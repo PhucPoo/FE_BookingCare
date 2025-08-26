@@ -4,6 +4,7 @@ import AdminHeader from "../AdminHeader/AdminHeader";
 import { Avatar, Drawer } from "antd";
 import { FaRegUserCircle } from "react-icons/fa";
 
+import "./Dasboard.css";
 const Dashboard = () => {
   const [open, setOpen] = useState(false);
   const showDrawer = () => {
