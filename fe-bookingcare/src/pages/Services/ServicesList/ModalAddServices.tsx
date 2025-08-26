@@ -1,0 +1,96 @@
+import React from "react";
+import { Input, Modal } from "antd";
+import { Controller, useForm } from "react-hook-form";
+import "./ModalAddServices.css";
+import TextArea from "antd/es/input/TextArea";
+type Props = {
+  isModalOpen: boolean;
+  setIsModalOpen: (e: boolean) => void;
+};
+
+const ModalAddServices = ({ isModalOpen, setIsModalOpen }: Props) => {
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+  const { handleSubmit, control } = useForm();
+
+  const onSubmit = (data: object) => console.log(data);
+
+  return (
+    <>
+      <Modal
+        title="Tạo mới dịch vụ"
+        closable={{ "aria-label": "Custom Close Button" }}
+        open={isModalOpen}
+        footer={null}
+        onCancel={handleCancel}
+        centered
+      >
+        <form onSubmit={handleSubmit(onSubmit)} className="form-container">
+          <div>
+            Tên:
+            <br />
+            <Controller
+              name="name"
+              control={control}
+              rules={{ required: "Yêu cầu nhập tên" }}
+              render={({ field, fieldState }) => (
+                <>
+                  <Input {...field} placeholder="Tên" />
+                  {fieldState.error && (
+                    <p style={{ color: "red" }}>{fieldState.error.message}</p>
+                  )}
+                </>
+              )}
+            />
+          </div>
+
+          <div>
+            Giá:
+            <br />
+            <Controller
+              name="cost"
+              control={control}
+              rules={{
+                required: "Yêu cầu điền giá dịch vụ",
+              }}
+              render={({ field, fieldState }) => (
+                <>
+                  <Input {...field} placeholder="cost" type="number" />
+                  {fieldState.error && (
+                    <p style={{ color: "red" }}>{fieldState.error.message}</p>
+                  )}
+                </>
+              )}
+            />
+          </div>
+
+          <div>
+            Miêu tả:
+            <br />
+            <Controller
+              name="description"
+              control={control}
+              rules={{
+                required: "Yêu cầu mô tả dịch vụ",
+                minLength: 8,
+              }}
+              render={({ field, fieldState }) => (
+                <>
+                  <TextArea {...field} placeholder="Mô tả" />
+                  {fieldState.error && (
+                    <p style={{ color: "red" }}>{fieldState.error.message}</p>
+                  )}
+                </>
+              )}
+            />
+          </div>
+
+          <input type="submit" />
+        </form>
+      </Modal>
+    </>
+  );
+};
+
+export default ModalAddServices;
