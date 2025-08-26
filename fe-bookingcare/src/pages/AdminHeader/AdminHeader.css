@@ -1,12 +1,15 @@
 .header {
   height: 80px;
-  background-color: rgba(237, 255, 250, 1);
+  background-color: #49bce2;
   padding: 0 50px;
   display: flex;
   align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 .header_icon {
   font-size: 25px;
-  color: cadetblue;
+  color: white;
   cursor: pointer;
 }

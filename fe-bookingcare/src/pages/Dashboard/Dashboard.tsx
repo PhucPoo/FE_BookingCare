@@ -1,45 +1,27 @@
 import React, { useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import AdminHeader from "../AdminHeader/AdminHeader";
-import { Avatar, Drawer } from "antd";
-import { FaRegUserCircle } from "react-icons/fa";
 
 import "./Dasboard.css";
+import Sidebar from "../../components/Sidebar/Sidebar";
 const Dashboard = () => {
   const [open, setOpen] = useState(false);
   const showDrawer = () => {
     setOpen(true);
   };
-  const onClose = () => {
-    setOpen(false);
-  };
+
   return (
     <>
       <AdminHeader showDrawer={showDrawer} />
-
-      <Drawer
-        title={
-          <div className="drawer_title">
-            <Avatar size={"large"} icon={<FaRegUserCircle />} />
-            <p>haha</p>
-          </div>
-        }
-        closable={{ "aria-label": "Close Button" }}
-        onClose={onClose}
-        open={open}
-        placement="left"
+      <Sidebar open={open} setOpen={setOpen} />
+      <div
+        style={{
+          backgroundColor: "#f5f5f5",
+          padding: "20px 0",
+        }}
       >
-        <div className="drawer_content">
-          <Link to={"statistics"}>
-            <div className="drawer_content_box">Thống kê</div>
-          </Link>
-
-          <Link to={"service-list"}>
-            <div className="drawer_content_box">Danh sách dịch vụ</div>
-          </Link>
-        </div>
-      </Drawer>
-      <Outlet />
+        <Outlet />
+      </div>
     </>
   );
 };
