@@ -19,8 +19,27 @@
   align-items: center;
   gap: 20px;
 }
+.header_item-right-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 .header_icon {
   font-size: 25px;
   color: white;
   cursor: pointer;
+}
+.header_item-left-icon {
+  display: none;
+}
+@media (max-width: 900px) {
+  .header_item-left-logo {
+    display: none;
+  }
+  .header_item-left-icon {
+    display: inline;
+  }
+  .header_item-right-content {
+    display: none;
+  }
 }

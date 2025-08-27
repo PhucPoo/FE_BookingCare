@@ -8,3 +8,8 @@
   text-decoration: none;
   color: black;
 }
+@media (max-width: 900px) {
+  .Sidebar-container {
+    display: none;
+  }
+}

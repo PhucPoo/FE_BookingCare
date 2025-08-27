@@ -1,10 +1,10 @@
-import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
 import AdminHeader from "../AdminHeader/AdminHeader";
+import Sidebar2 from "../../components/Sidebar/Sidebar2";
 
 import "./Dasboard.css";
+import { useState } from "react";
 import Sidebar from "../../components/Sidebar/Sidebar";
-import Sidebar2 from "../../components/Sidebar/Sidebar2";
 const Dashboard = () => {
   const [open, setOpen] = useState(false);
   const showDrawer = () => {
@@ -13,8 +13,7 @@ const Dashboard = () => {
 
   return (
     <>
-      <AdminHeader showDrawer={showDrawer} />
-      {/* <Sidebar open={open} setOpen={setOpen} /> */}
+      <AdminHeader setOpen={showDrawer} />
       <div
         style={{
           display: "flex",
@@ -27,6 +26,7 @@ const Dashboard = () => {
           }}
         >
           <Sidebar2 />
+          <Sidebar open={open} setOpen={setOpen} />
         </div>
         <div
           style={{

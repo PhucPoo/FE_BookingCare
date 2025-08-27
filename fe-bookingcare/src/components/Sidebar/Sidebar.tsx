@@ -1,8 +1,8 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { FaRegUserCircle } from "react-icons/fa";
 import { Avatar, Drawer } from "antd";
-
+import "./Sidebar.css";
+import { CiLogout } from "react-icons/ci";
 type Props = {
   open: boolean;
   setOpen: (e: boolean) => void;
@@ -18,7 +18,8 @@ const Sidebar = ({ open, setOpen }: Props) => {
         title={
           <div className="drawer_title">
             <Avatar size={"large"} icon={<FaRegUserCircle />} />
-            <p>haha</p>
+            <p>Hello Admin</p>
+            <CiLogout className="header_icon" style={{ color: "black" }} />
           </div>
         }
         closable={{ "aria-label": "Close Button" }}
