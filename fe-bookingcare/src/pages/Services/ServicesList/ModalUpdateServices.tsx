@@ -12,14 +12,15 @@ type Props = {
     cost: number;
     description: string;
   } | null;
-  key: number;
+  key: number | null;
+  id: number | null;
 };
 
 const ModalUpdateServices = ({
   isModalUpdateOpen,
   setIsModalUpdateOpen,
   DataToUpdateFromParent,
-  key,
+  id,
 }: Props) => {
   const { handleSubmit, control, reset } = useForm();
   const handleCancel = () => {
@@ -27,10 +28,8 @@ const ModalUpdateServices = ({
     reset();
   };
   const onSubmit = (data: object) => console.log(data);
-  useEffect(() => {
-    console.log(DataToUpdateFromParent);
-  }, [DataToUpdateFromParent]);
-  useEffect(() => {}, [key]);
+
+  useEffect(() => {}, [id]);
   return (
     <>
       <Modal

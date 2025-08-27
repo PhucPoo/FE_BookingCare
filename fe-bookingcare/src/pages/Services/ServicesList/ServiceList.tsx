@@ -190,7 +190,8 @@ const ServiceList = () => {
         setIsModalOpen={setIsModalOpen}
       />
       <ModalUpdateServices
-        key={DataToUpdate?.id}
+        key={DataToUpdate?.id || null}
+        id={DataToUpdate?.id || null}
         isModalUpdateOpen={isModalUpdateOpen}
         setIsModalUpdateOpen={setIsModalUpdateOpen}
         DataToUpdateFromParent={DataToUpdate}

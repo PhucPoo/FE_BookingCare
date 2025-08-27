@@ -13,9 +13,9 @@ const ServiceListData = [
   },
   {
     id: 3,
-    name: "ddada",
-    cost: 100000,
-    description: "fake",
+    name: "ccccc",
+    cost: 30000,
+    description: "idk",
   },
   {
     id: 4,
