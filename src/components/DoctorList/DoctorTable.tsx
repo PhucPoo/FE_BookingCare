@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 
-interface Doctor {
+export interface Doctor {
     id: number;
     name: string;
     email: string;
@@ -12,18 +12,15 @@ interface Doctor {
     Gender: string;
     address: string;
     birthday: Date;
+    price?: number;
     create_at: Date;
     update_at: Date;
-
-    
     status: 'active' | 'inactive';
 }
 
-const doctors: Doctor[] = [
-    { id: 1, name: 'BS. Nguyễn Văn A',email: 'hp@gmail.com',password:'aaaa',cccd: 1289389, phone: '0901234567', department: 'Nội khoa',Gender:'male',address:'Hà Nội',birthday:new Date('2025-08-27'),create_at:new Date('2025-08-27'),update_at:new Date('2025-08-27'), status: 'active' },
-    { id: 2, name: 'BS. Nguyễn Văn A',email: 'hp@gmail.com',password:'aaaa',cccd: 1289389, phone: '0901234567', department: 'Nội khoa',Gender:'male',address:'Hà Nội',birthday:new Date('2025-08-27'),create_at:new Date('2025-08-27'),update_at:new Date('2025-08-27'), status: 'active' },
-    // Thêm dữ liệu giả khác tại đây nếu cần
-];
+interface DoctorTableProps {
+  doctors: Doctor[];
+}
 
 const getStatusBadge = (status: Doctor['status']) => {
     switch (status) {
@@ -34,28 +31,95 @@ const getStatusBadge = (status: Doctor['status']) => {
     }
 };
 
-const DoctorTable: React.FC = () => {
+type SortColumn = 'name' | 'create_at' | 'department' | '';
+type SortDirection = 'asc' | 'desc';
+
+const DoctorTable: React.FC<DoctorTableProps> = ({ doctors }) => {
+    const [sortColumn, setSortColumn] = useState<SortColumn>('');
+    const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+
+    const handleSort = (column: SortColumn) => {
+      if (sortColumn === column) {
+        // Nếu click lại cột đang sắp xếp thì đảo chiều sắp xếp
+        setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      } else {
+        // Nếu chọn cột khác thì sắp xếp tăng dần theo cột mới
+        setSortColumn(column);
+        setSortDirection('asc');
+      }
+    };
+
+    const sortedDoctors = [...doctors].sort((a, b) => {
+      if (!sortColumn) return 0;
+
+      let aVal: any;
+      let bVal: any;
+
+      switch (sortColumn) {
+        case 'name':
+          aVal = a.name.toLowerCase();
+          bVal = b.name.toLowerCase();
+          break;
+        case 'create_at':
+          aVal = a.create_at.getTime();
+          bVal = b.create_at.getTime();
+          break;
+        case 'department':
+          aVal = a.department.toLowerCase();
+          bVal = b.department.toLowerCase();
+          break;
+      }
+
+      if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
+      if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    // Hàm để hiển thị mũi tên sắp xếp
+    const renderSortArrow = (column: SortColumn) => {
+      if (sortColumn !== column) return null;
+      return sortDirection === 'asc' ? ' ▲' : ' ▼';
+    };
+
     return (
         <div className="overflow-x-auto bg-white rounded shadow">
             <table className="w-full table-fixed border-collapse">
                 <thead>
-                    <th className="w-[3%] p-3 border">STT</th>
-                    <th className="w-[6%] p-3 border">Tên bác sĩ</th>
-                    <th className="w-[8%] p-3 border">Email bác sĩ</th>
-                    <th className="w-[6%] p-3 border">Password</th>
-                    <th className="w-[6%] p-3 border">CCCD</th>
-                    <th className="w-[6%] p-3 border">Phone</th>
-                    <th className="w-[6%] p-3 border">Gender</th>
-                    <th className="w-[6%] p-3 border">Address</th>
-                    <th className="w-[7%] p-3 border">Department</th>
-                    <th className="w-[6%] p-3 border">Birthday</th>
-                    <th className="w-[6%] p-3 border">Create_at</th>
-                    <th className="w-[6%] p-3 border">Update_at</th>
-                    <th className="w-[6%] p-3 border">Trạng thái</th>
-                    <th className="w-[10%] p-3 border text-center">Thao tác</th>
+                    <tr>
+                      <th className="w-[3%] p-3 border">STT</th>
+                      <th
+                        className="w-[6%] p-3 border cursor-pointer select-none"
+                        onClick={() => handleSort('name')}
+                      >
+                        Tên bác sĩ{renderSortArrow('name')}
+                      </th>
+                      <th className="w-[8%] p-3 border">Email bác sĩ</th>
+                      <th className="w-[6%] p-3 border">Password</th>
+                      <th className="w-[6%] p-3 border">CCCD</th>
+                      <th className="w-[6%] p-3 border">Phone</th>
+                      <th className="w-[6%] p-3 border">Gender</th>
+                      <th className="w-[6%] p-3 border">Address</th>
+                      <th
+                        className="w-[7%] p-3 border cursor-pointer select-none"
+                        onClick={() => handleSort('department')}
+                      >
+                        Department{renderSortArrow('department')}
+                      </th>
+                      <th className="w-[6%] p-3 border">Birthday</th>
+                      <th className="w-[6%] p-3 border">Price</th>
+                      <th
+                        className="w-[6%] p-3 border cursor-pointer select-none"
+                        onClick={() => handleSort('create_at')}
+                      >
+                        Create_at{renderSortArrow('create_at')}
+                      </th>
+                      <th className="w-[6%] p-3 border">Update_at</th>
+                      <th className="w-[6%] p-3 border">Trạng thái</th>
+                      <th className="w-[10%] p-3 border text-center">Thao tác</th>
+                    </tr>
                 </thead>
                 <tbody>
-                    {doctors.map((doc, index) => (
+                    {sortedDoctors.map((doc, index) => (
                         <tr key={doc.id} className="hover:bg-gray-50">
                             <td className="p-3 border">{index + 1}</td>
                             <td className="p-3 border">{doc.name}</td>
@@ -67,6 +131,7 @@ const DoctorTable: React.FC = () => {
                             <td className="p-3 border">{doc.address}</td>
                             <td className="p-3 border">{doc.department}</td>
                             <td className="p-3 border">{doc.birthday.toLocaleDateString()}</td>
+                            <td className="p-3 border">{doc.price}</td>
                             <td className="p-3 border">{doc.create_at.toLocaleDateString()}</td>
                             <td className="p-3 border">{doc.update_at.toLocaleDateString()}</td>
                             <td className="p-3 border">{getStatusBadge(doc.status)}</td>
