@@ -1,20 +1,21 @@
-import { IoAppsSharp } from "react-icons/io5";
+import { IoIosNotifications } from "react-icons/io";
+import { RxAvatar } from "react-icons/rx";
+import { CiLogout } from "react-icons/ci";
 import "./AdminHeader.css";
-type Props = {
-  showDrawer: () => void;
-};
-
-const AdminHeader = ({ showDrawer }: Props) => {
+const AdminHeader = () => {
   return (
     <>
       <div className="header">
-        <div className="header_item">
-          <IoAppsSharp
-            className="header_icon"
-            onClick={() => {
-              showDrawer();
-            }}
-          />
+        <div className="header_container">
+          <div className="header_item-left">Đây là logo</div>
+          <div className="header_item-right">
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <RxAvatar className="header_icon" />
+              Hello Admin
+            </div>
+            <IoIosNotifications className="header_icon" />
+            <CiLogout className="header_icon" />
+          </div>
         </div>
       </div>
     </>

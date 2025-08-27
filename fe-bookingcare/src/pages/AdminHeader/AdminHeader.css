@@ -8,6 +8,17 @@
   top: 0;
   z-index: 10;
 }
+.header_container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+.header_item-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
 .header_icon {
   font-size: 25px;
   color: white;

@@ -7,6 +7,10 @@ import ServiceList from "../pages/Services/ServicesList/ServiceList";
 const AppRoutes = () => {
   return (
     <Routes>
+      <Route
+        path="/"
+        element={<Navigate to={"/admin-dashboard"} replace={true} />}
+      />
       <Route path="/admin-dashboard" element={<Dashboard />}>
         <Route
           path="/admin-dashboard"

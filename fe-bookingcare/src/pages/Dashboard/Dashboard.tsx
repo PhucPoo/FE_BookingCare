@@ -4,6 +4,7 @@ import AdminHeader from "../AdminHeader/AdminHeader";
 
 import "./Dasboard.css";
 import Sidebar from "../../components/Sidebar/Sidebar";
+import Sidebar2 from "../../components/Sidebar/Sidebar2";
 const Dashboard = () => {
   const [open, setOpen] = useState(false);
   const showDrawer = () => {
@@ -13,14 +14,29 @@ const Dashboard = () => {
   return (
     <>
       <AdminHeader showDrawer={showDrawer} />
-      <Sidebar open={open} setOpen={setOpen} />
+      {/* <Sidebar open={open} setOpen={setOpen} /> */}
       <div
         style={{
-          backgroundColor: "#f5f5f5",
-          padding: "20px 0",
+          display: "flex",
+          width: "100%",
         }}
       >
-        <Outlet />
+        <div
+          style={{
+            width: "15%",
+          }}
+        >
+          <Sidebar2 />
+        </div>
+        <div
+          style={{
+            backgroundColor: "#f5f5f5",
+            padding: "20px 0",
+            width: "85%",
+          }}
+        >
+          <Outlet />
+        </div>
       </div>
     </>
   );

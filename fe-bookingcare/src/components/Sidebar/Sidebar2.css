@@ -1,0 +1,10 @@
+.Sidebar-container {
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 80px;
+}
+.Sidebar-container a {
+  text-decoration: none;
+  color: black;
+}
