@@ -28,11 +28,11 @@ const Sidebar = ({ open, setOpen }: Props) => {
         placement="left"
       >
         <div className="drawer_content">
-          <Link to={"statistics"}>
+          <Link to={"statistics"} onClick={() => onClose()}>
             <div className="drawer_content_box">Thống kê</div>
           </Link>
 
-          <Link to={"service-list"}>
+          <Link to={"service-list"} onClick={() => onClose()}>
             <div className="drawer_content_box">Danh sách dịch vụ</div>
           </Link>
         </div>
