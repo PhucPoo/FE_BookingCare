@@ -5,6 +5,7 @@ import {
   message,
   Pagination,
   Popconfirm,
+  Select,
   type PopconfirmProps,
 } from "antd";
 import ModalAddServices from "./ModalAddServices";
@@ -21,11 +22,18 @@ const ServiceList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
   const [ServiceList, setServiceList] = useState<Item[]>([]);
-  const [columns, setColumns] = useState<string[]>([]);
+  const [columns, setColumns] = useState<{ value: number; label: string }[]>(
+    []
+  );
   const [pageSize, setPageSize] = useState<number>(10);
   const [totalServiceList, setTotalServiceList] = useState<number>(500);
   const [currentPage, setCurrentPage] = useState<number>(1);
 
+  const [checkRender, setCheckRender] = useState({
+    id: false,
+    name: false,
+    cost: false,
+  });
   const [DataToUpdate, setDataToUpdate] = useState<Item>({
     id: 0,
     name: "",
@@ -51,8 +59,67 @@ const ServiceList = () => {
   const onLog = (page, pageSize) => {
     console.log("Đang ở trang:", page, pageSize);
   };
+  const handleSort = (value: number) => {
+    console.log("search:", value);
+    let ServiceListClone = ServiceList;
+    switch (value) {
+      case 0:
+        if (checkRender.id) {
+          ServiceListClone = ServiceListClone.sort(
+            (a: Item, b: Item) => a.id - b.id
+          );
+          setCheckRender({ ...checkRender, id: !checkRender.id });
+          setServiceList(ServiceListClone);
+        } else {
+          ServiceListClone = ServiceListClone.sort(
+            (a: Item, b: Item) => b.id - a.id
+          );
+          setCheckRender({ ...checkRender, id: !checkRender.id });
+          setServiceList(ServiceListClone);
+        }
+        break;
+      case 1:
+        if (checkRender.name) {
+          ServiceListClone = ServiceListClone.sort((a: Item, b: Item) =>
+            a.name.localeCompare(b.name)
+          );
+          setCheckRender({ ...checkRender, name: !checkRender.name });
+          setServiceList(ServiceListClone);
+        } else {
+          ServiceListClone = ServiceListClone.sort((a: Item, b: Item) =>
+            b.name.localeCompare(a.name)
+          );
+          setCheckRender({ ...checkRender, name: !checkRender.name });
+          setServiceList(ServiceListClone);
+        }
+        break;
+      case 2:
+        if (checkRender.cost) {
+          ServiceListClone = ServiceListClone.sort(
+            (a: Item, b: Item) => a.cost - b.cost
+          );
+          setCheckRender({ ...checkRender, cost: !checkRender.cost });
+          setServiceList(ServiceListClone);
+        } else {
+          ServiceListClone = ServiceListClone.sort(
+            (a: Item, b: Item) => b.cost - a.cost
+          );
+          setCheckRender({ ...checkRender, cost: !checkRender.cost });
+          setServiceList(ServiceListClone);
+        }
+        break;
+      default:
+        break;
+    }
+  };
+
   useEffect(() => {
-    const columnArr = Object.keys(ServiceListData[0]);
+    const columnArr = Object.keys(ServiceListData[0]).map((item, index) => {
+      return {
+        value: index,
+        label: item,
+      };
+    });
     setColumns(columnArr);
     setServiceList(ServiceListData);
   }, []);
@@ -77,6 +144,7 @@ const ServiceList = () => {
                   className="w-full sm:w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
+
               <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                 <Button
                   type="primary"
@@ -99,13 +167,16 @@ const ServiceList = () => {
                   <tr>
                     {columns &&
                       columns.length > 0 &&
-                      columns.map((item, index) => {
+                      columns.map((item) => {
                         return (
                           <th
-                            className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center"
-                            key={index}
+                            className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer"
+                            key={item.value}
+                            onClick={() => {
+                              handleSort(item.value);
+                            }}
                           >
-                            {item}
+                            {item.label}
                           </th>
                         );
                       })}
