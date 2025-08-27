@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { IoIosAddCircle } from "react-icons/io";
-import { Button, Typography } from "antd";
+import {
+  Button,
+  message,
+  Pagination,
+  Popconfirm,
+  type PopconfirmProps,
+} from "antd";
 import ModalAddServices from "./ModalAddServices";
 import ServiceListData from "../../../MockData/ServiceListData.ts";
 import "./ServiceList.css";
@@ -14,6 +20,20 @@ const ServiceList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [ServiceList, setServiceList] = useState<Item[]>([]);
   const [columns, setColumns] = useState<string[]>([]);
+  const [pageSize, setPageSize] = useState<number>(10);
+  const [totalServiceList, setTotalServiceList] = useState<number>(500);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
+  const confirm: PopconfirmProps["onConfirm"] = (e) => {
+    console.log(e);
+    message.success("Click on Yes");
+    alert("Cút");
+  };
+
+  const cancel: PopconfirmProps["onCancel"] = (e) => {
+    console.log(e);
+    message.error("Click on No");
+  };
   useEffect(() => {
     const columnArr = Object.keys(ServiceListData[0]);
     setColumns(columnArr);
@@ -23,69 +43,122 @@ const ServiceList = () => {
   return (
     <>
       <div className="service-container">
-        <Button
-          type="primary"
-          icon={<IoIosAddCircle />}
-          onClick={() => {
-            setIsModalOpen(true);
-          }}
-        >
-          Thêm
-        </Button>
-        <div className="mt-5">
-          {ServiceList.length === 0 && (
-            <Typography>Chưa có dịch vụ nào trong danh sách</Typography>
-          )}
-          <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-              <tr>
-                {columns &&
-                  columns.length > 0 &&
-                  columns.map((item, index) => {
-                    return (
-                      <th
-                        scope="col"
-                        className="px-6 py-3 text-center"
-                        key={index}
-                      >
-                        {item}
-                      </th>
-                    );
-                  })}
-                <th scope="col" className="px-6 py-3  text-center">
-                  <p>Action</p>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {ServiceList &&
-                ServiceList.length > 0 &&
-                ServiceList.map((item: Item) => {
-                  return (
-                    <tr
-                      className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200"
-                      key={item.id}
-                    >
-                      <th
-                        scope="row"
-                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center"
-                      >
-                        {item.id}
-                      </th>
-                      <td className="px-6 py-4 text-center">{item.name}</td>
-                      <td className="px-6 py-4 text-center">{item.cost}</td>
-                      <td className="px-6 py-4 text-center">
-                        {item.description}
-                      </td>
-                      <td className="px-6 py-4 flex gap-1 justify-center">
-                        <Button type="primary">Chỉnh sửa</Button>
-                        <Button danger>Xoá</Button>
-                      </td>
-                    </tr>
-                  );
-                })}
-            </tbody>
-          </table>
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-6">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+              Danh sách dịch vụ
+            </h1>
+            <p className="text-gray-600">Quản lý thông tin dịch vụ hiện có</p>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6 p-4">
+            <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+              <div className="w-full sm:w-auto">
+                <input
+                  type="text"
+                  placeholder="Tìm kiếm dịch vụ..."
+                  className="w-full sm:w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                <Button
+                  type="primary"
+                  icon={<IoIosAddCircle />}
+                  onClick={() => {
+                    setIsModalOpen(true);
+                  }}
+                  size="large"
+                >
+                  Thêm
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div className="overflow-x-auto custom-scrollbar">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    {columns &&
+                      columns.length > 0 &&
+                      columns.map((item, index) => {
+                        return (
+                          <th
+                            className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center"
+                            key={index}
+                          >
+                            {item}
+                          </th>
+                        );
+                      })}
+                    <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">
+                      Hành động
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {ServiceList &&
+                    ServiceList.length > 0 &&
+                    ServiceList.map((item) => {
+                      return (
+                        <tr
+                          className="hover:bg-gray-50 transition-colors duration-150"
+                          key={item.id}
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
+                            {item.id}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
+                            {item.name}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
+                            {item.cost}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
+                            {item.description}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div className="flex items-center justify-center space-x-5">
+                              <Button type="primary">Chỉnh sửa</Button>
+                              <Button danger>
+                                <Popconfirm
+                                  title={"Xoá " + item.name}
+                                  description="Bạn có muốn xoá không?"
+                                  onConfirm={confirm}
+                                  onCancel={cancel}
+                                  okText="Có"
+                                  cancelText="Không"
+                                >
+                                  Xóa
+                                </Popconfirm>
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="mt-6 flex flex-col sm:flex-row items-center justify-between bg-white px-6 py-3 rounded-lg shadow-sm border border-gray-200">
+            <div className="text-sm text-gray-700 mb-4 sm:mb-0">
+              Hiển thị <span className="font-semibold">1</span> đến{" "}
+              <span className="font-semibold">5</span>
+              của <span className="font-semibold">20</span> kết quả
+            </div>
+            <div className="flex items-center space-x-1">
+              <Pagination
+                defaultCurrent={currentPage}
+                pageSize={pageSize}
+                total={totalServiceList}
+                onChange={() => console.log("hehe")}
+              />
+            </div>
+          </div>
         </div>
       </div>
       <ModalAddServices

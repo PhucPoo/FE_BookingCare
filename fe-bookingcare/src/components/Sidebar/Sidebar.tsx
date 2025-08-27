@@ -1,6 +1,12 @@
 import { Link } from "react-router-dom";
 import { FaRegUserCircle } from "react-icons/fa";
-import { Avatar, Drawer } from "antd";
+import {
+  Avatar,
+  Drawer,
+  message,
+  Popconfirm,
+  type PopconfirmProps,
+} from "antd";
 import "./Sidebar.css";
 import { CiLogout } from "react-icons/ci";
 type Props = {
@@ -9,6 +15,16 @@ type Props = {
 };
 
 const Sidebar = ({ open, setOpen }: Props) => {
+  const confirm: PopconfirmProps["onConfirm"] = (e) => {
+    console.log(e);
+    message.success("Click on Yes");
+    alert("Cút");
+  };
+
+  const cancel: PopconfirmProps["onCancel"] = (e) => {
+    console.log(e);
+    message.error("Click on No");
+  };
   const onClose = () => {
     setOpen(false);
   };
@@ -19,7 +35,17 @@ const Sidebar = ({ open, setOpen }: Props) => {
           <div className="drawer_title">
             <Avatar size={"large"} icon={<FaRegUserCircle />} />
             <p>Hello Admin</p>
-            <CiLogout className="header_icon" style={{ color: "black" }} />
+            <Popconfirm
+              title="Đăng xuất"
+              description="Bạn có muốn đăng xuất không?"
+              onConfirm={confirm}
+              onCancel={cancel}
+              okText="Có"
+              cancelText="Không"
+            >
+              {" "}
+              <CiLogout className="header_icon" style={{ color: "black" }} />
+            </Popconfirm>
           </div>
         }
         closable={{ "aria-label": "Close Button" }}
