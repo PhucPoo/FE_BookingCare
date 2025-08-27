@@ -1,16 +1,18 @@
-.container {
+.statistics-container {
   margin: 0px 50px;
   background-color: white;
   box-shadow: 0 4px 2px -2px gray;
   border-radius: 10px;
   border: 1px solid #49bce2;
+  padding: 20px;
 }
-.statistic-container {
+.statistic-content {
   border: 1px solid #49bce2;
   margin: 10px 0;
   box-shadow: 0 2px 3px 1px gray;
+  border-radius: 5px;
 }
-.statistic-container_title {
+.statistic-content_title {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -19,7 +21,7 @@
   color: white;
 }
 
-.statistic-container_title a {
+.statistic-content_title a {
   text-decoration: none;
   color: white;
 }

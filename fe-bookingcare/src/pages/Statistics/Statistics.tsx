@@ -6,8 +6,8 @@ import Bill from "./Bill";
 
 const Statistics = () => {
   return (
-    <div className="container">
-      <h1>Hello Admin</h1>
+    <div className="statistics-container ">
+      <h1 className="text-2xl">Hello Admin</h1>
 
       <Cash />
       <Booking />

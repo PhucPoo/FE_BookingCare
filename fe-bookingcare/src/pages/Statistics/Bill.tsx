@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import {
   CartesianGrid,
@@ -10,7 +9,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-
+// import "./Bill.css";
 const Bill = () => {
   const data2 = [
     {
@@ -58,8 +57,8 @@ const Bill = () => {
   ];
   return (
     <>
-      <div className="statistic-container">
-        <div className="statistic-container_title">
+      <div className="statistic-content">
+        <div className="statistic-content_title">
           <h2>Thống kê danh sách hoá đơn</h2>
           <Link to={"#!"}>Xem thêm</Link>
         </div>

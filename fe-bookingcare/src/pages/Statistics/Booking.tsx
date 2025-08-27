@@ -11,8 +11,8 @@ const Booking = () => {
 
   return (
     <>
-      <div className="statistic-container">
-        <div className="statistic-container_title">
+      <div className="statistic-content">
+        <div className="statistic-content_title">
           <h2>Thống kê đơn khám</h2>
           <Link to={"#!"}>Xem thêm</Link>
         </div>

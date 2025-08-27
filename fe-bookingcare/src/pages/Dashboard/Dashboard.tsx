@@ -32,7 +32,7 @@ const Dashboard = () => {
           style={{
             backgroundColor: "#f5f5f5",
             padding: "20px 0",
-            width: "85%",
+            width: "100%",
           }}
         >
           <Outlet />

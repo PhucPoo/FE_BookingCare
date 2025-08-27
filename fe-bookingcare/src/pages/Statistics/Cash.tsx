@@ -84,8 +84,8 @@ const Cash = () => {
         <h2>Tổng thu nhập hôm nay</h2>
         <Statistic title="Đơn vị vnđ" value={112893} formatter={formatter} />
       </div>
-      <div className="statistic-container">
-        <div className="statistic-container_title">
+      <div className="statistic-content">
+        <div className="statistic-content_title">
           <h2>Thống kê tổng thu (theo tháng)</h2>
           <Link to={"#!"}>Xem thêm</Link>
         </div>
