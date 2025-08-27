@@ -1,5 +1,6 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { FaChartPie, FaClipboardList, FaCalendarAlt, FaUsers, FaCog, FaChevronUp, FaChevronDown } from 'react-icons/fa';
+import { Link } from "react-router-dom";
 
 
 
@@ -16,28 +17,48 @@ const Sidebar: React.FC = () => {
       </h1>
 
       <nav className="flex flex-col gap-6 text-gray-700">
-        <a href="admin-dashboard" className="flex items-center gap-3 hover:text-indigo-600">
+        <a href="/" className="flex items-center gap-3 hover:text-indigo-600">
           <FaChartPie /> Dashboard
         </a>
 
         {/* Phần sidebar cho quản lý người dùng */}
-         <button
-          onClick={toggleUserMenu}
-          className="flex items-center justify-between w-full text-left gap-3 hover:text-indigo-600"
-        >
-          <div className="flex items-center gap-3">
-            <FaClipboardList /> Quản lý người dùng
-          </div>
-          {userMenuOpen ? <FaChevronUp size={12} /> : <FaChevronDown size={12} />}
-        </button>
+        <div>
+          <button
+            onClick={toggleUserMenu}
+            className="flex items-center justify-between w-full text-left gap-3 hover:text-indigo-600"
+          >
+            <div className="flex items-center gap-3">
+              <FaClipboardList />
 
-         {userMenuOpen && (
-          <div className="ml-6 flex flex-col gap-2 text-sd text-gray-600">
-            <a href="#doctor" className="hover:text-indigo-500">Quản lý bác sĩ</a>
-            <a href="#support" className="hover:text-indigo-500">Quản lý trợ lý</a>
-            <a href="#user" className="hover:text-indigo-500">Quản lý bệnh nhân</a>
-          </div>
-        )}
+              Quản lý Người dùng
+
+            </div>
+            {userMenuOpen ? <FaChevronUp size={12} /> : <FaChevronDown size={12} />}
+          </button>
+
+          {userMenuOpen && (
+            <div className="ml-6 mt-2 flex flex-col gap-2 text-sm text-gray-600">
+              <a href="/admin-dashboard/doctor-list"
+                className="hover:text-indigo-500">
+
+
+                Quản lý bác sĩ
+              </a>
+              <a
+                href="/admin-dashboard/assistant-list"
+                className="hover:text-indigo-500"
+              >
+                Quản lý trợ lý
+              </a>
+              <a
+                href="/admin-dashboard/patient-list"
+                className="hover:text-indigo-500"
+              >
+                Quản lý bệnh nhân
+              </a>
+            </div>
+          )}
+        </div>
 
         <a href="specialty" className="flex items-center gap-3 hover:text-indigo-600">
           <FaCalendarAlt /> Quản lý chuyên khoa
