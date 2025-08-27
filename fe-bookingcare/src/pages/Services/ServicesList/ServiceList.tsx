@@ -10,6 +10,7 @@ import {
 import ModalAddServices from "./ModalAddServices";
 import ServiceListData from "../../../MockData/ServiceListData.ts";
 import "./ServiceList.css";
+import ModalUpdateServices from "./ModalUpdateServices.tsx";
 interface Item {
   id: number;
   name: string;
@@ -18,11 +19,19 @@ interface Item {
 }
 const ServiceList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
   const [ServiceList, setServiceList] = useState<Item[]>([]);
   const [columns, setColumns] = useState<string[]>([]);
   const [pageSize, setPageSize] = useState<number>(10);
   const [totalServiceList, setTotalServiceList] = useState<number>(500);
   const [currentPage, setCurrentPage] = useState<number>(1);
+
+  const [DataToUpdate, setDataToUpdate] = useState<Item>({
+    id: 0,
+    name: "",
+    cost: 0,
+    description: "",
+  });
 
   const confirm: PopconfirmProps["onConfirm"] = (e) => {
     console.log(e);
@@ -33,6 +42,14 @@ const ServiceList = () => {
   const cancel: PopconfirmProps["onCancel"] = (e) => {
     console.log(e);
     message.error("Click on No");
+  };
+
+  const handleUpdateService = (item: Item) => {
+    setDataToUpdate(item);
+    setIsModalUpdateOpen(true);
+  };
+  const onLog = (page, pageSize) => {
+    console.log("Đang ở trang:", page, pageSize);
   };
   useEffect(() => {
     const columnArr = Object.keys(ServiceListData[0]);
@@ -121,7 +138,14 @@ const ServiceList = () => {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <div className="flex items-center justify-center space-x-5">
-                              <Button type="primary">Chỉnh sửa</Button>
+                              <Button
+                                type="primary"
+                                onClick={() => {
+                                  handleUpdateService(item);
+                                }}
+                              >
+                                Chỉnh sửa
+                              </Button>
                               <Button danger>
                                 <Popconfirm
                                   title={"Xoá " + item.name}
@@ -155,7 +179,7 @@ const ServiceList = () => {
                 defaultCurrent={currentPage}
                 pageSize={pageSize}
                 total={totalServiceList}
-                onChange={() => console.log("hehe")}
+                onChange={onLog}
               />
             </div>
           </div>
@@ -164,6 +188,12 @@ const ServiceList = () => {
       <ModalAddServices
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
+      />
+      <ModalUpdateServices
+        key={DataToUpdate?.id}
+        isModalUpdateOpen={isModalUpdateOpen}
+        setIsModalUpdateOpen={setIsModalUpdateOpen}
+        DataToUpdateFromParent={DataToUpdate}
       />
     </>
   );

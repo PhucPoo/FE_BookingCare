@@ -7,9 +7,9 @@ const ServiceListData = [
   },
   {
     id: 2,
-    name: "ddada",
-    cost: 100000,
-    description: "fake",
+    name: "bbbbbbbbb",
+    cost: 200000,
+    description: "real",
   },
   {
     id: 3,
