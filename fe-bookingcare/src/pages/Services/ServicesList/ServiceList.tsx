@@ -5,7 +5,6 @@ import {
   message,
   Pagination,
   Popconfirm,
-  Select,
   type PopconfirmProps,
 } from "antd";
 import ModalAddServices from "./ModalAddServices";
@@ -28,6 +27,13 @@ const ServiceList = () => {
   const [pageSize, setPageSize] = useState<number>(10);
   const [totalServiceList, setTotalServiceList] = useState<number>(500);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [filterData, setFilterData] = useState<{
+    from: number;
+    to: number;
+  }>({
+    from: 0,
+    to: 0,
+  });
 
   const [checkRender, setCheckRender] = useState({
     id: false,
@@ -112,7 +118,15 @@ const ServiceList = () => {
         break;
     }
   };
-
+  const filterService = () => {
+    console.log(filterData);
+    let ServiceListClone = ServiceListData;
+    ServiceListClone = ServiceListClone.filter((item) => {
+      return filterData.from <= item.cost && item.cost <= filterData.to;
+    });
+    console.log("🚀 ~ filterService ~ ServiceListClone:", ServiceListClone);
+    setServiceList(ServiceListClone);
+  };
   useEffect(() => {
     const columnArr = Object.keys(ServiceListData[0]).map((item, index) => {
       return {
@@ -141,8 +155,41 @@ const ServiceList = () => {
                 <input
                   type="text"
                   placeholder="Tìm kiếm dịch vụ..."
-                  className="w-full sm:w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full sm:w-16 md:w-32 lg:w-64  not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
+              </div>
+
+              <div className="w-full sm:w-auto md:w-auto lg:w-auto flex gap-3 flex-col sm:flex-row items-center">
+                <label className="w-full sm:w-auto text-center">
+                  Lọc theo giá:
+                </label>
+                <div className="flex gap-3 items-center">
+                  <input
+                    type="number"
+                    placeholder="Từ"
+                    className="w-full sm:w-16 md:w-32  px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    onChange={(e) => {
+                      setFilterData({ ...filterData, from: +e.target.value });
+                    }}
+                  />
+                  <input
+                    type="number"
+                    placeholder="Đến"
+                    className="w-full sm:w-16 md:w-32   px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    onChange={(e) => {
+                      setFilterData({ ...filterData, to: +e.target.value });
+                    }}
+                  />
+                </div>
+                <Button
+                  size="large"
+                  className="sm:flex-row gap-2 w-full sm:w-auto"
+                  onClick={() => {
+                    filterService();
+                  }}
+                >
+                  Lọc
+                </Button>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
