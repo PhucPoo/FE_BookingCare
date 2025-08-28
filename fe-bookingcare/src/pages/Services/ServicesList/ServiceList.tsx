@@ -170,7 +170,7 @@ const ServiceList = () => {
                       columns.map((item) => {
                         return (
                           <th
-                            className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer"
+                            className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
                             key={item.value}
                             onClick={() => {
                               handleSort(item.value);
@@ -180,7 +180,7 @@ const ServiceList = () => {
                           </th>
                         );
                       })}
-                    <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">
+                    <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center hover:bg-gray-500 hover:text-white transition-all delay-100">
                       Hành động
                     </th>
                   </tr>

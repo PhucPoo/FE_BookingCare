@@ -2,14 +2,21 @@
   display: flex;
   flex-direction: column;
   position: sticky;
-  top: 80px;
+  top: 0px;
+  z-index: 11;
+  background-color: white;
 }
 .Sidebar-container a {
   text-decoration: none;
   color: black;
 }
+.Sidebar-logo {
+  padding: 23.5px 0px;
+  margin: 0px auto;
+}
 @media (max-width: 900px) {
   .Sidebar-container {
     display: none;
+    width: 0px;
   }
 }

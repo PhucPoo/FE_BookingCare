@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { FaRegUserCircle } from "react-icons/fa";
 import {
   Avatar,
   Drawer,
@@ -33,7 +32,11 @@ const Sidebar = ({ open, setOpen }: Props) => {
       <Drawer
         title={
           <div className="drawer_title">
-            <Avatar size={"large"} icon={<FaRegUserCircle />} />
+            <Avatar
+              src="https://i.pinimg.com/originals/fb/e1/48/fbe1485e8eb285c151e548e4b10f2414.gif"
+              size={"large"}
+            />
+
             <p>Hello Admin</p>
             <Popconfirm
               title="Đăng xuất"
@@ -43,7 +46,6 @@ const Sidebar = ({ open, setOpen }: Props) => {
               okText="Có"
               cancelText="Không"
             >
-              {" "}
               <CiLogout className="header_icon" style={{ color: "black" }} />
             </Popconfirm>
           </div>
