@@ -5,13 +5,17 @@ import DoctorTable, { type Doctor } from '../../components/DoctorList/DoctorTabl
 
 
 const doctors: Doctor[] = [
-    { id: 1, name: 'BS. Nguyễn Văn A',email: 'hp@gmail.com',password:'aaaa',cccd: 1289389, phone: '0901234567', department: 'Nội khoa',Gender:'male',address:'Hà Nội',birthday:new Date('2025-08-27'),price:20000,create_at:new Date('2025-08-27'),update_at:new Date('2025-08-27'), status: 'active' },
-    { id: 2, name: 'BS. Nguyễn Văn B',email: 'hp@gmail.com',password:'aaaa',cccd: 1289389, phone: '0901234567', department: 'Xương Khớp',Gender:'male',address:'Hà Nội',birthday:new Date('2025-08-27'),price:15000,create_at:new Date('2025-08-27'),update_at:new Date('2025-08-27'), status: 'active' },
-    { id: 3, name: 'BS. Nguyễn Văn C',email: 'hp@gmail.com',password:'aaaa',cccd: 1289389, phone: '0901234567', department: 'Tai Mũi Họng',Gender:'male',address:'Hà Nội',birthday:new Date('2025-08-27'),price:15000,create_at:new Date('2025-08-27'),update_at:new Date('2025-08-27'), status: 'active' },
-    { id: 4, name: 'BS. Nguyễn Văn D',email: 'hp@gmail.com',password:'aaaa',cccd: 1289389, phone: '0901234567', department: 'Tim Mạch',Gender:'male',address:'Hà Nội',birthday:new Date('2025-08-27'),price:15000,create_at:new Date('2025-08-27'),update_at:new Date('2025-08-27'), status: 'active' },
-    { id: 5, name: 'BS. Nguyễn Văn CD',email: 'hp@gmail.com',password:'aaaa',cccd: 1289389, phone: '0901234567', department: 'Nội khoa',Gender:'male',address:'Hà Nội',birthday:new Date('2025-08-27'),price:15000,create_at:new Date('2025-08-27'),update_at:new Date('2025-08-27'), status: 'active' },
-    { id: 6, name: 'BS. Nguyễn Văn AB',email: 'hp@gmail.com',password:'aaaa',cccd: 1289389, phone: '0901234567', department: 'Nội khoa',Gender:'male',address:'Hà Nội',birthday:new Date('2025-08-27'),price:15000,create_at:new Date('2025-08-27'),update_at:new Date('2025-08-27'), status: 'active' },
-    { id: 7, name: 'BS. Nguyễn Văn ABC',email: 'hp@gmail.com',password:'aaaa',cccd: 1289389, phone: '0901234567', department: 'Nội khoa',Gender:'male',address:'Hà Nội',birthday:new Date('2025-08-27'),price:15000,create_at:new Date('2025-08-27'),update_at:new Date('2025-08-27'), status: 'active' },
+  { id: 2, name: 'BS. Nguyễn Văn B',email: 'hp@gmail.com',cccd: 1289389, phone: '0942234567',price:15000,create_at:new Date('2025-08-27'),update_at:new Date('2025-08-27'), status: 'active' },
+  { id: 2, name: 'BS. Nguyễn Văn B',email: 'hp@gmail.com',cccd: 1289389, phone: '0942234567',price:15000,create_at:new Date('2025-08-27'),update_at:new Date('2025-08-27'), status: 'active' },
+  { id: 1, name: 'BS. Nguyễn Văn A',email: 'hp@gmail.com',cccd: 1289389, phone: '0901234567',price:20000,create_at:new Date('2025-08-27'),update_at:new Date('2025-08-27'), status: 'active' },
+  { id: 3, name: 'BS. Nguyễn Văn C',email: 'hp@gmail.com',cccd: 1289389, phone: '0939234567',price:15000,create_at:new Date('2025-08-27'),update_at:new Date('2025-08-27'), status: 'active' },
+  { id: 4, name: 'BS. Nguyễn Văn D',email: 'hp@gmail.com',cccd: 1289389, phone: '0920234567',price:15000,create_at:new Date('2025-08-27'),update_at:new Date('2025-08-27'), status: 'inactive' },
+  { id: 5, name: 'BS. Nguyễn Văn CD',email: 'hp@gmail.com',cccd: 1289389, phone: '0901234567',price:15000,create_at:new Date('2025-08-27'),update_at:new Date('2025-08-27'), status: 'inactive' },
+  { id: 6, name: 'BS. Nguyễn Văn AB',email: 'hp@gmail.com',cccd: 1289389, phone: '0910744567',price:15000,create_at:new Date('2025-08-27'),update_at:new Date('2025-08-27'), status: 'active' },
+  { id: 7, name: 'BS. Nguyễn Văn ABC',email: 'hp@gmail.com',cccd: 1289389, phone: '0910784567',price:15000,create_at:new Date('2025-08-27'),update_at:new Date('2025-08-27'), status: 'inactive' },
+  { id: 8, name: 'BS. Nguyễn Văn ABC',email: 'hp@gmail.com',cccd: 1289389, phone: '0910784567',price:15000,create_at:new Date('2025-08-27'),update_at:new Date('2025-08-27'), status: 'inactive' },
+  { id: 9, name: 'BS. Nguyễn Văn ABC',email: 'hp@gmail.com',cccd: 1289389, phone: '0910784567',price:15000,create_at:new Date('2025-08-27'),update_at:new Date('2025-08-27'), status: 'inactive' },
+  { id: 10, name: 'BS. Nguyễn Văn ABC',email: 'hp@gmail.com',cccd: 1289389, phone: '0910784567',price:15000,create_at:new Date('2025-08-27'),update_at:new Date('2025-08-27'), status: 'inactive' },
     // Thêm dữ liệu giả khác tại đây nếu cần
 ];
 const DoctorManagement: React.FC = () => {
