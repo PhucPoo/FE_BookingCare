@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import Button from "antd/lib/button";
 import DetailDoctor from "./DetailDoctor";
 import EditDoctor from "./EditDoctor";
+import Modal from "antd/lib/modal";
 
 export interface Doctor {
   id: number;
@@ -19,9 +20,10 @@ export interface Doctor {
 interface DoctorTableProps {
   doctors: Doctor[];
   onUpdateDoctor: (updatedDoctor: Doctor) => void;
+  onDeleteDoctor: (id: number) => void;
 }
 
-// Hiển thị badge trạng thái bác sĩ
+// Hiển thị trạng thái bác sĩ
 const getStatusBadge = (status: Doctor["status"]) => {
   if (status === "active") {
     return (
@@ -43,10 +45,25 @@ const getStatusBadge = (status: Doctor["status"]) => {
 type SortColumn = "name" | "create_at" | "";
 type SortDirection = "asc" | "desc";
 
-const DoctorTable: React.FC<DoctorTableProps> = ({ doctors,onUpdateDoctor }) => {
+const DoctorTable: React.FC<DoctorTableProps> = ({ doctors, onUpdateDoctor, onDeleteDoctor }) => {
   // State sắp xếp
   const [sortColumn, setSortColumn] = useState<SortColumn>("");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleOk = () => {
+    // console.log('OK clicked', editingDoctor?.id);
+    onDeleteDoctor(Number(deleteDoctorid)); 
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
 
   // Sắp xếp dữ liệu theo cột và chiều
   const sortedDoctors = useMemo(() => {
@@ -108,9 +125,10 @@ const DoctorTable: React.FC<DoctorTableProps> = ({ doctors,onUpdateDoctor }) => 
   // Modal sửa bác sĩ
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingDoctor, setEditingDoctor] = useState<Doctor | null>(null);
+  const [deleteDoctorid, setDeleteDoctorid] = useState<number>(0);
 
   // Cập nhật bác sĩ
-   const handleUpdateDoctor = (doctor: Doctor) => {
+  const handleUpdateDoctor = (doctor: Doctor) => {
     onUpdateDoctor(doctor); // Gọi về component cha
     setEditingDoctor(null);
     setIsEditModalOpen(false);
@@ -169,7 +187,9 @@ const DoctorTable: React.FC<DoctorTableProps> = ({ doctors,onUpdateDoctor }) => 
                       color: "#000",
                     }}
                     onClick={() => {
+                      
                       setEditingDoctor(doc);
+                     
                       setIsEditModalOpen(true);
                     }}
                   >
@@ -182,7 +202,10 @@ const DoctorTable: React.FC<DoctorTableProps> = ({ doctors,onUpdateDoctor }) => 
                       borderColor: "#b91c1c",
                       color: "#fff",
                     }}
-                    // Thêm xử lý xóa ở đây nếu cần
+                    onClick={() => {
+                      setIsModalOpen(true);
+                      setDeleteDoctorid(doc.id);
+                    }}
                   >
                     Xóa
                   </Button>
@@ -213,6 +236,15 @@ const DoctorTable: React.FC<DoctorTableProps> = ({ doctors,onUpdateDoctor }) => 
         }}
         onUpdate={handleUpdateDoctor}
       />
+      <Modal
+        title="Basic Modal"
+        closable={{ 'aria-label': 'Custom Close Button' }}
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+        <p>Bạn có chắc chắn muốn xóa bác sĩ này không?</p>
+      </Modal>
     </div>
   );
 };

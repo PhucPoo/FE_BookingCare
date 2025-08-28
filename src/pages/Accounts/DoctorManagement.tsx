@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import DoctorFilterBar from "../../components/DoctorList/DoctorFilterBar";
-import DoctorTable, {type Doctor } from "../../components/DoctorList/DoctorTable";
+import DoctorTable, { type Doctor } from "../../components/DoctorList/DoctorTable";
 import AddDoctor from "../../components/DoctorList/AddDoctor";
 import Button from "antd/lib/button";
 
@@ -28,7 +28,7 @@ const DoctorManagement: React.FC = () => {
   };
 
   // Cập nhật bác sĩ
- const handleUpdateDoctor = (updatedDoctor: Doctor) => {
+  const handleUpdateDoctor = (updatedDoctor: Doctor) => {
     const updatedList = doctors.map((doc) =>
       doc.id === updatedDoctor.id
         ? { ...doc, ...updatedDoctor, update_at: new Date() }
@@ -37,7 +37,14 @@ const DoctorManagement: React.FC = () => {
     setDoctors(updatedList);
     setFilteredDoctors(updatedList); // rất quan trọng để table hiển thị đúng
   };
-
+  // Xóa bác sĩ
+  const handleDeleteDoctor = (id: number) => {
+    console.log("Deleted doctor with id:", id);
+    const updatedDoctors = doctors.filter((d) => d.id !== id);
+    setDoctors(updatedDoctors);
+    setFilteredDoctors(updatedDoctors); 
+    
+  };
   return (
     <div className="p-6">
       <h1 className="text-xxl font-bold mb-4 text-blue-700">Quản lý Bác sĩ</h1>
@@ -60,7 +67,9 @@ const DoctorManagement: React.FC = () => {
       </div>
 
       <DoctorTable
-        doctors={filteredDoctors} onUpdateDoctor={handleUpdateDoctor}
+        doctors={filteredDoctors}
+        onUpdateDoctor={handleUpdateDoctor}
+        onDeleteDoctor={handleDeleteDoctor}
       />
 
       <AddDoctor
