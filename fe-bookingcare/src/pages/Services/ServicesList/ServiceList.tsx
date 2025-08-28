@@ -251,6 +251,7 @@ const ServiceList = () => {
                 pageSize={pageSize}
                 total={totalServiceList}
                 onChange={onLog}
+                responsive
               />
             </div>
           </div>

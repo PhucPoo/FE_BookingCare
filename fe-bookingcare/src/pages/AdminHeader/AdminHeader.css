@@ -1,6 +1,6 @@
 .header {
   height: 80px;
-  background-color: #49bce2;
+  background-color: white;
   padding: 0 50px;
   display: flex;
   align-items: center;
@@ -8,6 +8,8 @@
   top: 0;
   z-index: 10;
   width: 100% - 15%;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+  clip-path: inset(0 0 -15px 0);
 }
 .header_container {
   display: flex;
@@ -27,13 +29,13 @@
 }
 .header_icon {
   font-size: 25px;
-  color: white;
+  color: black;
   cursor: pointer;
 }
 .header_item-left-icon {
   display: none;
 }
-@media (max-width: 900px) {
+@media (max-width: 992px) {
   .header_item-left-logo {
     display: none;
   }

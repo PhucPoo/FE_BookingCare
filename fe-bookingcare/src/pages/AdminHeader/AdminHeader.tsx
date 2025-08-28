@@ -23,7 +23,7 @@ const AdminHeader = ({ setOpen }: Props) => {
   return (
     <>
       <div className="header">
-        <div className="header_container">
+        <div className="header_container ">
           <div className="header_item-left">
             <div className="w-full sm:w-auto header_item-left-logo ">
               <input
