@@ -125,6 +125,13 @@ const ServiceList = () => {
     });
     setServiceList(ServiceListClone);
   };
+  const handleSearchService = (value) => {
+    let ServiceListClone = ServiceListData;
+    ServiceListClone = ServiceListClone.filter((item) => {
+      return item.name.includes(value);
+    });
+    setServiceList(ServiceListClone);
+  };
   const handleGetServiceList = () => {
     const columnArr = Object.keys(ServiceListData[0]).map((item, index) => {
       return {
@@ -156,6 +163,11 @@ const ServiceList = () => {
                 <input
                   type="text"
                   placeholder="Tìm kiếm dịch vụ..."
+                  onChange={(e) => {
+                    setTimeout(() => {
+                      handleSearchService(e.target.value);
+                    }, 500);
+                  }}
                   className="w-full sm:w-15 md:w-25 lg:w-50  not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
