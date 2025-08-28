@@ -6,7 +6,7 @@ interface DoctorFilterBarProps {
   onFilter: (filtered: Doctor[]) => void;
 }
 
-const DoctorFilterBar: React.FC<DoctorFilterBarProps> = ({ doctors, onFilter }) => {
+const DoctorFilterBar: React.FC<DoctorFilterBarProps> = ({ doctors, onFilter,   }) => {
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [phone, setPhone] = useState('');
@@ -25,32 +25,32 @@ const DoctorFilterBar: React.FC<DoctorFilterBarProps> = ({ doctors, onFilter }) 
   };
 
   return (
-    <div className="grid grid-cols-6 gap-4 p-4 bg-white shadow rounded mb-4">
+    <div className="flex flex-wrap gap-4 p-4 bg-white shadow rounded mb-4 w-full">
       <input
         type="text"
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="Tên bác sĩ"
-        className="border rounded px-3 py-2"
+        className="border rounded px-3 py-2 flex-1 min-w-[150px]"
       />
       <input
         type="text"
         value={price}
         onChange={(e) => setPrice(e.target.value)}
         placeholder="Giá tiền"
-        className="border rounded px-3 py-2"
+        className="border rounded px-3 py-2 flex-1 min-w-[150px]"
       />
       <input
         type="text"
         value={phone}
         onChange={(e) => setPhone(e.target.value)}
         placeholder="Số điện thoại"
-        className="border rounded px-3 py-2"
+        className="border rounded px-3 py-2 flex-1 min-w-[150px]"
       />
       <select
         value={status}
         onChange={(e) => setStatus(e.target.value)}
-        className="border rounded px-3 py-2"
+        className="border rounded px-3 py-2 flex-1 min-w-[150px]"
       >
         <option value="">Trạng thái</option>
         <option value="active">Hoạt động</option>
@@ -58,11 +58,14 @@ const DoctorFilterBar: React.FC<DoctorFilterBarProps> = ({ doctors, onFilter }) 
       </select>
       <button
         onClick={handleSearch}
-        className="bg-blue-600 text-white px-4 py-2 rounded col-span-1"
+        className="bg-blue-600 text-white px-4 py-2 rounded flex-1 min-w-[150px]"
       >
         Tìm kiếm
       </button>
+
     </div>
+
+
   );
 };
 
