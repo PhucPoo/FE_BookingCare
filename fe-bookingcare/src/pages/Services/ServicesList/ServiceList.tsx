@@ -119,15 +119,13 @@ const ServiceList = () => {
     }
   };
   const filterService = () => {
-    console.log(filterData);
     let ServiceListClone = ServiceListData;
     ServiceListClone = ServiceListClone.filter((item) => {
       return filterData.from <= item.cost && item.cost <= filterData.to;
     });
-    console.log("🚀 ~ filterService ~ ServiceListClone:", ServiceListClone);
     setServiceList(ServiceListClone);
   };
-  useEffect(() => {
+  const handleGetServiceList = () => {
     const columnArr = Object.keys(ServiceListData[0]).map((item, index) => {
       return {
         value: index,
@@ -136,6 +134,9 @@ const ServiceList = () => {
     });
     setColumns(columnArr);
     setServiceList(ServiceListData);
+  };
+  useEffect(() => {
+    handleGetServiceList();
   }, []);
 
   return (
@@ -155,7 +156,7 @@ const ServiceList = () => {
                 <input
                   type="text"
                   placeholder="Tìm kiếm dịch vụ..."
-                  className="w-full sm:w-16 md:w-32 lg:w-64  not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full sm:w-15 md:w-25 lg:w-50  not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
@@ -183,12 +184,23 @@ const ServiceList = () => {
                 </div>
                 <Button
                   size="large"
+                  type="primary"
                   className="sm:flex-row gap-2 w-full sm:w-auto"
                   onClick={() => {
                     filterService();
                   }}
                 >
                   Lọc
+                </Button>
+                <Button
+                  size="large"
+                  type="dashed"
+                  className="sm:flex-row gap-2 w-full sm:w-auto"
+                  onClick={() => {
+                    handleGetServiceList();
+                  }}
+                >
+                  làm mới
                 </Button>
               </div>
 
