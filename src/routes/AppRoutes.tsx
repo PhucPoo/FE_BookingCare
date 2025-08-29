@@ -2,6 +2,7 @@ import React from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import DoctorManagement from "../pages/Accounts/DoctorManagement";
 import Dashboard from "../pages/Dashboard/Dashboard";
+import SupportList from "../pages/Accounts/SupportList";
 
 const AppRoutes = () => {
   return (
@@ -12,6 +13,7 @@ const AppRoutes = () => {
       <Route />
         {/* Quản lí bác sĩ nhánh con của quản lý admin */}
         <Route path="doctor-list" element={<DoctorManagement />} />
+        <Route path="assistant-list" element={<SupportList />} />
        
       </Route>
 
