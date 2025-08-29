@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import supportFilterBar from "../../components/SupportList/SupportFilterBar";
 import supportTable, { type Support } from "../../components/SupportList/SupportTable";
-import Addsupport from "../../components/SupportList/AppSupport";
+import Addsupport from "../../components/SupportList/AddSupport";
 import Button from "antd/lib/button";
 import SupportFilterBar from "../../components/SupportList/SupportFilterBar";
 import SupportTable from "../../components/SupportList/SupportTable";
@@ -31,10 +31,10 @@ const supportManagement: React.FC = () => {
 
   // Cập nhật trợ lý
   const handleUpdatesupport = (updatedsupport: Support) => {
-    const updatedList = supports.map((doc) =>
-      doc.id === updatedsupport.id
-        ? { ...doc, ...updatedsupport, update_at: new Date() }
-        : doc
+    const updatedList = supports.map((sp) =>
+      sp.id === updatedsupport.id
+        ? { ...sp, ...updatedsupport, update_at: new Date() }
+        : sp
     );
     setsupports(updatedList);
     setFilteredsupports(updatedList); // rất quan trọng để table hiển thị đúng

@@ -1,18 +1,18 @@
-// src/components/Informationsupport.tsx
+// src/components/Informationpatient.tsx
 
 import React from "react";
 import Modal from "antd/es/modal";
 import Button from "antd/es/button";
-import type { Support } from "./SupportTable";
+import type { Patient } from "./PatientTable";
  // đảm bảo đường dẫn đúng
 
-interface InformationsupportProps {
+interface InformationpatientProps {
   open: boolean;
-  support: Support | null;
+  patient: Patient | null;
   onClose: () => void;
 }
 
-const getStatusBadge = (status: Support["status"]) => {
+const getStatusBadge = (status: Patient["status"]) => {
   if (status === "active") {
     return (
       <span className="bg-green-500 text-white px-2 py-1 rounded text-sm">
@@ -29,14 +29,14 @@ const getStatusBadge = (status: Support["status"]) => {
   return null;
 };
 
-const Informationsupport: React.FC<InformationsupportProps> = ({
+const Informationpatient: React.FC<InformationpatientProps> = ({
   open,
-  support,
+  patient,
   onClose,
 }) => {
   return (
     <Modal
-      title={<div className="text-center text-lg font-semibold">Thông tin chi tiết trợ lý</div>}
+      title={<div className="text-center text-lg font-semibold">Thông tin chi tiết bệnh nhân</div>}
       open={open}
       onCancel={onClose}
       footer={[
@@ -46,31 +46,31 @@ const Informationsupport: React.FC<InformationsupportProps> = ({
       ]}
       centered
     >
-      {support && (
+      {patient && (
         <div className="space-y-2 text-sm">
           <p>
-            <strong>ID:</strong> {support.id}
+            <strong>ID:</strong> {patient.id}
           </p>
           <p>
-            <strong>Tên:</strong> {support.name}
+            <strong>Tên:</strong> {patient.name}
           </p>
           <p>
-            <strong>Email:</strong> {support.email}
+            <strong>Email:</strong> {patient.email}
           </p>
           <p>
-            <strong>CCCD:</strong> {support.cccd}
+            <strong>CCCD:</strong> {patient.cccd}
           </p>
           <p>
-            <strong>SĐT:</strong> {support.phone}
+            <strong>SĐT:</strong> {patient.phone}
           </p>
           <p>
-            <strong>Ngày tạo:</strong> {support.create_at.toLocaleDateString()}
+            <strong>Ngày tạo:</strong> {patient.create_at.toLocaleDateString()}
           </p>
           <p>
-            <strong>Cập nhật:</strong> {support.update_at.toLocaleDateString()}
+            <strong>Cập nhật:</strong> {patient.update_at.toLocaleDateString()}
           </p>
           <p>
-            <strong>Trạng thái:</strong> {getStatusBadge(support.status)}
+            <strong>Trạng thái:</strong> {getStatusBadge(patient.status)}
           </p>
         </div>
       )}
@@ -78,4 +78,4 @@ const Informationsupport: React.FC<InformationsupportProps> = ({
   );
 };
 
-export default Informationsupport;
+export default Informationpatient;

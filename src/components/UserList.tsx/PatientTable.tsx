@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from "react";
 import Button from "antd/lib/button";
 import Modal from "antd/lib/modal";
-import Detailsupport from "./DetailSupport";
-import Editsupport from "./EditSupport";
+import Detailpatient from "./DetailPatient";
+import Editpatient from "./EditPatient";
 
-export interface Support {
+export interface Patient {
   id: number;
   name: string;
   email: string;
@@ -17,14 +17,14 @@ export interface Support {
   status: "active" | "inactive";
 }
 
-interface SupportTableProps {
-  supports: Support[];
-  onUpdatesupport: (updatedsupport: Support) => void;
-  onDeletesupport: (id: number) => void;
+interface patientTableProps {
+  patients: Patient[];
+  onUpdatepatient: (updatedpatient: Patient) => void;
+  onDeletepatient: (id: number) => void;
 }
 
-// Hiển thị trạng thái support
-const getStatusBadge = (status: Support["status"]) => {
+// Hiển thị trạng thái patient
+const getStatusBadge = (status: Patient["status"]) => {
   if (status === "active") {
     return (
       <span className="bg-green-500 text-white px-2 py-1 rounded text-sm">
@@ -45,7 +45,7 @@ const getStatusBadge = (status: Support["status"]) => {
 type SortColumn = "name" | "create_at" | "";
 type SortDirection = "asc" | "desc";
 
-const supportTable: React.FC<SupportTableProps> = ({ supports, onUpdatesupport, onDeletesupport }) => {
+const patientTable: React.FC<patientTableProps> = ({ patients, onUpdatepatient, onDeletepatient }) => {
   // State sắp xếp
   const [sortColumn, setSortColumn] = useState<SortColumn>("");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
@@ -55,8 +55,8 @@ const supportTable: React.FC<SupportTableProps> = ({ supports, onUpdatesupport, 
     setIsModalOpen(true);
   };
   const handleOk = () => {
-    // console.log('OK clicked', editingsupport?.id);
-    onDeletesupport(Number(deletesupportid)); 
+    // console.log('OK clicked', editingpatient?.id);
+    onDeletepatient(Number(deletepatientid)); 
     setIsModalOpen(false);
   };
 
@@ -66,10 +66,10 @@ const supportTable: React.FC<SupportTableProps> = ({ supports, onUpdatesupport, 
 
 
   // Sắp xếp dữ liệu theo cột và chiều
-  const sortedsupports = useMemo(() => {
-    if (!sortColumn) return supports;
+  const sortedpatients = useMemo(() => {
+    if (!sortColumn) return patients;
 
-    return [...supports].sort((a, b) => {
+    return [...patients].sort((a, b) => {
       let aVal: any;
       let bVal: any;
 
@@ -90,7 +90,7 @@ const supportTable: React.FC<SupportTableProps> = ({ supports, onUpdatesupport, 
       if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
       return 0;
     });
-  }, [supports, sortColumn, sortDirection]);
+  }, [patients, sortColumn, sortDirection]);
 
   // Xử lý click sort cột
   const handleSort = (column: SortColumn) => {
@@ -110,27 +110,27 @@ const supportTable: React.FC<SupportTableProps> = ({ supports, onUpdatesupport, 
 
   // Modal xem chi tiết
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [selectedsupport, setSelectedsupport] = useState<Support | null>(null);
+  const [selectedpatient, setSelectedpatient] = useState<Patient | null>(null);
 
-  const showDetailModal = (support: Support) => {
-    setSelectedsupport(support);
+  const showDetailModal = (patient: Patient) => {
+    setSelectedpatient(patient);
     setIsDetailModalOpen(true);
   };
 
   const closeDetailModal = () => {
     setIsDetailModalOpen(false);
-    setSelectedsupport(null);
+    setSelectedpatient(null);
   };
 
-  // Modal sửa trợ lý
+  // Modal sửa bệnh nhân
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editingsupport, setEditingsupport] = useState<Support | null>(null);
-  const [deletesupportid, setDeletesupportid] = useState<number>(0);
+  const [editingpatient, setEditingpatient] = useState<Patient | null>(null);
+  const [deletepatientid, setDeletepatientid] = useState<number>(0);
 
-  // Cập nhật trợ lý
-  const handleUpdatesupport = (support: Support) => {
-    onUpdatesupport(support); // Gọi về component cha
-    setEditingsupport(null);
+  // Cập nhật bệnh nhân
+  const handleUpdatepatient = (patient: Patient) => {
+    onUpdatepatient(patient); // Gọi về component cha
+    setEditingpatient(null);
     setIsEditModalOpen(false);
   };
 
@@ -144,7 +144,7 @@ const supportTable: React.FC<SupportTableProps> = ({ supports, onUpdatesupport, 
               className="p-3 border cursor-pointer select-none"
               onClick={() => handleSort("name")}
             >
-              Tên trợ lý {renderSortArrow("name")}
+              Tên bệnh nhân {renderSortArrow("name")}
             </th>
             <th className="p-3 border hidden md:table-cell">Email</th>
             <th className="p-3 border hidden lg:table-cell">CCCD</th>
@@ -161,7 +161,7 @@ const supportTable: React.FC<SupportTableProps> = ({ supports, onUpdatesupport, 
           </tr>
         </thead>
         <tbody>
-          {sortedsupports.map((sp, index) => (
+          {sortedpatients.map((sp, index) => (
             <tr key={sp.id} className="hover:bg-gray-50">
               <td className="p-3 border text-center">{index + 1}</td>
               <td className="p-3 border">{sp.name}</td>
@@ -186,7 +186,7 @@ const supportTable: React.FC<SupportTableProps> = ({ supports, onUpdatesupport, 
                     }}
                     onClick={() => {
                       
-                      setEditingsupport(sp);
+                      setEditingpatient(sp);
                      
                       setIsEditModalOpen(true);
                     }}
@@ -202,7 +202,7 @@ const supportTable: React.FC<SupportTableProps> = ({ supports, onUpdatesupport, 
                     }}
                     onClick={() => {
                       setIsModalOpen(true);
-                      setDeletesupportid(sp.id);
+                      setDeletepatientid(sp.id);
                     }}
                   >
                     Xóa
@@ -218,21 +218,21 @@ const supportTable: React.FC<SupportTableProps> = ({ supports, onUpdatesupport, 
       </table>
 
       {/* Modal thông tin chi tiết */}
-      <Detailsupport
+      <Detailpatient
         open={isDetailModalOpen}
-        support={selectedsupport}
+        patient={selectedpatient}
         onClose={closeDetailModal}
       />
 
-      {/* Modal sửa trợ lý */}
-      <Editsupport
+      {/* Modal sửa bệnh nhân */}
+      <Editpatient
         open={isEditModalOpen}
-        support={editingsupport}
+        patient={editingpatient}
         onCancel={() => {
           setIsEditModalOpen(false);
-          setEditingsupport(null);
+          setEditingpatient(null);
         }}
-        onUpdate={handleUpdatesupport}
+        onUpdate={handleUpdatepatient}
       />
       <Modal
         title="Basic Modal"
@@ -241,10 +241,10 @@ const supportTable: React.FC<SupportTableProps> = ({ supports, onUpdatesupport, 
         onOk={handleOk}
         onCancel={handleCancel}
       >
-        <p>Bạn có chắc chắn muốn xóa trợ lý này không?</p>
+        <p>Bạn có chắc chắn muốn xóa bệnh nhân này không?</p>
       </Modal>
     </div>
   );
 };
 
-export default supportTable;
+export default patientTable;

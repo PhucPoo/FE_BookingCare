@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import Modal from "antd/es/modal";
 import Input from "antd/es/input";
 import Select from "antd/es/select";
@@ -6,70 +6,68 @@ import Button from "antd/es/button";
 import Form from "antd/es/form";
 import type { Support } from "./SupportTable";
 
+
 const { Option } = Select;
 
-interface EditsupportProps {
+interface AddsupportProps {
     open: boolean;
     onCancel: () => void;
-    onUpdate: (support: Support) => void;
-    support: Support | null;
+    onAdd: (support: Support) => void;
 }
 
-const Editsupport: React.FC<EditsupportProps> = ({ open, onCancel, onUpdate, support }) => {
-    const [form] = Form.useForm();
+const Addsupport: React.FC<AddsupportProps> = ({ open, onCancel, onAdd }) => {
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [cccd, setCccd] = useState("");
+    const [phone, setPhone] = useState("");
+    const [status, setStatus] = useState<"active" | "inactive">("active");
 
-    // Đổ dữ liệu vào form khi modal mở
-    useEffect(() => {
-        if (support) {
-            form.setFieldsValue({
-                name: support.name,
-                email: support.email,
-                cccd: support.cccd.toString(),
-                phone: support.phone,
-                status: support.status,
-            });
+    const handleSubmit = () => {
+        if (!name || !email || !phone || !cccd) {
+            alert("Vui lòng nhập đầy đủ thông tin cần thiết!");
+            return;
         }
-    }, [support, form]);
 
-    const handleSubmit = (values: any) => {
-        if (!support) return;
-
-        const updatedsupport: Support = {
-            ...support,
-            name: values.name,
-            email: values.email,
-            cccd: Number(values.cccd),
-            phone: values.phone,
-            status: values.status,
+        const newsupport: Support = {
+            id: Date.now(),
+            name,
+            email,
+            cccd: Number(cccd),
+            phone,
+            date_of_birth: undefined,
+            create_at: new Date(),
             update_at: new Date(),
+            status,
         };
 
-        onUpdate(updatedsupport); 
-        form.resetFields();
+        onAdd(newsupport);
+        // reset form
+        setName("");
+        setEmail("");
+        setCccd("");
+        setPhone("");
+        setStatus("active");
     };
 
     return (
         <Modal
-            title={<div className="text-center text-lg font-semibold">Chỉnh sửa thông tin trợ lý</div>}
+            title={<div className="text-center text-lg font-semibold">Thêm trợ lý mới</div>}
             open={open}
-            onCancel={() => {
-                form.resetFields();
-                onCancel();
-            }}
+            onCancel={onCancel}
             footer={null}
             centered
             width={520}
+           
         >
             <Form
                 layout="vertical"
                 onFinish={handleSubmit}
                 className="space-y-4"
-                form={form}
             >
                 <Form.Item
                     name="name"
                     label="Tên trợ lý"
-                    rules={[{ required: true, message: "Vui lòng nhập tên trợ lý!" }]}
+                    rules={[{ required: true, message: 'Vui lòng nhập tên trợ lý!' }]}
                 >
                     <Input placeholder="Nhập tên trợ lý" size="large" className="rounded-md px-3 py-2" />
                 </Form.Item>
@@ -78,8 +76,8 @@ const Editsupport: React.FC<EditsupportProps> = ({ open, onCancel, onUpdate, sup
                     name="email"
                     label="Email"
                     rules={[
-                        { required: true, message: "Vui lòng nhập email!" },
-                        { type: "email", message: "Email không hợp lệ!" },
+                        { required: true, message: 'Vui lòng nhập email!' },
+                        { type: 'email', message: 'Email không hợp lệ!' },
                     ]}
                 >
                     <Input placeholder="Nhập email" size="large" className="rounded-md px-3 py-2" />
@@ -88,7 +86,7 @@ const Editsupport: React.FC<EditsupportProps> = ({ open, onCancel, onUpdate, sup
                 <Form.Item
                     name="cccd"
                     label="CCCD"
-                    rules={[{ required: true, message: "Vui lòng nhập CCCD!" }]}
+                    rules={[{ required: true, message: 'Vui lòng nhập CCCD!' }]}
                 >
                     <Input placeholder="Nhập số CCCD" size="large" className="rounded-md px-3 py-2" />
                 </Form.Item>
@@ -96,7 +94,7 @@ const Editsupport: React.FC<EditsupportProps> = ({ open, onCancel, onUpdate, sup
                 <Form.Item
                     name="phone"
                     label="Số điện thoại"
-                    rules={[{ required: true, message: "Vui lòng nhập số điện thoại!" }]}
+                    rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}
                 >
                     <Input placeholder="Nhập số điện thoại" size="large" className="rounded-md px-3 py-2" />
                 </Form.Item>
@@ -104,7 +102,7 @@ const Editsupport: React.FC<EditsupportProps> = ({ open, onCancel, onUpdate, sup
                 <Form.Item
                     name="status"
                     label="Trạng thái"
-                    rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
+                    rules={[{ required: true, message: 'Vui lòng chọn trạng thái!' }]}
                 >
                     <Select placeholder="Chọn trạng thái" size="large" className="rounded-md">
                         <Option value="active">Hoạt động</Option>
@@ -118,13 +116,16 @@ const Editsupport: React.FC<EditsupportProps> = ({ open, onCancel, onUpdate, sup
                             Hủy
                         </Button>
                         <Button type="primary" htmlType="submit" size="large">
-                            Cập nhật
+                            Thêm
                         </Button>
                     </div>
                 </Form.Item>
             </Form>
         </Modal>
+
+
+
     );
 };
 
-export default Editsupport;
+export default Addsupport;

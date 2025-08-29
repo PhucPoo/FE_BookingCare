@@ -4,23 +4,22 @@ import Input from "antd/es/input";
 import Select from "antd/es/select";
 import Button from "antd/es/button";
 import Form from "antd/es/form";
-import type { Support } from "./SupportTable";
+import type { Patient } from "./PatientTable";
 
 
 const { Option } = Select;
 
-interface AddsupportProps {
+interface AddpatientProps {
     open: boolean;
     onCancel: () => void;
-    onAdd: (support: Support) => void;
+    onAdd: (patient: Patient) => void;
 }
 
-const Addsupport: React.FC<AddsupportProps> = ({ open, onCancel, onAdd }) => {
+const Addpatient: React.FC<AddpatientProps> = ({ open, onCancel, onAdd }) => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [cccd, setCccd] = useState("");
     const [phone, setPhone] = useState("");
-    const [price, setPrice] = useState("");
     const [status, setStatus] = useState<"active" | "inactive">("active");
 
     const handleSubmit = () => {
@@ -29,32 +28,30 @@ const Addsupport: React.FC<AddsupportProps> = ({ open, onCancel, onAdd }) => {
             return;
         }
 
-        const newsupport: Support = {
+        const newpatient: Patient = {
             id: Date.now(),
             name,
             email,
             cccd: Number(cccd),
             phone,
-            price: price ? Number(price) : undefined,
             date_of_birth: undefined,
             create_at: new Date(),
             update_at: new Date(),
             status,
         };
 
-        onAdd(newsupport);
+        onAdd(newpatient);
         // reset form
         setName("");
         setEmail("");
         setCccd("");
         setPhone("");
-        setPrice("");
         setStatus("active");
     };
 
     return (
         <Modal
-            title={<div className="text-center text-lg font-semibold">Thêm trợ lý mới</div>}
+            title={<div className="text-center text-lg font-semibold">Thêm bệnh nhân mới</div>}
             open={open}
             onCancel={onCancel}
             footer={null}
@@ -69,10 +66,10 @@ const Addsupport: React.FC<AddsupportProps> = ({ open, onCancel, onAdd }) => {
             >
                 <Form.Item
                     name="name"
-                    label="Tên trợ lý"
-                    rules={[{ required: true, message: 'Vui lòng nhập tên trợ lý!' }]}
+                    label="Tên bệnh nhân"
+                    rules={[{ required: true, message: 'Vui lòng nhập tên bệnh nhân!' }]}
                 >
-                    <Input placeholder="Nhập tên trợ lý" size="large" className="rounded-md px-3 py-2" />
+                    <Input placeholder="Nhập tên bệnh nhân" size="large" className="rounded-md px-3 py-2" />
                 </Form.Item>
 
                 <Form.Item
@@ -100,14 +97,6 @@ const Addsupport: React.FC<AddsupportProps> = ({ open, onCancel, onAdd }) => {
                     rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}
                 >
                     <Input placeholder="Nhập số điện thoại" size="large" className="rounded-md px-3 py-2" />
-                </Form.Item>
-
-                <Form.Item
-                    name="price"
-                    label="Giá khám (VNĐ)"
-                    rules={[{ required: true, message: 'Vui lòng nhập giá khám!' }]}
-                >
-                    <Input type="number" placeholder="Nhập giá khám" size="large" className="rounded-md px-3 py-2" />
                 </Form.Item>
 
                 <Form.Item
@@ -139,4 +128,4 @@ const Addsupport: React.FC<AddsupportProps> = ({ open, onCancel, onAdd }) => {
     );
 };
 
-export default Addsupport;
+export default Addpatient;

@@ -4,38 +4,38 @@ import Input from "antd/es/input";
 import Select from "antd/es/select";
 import Button from "antd/es/button";
 import Form from "antd/es/form";
-import type { Support } from "./SupportTable";
+import type { Patient } from "./PatientTable";
 
 const { Option } = Select;
 
-interface EditsupportProps {
+interface EditpatientProps {
     open: boolean;
     onCancel: () => void;
-    onUpdate: (support: Support) => void;
-    support: Support | null;
+    onUpdate: (patient: Patient) => void;
+    patient: Patient | null;
 }
 
-const Editsupport: React.FC<EditsupportProps> = ({ open, onCancel, onUpdate, support }) => {
+const Editpatient: React.FC<EditpatientProps> = ({ open, onCancel, onUpdate, patient }) => {
     const [form] = Form.useForm();
 
     // Đổ dữ liệu vào form khi modal mở
     useEffect(() => {
-        if (support) {
+        if (patient) {
             form.setFieldsValue({
-                name: support.name,
-                email: support.email,
-                cccd: support.cccd.toString(),
-                phone: support.phone,
-                status: support.status,
+                name: patient.name,
+                email: patient.email,
+                cccd: patient.cccd.toString(),
+                phone: patient.phone,
+                status: patient.status,
             });
         }
-    }, [support, form]);
+    }, [patient, form]);
 
     const handleSubmit = (values: any) => {
-        if (!support) return;
+        if (!patient) return;
 
-        const updatedsupport: Support = {
-            ...support,
+        const updatedpatient: Patient = {
+            ...patient,
             name: values.name,
             email: values.email,
             cccd: Number(values.cccd),
@@ -44,13 +44,13 @@ const Editsupport: React.FC<EditsupportProps> = ({ open, onCancel, onUpdate, sup
             update_at: new Date(),
         };
 
-        onUpdate(updatedsupport); 
+        onUpdate(updatedpatient); 
         form.resetFields();
     };
 
     return (
         <Modal
-            title={<div className="text-center text-lg font-semibold">Chỉnh sửa thông tin trợ lý</div>}
+            title={<div className="text-center text-lg font-semibold">Chỉnh sửa thông tin bệnh nhân</div>}
             open={open}
             onCancel={() => {
                 form.resetFields();
@@ -68,10 +68,10 @@ const Editsupport: React.FC<EditsupportProps> = ({ open, onCancel, onUpdate, sup
             >
                 <Form.Item
                     name="name"
-                    label="Tên trợ lý"
-                    rules={[{ required: true, message: "Vui lòng nhập tên trợ lý!" }]}
+                    label="Tên bệnh nhân"
+                    rules={[{ required: true, message: "Vui lòng nhập tên bệnh nhân!" }]}
                 >
-                    <Input placeholder="Nhập tên trợ lý" size="large" className="rounded-md px-3 py-2" />
+                    <Input placeholder="Nhập tên bệnh nhân" size="large" className="rounded-md px-3 py-2" />
                 </Form.Item>
 
                 <Form.Item
@@ -127,4 +127,4 @@ const Editsupport: React.FC<EditsupportProps> = ({ open, onCancel, onUpdate, sup
     );
 };
 
-export default Editsupport;
+export default Editpatient;
