@@ -5,6 +5,7 @@ import Dashboard from "../pages/Dashboard/Dashboard";
 import SupportList from "../pages/Accounts/SupportList";
 import PatientList from "../pages/Accounts/PatientList";
 import UserList from "../pages/Accounts/UserList";
+import SpecialtyGrid from "../pages/Specialty/SpecialtyGrid";
 
 const AppRoutes = () => {
   return (
@@ -20,6 +21,8 @@ const AppRoutes = () => {
         <Route path="doctor-list" element={<DoctorManagement />} />
         <Route path="assistant-list" element={<SupportList />} />
         <Route path="patient-list" element={<PatientList />} />
+
+        <Route path="specialty" element={<SpecialtyGrid />} />
        
       </Route>
 
