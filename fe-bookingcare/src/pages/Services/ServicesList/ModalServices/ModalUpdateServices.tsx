@@ -1,6 +1,6 @@
+import MDEditor from "@uiw/react-md-editor";
 import { Input, Modal } from "antd";
-import TextArea from "antd/es/input/TextArea";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 
 type Props = {
@@ -23,6 +23,8 @@ const ModalUpdateServices = ({
   id,
 }: Props) => {
   const { handleSubmit, control, reset } = useForm();
+  const [value, setValue] = useState<string>("");
+
   const handleCancel = () => {
     setIsModalUpdateOpen(false);
     reset();
@@ -87,23 +89,7 @@ const ModalUpdateServices = ({
           <div>
             Miêu tả:
             <br />
-            <Controller
-              name="description"
-              control={control}
-              defaultValue={DataToUpdateFromParent?.description}
-              rules={{
-                required: "Yêu cầu mô tả dịch vụ",
-                minLength: 8,
-              }}
-              render={({ field, fieldState }) => (
-                <>
-                  <TextArea {...field} placeholder="Mô tả" />
-                  {fieldState.error && (
-                    <p style={{ color: "red" }}>{fieldState.error.message}</p>
-                  )}
-                </>
-              )}
-            />
+            <MDEditor value={value} onChange={(val) => setValue(val || "")} />
           </div>
 
           <input

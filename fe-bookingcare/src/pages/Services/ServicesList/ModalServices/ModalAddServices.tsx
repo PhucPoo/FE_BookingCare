@@ -1,20 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import { Input, Modal } from "antd";
 import { Controller, useForm } from "react-hook-form";
 import "./ModalAddServices.css";
-import TextArea from "antd/es/input/TextArea";
+import MDEditor from "@uiw/react-md-editor";
 type Props = {
   isModalOpen: boolean;
   setIsModalOpen: (e: boolean) => void;
 };
 
 const ModalAddServices = ({ isModalOpen, setIsModalOpen }: Props) => {
+  const [value, setValue] = useState<string>("");
   const handleCancel = () => {
     setIsModalOpen(false);
   };
   const { handleSubmit, control } = useForm();
 
-  const onSubmit = (data: object) => console.log(data);
+  const onSubmit = (data: object) =>
+    console.log({ ...data, description: value });
 
   return (
     <>
@@ -68,22 +70,7 @@ const ModalAddServices = ({ isModalOpen, setIsModalOpen }: Props) => {
           <div>
             Miêu tả:
             <br />
-            <Controller
-              name="description"
-              control={control}
-              rules={{
-                required: "Yêu cầu mô tả dịch vụ",
-                minLength: 8,
-              }}
-              render={({ field, fieldState }) => (
-                <>
-                  <TextArea {...field} placeholder="Mô tả" />
-                  {fieldState.error && (
-                    <p style={{ color: "red" }}>{fieldState.error.message}</p>
-                  )}
-                </>
-              )}
-            />
+            <MDEditor value={value} onChange={(val) => setValue(val || "")} />
           </div>
 
           <input

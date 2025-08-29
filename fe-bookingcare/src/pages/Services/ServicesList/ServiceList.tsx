@@ -7,10 +7,10 @@ import {
   Popconfirm,
   type PopconfirmProps,
 } from "antd";
-import ModalAddServices from "./ModalAddServices";
+import ModalAddServices from "./ModalServices/ModalAddServices.tsx";
 import ServiceListData from "../../../MockData/ServiceListData.ts";
 import "./ServiceList.css";
-import ModalUpdateServices from "./ModalUpdateServices.tsx";
+import ModalUpdateServices from "./ModalServices/ModalUpdateServices.tsx";
 interface Item {
   id: number;
   name: string;
