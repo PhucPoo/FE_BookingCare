@@ -29,9 +29,10 @@ const Sidebar: React.FC = () => {
           >
             <div className="flex items-center gap-3">
               <FaClipboardList />
+              <a href="/admin-dashboard/user-list">
 
               Quản lý Người dùng
-
+            </a>
             </div>
             {userMenuOpen ? <FaChevronUp size={12} /> : <FaChevronDown size={12} />}
           </button>

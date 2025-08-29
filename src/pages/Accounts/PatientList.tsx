@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 
 import Button from "antd/lib/button";
-import type { Patient } from "../../components/UserList.tsx/PatientTable";
-import PatientFilterBar from "../../components/UserList.tsx/PatientFilterBar";
-import PatientTable from "../../components/UserList.tsx/PatientTable";
-import AddPatient from "../../components/UserList.tsx/AddPatient";
+import type { Patient } from "../../components/PatientList.tsx/PatientTable";
+import PatientFilterBar from "../../components/PatientList.tsx/PatientFilterBar";
+import PatientTable from "../../components/PatientList.tsx/PatientTable";
+import AddPatient from "../../components/PatientList.tsx/AddPatient";
 
 
 
