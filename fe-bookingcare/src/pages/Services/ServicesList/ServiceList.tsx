@@ -125,7 +125,7 @@ const ServiceList = () => {
     });
     setServiceList(ServiceListClone);
   };
-  const handleSearchService = (value) => {
+  const handleSearchService = (value: string) => {
     let ServiceListClone = ServiceListData;
     ServiceListClone = ServiceListClone.filter((item) => {
       return item.name.includes(value);

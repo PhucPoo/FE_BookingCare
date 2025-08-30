@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import Dashboard from "../pages/Dashboard/Dashboard";
 import Statistics from "../pages/Statistics/Statistics";
 import ServiceList from "../pages/Services/ServicesList/ServiceList";
+import ErrorPage from "../components/ErrorPage/ErrorPage";
 
 const AppRoutes = () => {
   return (
@@ -19,6 +20,11 @@ const AppRoutes = () => {
         <Route path="statistics" element={<Statistics />} />
         <Route path="service-list" element={<ServiceList />} />
       </Route>
+      <Route path="/error-page" element={<ErrorPage />} />
+      <Route
+        path="*"
+        element={<Navigate to={"/error-page"} replace={true} />}
+      />
     </Routes>
   );
 };
