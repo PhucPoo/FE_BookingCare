@@ -1,9 +1,0 @@
-.form-container {
-  display: flex;
-  gap: 10px;
-  flex-direction: column;
-}
-.form-container_item {
-  display: flex;
-  justify-content: space-between;
-}
