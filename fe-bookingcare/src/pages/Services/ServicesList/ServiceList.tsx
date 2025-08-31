@@ -62,7 +62,7 @@ const ServiceList = () => {
     setDataToUpdate(item);
     setIsModalUpdateOpen(true);
   };
-  const onLog = (page, pageSize) => {
+  const onLog = (page: number, pageSize: number) => {
     console.log("Đang ở trang:", page, pageSize);
   };
   const handleSort = (value: number) => {
@@ -157,6 +157,7 @@ const ServiceList = () => {
             <p className="text-gray-600">Quản lý thông tin dịch vụ hiện có</p>
           </div>
 
+          {/* table search feature */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6 p-4">
             <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
               <div className="w-full sm:w-auto">
@@ -231,6 +232,7 @@ const ServiceList = () => {
             </div>
           </div>
 
+          {/* table */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
             <div className="overflow-x-auto custom-scrollbar">
               <table className="min-w-full divide-y divide-gray-200">
@@ -310,6 +312,7 @@ const ServiceList = () => {
             </div>
           </div>
 
+          {/* pagination */}
           <div className="mt-6 flex flex-col sm:flex-row items-center justify-between bg-white px-6 py-3 rounded-lg shadow-sm border border-gray-200">
             <div className="text-sm text-gray-700 mb-4 sm:mb-0">
               Hiển thị <span className="font-semibold">1</span> đến{" "}

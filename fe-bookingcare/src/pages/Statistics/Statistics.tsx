@@ -2,7 +2,7 @@ import "./Statistics.css";
 
 import Cash from "./Cash";
 import Booking from "./Booking";
-import Bill from "./Bill";
+import Bill from "./BillStatistcs";
 
 const Statistics = () => {
   return (

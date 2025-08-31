@@ -15,6 +15,9 @@ const Sidebar2 = () => {
         <Link to={"service-list"}>
           <div className="drawer_content_box">Danh sách dịch vụ</div>
         </Link>
+        <Link to={"bill-manage"}>
+          <div className="drawer_content_box">Danh sách hoá đơn</div>
+        </Link>
       </div>
     </>
   );

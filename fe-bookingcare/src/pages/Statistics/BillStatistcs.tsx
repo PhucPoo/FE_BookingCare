@@ -9,7 +9,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-// import "./Bill.css";
 const Bill = () => {
   const data2 = [
     {
