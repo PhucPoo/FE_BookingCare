@@ -45,8 +45,10 @@ const ServiceList = () => {
     setDataToUpdate(item);
     setIsModalUpdateOpen(true);
   };
-  const onLog = (page: number, pageSize: number) => {
-    console.log("Đang ở trang:", page, pageSize);
+  const onLog = (currentPage: number, pageSize: number) => {
+    console.log("Đang ở trang:", currentPage, pageSize);
+    setCurrentPage(currentPage);
+    setPageSize(pageSize);
   };
   const handleSort = (value: number) => {
     console.log("search:", value);
@@ -124,6 +126,7 @@ const ServiceList = () => {
     });
     setColumns(columnArr);
     setServiceList(ServiceListData);
+    // setTotalServiceList(ServiceListData.length);
   };
   useEffect(() => {
     handleGetServiceList();

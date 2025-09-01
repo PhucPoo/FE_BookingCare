@@ -222,7 +222,7 @@ const ServiceListTable = ({
         <div className="text-sm text-gray-700 mb-4 sm:mb-0">
           Hiển thị <span className="font-semibold">1</span> đến{" "}
           <span className="font-semibold">5</span>
-          của <span className="font-semibold">20</span> kết quả
+          của <span className="font-semibold">{totalServiceList}</span> kết quả
         </div>
         <div className="flex items-center space-x-1">
           <Pagination
