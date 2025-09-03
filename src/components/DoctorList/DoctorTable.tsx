@@ -11,7 +11,6 @@ export interface Doctor {
   cccd: number;
   phone: string;
   price?: number;
-  date_of_birth?: Date;
   create_at: Date;
   update_at: Date;
   status: "active" | "inactive";

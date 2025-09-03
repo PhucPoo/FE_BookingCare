@@ -16,17 +16,10 @@ interface AdduserProps {
 }
 
 const Adduser: React.FC<AdduserProps> = ({ open, onCancel, onAdd }) => {
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [cccd, setCccd] = useState("");
-    const [phone, setPhone] = useState("");
-    const [create_at, setcreate_at] = useState<"active" | "inactive">("active");
+    const [form] = Form.useForm();
 
-    const handleSubmit = () => {
-        if (!name || !email || !phone || !cccd) {
-            alert("Vui lòng nhập đầy đủ thông tin cần thiết!");
-            return;
-        }
+    const handleSubmit = (values:any) => {
+         const { name, email, phone, cccd,  } = values;
 
         const newuser: User = {
             id: Date.now(),
@@ -42,11 +35,7 @@ const Adduser: React.FC<AdduserProps> = ({ open, onCancel, onAdd }) => {
 
         onAdd(newuser);
         // reset form
-        setName("");
-        setEmail("");
-        setCccd("");
-        setPhone("");
-        setcreate_at("active");
+        form.resetFields();
     };
 
     return (

@@ -16,17 +16,10 @@ interface AddsupportProps {
 }
 
 const Addsupport: React.FC<AddsupportProps> = ({ open, onCancel, onAdd }) => {
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [cccd, setCccd] = useState("");
-    const [phone, setPhone] = useState("");
-    const [status, setStatus] = useState<"active" | "inactive">("active");
+    const [form] = Form.useForm();
 
-    const handleSubmit = () => {
-        if (!name || !email || !phone || !cccd) {
-            alert("Vui lòng nhập đầy đủ thông tin cần thiết!");
-            return;
-        }
+    const handleSubmit = (values:any) => {
+        const { name, email, phone, cccd, price, status } = values;
 
         const newsupport: Support = {
             id: Date.now(),
@@ -42,11 +35,7 @@ const Addsupport: React.FC<AddsupportProps> = ({ open, onCancel, onAdd }) => {
 
         onAdd(newsupport);
         // reset form
-        setName("");
-        setEmail("");
-        setCccd("");
-        setPhone("");
-        setStatus("active");
+        form.resetFields();
     };
 
     return (
