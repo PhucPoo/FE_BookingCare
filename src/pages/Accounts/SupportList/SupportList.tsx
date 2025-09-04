@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import supportFilterBar from "../../components/SupportList/SupportFilterBar";
-import supportTable, { type Support } from "../../components/SupportList/SupportTable";
-import Addsupport from "../../components/SupportList/AddSupport";
+import supportFilterBar from "./SupportFilterBar";
+import supportTable, { type Support } from "./SupportTable";
+import Addsupport from "./AddSupport";
 import Button from "antd/lib/button";
-import SupportFilterBar from "../../components/SupportList/SupportFilterBar";
-import SupportTable from "../../components/SupportList/SupportTable";
+import SupportFilterBar from "./SupportFilterBar";
+import SupportTable from "./SupportTable";
 import { Space } from "antd/lib";
 import Input from "antd/es/input";
 

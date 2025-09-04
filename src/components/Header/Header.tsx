@@ -1,6 +1,6 @@
 import React from 'react';
 import { FaChevronDown, FaUserCircle } from 'react-icons/fa';
-import SearchBar from '../UI/SearchBar/SearchBar';
+import SearchBar from '../UI/SearchBar';
 
 const Header = () => {
   return (

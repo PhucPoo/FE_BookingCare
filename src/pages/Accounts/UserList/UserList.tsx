@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 
 import Button from "antd/lib/button";
-import type { User } from "../../components/UserList/UserTable";
+import type { User } from "./UserTable";
 
-import UserFilterBar from "../../components/UserList/UserFilterBar";
-import UserTable from "../../components/UserList/UserTable";
-import Adduser from "../../components/UserList/AddUser";
+import UserFilterBar from "./UserFilterBar";
+import UserTable from "./UserTable";
+import Adduser from "./AddUser";
 import { Select, Space } from "antd/lib";
 import Input from "antd/es/input";
 

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import DoctorFilterBar from "../../components/DoctorList/DoctorFilterBar";
-import DoctorTable, { type Doctor } from "../../components/DoctorList/DoctorTable";
-import AddDoctor from "../../components/DoctorList/AddDoctor";
+import DoctorFilterBar from "./DoctorFilterBar";
+import DoctorTable, { type Doctor } from "./DoctorTable";
+import AddDoctor from "./AddDoctor";
 import Button from "antd/lib/button";
 import { SearchOutlined } from "@ant-design/icons";
 import { Space } from "antd/lib";

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { Doctor } from '../DoctorList/DoctorTable'; // hoặc import từ doctorTypes.ts nếu tách riêng
+import type { Doctor } from './DoctorTable'; // hoặc import từ doctorTypes.ts nếu tách riêng
 
 interface DoctorFilterBarProps {
   doctors: Doctor[];

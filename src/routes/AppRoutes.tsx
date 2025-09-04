@@ -1,10 +1,10 @@
 import React from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
-import DoctorManagement from "../pages/Accounts/DoctorManagement";
+import DoctorManagement from "../pages/Accounts/DoctorList/DoctorManagement";
 import Dashboard from "../pages/Dashboard/Dashboard";
-import SupportList from "../pages/Accounts/SupportList";
-import PatientList from "../pages/Accounts/PatientList";
-import UserList from "../pages/Accounts/UserList";
+import SupportList from "../pages/Accounts/SupportList/SupportList";
+import PatientList from "../pages/Accounts/PatientList/PatientList";
+import UserList from "../pages/Accounts/UserList/UserList";
 import SpecialtyGrid from "../pages/Specialty/SpecialtyGrid";
 
 const AppRoutes = () => {
