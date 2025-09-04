@@ -132,24 +132,6 @@ const BookingTablePage = ({
             </div>
 
             <div className="w-full lg:w-auto flex gap-2">
-              {/* <input
-                type="date"
-                onChange={(e) => {
-                  setTimeout(() => {
-                    handleFindByDate(e.target.value);
-                  }, 500);
-                }}
-                className="w-full lg:w-45  not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              /> */}
-              {/* <input
-                type="date"
-                onChange={(e) => {
-                  setTimeout(() => {
-                    handleFindByDate(e.target.value);
-                  }, 500);
-                }}
-                className="w-full lg:w-45  not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              /> */}
               <Dropdown menu={{ items }} trigger={["click"]}>
                 <Button size="large">Tìm theo ngày</Button>
               </Dropdown>
@@ -162,8 +144,8 @@ const BookingTablePage = ({
                 size="large"
                 placeholder="Trạng thái"
                 options={[
-                  { value: 1, label: "Done" },
-                  { value: 2, label: "Pending" },
+                  { value: "Done", label: "Done" },
+                  { value: "Pending", label: "Pending" },
                 ]}
               />
             </div>

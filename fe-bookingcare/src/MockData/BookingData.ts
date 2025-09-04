@@ -6,7 +6,7 @@ const BookingData = [
     time_id: 1,
     clinic_id: 1,
     description: "sdasd",
-    status: "pending",
+    status: "Pending",
     createdAt: "2025-08-15",
   },
   {
@@ -16,7 +16,7 @@ const BookingData = [
     clinic_id: 2,
     doctor_id: "daoVuVan",
     description: "sdasd",
-    status: "pending",
+    status: "Pending",
     createdAt: "2025-09-12",
   },
   {
@@ -26,7 +26,7 @@ const BookingData = [
     clinic_id: 3,
     doctor_id: "VuVanDao",
     description: "sdasd",
-    status: "pending",
+    status: "Pending",
     createdAt: "2025-03-03",
   },
   {
@@ -36,7 +36,7 @@ const BookingData = [
     clinic_id: 4,
     doctor_id: "Daohehehe",
     description: "sdasd",
-    status: "pending",
+    status: "Pending",
     createdAt: "2025-01-01",
   },
   {
@@ -46,7 +46,7 @@ const BookingData = [
     clinic_id: 5,
     doctor_id: "daoVipPro",
     description: "sdasd",
-    status: "pending",
+    status: "Pending",
     createdAt: "2025-08-15",
   },
   {
@@ -56,7 +56,7 @@ const BookingData = [
     clinic_id: 6,
     doctor_id: "VanDao",
     description: "sdasd",
-    status: "done",
+    status: "Done",
     createdAt: "2025-08-15",
   },
   {
@@ -66,7 +66,7 @@ const BookingData = [
     clinic_id: 7,
     doctor_id: "Daohihihi",
     description: "sdasd",
-    status: "done",
+    status: "Done",
     createdAt: "2025-08-15",
   },
   {
@@ -76,7 +76,7 @@ const BookingData = [
     clinic_id: 8,
     doctor_id: "dao",
     description: "sdasd",
-    status: "done",
+    status: "Done",
     createdAt: "2025-08-15",
   },
 ];

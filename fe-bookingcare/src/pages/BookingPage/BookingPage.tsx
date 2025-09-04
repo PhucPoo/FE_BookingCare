@@ -52,6 +52,11 @@ const BookingPage = () => {
   // handle change option (status and clinic)
   const handleChange = (value: string) => {
     console.log(`selected ${value}`);
+    let BookingListClone = BookingData;
+    BookingListClone = BookingListClone.filter((item) => {
+      return item.status === value;
+    });
+    setBookingList(BookingListClone);
   };
 
   //search by createAt
@@ -65,9 +70,7 @@ const BookingPage = () => {
       return;
     }
     const from = new Date(filterCreatedAt.from);
-    console.log("🚀 ~ handleFindByDate ~ from:", from);
     const to = new Date(filterCreatedAt.to);
-    console.log("🚀 ~ handleFindByDate ~ to:", to);
     let BookingListClone = BookingData;
     BookingListClone = BookingListClone.filter((item) => {
       return from <= new Date(item.createdAt) && new Date(item.createdAt) <= to;
