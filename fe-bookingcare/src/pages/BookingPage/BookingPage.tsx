@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import "./BookingPage.css";
 import BookingTablePage from "./BookingTablePage";
 import BookingData from "../../MockData/BookingData";
 type Item = {
@@ -46,7 +45,9 @@ const BookingPage = () => {
     });
     setColumns(columnArr);
     setBookingList(BookingData);
-    // setTotalServiceList(ServiceListData.length);
+    setPageSize(10);
+    setTotalBillList(BookingData.length);
+    setCurrentPage(1);
   };
 
   // handle change option (status and clinic)
@@ -121,7 +122,7 @@ const BookingPage = () => {
     handleGetBookingList();
   }, []);
   return (
-    <div className="BookingPage-container">
+    <div className="p-5 bg-white mx-5">
       <BookingTablePage
         BookingList={BookingList}
         pageSize={pageSize}

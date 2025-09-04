@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import BillListData from "../../MockData/BillData";
-import "./BillManage.css";
 import BillTable from "./BillTable";
 type Item = {
   id: number;
@@ -49,13 +48,16 @@ const BillManage = () => {
   };
   const handleGetBillList = () => {
     setBillList(BillListData);
+    setPageSize(10);
+    setTotalBillList(500);
+    setCurrentPage(10);
   };
   useEffect(() => {
     handleGetBillList();
   }, []);
   return (
     <>
-      <div className="bill-container">
+      <div className="p-5 bg-white mx-5">
         <BillTable
           BillList={BillList}
           pageSize={pageSize}

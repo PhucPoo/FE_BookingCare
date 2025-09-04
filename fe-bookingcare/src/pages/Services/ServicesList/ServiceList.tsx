@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 
 import ModalAddServices from "./ModalServices/ModalAddServices.tsx";
 import ServiceListData from "../../../MockData/ServiceListData.ts";
-import "./ServiceList.css";
 import ModalUpdateServices from "./ModalServices/ModalUpdateServices.tsx";
 import ServiceListTable from "./ServiceListTable.tsx";
 interface Item {
@@ -130,7 +129,7 @@ const ServiceList = () => {
       from: 0,
       to: 0,
     });
-    // setTotalServiceList(ServiceListData.length);
+    setTotalServiceList(500);
   };
   useEffect(() => {
     handleGetServiceList();
@@ -138,7 +137,7 @@ const ServiceList = () => {
 
   return (
     <>
-      <div className="service-container">
+      <div className="p-5 bg-white mx-5">
         <div className="max-w-7xl mx-auto">
           <div className="mb-6">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
