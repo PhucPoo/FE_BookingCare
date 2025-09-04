@@ -59,10 +59,21 @@ const Login: React.FC = () => {
           </Form.Item>
 
           <Form.Item>
-            <Button type="primary" htmlType="submit" block>
+            <Button type="primary" 
+                    htmlType="submit" 
+                    block
+                    style={{ fontWeight: "bold" }}>
               Đăng nhập
             </Button>
           </Form.Item>
+            <Form.Item>
+              <Button type="default" 
+                      block 
+                      style={{ fontWeight: "bold" }} 
+                      onClick={() => (window.location.href = "/signup")}>
+                Đăng ký
+              </Button>
+            </Form.Item>
         </Form>
       </Card>
     </div>
