@@ -67,6 +67,10 @@ const Sidebar = ({ open, setOpen }: Props) => {
           <Link to={"bill-manage"}>
             <div className="drawer_content_box">Danh sách hoá đơn</div>
           </Link>
+
+          <Link to={"booking-manage"}>
+            <div className="drawer_content_box">Danh sách lịch khám</div>
+          </Link>
         </div>
       </Drawer>
     </>

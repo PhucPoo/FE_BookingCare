@@ -5,6 +5,7 @@ import Statistics from "../pages/Statistics/Statistics";
 import ServiceList from "../pages/Services/ServicesList/ServiceList";
 import ErrorPage from "../components/ErrorPage/ErrorPage";
 import BillManage from "../pages/Bill/BillManage";
+import BookingPage from "../pages/BookingPage/BookingPage";
 
 const AppRoutes = () => {
   return (
@@ -21,6 +22,7 @@ const AppRoutes = () => {
         <Route path="statistics" element={<Statistics />} />
         <Route path="service-list" element={<ServiceList />} />
         <Route path="bill-manage" element={<BillManage />} />
+        <Route path="booking-manage" element={<BookingPage />} />
       </Route>
       <Route path="/error-page" element={<ErrorPage />} />
       <Route

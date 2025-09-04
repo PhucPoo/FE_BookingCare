@@ -126,6 +126,10 @@ const ServiceList = () => {
     });
     setColumns(columnArr);
     setServiceList(ServiceListData);
+    setFilterData({
+      from: 0,
+      to: 0,
+    });
     // setTotalServiceList(ServiceListData.length);
   };
   useEffect(() => {

@@ -33,8 +33,6 @@ const BillManage = () => {
     createdAt: false,
   });
   const handleSort = () => {
-    console.log("dasda");
-
     let BillListClone = BillList;
     if (checkRender.createdAt) {
       BillListClone = BillListClone.sort((a: Item, b: Item) =>
