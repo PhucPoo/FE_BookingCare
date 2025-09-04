@@ -3,6 +3,9 @@ import DoctorFilterBar from "../../components/DoctorList/DoctorFilterBar";
 import DoctorTable, { type Doctor } from "../../components/DoctorList/DoctorTable";
 import AddDoctor from "../../components/DoctorList/AddDoctor";
 import Button from "antd/lib/button";
+import { SearchOutlined } from "@ant-design/icons";
+import { Space } from "antd/lib";
+import Input from "antd/es/input";
 
 const initialDoctors: Doctor[] = [
   { id: 2, name: "BS. Nguyễn Văn B", email: "hp@gmail.com", cccd: 1289389, phone: "0942234567", price: 15000, create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "active" },
@@ -42,8 +45,8 @@ const DoctorManagement: React.FC = () => {
     console.log("Deleted doctor with id:", id);
     const updatedDoctors = doctors.filter((d) => d.id !== id);
     setDoctors(updatedDoctors);
-    setFilteredDoctors(updatedDoctors); 
-    
+    setFilteredDoctors(updatedDoctors);
+
   };
   return (
     <div className="p-6">
@@ -56,6 +59,17 @@ const DoctorManagement: React.FC = () => {
       </div>
 
       <div className="mb-4">
+
+        <Space.Compact size="large">
+          <Input placeholder="Ngày tạo"
+            style={{ margin: 5,padding:7 }} />
+          <Input placeholder="Giá"
+            style={{ margin: 5 }} />
+             <Input placeholder="Phòng khám"
+            style={{ margin: 5 }} />
+             <Input placeholder="Chuyên khoa"
+            style={{ margin: 5 }} />
+        </Space.Compact>
         <Button
           type="primary"
           size="large"

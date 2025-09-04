@@ -5,23 +5,26 @@ import type { Patient } from "../../components/PatientList.tsx/PatientTable";
 import PatientFilterBar from "../../components/PatientList.tsx/PatientFilterBar";
 import PatientTable from "../../components/PatientList.tsx/PatientTable";
 import AddPatient from "../../components/PatientList.tsx/AddPatient";
+import { Select, Space } from "antd/lib";
+import Input from "antd/es/input";
 
 
 
 const initialpatients: Patient[] = [
-  { id: 2, name: "Bn. Nguyễn Văn B", email: "hp234@gmail.com", cccd: 1289389, phone: "0942234567",  create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "active" },
+  { id: 2, name: "Bn. Nguyễn Văn B", email: "hp234@gmail.com", cccd: 1289389, phone: "0942234567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "active" },
   { id: 1, name: "Bn. Nguyễn Văn A", email: "hp@gmail.com", cccd: 1289389, phone: "0901234567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "active" },
-  { id: 3, name: "Bn. Nguyễn Văn C", email: "hp36@gmail.com", cccd: 1289389, phone: "0939234567",  create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "active" },
-  { id: 4, name: "Bn. Nguyễn Văn D", email: "hp@gmail.com", cccd: 1289389, phone: "0920234567",  create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "inactive" },
+  { id: 3, name: "Bn. Nguyễn Văn C", email: "hp36@gmail.com", cccd: 1289389, phone: "0939234567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "active" },
+  { id: 4, name: "Bn. Nguyễn Văn D", email: "hp@gmail.com", cccd: 1289389, phone: "0920234567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "inactive" },
   { id: 5, name: "Bn. Nguyễn Văn CD", email: "hp@gmail.com", cccd: 1289389, phone: "0901234567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "inactive" },
-  { id: 6, name: "Bn. Nguyễn Văn AB", email: "hp@gmail.com", cccd: 1289389, phone: "0910744567",  create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "active" },
-  { id: 7, name: "Bn. Nguyễn Văn ABC", email: "hp@gmail.com", cccd: 1289389, phone: "0910784567",  create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "inactive" },
+  { id: 6, name: "Bn. Nguyễn Văn AB", email: "hp@gmail.com", cccd: 1289389, phone: "0910744567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "active" },
+  { id: 7, name: "Bn. Nguyễn Văn ABC", email: "hp@gmail.com", cccd: 1289389, phone: "0910784567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "inactive" },
 ];
 
 const patientManagement: React.FC = () => {
   const [patients, setpatients] = useState<Patient[]>(initialpatients);
   const [filteredpatients, setFilteredpatients] = useState<Patient[]>(initialpatients);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const { Option, OptGroup } = Select;
 
   // Thêm bệnh nhân mới
   const handleAddpatient = (newpatient: Patient) => {
@@ -46,9 +49,12 @@ const patientManagement: React.FC = () => {
     console.log("Deleted patient with id:", id);
     const updatedpatients = patients.filter((d) => d.id !== id);
     setpatients(updatedpatients);
-    setFilteredpatients(updatedpatients); 
-    
+    setFilteredpatients(updatedpatients);
+
   };
+  function handleChange(value: any) {
+    console.log(`selected ${value}`);
+  }
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4 text-blue-700">Quản lý bệnh nhân</h1>
@@ -60,15 +66,41 @@ const patientManagement: React.FC = () => {
       </div>
 
       <div className="mb-4">
+        {/* Filter Inputs */}
+        <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-3">
+          <Input
+            placeholder="Ngày tạo"
+            style={{ padding: 7 }}
+            className="w-full sm:w-auto flex-1 min-w-[150px]"
+          />
+          <Input
+            placeholder="Địa chỉ"
+            className="w-full sm:w-auto flex-1 min-w-[150px]"
+          />
+          <Select
+            defaultValue="gender"
+            onChange={handleChange}
+            className="w-full sm:w-auto min-w-[150px] max-w-[200px] h-[36px]"
+          >
+            <OptGroup label="Manager">
+              <Option value="male">Nam</Option>
+              <Option value="female">Nữ</Option>
+              <Option value="other">Khác</Option>
+            </OptGroup>
+          </Select>
+        </div>
+
+        {/* Add Button */}
         <Button
           type="primary"
           size="large"
           onClick={() => setIsAddModalOpen(true)}
-          style={{ minWidth: 150 }}
+          className="w-full sm:w-auto min-w-[150px]"
         >
           + Thêm bệnh nhân
         </Button>
       </div>
+
 
       <PatientTable
         patients={filteredpatients}

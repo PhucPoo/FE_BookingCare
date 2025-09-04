@@ -5,6 +5,8 @@ import Addsupport from "../../components/SupportList/AddSupport";
 import Button from "antd/lib/button";
 import SupportFilterBar from "../../components/SupportList/SupportFilterBar";
 import SupportTable from "../../components/SupportList/SupportTable";
+import { Space } from "antd/lib";
+import Input from "antd/es/input";
 
 const initialsupports: Support[] = [
   { id: 2, name: "Sp. Nguyễn Văn B", email: "hp234@gmail.com", cccd: 1289389, phone: "0942234567",  create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "active" },
@@ -58,6 +60,16 @@ const supportManagement: React.FC = () => {
       </div>
 
       <div className="mb-4">
+        <Space.Compact size="large">
+          <Input placeholder="Ngày tạo"
+            style={{ margin: 5,padding:7 }} />
+          <Input placeholder="Giới tính"
+            style={{ margin: 5 }} />
+            <Input placeholder="Địa chỉ"
+            style={{ margin: 5 }} />
+            <Input placeholder="Phòng khám"
+            style={{ margin: 5 }} />
+        </Space.Compact>
         <Button
           type="primary"
           size="large"
