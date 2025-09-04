@@ -135,6 +135,7 @@ const BookingPage = () => {
         handleSearchService={handleSearchService}
         setFilterCreatedAt={setFilterCreatedAt}
         filterCreatedAt={filterCreatedAt}
+        handleGetBookingList={handleGetBookingList}
       />
     </div>
   );

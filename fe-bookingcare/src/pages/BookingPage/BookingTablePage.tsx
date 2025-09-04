@@ -23,6 +23,7 @@ type Props = {
   handleSearchService: (value: string, key: string) => void;
   setFilterCreatedAt: (value: { from: string; to: string }) => void;
   filterCreatedAt: { from: string; to: string };
+  handleGetBookingList: () => void;
 };
 
 const BookingTablePage = ({
@@ -38,6 +39,7 @@ const BookingTablePage = ({
   handleSearchService,
   setFilterCreatedAt,
   filterCreatedAt,
+  handleGetBookingList,
 }: Props) => {
   const items: MenuProps["items"] = [
     {
@@ -161,6 +163,17 @@ const BookingTablePage = ({
                   { value: 2, label: "bbb" },
                 ]}
               />
+            </div>
+            <div className="w-full lg:w-auto">
+              <Button
+                size="large"
+                type="primary"
+                onClick={() => {
+                  handleGetBookingList();
+                }}
+              >
+                Làm mới
+              </Button>
             </div>
           </div>
         </div>
