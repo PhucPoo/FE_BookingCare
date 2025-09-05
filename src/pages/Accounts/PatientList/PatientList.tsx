@@ -5,7 +5,7 @@ import type { Patient } from "./PatientTable";
 import PatientFilterBar from "./PatientFilterBar";
 import PatientTable from "./PatientTable";
 import AddPatient from "./AddPatient";
-import { Select, Space } from "antd/lib";
+import { DatePicker, Select, Space } from "antd/lib";
 import Input from "antd/es/input";
 
 
@@ -68,11 +68,7 @@ const patientManagement: React.FC = () => {
       <div className="mb-4">
         {/* Filter Inputs */}
         <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-3">
-          <Input
-            placeholder="Ngày tạo"
-            style={{ padding: 7 }}
-            className="w-full sm:w-auto flex-1 min-w-[150px]"
-          />
+          <DatePicker placeholder="Ngày tạo" style={{ width: 160, }} />
           <Input
             placeholder="Địa chỉ"
             className="w-full sm:w-auto flex-1 min-w-[150px]"

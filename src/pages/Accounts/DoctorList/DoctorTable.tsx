@@ -155,7 +155,7 @@ const DoctorTable: React.FC<DoctorTableProps> = ({ doctors, onUpdateDoctor, onDe
             >
               Ngày tạo {renderSortArrow("create_at")}
             </th>
-            <th className="p-3 border hidden xl:table-cell">Cập nhật</th>
+            <th className="p-3 border hidden xl:table-cell">Ngày cập nhật</th>
             <th className="p-3 border">Trạng thái</th>
             <th className="p-3 border text-center">Thao tác</th>
           </tr>

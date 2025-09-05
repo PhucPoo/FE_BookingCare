@@ -5,7 +5,7 @@ import Addsupport from "./AddSupport";
 import Button from "antd/lib/button";
 import SupportFilterBar from "./SupportFilterBar";
 import SupportTable from "./SupportTable";
-import { Space } from "antd/lib";
+import { DatePicker, Space } from "antd/lib";
 import Input from "antd/es/input";
 
 const initialsupports: Support[] = [
@@ -61,8 +61,7 @@ const supportManagement: React.FC = () => {
 
       <div className="mb-4">
         <Space.Compact size="large">
-          <Input placeholder="Ngày tạo"
-            style={{ margin: 5,padding:7 }} />
+          <DatePicker placeholder="Ngày tạo" style={{ margin:5,width:400 }} />
           <Input placeholder="Giới tính"
             style={{ margin: 5 }} />
             <Input placeholder="Địa chỉ"

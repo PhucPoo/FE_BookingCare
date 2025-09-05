@@ -6,7 +6,7 @@ import type { User } from "./UserTable";
 import UserFilterBar from "./UserFilterBar";
 import UserTable from "./UserTable";
 import Adduser from "./AddUser";
-import { Select, Space } from "antd/lib";
+import { DatePicker, Select, Space } from "antd/lib";
 import Input from "antd/es/input";
 
 
@@ -85,8 +85,7 @@ const userManagement: React.FC = () => {
          
         </Select>,
         <Space.Compact size="large">
-          <Input placeholder="Ngày tạo"
-            style={{ margin: 5, padding: 7 }} />
+          <DatePicker placeholder="Ngày tạo" style={{ width: 160, marginRight:5 }} />
 
         </Space.Compact>
         <Button
