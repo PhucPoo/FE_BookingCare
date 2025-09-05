@@ -90,7 +90,7 @@ const BookingPage = () => {
       setBookingList(BookingListCLone);
     } else {
       BookingListCLone = BookingListCLone.sort((a: Item, b: Item) =>
-        a.createdAt.localeCompare(b.createdAt)
+        b.createdAt.localeCompare(a.createdAt)
       );
       setCheckRender({ ...checkRender, createdAt: !checkRender.createdAt });
       setBookingList(BookingListCLone);

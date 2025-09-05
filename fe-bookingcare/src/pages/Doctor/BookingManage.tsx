@@ -68,18 +68,20 @@ const BookingManage = () => {
 
   //handle sort
   const handleSort = () => {
+    console.log("dasdas");
+
     let BookingListCLone = BookingList;
     if (checkRender.createdAt) {
       BookingListCLone = BookingListCLone.sort((a: Item, b: Item) =>
         a.createdAt.localeCompare(b.createdAt)
       );
-      // setCheckRender({ ...checkRender, createdAt: !checkRender.createdAt });
+      setCheckRender({ ...checkRender, createdAt: !checkRender.createdAt });
       setBookingList(BookingListCLone);
     } else {
       BookingListCLone = BookingListCLone.sort((a: Item, b: Item) =>
-        a.createdAt.localeCompare(b.createdAt)
+        b.createdAt.localeCompare(a.createdAt)
       );
-      // setCheckRender({ ...checkRender, createdAt: !checkRender.createdAt });
+      setCheckRender({ ...checkRender, createdAt: !checkRender.createdAt });
       setBookingList(BookingListCLone);
     }
   };
