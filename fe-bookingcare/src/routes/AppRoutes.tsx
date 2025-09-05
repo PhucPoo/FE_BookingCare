@@ -4,8 +4,10 @@ import Dashboard from "../pages/Dashboard/Dashboard";
 import Statistics from "../pages/Statistics/Statistics";
 import ServiceList from "../pages/Services/ServicesList/ServiceList";
 import ErrorPage from "../components/ErrorPage/ErrorPage";
-import BillManage from "../pages/Bill/BillManage";
+import BillPage from "../pages/Bill/BillPage";
 import BookingPage from "../pages/BookingPage/BookingPage";
+import BookingManage from "../pages/Doctor/BookingManage";
+import DoctorDashboard from "../pages/Dashboard/DoctorDashboard/DoctorDashboard";
 
 const AppRoutes = () => {
   return (
@@ -14,6 +16,7 @@ const AppRoutes = () => {
         path="/"
         element={<Navigate to={"/admin-dashboard"} replace={true} />}
       />
+
       <Route path="/admin-dashboard" element={<Dashboard />}>
         <Route
           path="/admin-dashboard"
@@ -21,8 +24,16 @@ const AppRoutes = () => {
         />
         <Route path="statistics" element={<Statistics />} />
         <Route path="service-list" element={<ServiceList />} />
-        <Route path="bill-manage" element={<BillManage />} />
+        <Route path="bill-manage" element={<BillPage />} />
         <Route path="booking-manage" element={<BookingPage />} />
+      </Route>
+
+      <Route path="/doctor-dashboard" element={<DoctorDashboard />}>
+        <Route
+          path="/doctor-dashboard"
+          element={<Navigate to={"booking-manage"} replace={true} />}
+        />
+        <Route path="booking-manage" element={<BookingManage />} />
       </Route>
       <Route path="/error-page" element={<ErrorPage />} />
       <Route

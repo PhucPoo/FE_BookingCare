@@ -98,7 +98,7 @@ const BookingPage = () => {
   };
 
   //handle search
-  const handleSearchService = (value: string, key: string) => {
+  const handleSearchBooking = (value: string, key: string) => {
     let BookingListClone = BookingData;
     switch (key) {
       case "doctor":
@@ -133,7 +133,7 @@ const BookingPage = () => {
         handleChange={handleChange}
         handleFindByDate={handleFindByDate}
         handleSort={handleSort}
-        handleSearchService={handleSearchService}
+        handleSearchBooking={handleSearchBooking}
         setFilterCreatedAt={setFilterCreatedAt}
         filterCreatedAt={filterCreatedAt}
         handleGetBookingList={handleGetBookingList}

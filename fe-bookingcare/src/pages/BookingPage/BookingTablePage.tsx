@@ -20,7 +20,7 @@ type Props = {
   handleSort: () => void;
   handleChange: (value: string) => void;
   handleFindByDate: () => void;
-  handleSearchService: (value: string, key: string) => void;
+  handleSearchBooking: (value: string, key: string) => void;
   setFilterCreatedAt: (value: { from: string; to: string }) => void;
   filterCreatedAt: { from: string; to: string };
   handleGetBookingList: () => void;
@@ -36,7 +36,7 @@ const BookingTablePage = ({
   handleSort,
   handleChange,
   handleFindByDate,
-  handleSearchService,
+  handleSearchBooking,
   setFilterCreatedAt,
   filterCreatedAt,
   handleGetBookingList,
@@ -114,7 +114,7 @@ const BookingTablePage = ({
                 placeholder="Tìm kiếm bác sĩ..."
                 onChange={(e) => {
                   setTimeout(() => {
-                    handleSearchService(e.target.value, "doctor");
+                    handleSearchBooking(e.target.value, "doctor");
                   }, 500);
                 }}
                 className="w-full  lg:w-45  not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -126,7 +126,7 @@ const BookingTablePage = ({
                 placeholder="Tìm kiếm bệnh nhân..."
                 onChange={(e) => {
                   setTimeout(() => {
-                    handleSearchService(e.target.value, "patient");
+                    handleSearchBooking(e.target.value, "patient");
                   }, 500);
                 }}
                 className="w-full lg:w-45 not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"

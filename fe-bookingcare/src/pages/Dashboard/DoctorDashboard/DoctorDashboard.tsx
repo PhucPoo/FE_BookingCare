@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 
-const Dashboard = () => {
+const DoctorDashboard = () => {
   return (
     <>
       <Outlet />
@@ -8,4 +8,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default DoctorDashboard;
