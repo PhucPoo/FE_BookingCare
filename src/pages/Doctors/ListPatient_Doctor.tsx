@@ -1,18 +1,16 @@
 import React, { useState } from "react";
 
-import Button from "antd/lib/button";
-import { DatePicker, Select, Space } from "antd/lib";
+import { DatePicker, Select } from "antd/lib";
 import Input from "antd/es/input";
 import type { Patient } from "../Accounts/PatientList/PatientTable";
 import PatientFilterBar from "../Accounts/PatientList/PatientFilterBar";
-import PatientTable from "../Accounts/PatientList/PatientTable";
-import AddPatient from "../Accounts/PatientList/AddPatient";
+import PatientTable_Doctor from "./PatientTable_Doctor";
 
 
 
 const initialpatients: Patient[] = [
-  { id: 2, name: "Bn. Nguyễn Văn B", email: "hp234@gmail.com", cccd: 1289389, phone: "0942234567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "active" },
-  { id: 1, name: "Bn. Nguyễn Văn A", email: "hp@gmail.com", cccd: 1289389, phone: "0901234567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "active" },
+  { id: 1, name: "Bn. Nguyễn Văn B", email: "hp234@gmail.com", cccd: 1289389, phone: "0942234567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "active" },
+  { id: 2, name: "Bn. Nguyễn Văn A", email: "hp@gmail.com", cccd: 1289389, phone: "0901234567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "active" },
   { id: 3, name: "Bn. Nguyễn Văn C", email: "hp36@gmail.com", cccd: 1289389, phone: "0939234567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "active" },
   { id: 4, name: "Bn. Nguyễn Văn D", email: "hp@gmail.com", cccd: 1289389, phone: "0920234567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "inactive" },
   { id: 5, name: "Bn. Nguyễn Văn CD", email: "hp@gmail.com", cccd: 1289389, phone: "0901234567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "inactive" },
@@ -25,21 +23,8 @@ const patientList_Doctor: React.FC = () => {
   const [filteredpatients, setFilteredpatients] = useState<Patient[]>(initialpatients);
   const { Option, OptGroup } = Select;
 
-  // Thêm bệnh nhân mới
   
 
-  // Cập nhật bệnh nhân
-  const handleUpdatepatient = (updatedpatient: Patient) => {
-    const updatedList = patients.map((Bn) =>
-      Bn.id === updatedpatient.id
-        ? { ...Bn, ...updatedpatient, update_at: new Date() }
-        : Bn
-    );
-    setpatients(updatedList);
-    setFilteredpatients(updatedList); // rất quan trọng để table hiển thị đúng
-  };
-  // Xóa bệnh nhân
-  
 
   return (
     <div className="p-6">
@@ -76,7 +61,7 @@ const patientList_Doctor: React.FC = () => {
       </div>
 
 
-      <PatientTable
+      <PatientTable_Doctor
               patients={filteredpatients} onUpdatepatient={function (updatedpatient: Patient): void {
                   throw new Error("Function not implemented.");
               } } onDeletepatient={function (id: number): void {
