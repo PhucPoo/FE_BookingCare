@@ -33,6 +33,7 @@ type Props = {
   setFilterCreatedAt: (value: { from: string; to: string }) => void;
   filterCreatedAt: { from: string; to: string };
   handleGetBookingList: () => void;
+  showModal: () => void;
 };
 
 const BookingTableManage = ({
@@ -49,6 +50,7 @@ const BookingTableManage = ({
   setFilterCreatedAt,
   filterCreatedAt,
   handleGetBookingList,
+  showModal,
 }: Props) => {
   const items: MenuProps["items"] = [
     {
@@ -115,11 +117,24 @@ const BookingTableManage = ({
   };
   return (
     <div className="max-w-7xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-          Danh sách lịch khám
-        </h1>
-        <p className="text-gray-600">Thông tin lịch khám hiện có</p>
+      <div className="flex justify-between items-center">
+        <div className="mb-6">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+            Danh sách lịch khám
+          </h1>
+          <p className="text-gray-600">Thông tin lịch khám hiện có</p>
+        </div>
+
+        <div className="mb-6">
+          <Button
+            size="large"
+            onClick={() => {
+              showModal();
+            }}
+          >
+            Đăng kí lịch khám
+          </Button>
+        </div>
       </div>
 
       {/* table search feature */}

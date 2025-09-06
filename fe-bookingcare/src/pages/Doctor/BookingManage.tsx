@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import BookingTableManage from "./BookingTableManage";
 import BookingData from "../../MockData/BookingData";
+import ModalRegisterTime from "./ModalRegisterTime";
 
 type Item = {
   id: number;
@@ -12,7 +13,10 @@ type Item = {
   status: string;
   createdAt: string;
 };
-
+type TimeItem = {
+  id: number;
+  label: string;
+};
 const BookingManage = () => {
   const [BookingList, setBookingList] = useState<Item[]>([]);
   const [pageSize, setPageSize] = useState<number>(10);
@@ -25,7 +29,20 @@ const BookingManage = () => {
     from: "",
     to: "",
   });
+  const [timeSelected, setTimeSelected] = useState<TimeItem[]>([]);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
   const [columns, setColumns] = useState<{ value: number; label: string }[]>(
     []
   );
@@ -68,8 +85,6 @@ const BookingManage = () => {
 
   //handle sort
   const handleSort = () => {
-    console.log("dasdas");
-
     let BookingListCLone = BookingList;
     if (checkRender.createdAt) {
       BookingListCLone = BookingListCLone.sort((a: Item, b: Item) =>
@@ -141,6 +156,15 @@ const BookingManage = () => {
         setFilterCreatedAt={setFilterCreatedAt}
         filterCreatedAt={filterCreatedAt}
         handleGetBookingList={handleGetBookingList}
+        showModal={showModal}
+      />
+      <ModalRegisterTime
+        isModalOpen={isModalOpen}
+        handleOk={handleOk}
+        handleCancel={handleCancel}
+        timeSelected={timeSelected}
+        setTimeSelected={setTimeSelected}
+        key={timeSelected[0]?.id || null}
       />
     </div>
   );
