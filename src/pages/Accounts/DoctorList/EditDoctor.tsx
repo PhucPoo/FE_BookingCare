@@ -1,63 +1,77 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import Modal from "antd/es/modal";
 import Input from "antd/es/input";
 import Select from "antd/es/select";
 import Button from "antd/es/button";
 import Form from "antd/es/form";
-import type { Doctor } from "../DoctorList/DoctorTable";
-
-
+import type { Doctor } from "./DoctorTable";
 
 const { Option } = Select;
 
-interface AddDoctorProps {
+interface EditDoctorProps {
     open: boolean;
     onCancel: () => void;
-    onAdd: (doctor: Doctor) => void;
+    onUpdate: (doctor: Doctor) => void;
+    doctor: Doctor | null;
 }
 
-const AddDoctor: React.FC<AddDoctorProps> = ({ open, onCancel, onAdd }) => {
+const EditDoctor: React.FC<EditDoctorProps> = ({ open, onCancel, onUpdate, doctor }) => {
     const [form] = Form.useForm();
-    
 
-   const handleSubmit = (values: any) => {
-    const { name, email, phone, cccd, price, status } = values;
+    // Đổ dữ liệu vào form khi modal mở
+    useEffect(() => {
+        if (doctor) {
+            form.setFieldsValue({
+                name: doctor.name,
+                email: doctor.email,
+                cccd: doctor.cccd.toString(),
+                phone: doctor.phone,
+                price: doctor.price?.toString(),
+                status: doctor.status,
+            });
+        }
+    }, [doctor, form]);
 
-    const newDoctor: Doctor = {
-        id: Date.now(),
-        name,
-        email,
-        phone,
-        cccd: Number(cccd),
-        price: price ? Number(price) : undefined,
-        create_at: new Date(),
-        update_at: new Date(),
-        status,
+    const handleSubmit = (values: any) => {
+        if (!doctor) return;
+
+        const updatedDoctor: Doctor = {
+            ...doctor,
+            name: values.name,
+            email: values.email,
+            cccd: Number(values.cccd),
+            phone: values.phone,
+            price: Number(values.price),
+            status: values.status,
+            update_at: new Date(),
+        };
+
+        onUpdate(updatedDoctor); // 👈 Gọi hàm cập nhật truyền từ DoctorTable
+        form.resetFields();
     };
-
-    onAdd(newDoctor);
-    form.resetFields();
-};
 
     return (
         <Modal
-            title={<div className="text-center text-lg font-semibold">Thêm bác sĩ mới</div>}
+            title={<div className="text-center text-lg font-semibold">Chỉnh sửa thông tin bác sĩ</div>}
             open={open}
-            onCancel={onCancel}
+            onCancel={() => {
+                form.resetFields();
+                onCancel();
+            }}
             footer={null}
             centered
             width={520}
-           
         >
             <Form
                 layout="vertical"
                 onFinish={handleSubmit}
                 className="space-y-4"
+                form={form}
             >
                 <Form.Item
                     name="name"
                     label="Tên bác sĩ"
-                    rules={[{ required: true, message: 'Vui lòng nhập tên bác sĩ!' }]}
+                    rules={[{ required: true, message: "Vui lòng nhập tên bác sĩ!" }]}
                 >
                     <Input placeholder="Nhập tên bác sĩ" size="large" className="rounded-md px-3 py-2" />
                 </Form.Item>
@@ -66,8 +80,8 @@ const AddDoctor: React.FC<AddDoctorProps> = ({ open, onCancel, onAdd }) => {
                     name="email"
                     label="Email"
                     rules={[
-                        { required: true, message: 'Vui lòng nhập email!' },
-                        { type: 'email', message: 'Email không hợp lệ!' },
+                        { required: true, message: "Vui lòng nhập email!" },
+                        { type: "email", message: "Email không hợp lệ!" },
                     ]}
                 >
                     <Input placeholder="Nhập email" size="large" className="rounded-md px-3 py-2" />
@@ -76,7 +90,7 @@ const AddDoctor: React.FC<AddDoctorProps> = ({ open, onCancel, onAdd }) => {
                 <Form.Item
                     name="cccd"
                     label="CCCD"
-                    rules={[{ required: true, message: 'Vui lòng nhập CCCD!' }]}
+                    rules={[{ required: true, message: "Vui lòng nhập CCCD!" }]}
                 >
                     <Input placeholder="Nhập số CCCD" size="large" className="rounded-md px-3 py-2" />
                 </Form.Item>
@@ -84,7 +98,7 @@ const AddDoctor: React.FC<AddDoctorProps> = ({ open, onCancel, onAdd }) => {
                 <Form.Item
                     name="phone"
                     label="Số điện thoại"
-                    rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}
+                    rules={[{ required: true, message: "Vui lòng nhập số điện thoại!" }]}
                 >
                     <Input placeholder="Nhập số điện thoại" size="large" className="rounded-md px-3 py-2" />
                 </Form.Item>
@@ -92,7 +106,7 @@ const AddDoctor: React.FC<AddDoctorProps> = ({ open, onCancel, onAdd }) => {
                 <Form.Item
                     name="price"
                     label="Giá khám (VNĐ)"
-                    rules={[{ required: true, message: 'Vui lòng nhập giá khám!' }]}
+                    rules={[{ required: true, message: "Vui lòng nhập giá khám!" }]}
                 >
                     <Input type="number" placeholder="Nhập giá khám" size="large" className="rounded-md px-3 py-2" />
                 </Form.Item>
@@ -100,7 +114,7 @@ const AddDoctor: React.FC<AddDoctorProps> = ({ open, onCancel, onAdd }) => {
                 <Form.Item
                     name="status"
                     label="Trạng thái"
-                    rules={[{ required: true, message: 'Vui lòng chọn trạng thái!' }]}
+                    rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
                 >
                     <Select placeholder="Chọn trạng thái" size="large" className="rounded-md">
                         <Option value="active">Hoạt động</Option>
@@ -114,16 +128,13 @@ const AddDoctor: React.FC<AddDoctorProps> = ({ open, onCancel, onAdd }) => {
                             Hủy
                         </Button>
                         <Button type="primary" htmlType="submit" size="large">
-                            Thêm
+                            Cập nhật
                         </Button>
                     </div>
                 </Form.Item>
             </Form>
         </Modal>
-
-
-
     );
 };
 
-export default AddDoctor;
+export default EditDoctor;

@@ -19,7 +19,7 @@ const Addsupport: React.FC<AddsupportProps> = ({ open, onCancel, onAdd }) => {
     const [form] = Form.useForm();
 
     const handleSubmit = (values:any) => {
-        const { name, email, phone, cccd, price, status } = values;
+        const { name, email, phone, cccd, status } = values;
 
         const newsupport: Support = {
             id: Date.now(),

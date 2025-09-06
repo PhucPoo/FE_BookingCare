@@ -1,8 +1,12 @@
 import React, { useState } from "react";
-import DoctorFilterBar from "../../components/DoctorList/DoctorFilterBar";
-import DoctorTable, { type Doctor } from "../../components/DoctorList/DoctorTable";
-import AddDoctor from "../../components/DoctorList/AddDoctor";
+import DoctorFilterBar from "./DoctorFilterBar";
+import DoctorTable, { type Doctor } from "./DoctorTable";
+import AddDoctor from "./AddDoctor";
 import Button from "antd/lib/button";
+import { SearchOutlined } from "@ant-design/icons";
+import { DatePicker, Form, Space } from "antd/lib";
+import Input from "antd/es/input";
+
 
 const initialDoctors: Doctor[] = [
   { id: 2, name: "BS. Nguyễn Văn B", email: "hp@gmail.com", cccd: 1289389, phone: "0942234567", price: 15000, create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "active" },
@@ -42,36 +46,48 @@ const DoctorManagement: React.FC = () => {
     console.log("Deleted doctor with id:", id);
     const updatedDoctors = doctors.filter((d) => d.id !== id);
     setDoctors(updatedDoctors);
-    setFilteredDoctors(updatedDoctors); 
-    
+    setFilteredDoctors(updatedDoctors);
+
   };
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4 text-blue-700">Quản lý Bác sĩ</h1>
+    <div className="p-4 sm:p-6">
+      <h1 className="text-xl sm:text-2xl font-bold mb-4 text-blue-700">Quản lý Bác sĩ</h1>
 
+      {/* Bộ lọc bác sĩ */}
       <div className="flex justify-between items-center mb-4">
         <div className="flex-1">
           <DoctorFilterBar doctors={doctors} onFilter={setFilteredDoctors} />
         </div>
       </div>
 
-      <div className="mb-4">
-        <Button
-          type="primary"
-          size="large"
-          onClick={() => setIsAddModalOpen(true)}
-          style={{ minWidth: 150 }}
-        >
-          + Thêm bác sĩ
-        </Button>
+      {/* Thanh lọc và nút Thêm bác sĩ trên 1 hàng */}
+      <div className="mb-4 overflow-x-auto">
+        <div className="flex flex-nowrap gap-2 min-w-[800px]">
+          {/* <Form.Item name="Ngày tạo" className="h-2"> */}
+            <DatePicker placeholder="Ngày tạo" style={{ width: 160, }} />
+          {/* </Form.Item> */}
+          <Input placeholder="Giá" style={{ width: 120 }} />
+          <Input placeholder="Phòng khám" style={{ width: 160 }} />
+          <Input placeholder="Chuyên khoa" style={{ width: 160 }} />
+          <Button
+            type="primary"
+            size="large"
+            onClick={() => setIsAddModalOpen(true)}
+            style={{ minWidth: 150 }}
+          >
+            + Thêm bác sĩ
+          </Button>
+        </div>
       </div>
 
+      {/* Bảng bác sĩ */}
       <DoctorTable
         doctors={filteredDoctors}
         onUpdateDoctor={handleUpdateDoctor}
         onDeleteDoctor={handleDeleteDoctor}
       />
 
+      {/* Modal thêm bác sĩ */}
       <AddDoctor
         open={isAddModalOpen}
         onCancel={() => setIsAddModalOpen(false)}
@@ -79,6 +95,7 @@ const DoctorManagement: React.FC = () => {
       />
     </div>
   );
+
 };
 
 export default DoctorManagement;
