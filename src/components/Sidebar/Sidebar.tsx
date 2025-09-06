@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 
 
-const Sidebar: React.FC = () => {
+const SidebarDashboard: React.FC = () => {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   const toggleUserMenu = () => {
@@ -70,10 +70,14 @@ const Sidebar: React.FC = () => {
         <a href="#" className="flex items-center gap-3 hover:text-indigo-600">
           <FaCog /> Quản lý hóa đơn
         </a>
+        <a href="patient_list" className="flex items-center gap-3 hover:text-indigo-600">
+          <FaCog /> Quản lý bệnh nhân
+        </a>
+
       </nav>
     </div>
   );
 }
 
 
-export default Sidebar;
+export default SidebarDashboard;

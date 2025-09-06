@@ -6,6 +6,7 @@ import SupportList from "../pages/Accounts/SupportList/SupportList";
 import PatientList from "../pages/Accounts/PatientList/PatientList";
 import UserList from "../pages/Accounts/UserList/UserList";
 import SpecialtyGrid from "../pages/Specialty/SpecialtyGrid";
+import ListPatient_Doctor from "../pages/Doctors/ListPatient_Doctor";
 
 const AppRoutes = () => {
   return (
@@ -24,7 +25,9 @@ const AppRoutes = () => {
 
         <Route path="specialty" element={<SpecialtyGrid />} />
        
+        <Route path="patient_list" element={<ListPatient_Doctor />} />
       </Route>
+      
 
       
     </Routes>
