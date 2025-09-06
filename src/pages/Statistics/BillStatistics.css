@@ -1,0 +1,13 @@
+.bill-container {
+  border: 1px solid #49bce2;
+  box-shadow: 0 2px 3px 1px gray;
+  border-radius: 5px;
+}
+.bill-container_title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #49bce2;
+  padding: 10px;
+  color: white;
+}
