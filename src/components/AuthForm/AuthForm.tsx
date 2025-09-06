@@ -1,8 +1,31 @@
 import React from "react";
-import { Form, Input, Button, Checkbox, Card, DatePicker, Select } from "antd";
-import { UserOutlined, LockOutlined, MailOutlined, IdcardOutlined, PhoneOutlined, HomeOutlined } from "@ant-design/icons";
+import {
+  Form,
+  Input,
+  Button,
+  Checkbox,
+  Card,
+  DatePicker,
+  Select,
+  Row,
+  Col,
+} from "antd";
+import {
+  UserOutlined,
+  LockOutlined,
+  MailOutlined,
+  IdcardOutlined,
+  PhoneOutlined,
+  HomeOutlined,
+} from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { checkLogin, registerUser, validatePassword, validateCCCD, validatePhone } from "../../utils/AuthHelper/AuthHelper";
+import {
+  checkLogin,
+  registerUser,
+  validatePassword,
+  validateCCCD,
+  validatePhone,
+} from "../../utils/AuthHelper/AuthHelper";
 
 interface AuthFormProps {
   role: "admin" | "doctor" | "support" | "client";
@@ -17,7 +40,7 @@ const roleConfig = {
 };
 
 const AuthForm: React.FC<AuthFormProps> = ({ role, type }) => {
-  const { title, color, } = roleConfig[role];
+  const { title, color } = roleConfig[role];
   const navigate = useNavigate();
 
   const onFinish = (values: any) => {
@@ -51,130 +74,164 @@ const AuthForm: React.FC<AuthFormProps> = ({ role, type }) => {
   return (
     <div
       style={{
-        height: "100vh",
+        minHeight: "100vh",
         display: "flex",
-        justifyContent: "center",
         alignItems: "center",
         backgroundImage:
           'linear-gradient(to top, rgba(255, 255, 255, 0.8), rgba(0,0,0,0)),url("/public/bg_login.jpg")',
         backgroundSize: "cover",
         backgroundPosition: "center",
-        padding: "20px",
+        padding: "16px",
       }}
     >
-      <Card
-        title={`${title} ${type === "login" ? "Login" : "Signup"}`}
-        style={{
-          width: "100%",
-          maxWidth: 400,
-          borderRadius: 10,
-          textAlign: "center",
-          padding: "20px",
-          backgroundColor: "#fff",
-        }}
+      <Row
+        justify="center"
+        align="middle"
+        style={{ width: "100%", margin: 0 }}
       >
-        <Form name={`${role}_${type}`} onFinish={onFinish}>
-          <Form.Item
-            name="username"
-            rules={[{ required: true, message: "Hãy nhập tên đăng nhập!" }]}
+        <Col xs={24} sm={18} md={12} lg={8}>
+          <Card
+            title={`${title} ${type === "login" ? "Login" : "Signup"}`}
+            style={{
+              width: "100%",
+              borderRadius: 12,
+              textAlign: "center",
+              padding: "20px",
+              backgroundColor: "#fff",
+              boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
+            }}
           >
-            <Input prefix={<UserOutlined />} placeholder="Tên đăng nhập" />
-          </Form.Item>
-
-          <Form.Item
-            name="password"
-            rules={[{ required: true, message: "Hãy nhập mật khẩu!" }]}
-          >
-            <Input.Password prefix={<LockOutlined />} placeholder="Mật khẩu" />
-          </Form.Item>
-
-          {type === "signup" && role === "client" && (
-            <>
+            <Form name={`${role}_${type}`} onFinish={onFinish}>
               <Form.Item
-                name="confirmPassword"
-                rules={[{ required: true, message: "Hãy nhập lại mật khẩu!" }]}
+                name="username"
+                rules={[{ required: true, message: "Hãy nhập tên đăng nhập!" }]}
               >
-                <Input.Password prefix={<LockOutlined />} placeholder="Xác nhận mật khẩu" />
+                <Input prefix={<UserOutlined />} placeholder="Tên đăng nhập" />
               </Form.Item>
 
               <Form.Item
-                name="email"
-                rules={[{ required: true, type: "email", message: "Hãy nhập email!" }]}
+                name="password"
+                rules={[{ required: true, message: "Hãy nhập mật khẩu!" }]}
               >
-                <Input prefix={<MailOutlined />} placeholder="Email" />
+                <Input.Password
+                  prefix={<LockOutlined />}
+                  placeholder="Mật khẩu"
+                />
               </Form.Item>
 
-              <Form.Item
-                name="cccd"
-                rules={[{ required: true, message: "Hãy nhập số căn cước công dân của bạn!" }]}
-              >
-                <Input prefix={<IdcardOutlined />} placeholder="Số căn cước công dân" />
-              </Form.Item>
+              {type === "signup" && role === "client" && (
+                <>
+                  <Form.Item
+                    name="confirmPassword"
+                    rules={[{ required: true, message: "Hãy nhập lại mật khẩu!" }]}
+                  >
+                    <Input.Password
+                      prefix={<LockOutlined />}
+                      placeholder="Xác nhận mật khẩu"
+                    />
+                  </Form.Item>
 
-              <Form.Item name="phone">
-                <Input prefix={<PhoneOutlined />} placeholder="Số điện thoại (Không bắt buộc)" />
-              </Form.Item>
+                  <Form.Item
+                    name="email"
+                    rules={[
+                      { required: true, type: "email", message: "Hãy nhập email!" },
+                    ]}
+                  >
+                    <Input prefix={<MailOutlined />} placeholder="Email" />
+                  </Form.Item>
 
-              <Form.Item name="address">
-                <Input prefix={<HomeOutlined />} placeholder="Địa chỉ (Không bắt buộc)" />
-              </Form.Item>
+                  <Form.Item
+                    name="cccd"
+                    rules={[
+                      { required: true, message: "Hãy nhập số căn cước công dân!" },
+                    ]}
+                  >
+                    <Input
+                      prefix={<IdcardOutlined />}
+                      placeholder="Số căn cước công dân"
+                    />
+                  </Form.Item>
 
-              <Form.Item
-                name="gender"
-                rules={[{ required: true, message: "Hãy chọn giới tính!" }]}
-              >
-                <Select placeholder="Giới tính">
-                  <Select.Option value="male">Nam</Select.Option>
-                  <Select.Option value="female">Nữ</Select.Option>
-                  <Select.Option value="other">Khác</Select.Option>
-                </Select>
-              </Form.Item>
+                  <Form.Item name="phone">
+                    <Input
+                      prefix={<PhoneOutlined />}
+                      placeholder="Số điện thoại (Không bắt buộc)"
+                    />
+                  </Form.Item>
 
-              <Form.Item name="dob">
-                <DatePicker placeholder="Ngày sinh" style={{ width: "100%" }} />
-              </Form.Item>
-            </>
-          )}
+                  <Form.Item name="address">
+                    <Input
+                      prefix={<HomeOutlined />}
+                      placeholder="Địa chỉ (Không bắt buộc)"
+                    />
+                  </Form.Item>
 
-          {type === "login" && (
-            <Form.Item>
-              <Checkbox style={{ float: "left" }}>Remember me</Checkbox>
-              <a style={{ float: "right" }} href="#">
-                Forgot password?
-              </a>
-            </Form.Item>
-          )}
+                  <Form.Item
+                    name="gender"
+                    rules={[{ required: true, message: "Hãy chọn giới tính!" }]}
+                  >
+                    <Select placeholder="Giới tính">
+                      <Select.Option value="male">Nam</Select.Option>
+                      <Select.Option value="female">Nữ</Select.Option>
+                      <Select.Option value="other">Khác</Select.Option>
+                    </Select>
+                  </Form.Item>
 
-          <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              block
-              style={{
-                backgroundColor: color,
-                borderColor: color,
-                fontWeight: "bold",
-              }}
-            >
-              {type === "login" ? "Login" : "Sign up"}
-            </Button>
-          </Form.Item>
-
-          {role === "client" && (
-            <Form.Item>
-              {type === "login" ? (
-                <Button type="link" block onClick={() => navigate(`/${role}/signup`)}>
-                  Create an account
-                </Button>
-              ) : (
-                <Button type="link" block onClick={() => navigate(`/${role}/login`)}>
-                  Already have an account? Login
-                </Button>
+                  <Form.Item name="dob">
+                    <DatePicker placeholder="Ngày sinh" style={{ width: "100%" }} />
+                  </Form.Item>
+                </>
               )}
-            </Form.Item>
-          )}
-        </Form>
-      </Card>
+
+              {type === "login" && (
+                <Form.Item>
+                  <Checkbox style={{ float: "left" }}>Remember me</Checkbox>
+                  <a style={{ float: "right" }} onClick={() => navigate(`/${role}/forgot-password`)}>
+                    Forgot password?
+                  </a>
+                </Form.Item>
+              )}
+
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  block
+                  style={{
+                    backgroundColor: color,
+                    borderColor: color,
+                    fontWeight: "bold",
+                  }}
+                >
+                  {type === "login" ? "Login" : "Sign up"}
+                </Button>
+              </Form.Item>
+
+              {role === "client" && (
+                <Form.Item>
+                  {type === "login" ? (
+                    <Button
+                      type="link"
+                      block
+                      onClick={() => navigate(`/${role}/signup`)}
+                    >
+                      Create an account
+                    </Button>
+                  ) : (
+                    <Button
+                      type="link"
+                      block
+                      onClick={() => navigate(`/${role}/login`)}
+                    >
+                      Already have an account? Login
+                    </Button>
+                  )}
+                </Form.Item>
+              )}
+            </Form>
+          </Card>
+        </Col>
+      </Row>
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AuthForm from "./components/AuthForm/AuthForm";
+import ForgotPasswordForm from "./components/ForgotPasswordForm/ForgotPasswordForm";
 import NotFound from "./pages/NotFound/NotFound";
 import { Navigate } from "react-router-dom";
 
@@ -20,6 +21,7 @@ function App() {
         {/* Client */}
         <Route path="/client/login" element={<AuthForm role="client" type="login" />} />
         <Route path="/client/signup" element={<AuthForm role="client" type="signup" />} />
+        <Route path="/:role/forgot-password" element={<ForgotPasswordForm />} />
 
         {/* 404 */}
         <Route path="*" element={<NotFound />} />
