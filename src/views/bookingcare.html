@@ -9,7 +9,9 @@
     <link rel="stylesheet" href="../public/css/bookingcare2.css">
     <link rel="stylesheet" href="../public/css/bookingcare3.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-     <link rel="stylesheet" href="../public/img/logo1.png">
+    <link rel="stylesheet" href="../public/img/logo1.png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="../public/css/banner.css">
 </head>
 
 <body>
@@ -119,6 +121,7 @@
             <i class="fa fa-briefcase-medical"></i>
             <p>Khám doanh nghiệp <span class="badge new">Mới</span></p>
         </div>
+
     </section>
 
 
@@ -148,16 +151,29 @@
                     <img src="../public/img/logo5.png" alt="Bệnh viện Mắt">
                     <p>Bệnh viện Mắt - Răng Hàm Mặt Cần Thơ</p>
                 </div>
-                
             </div>
             <button class="arrow right">&#10095;</button>
         </div>
+
+        <!-- Progress bar -->
+        <div class="partners-progress">
+            <div class="progress-bar"></div>
+        </div>
     </section>
 
-    <!-- Banner quảng cáo -->
-    <section class="promo">
-        <img src="images/promo-banner.png" alt="Promo Banner">
-    </section>
+
+    <!-- Swiper -->
+    <div class="swiper mySwiper">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide"> <img src="../public/img/baner1.png" alt="Banner 1"> </div>
+            <div class="swiper-slide"> <img src="../public/img/baner2.png" alt="Banner 2"> </div>
+            <div class="swiper-slide"> <img src="../public/img/baner3.png" alt="Banner 3"> </div>
+        </div>
+
+        <!-- Pagination (chấm tròn) -->
+        <div class="swiper-pagination"></div>
+    </div>
+
 
     <!-- Cơ sở y tế -->
     <section class="hospitals">
@@ -177,12 +193,7 @@
             </div>
         </div>
     </section>
-    <!-- Slider quảng cáo nhỏ -->
-    <section class="mini-slider">
-        <div class="slide"><img src="images/slide1.png" alt="Slide 1"></div>
-        <div class="slide"><img src="images/slide2.png" alt="Slide 2"></div>
-        <div class="slide"><img src="images/slide3.png" alt="Slide 3"></div>
-    </section>
+
 
     <!-- Bác sĩ tư vấn -->
     <section class="doctors">
@@ -504,18 +515,33 @@
 
 
 
-<script>
-  const list = document.querySelector('.partners-list');
-  const btnLeft = document.querySelector('.arrow.left');
-  const btnRight = document.querySelector('.arrow.right');
+    <script>
+        const list = document.querySelector('.partners-list');
+        const btnLeft = document.querySelector('.arrow.left');
+        const btnRight = document.querySelector('.arrow.right');
 
-  btnLeft.addEventListener('click', () => {
-    list.scrollBy({ left: -200, behavior: 'smooth' });
-  });
-  btnRight.addEventListener('click', () => {
-    list.scrollBy({ left: 200, behavior: 'smooth' });
-  });
-</script>
+        btnLeft.addEventListener('click', () => {
+            list.scrollBy({ left: -200, behavior: 'smooth' });
+        });
+        btnRight.addEventListener('click', () => {
+            list.scrollBy({ left: 200, behavior: 'smooth' });
+        });
+    </script>
+    <!-- Script Swiper -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        var swiper = new Swiper(".mySwiper", {
+            loop: true,
+            autoplay: {
+                delay: 4000,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: ".swiper-pagination",
+                clickable: true,
+            },
+        });
+    </script>
 
 </body>
 

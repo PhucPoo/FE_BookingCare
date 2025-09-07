@@ -336,6 +336,32 @@ body {
     font-weight: 600;
 }
 
+.partners-pagination {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.partners-progress {
+    width: 150px;
+    /* chỉnh theo ý */
+    height: 6px;
+    background: #ddd;
+    border-radius: 5px;
+    margin: 15px auto 0;
+    overflow: hidden;
+    position: relative;
+    margin-top: 50px;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: #3ba9f4;
+    /* xanh dương */
+    border-radius: 5px;
+    transition: width 0.3s ease;
+}
+
 
 /* Arrow buttons */
 .arrow {
