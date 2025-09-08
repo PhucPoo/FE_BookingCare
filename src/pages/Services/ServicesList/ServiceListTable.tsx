@@ -5,7 +5,7 @@ import {
   Pagination,
   Popconfirm,
   type PopconfirmProps,
-} from "antd";
+} from "antd/lib";
 
 type Props = {
   pageSize: number;

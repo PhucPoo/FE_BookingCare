@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import BookingTablePage from "./BookingTablePage";
 import BookingData from "../../MockData/BookingData";
+import { message, type PopconfirmProps } from "antd/lib";
 type Item = {
   id: number;
   doctor_id: string;
@@ -118,6 +119,15 @@ const BookingPage = () => {
         break;
     }
   };
+  const confirm: PopconfirmProps["onConfirm"] = (e) => {
+    console.log(e);
+    message.success("Click on Yes");
+  };
+
+  const cancel: PopconfirmProps["onCancel"] = (e) => {
+    console.log(e);
+    message.error("Click on No");
+  };
   useEffect(() => {
     handleGetBookingList();
   }, []);
@@ -137,6 +147,8 @@ const BookingPage = () => {
         setFilterCreatedAt={setFilterCreatedAt}
         filterCreatedAt={filterCreatedAt}
         handleGetBookingList={handleGetBookingList}
+        confirm={confirm}
+        cancel={cancel}
       />
     </div>
   );
