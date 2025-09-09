@@ -1,0 +1,21 @@
+.mySwiper {
+  width: 1277px;              /* chỉ chiếm 80% màn hình, không full */
+  max-width: 2000px;       /* giới hạn tối đa */
+  margin: 0 auto;          /* căn giữa */
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.mySwiper .swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mySwiper img {
+  width: 100%;             /* vừa khung swiper */
+  height: 350px;           /* đồng bộ chiều cao */
+  object-fit: cover;       /* cắt dư để ảnh không méo */
+  border-radius: 12px;
+}
