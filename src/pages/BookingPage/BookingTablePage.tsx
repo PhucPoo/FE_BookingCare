@@ -1,5 +1,4 @@
-import { Button, Dropdown, Pagination, Select, type MenuProps } from "antd";
-import React from "react";
+import { Button, Dropdown, Pagination, Select, type MenuProps } from "antd/lib";
 
 type Props = {
   BookingList: {
