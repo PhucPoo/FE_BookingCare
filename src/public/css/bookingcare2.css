@@ -237,7 +237,8 @@
 /* Departments */
 .departments {
   max-width: 1080px;
-  margin: 0 auto;     /* căn giữa toàn bộ */
+  margin: 0 auto;
+  /* căn giữa toàn bộ */
   padding: 0 20px;
 }
 
@@ -246,7 +247,8 @@
   font-weight: bold;
   margin: 30px;
   color: #1a3c6e;
-  text-align: center;}
+  text-align: center;
+}
 
 .department-list {
   display: grid;
@@ -295,55 +297,56 @@
 
 /* Statistics */
 .statistics {
-  padding: 50px 20px;
-  background: #eaf6ff;
   text-align: center;
+  padding: 50px 20px;
+  background: linear-gradient(to bottom, #f8fbff, #eaf3ff);
 }
 
 .statistics h2 {
-  font-size: 22px;
-  color: #004a9f;
+  font-size: 24px;
+  font-weight: bold;
   margin-bottom: 30px;
+  color: #222;
 }
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(6, 1fr);
   gap: 20px;
-  max-width: 900px;
+  background: #fff;
+  padding: 30px;
+  border-radius: 20px;
+  max-width: 1200px;
   margin: 0 auto;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
 .stat {
-  background: #fff;
-  padding: 20px 10px;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  transition: transform 0.2s;
-}
-
-.stat:hover {
-  transform: translateY(-5px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .stat img {
-  width: 40px;
+  width: 100px;
   margin-bottom: 10px;
+  height: 100px;
 }
 
 .stat h3 {
-  font-size: 18px;
-  color: #2196f3;
-  margin: 5px 0;
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
 }
 
 .stat p {
   font-size: 14px;
-  color: #555;
+  color: #666;
 }
 
 /* News */
-.news {
+/* .news {
   padding: 50px 20px;
   background: #f9fcff;
   text-align: center;
@@ -397,4 +400,4 @@
   font-size: 14px;
   color: #555;
   margin: 0 12px 15px;
-}
+} */
