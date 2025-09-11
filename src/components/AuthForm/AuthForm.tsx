@@ -33,14 +33,14 @@ interface AuthFormProps {
 }
 
 const roleConfig = {
-  admin: { title: "Admin", color: "#7fbefcff", bg: "/bg_admin.jpg" },
-  doctor: { title: "Doctor", color: "#7fbefcff", bg: "/bg_doctor.jpg" },
-  support: { title: "Support", color: "#7fbefcff", bg: "/bg_support.jpg" },
-  client: { title: "Client", color: "#7fbefcff", bg: "/bg_client.jpg" },
+  admin: { color: "#46d9f6ff", bg: "/bg_admin.jpg" },
+  doctor: { color: "#46d9f6ff", bg: "/bg_doctor.jpg" },
+  support: { color: "#46d9f6ff", bg: "/bg_support.jpg" },
+  client: { color: "#46d9f6ff", bg: "/bg_client.jpg" },
 };
 
 const AuthForm: React.FC<AuthFormProps> = ({ role, type }) => {
-  const { title, color } = roleConfig[role];
+  const { color } = roleConfig[role];
   const navigate = useNavigate();
 
   const onFinish = (values: any) => {
@@ -78,35 +78,41 @@ const AuthForm: React.FC<AuthFormProps> = ({ role, type }) => {
         display: "flex",
         alignItems: "center",
         backgroundImage:
-          'linear-gradient(to top, rgba(255, 255, 255, 0.8), rgba(0,0,0,0)),url("/public/bg_login.jpg")',
+          'linear-gradient(to top, rgba(255, 255, 255, 0.9), rgba(0,0,0,0)), url("/public/bg_login.jpg")',
         backgroundSize: "cover",
         backgroundPosition: "center",
         padding: "16px",
       }}
     >
-      <Row
-        justify="center"
-        align="middle"
-        style={{ width: "100%", margin: 0 }}
-      >
+      <Row justify="center" align="middle" style={{ width: "100%", margin: 0 }}>
         <Col xs={24} sm={18} md={12} lg={8}>
           <Card
-            title={`${title} ${type === "login" ? "Login" : "Signup"}`}
+            title={type === "login" ? "Login" : "Sign up"}
+            headStyle={{ fontSize: 20, fontWeight: "bold", textAlign: "center" }}
             style={{
               width: "100%",
-              borderRadius: 12,
+              borderRadius: 16,
               textAlign: "center",
               padding: "20px",
               backgroundColor: "#fff",
-              boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
+              boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
             }}
           >
-            <Form name={`${role}_${type}`} onFinish={onFinish}>
+            <Form
+              name={`${role}_${type}`}
+              layout="vertical"
+              onFinish={onFinish}
+              size="large"
+            >
               <Form.Item
                 name="username"
                 rules={[{ required: true, message: "Hãy nhập tên đăng nhập!" }]}
               >
-                <Input prefix={<UserOutlined />} placeholder="Tên đăng nhập" />
+                <Input
+                  prefix={<UserOutlined />}
+                  placeholder="Tên đăng nhập"
+                  allowClear
+                />
               </Form.Item>
 
               <Form.Item
@@ -116,6 +122,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ role, type }) => {
                 <Input.Password
                   prefix={<LockOutlined />}
                   placeholder="Mật khẩu"
+                  allowClear
                 />
               </Form.Item>
 
@@ -128,6 +135,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ role, type }) => {
                     <Input.Password
                       prefix={<LockOutlined />}
                       placeholder="Xác nhận mật khẩu"
+                      allowClear
                     />
                   </Form.Item>
 
@@ -137,18 +145,17 @@ const AuthForm: React.FC<AuthFormProps> = ({ role, type }) => {
                       { required: true, type: "email", message: "Hãy nhập email!" },
                     ]}
                   >
-                    <Input prefix={<MailOutlined />} placeholder="Email" />
+                    <Input prefix={<MailOutlined />} placeholder="Email" allowClear />
                   </Form.Item>
 
                   <Form.Item
                     name="cccd"
-                    rules={[
-                      { required: true, message: "Hãy nhập số căn cước công dân!" },
-                    ]}
+                    rules={[{ required: true, message: "Hãy nhập số CCCD!" }]}
                   >
                     <Input
                       prefix={<IdcardOutlined />}
                       placeholder="Số căn cước công dân"
+                      allowClear
                     />
                   </Form.Item>
 
@@ -156,6 +163,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ role, type }) => {
                     <Input
                       prefix={<PhoneOutlined />}
                       placeholder="Số điện thoại (Không bắt buộc)"
+                      allowClear
                     />
                   </Form.Item>
 
@@ -163,6 +171,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ role, type }) => {
                     <Input
                       prefix={<HomeOutlined />}
                       placeholder="Địa chỉ (Không bắt buộc)"
+                      allowClear
                     />
                   </Form.Item>
 
@@ -186,7 +195,10 @@ const AuthForm: React.FC<AuthFormProps> = ({ role, type }) => {
               {type === "login" && (
                 <Form.Item>
                   <Checkbox style={{ float: "left" }}>Remember me</Checkbox>
-                  <a style={{ float: "right" }} onClick={() => navigate(`/${role}/forgot-password`)}>
+                  <a
+                    style={{ float: "right" }}
+                    onClick={() => navigate(`/${role}/forgot-password`)}
+                  >
                     Forgot password?
                   </a>
                 </Form.Item>
@@ -202,36 +214,56 @@ const AuthForm: React.FC<AuthFormProps> = ({ role, type }) => {
                     borderColor: color,
                     fontWeight: "bold",
                   }}
+                  className="auth-btn"
                 >
                   {type === "login" ? "Login" : "Sign up"}
                 </Button>
               </Form.Item>
 
-              {role === "client" && (
-                <Form.Item>
-                  {type === "login" ? (
+            {role === "client" && (
+              <Form.Item style={{ textAlign: "center" }}>
+                {type === "login" ? (
+                  <>
+                    Don’t have an account?{" "}
                     <Button
                       type="link"
-                      block
+                      style={{ padding: 0 }}
                       onClick={() => navigate(`/${role}/signup`)}
                     >
-                      Create an account
+                      Sign up
                     </Button>
-                  ) : (
+                  </>
+                ) : (
+                  <>
+                    Already have an account?{" "}
                     <Button
                       type="link"
-                      block
+                      style={{ padding: 0 }}
                       onClick={() => navigate(`/${role}/login`)}
                     >
-                      Already have an account? Login
+                      Login
                     </Button>
-                  )}
-                </Form.Item>
-              )}
+                  </>
+                )}
+              </Form.Item>
+            )}
             </Form>
           </Card>
         </Col>
       </Row>
+
+      {/* CSS riêng cho hover nút */}
+      <style>
+        {`
+          .auth-btn {
+            transition: all 0.3s ease;
+          }
+          .auth-btn:hover {
+            background-color: #30a4fdff !important;
+            border-color: #30a4fdff !important;
+          }
+        `}
+      </style>
     </div>
   );
 };
