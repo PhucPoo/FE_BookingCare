@@ -5,10 +5,7 @@ import DoctorManagement from './pages/Accounts/DoctorList/DoctorManagement.tsx'
 import { BrowserRouter } from 'react-router-dom'
 import AppRoutes from './routes/AppRoutes.tsx'
 
-
-
 function App() {
-
 
   return (
     <>
