@@ -30,7 +30,7 @@ const AppRoutes = () => {
         <Route
           path="/admin-dashboard"
           element={<Navigate to={"statistics"} replace={true} />}
-        />
+        /> 
         <Route path="statistics" element={<Statistics />} />
         <Route path="service-list" element={<ServiceList />} />
         <Route path="bill-manage" element={<BillPage />} />

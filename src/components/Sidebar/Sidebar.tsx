@@ -8,6 +8,8 @@ import {
   FaChevronUp,
   FaChevronDown,
 } from "react-icons/fa";
+import { Link } from "react-router";
+
 
 const SidebarDashboard: React.FC = () => {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -22,9 +24,12 @@ const SidebarDashboard: React.FC = () => {
       </h1>
 
       <nav className="flex flex-col gap-6 text-gray-700">
-        <a href="/" className="flex items-center gap-3 hover:text-indigo-600">
+        <Link
+          to="/"
+          className="flex items-center gap-3 hover:text-indigo-600"
+        >
           <FaChartPie /> Dashboard
-        </a>
+        </Link>
 
         {/* Phần sidebar cho quản lý người dùng */}
         <div>
@@ -45,59 +50,59 @@ const SidebarDashboard: React.FC = () => {
 
           {userMenuOpen && (
             <div className="ml-6 mt-2 flex flex-col gap-2 text-sm text-gray-600">
-              <a
-                href="/admin-dashboard/doctor-list"
+              <Link
+                to="/admin-dashboard/doctor-list"
                 className="hover:text-indigo-500"
               >
                 Quản lý bác sĩ
-              </a>
-              <a
-                href="/admin-dashboard/assistant-list"
+              </Link>
+              <Link
+                to="/admin-dashboard/assistant-list"
                 className="hover:text-indigo-500"
               >
                 Quản lý trợ lý
-              </a>
-              <a
-                href="/admin-dashboard/patient-list"
+              </Link>
+              <Link
+                to="/admin-dashboard/patient-list"
                 className="hover:text-indigo-500"
               >
                 Quản lý bệnh nhân
-              </a>
+              </Link>
             </div>
           )}
         </div>
 
-        <a
-          href="specialty"
+        <Link
+          to="/admin-dashboard/specialty"
           className="flex items-center gap-3 hover:text-indigo-600"
         >
           <FaCalendarAlt /> Quản lý chuyên khoa
-        </a>
-        <a
-          href="booking-manage"
+        </Link>
+        <Link
+          to="/admin-dashboard/booking-manage"
           className="flex items-center gap-3 hover:text-indigo-600"
         >
           <FaUsers /> Quản lý lịch khám
-        </a>
-        <a
-          href="bill-manage"
+        </Link>
+        <Link
+          to="/admin-dashboard/bill-manage"
           className="flex items-center gap-3 hover:text-indigo-600"
         >
           <FaCog /> Quản lý hóa đơn
-        </a>
+        </Link>
 
-        <a
-          href="patient_list"
+        <Link
+          to="/admin-dashboard/patient_list"
           className="flex items-center gap-3 hover:text-indigo-600"
         >
           <FaCog /> Quản lý bệnh nhân
-        </a>
-        <a
-          href="service-list"
+        </Link>
+        <Link
+          to="/admin-dashboard/service-list"
           className="flex items-center gap-3 hover:text-indigo-600"
         >
           <FaCog /> Quản lý dịch vụ
-        </a>
+        </Link>
       </nav>
     </div>
   );

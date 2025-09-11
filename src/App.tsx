@@ -18,9 +18,9 @@ function App() {
           {/* Place your main dashboard content here */}
             <Header/>
             <div className='p-10'>
-            <BrowserRouter>
+           
               <AppRoutes />
-            </BrowserRouter>
+            
             </div>
         </div>
       </div>
