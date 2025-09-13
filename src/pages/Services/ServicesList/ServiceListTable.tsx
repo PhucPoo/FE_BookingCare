@@ -1,11 +1,7 @@
 import { IoIosAddCircle } from "react-icons/io";
-import {
-  Button,
-  message,
-  Pagination,
-  Popconfirm,
-  type PopconfirmProps,
-} from "antd/lib";
+import { Button, Pagination, Popconfirm } from "antd/lib";
+import { deleteService } from "../../../api/Services/ServiceApi";
+import { toast } from "react-toastify";
 
 type Props = {
   pageSize: number;
@@ -17,7 +13,6 @@ type Props = {
   setFilterData: (value: { from: number; to: number }) => void;
   filterData: { from: number; to: number };
   setIsModalOpen: (e: boolean) => void;
-  columns: { value: number; label: string }[];
   handleSort: (value: number) => void;
   ServiceList: {
     id: number;
@@ -44,21 +39,17 @@ const ServiceListTable = ({
   setFilterData,
   filterData,
   setIsModalOpen,
-  columns,
   handleSort,
   ServiceList,
   handleUpdateService,
   onLog,
 }: Props) => {
-  const confirm: PopconfirmProps["onConfirm"] = (e) => {
-    console.log(e);
-    message.success("Click on Yes");
-    alert("Cút");
-  };
-
-  const cancel: PopconfirmProps["onCancel"] = (e) => {
-    console.log(e);
-    message.error("Click on No");
+  const handleDeleteService = async (id: number) => {
+    const result = await deleteService(id);
+    if (!result?.error) {
+      toast.success("Sửa dịch vụ hoàn tất");
+      handleGetServiceList();
+    }
   };
   return (
     <>
@@ -143,21 +134,42 @@ const ServiceListTable = ({
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                {columns &&
-                  columns.length > 0 &&
-                  columns.map((item) => {
-                    return (
-                      <th
-                        className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
-                        key={item.value}
-                        onClick={() => {
-                          handleSort(item.value);
-                        }}
-                      >
-                        {item.label}
-                      </th>
-                    );
-                  })}
+                <th
+                  className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
+                  // key={item.value}
+                  onClick={() => {
+                    handleSort(0);
+                  }}
+                >
+                  id
+                </th>
+                <th
+                  className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
+                  // key={item.value}
+                  onClick={() => {
+                    handleSort(1);
+                  }}
+                >
+                  Tên
+                </th>
+                <th
+                  className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
+                  // key={item.value}
+                  onClick={() => {
+                    handleSort(2);
+                  }}
+                >
+                  Giá
+                </th>
+                <th
+                  className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
+                  // key={item.value}
+                  // onClick={() => {
+                  //   handleSort(item.value);
+                  // }}
+                >
+                  Miêu tả
+                </th>
                 <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center hover:bg-gray-500 hover:text-white transition-all delay-100">
                   Hành động
                 </th>
@@ -199,8 +211,7 @@ const ServiceListTable = ({
                             <Popconfirm
                               title={"Xoá " + item.name}
                               description="Bạn có muốn xoá không?"
-                              onConfirm={confirm}
-                              onCancel={cancel}
+                              onConfirm={() => handleDeleteService(item.id)}
                               okText="Có"
                               cancelText="Không"
                             >

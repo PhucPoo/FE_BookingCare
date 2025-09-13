@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import BookingTableManage from "./BookingTableManage";
 import BookingData from "../../MockData/BookingData";
 import ModalRegisterTime from "./ModalRegisterTime";
+import { testGetAccountsApi, testLoginApi } from "../../api/testApi";
 
 type Item = {
   id: number;
@@ -137,8 +138,13 @@ const BookingManage = () => {
     setTotalBillList(BookingData.length);
     setCurrentPage(1);
   };
+  const handleTestLoginApi = async () => {
+    // testLoginApi();
+    testGetAccountsApi();
+  };
   useEffect(() => {
     handleGetBookingList();
+    handleTestLoginApi();
   }, []);
   return (
     <div className="p-5 bg-white mx-5">

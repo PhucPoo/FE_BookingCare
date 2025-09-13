@@ -269,7 +269,7 @@ const BookingTablePage = ({
                               }}
                             >
                               <Popconfirm
-                                title={"Xác nhận khám hoặc huỷ "}
+                                title={"Xác nhận đặt lịch từ bệnh nhân"}
                                 onConfirm={confirm}
                                 onCancel={cancel}
                                 okText="Xác nhận"
