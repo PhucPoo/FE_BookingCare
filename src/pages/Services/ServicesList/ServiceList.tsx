@@ -17,14 +17,14 @@ const ServiceList = () => {
   const [ServiceList, setServiceList] = useState<Item[]>([]);
 
   const [pageSize, setPageSize] = useState<number>(10);
-  const [totalServiceList, setTotalServiceList] = useState<number>(500);
+  const [totalServiceList, setTotalServiceList] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [filterData, setFilterData] = useState<{
-    from: number;
-    to: number;
+    from: string;
+    to: string;
   }>({
-    from: 0,
-    to: 0,
+    from: "",
+    to: "",
   });
 
   const [checkRender, setCheckRender] = useState({
@@ -110,14 +110,14 @@ const ServiceList = () => {
       filterData.from > filterData.to ||
       !filterData.from ||
       !filterData.to ||
-      filterData.from < 0 ||
-      filterData.to < 0
+      +filterData.from < 0 ||
+      +filterData.to < 0
     ) {
       toast.error("error filter");
       return;
     }
     ServiceListClone = ServiceListClone.filter((item) => {
-      return filterData.from <= item.cost && item.cost <= filterData.to;
+      return +filterData.from <= item.cost && item.cost <= +filterData.to;
     });
     setServiceList(ServiceListClone);
   };
@@ -136,10 +136,10 @@ const ServiceList = () => {
 
     setServiceList(result.data.result);
     setFilterData({
-      from: 0,
-      to: 0,
+      from: "",
+      to: "",
     });
-    setTotalServiceList(500);
+    setTotalServiceList(result.data.result.length);
   };
 
   useEffect(() => {

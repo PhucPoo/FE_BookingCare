@@ -10,8 +10,8 @@ type Props = {
   handleSearchService: (value: string) => void;
   filterService: () => void;
   handleGetServiceList: () => void;
-  setFilterData: (value: { from: number; to: number }) => void;
-  filterData: { from: number; to: number };
+  setFilterData: (value: { from: string; to: string }) => void;
+  filterData: { from: string; to: string };
   setIsModalOpen: (e: boolean) => void;
   handleSort: (value: number) => void;
   ServiceList: {
@@ -77,17 +77,19 @@ const ServiceListTable = ({
               <input
                 type="number"
                 placeholder="Từ"
+                value={filterData.from}
                 className="w-full sm:w-16 md:w-32  px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 onChange={(e) => {
-                  setFilterData({ ...filterData, from: +e.target.value });
+                  setFilterData({ ...filterData, from: e.target.value });
                 }}
               />
               <input
                 type="number"
                 placeholder="Đến"
+                value={filterData.to}
                 className="w-full sm:w-16 md:w-32   px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 onChange={(e) => {
-                  setFilterData({ ...filterData, to: +e.target.value });
+                  setFilterData({ ...filterData, to: e.target.value });
                 }}
               />
             </div>
@@ -231,8 +233,8 @@ const ServiceListTable = ({
       {/* pagination */}
       <div className="mt-6 flex flex-col sm:flex-row items-center justify-between bg-white px-6 py-3 rounded-lg shadow-sm border border-gray-200">
         <div className="text-sm text-gray-700 mb-4 sm:mb-0">
-          Hiển thị <span className="font-semibold">1</span> đến{" "}
-          <span className="font-semibold">5</span>
+          Hiển thị <span className="font-semibold">{currentPage}</span> đến
+          <span className="font-semibold">{pageSize}</span>
           của <span className="font-semibold">{totalServiceList}</span> kết quả
         </div>
         <div className="flex items-center space-x-1">
