@@ -3,18 +3,23 @@ import Button from "antd/lib/button";
 import Modal from "antd/lib/modal";
 import Detailuser from "./DetailUser";
 import Edituser from "./EditUser";
+import {
+  testDeleteAccountsApi,
+  testSortAccountsApi,
+  // testSortAccountsApi,
+} from "../../../api/testApi";
 
 export interface User {
   id: number;
   name: string;
   email: string;
   cccd: number;
-  phone: string;
+  phoneNumber: string;
+  password: string;
   price?: number;
   date_of_birth?: Date;
   create_at: Date;
   update_at: Date;
-  
 }
 
 interface userTableProps {
@@ -45,25 +50,29 @@ interface userTableProps {
 type SortColumn = "name" | "create_at" | "";
 type SortDirection = "asc" | "desc";
 
-const userTable: React.FC<userTableProps> = ({ users, onUpdateuser, onDeleteuser }) => {
+const userTable: React.FC<userTableProps> = ({
+  users,
+  onUpdateuser,
+  onDeleteuser,
+}) => {
   // State sắp xếp
   const [sortColumn, setSortColumn] = useState<SortColumn>("");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
-   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const showModal = () => {
     setIsModalOpen(true);
   };
   const handleOk = () => {
     // console.log('OK clicked', editinguser?.id);
-    onDeleteuser(Number(deleteuserid)); 
+    testDeleteAccountsApi(deleteuserid);
+    // onDeleteuser(Number(deleteuserid));
     setIsModalOpen(false);
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-
 
   // Sắp xếp dữ liệu theo cột và chiều
   const sortedusers = useMemo(() => {
@@ -93,7 +102,7 @@ const userTable: React.FC<userTableProps> = ({ users, onUpdateuser, onDeleteuser
   }, [users, sortColumn, sortDirection]);
 
   // Xử lý click sort cột
-  const handleSort = (column: SortColumn) => {
+  const handleSort = async (column: SortColumn) => {
     if (sortColumn === column) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
@@ -167,12 +176,14 @@ const userTable: React.FC<userTableProps> = ({ users, onUpdateuser, onDeleteuser
               <td className="p-3 border">{u.name}</td>
               <td className="p-3 border hidden md:table-cell">{u.email}</td>
               <td className="p-3 border hidden lg:table-cell">{u.cccd}</td>
-              <td className="p-3 border hidden md:table-cell">{u.phone}</td>
               <td className="p-3 border hidden md:table-cell">
-                {u.create_at.toLocaleDateString()}
+                {u.phoneNumber}
+              </td>
+              <td className="p-3 border hidden md:table-cell">
+                {/* {u.create_at.toLocaleDateString()} */}
               </td>
               <td className="p-3 border hidden xl:table-cell">
-                {u.update_at.toLocaleDateString()}
+                {/* {u.update_at.toLocaleDateString()} */}
               </td>
               {/* <td className="p-3 border">{getStatusBadge(u.status)}</td> */}
               <td className="p-3 border text-center">
@@ -185,9 +196,8 @@ const userTable: React.FC<userTableProps> = ({ users, onUpdateuser, onDeleteuser
                       color: "#000",
                     }}
                     onClick={() => {
-                      
                       setEditinguser(u);
-                     
+
                       setIsEditModalOpen(true);
                     }}
                   >
@@ -236,7 +246,7 @@ const userTable: React.FC<userTableProps> = ({ users, onUpdateuser, onDeleteuser
       />
       <Modal
         title="Basic Modal"
-        closable={{ 'aria-label': 'Custom Close Button' }}
+        closable={{ "aria-label": "Custom Close Button" }}
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}

@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
-import BookingTableManage from "./BookingTableManage";
+import React, { useEffect, useState } from "react";
+import BookingTablePage from "./BookingTablePage";
 import BookingData from "../../MockData/BookingData";
-import ModalRegisterTime from "./ModalRegisterTime";
-
+import { message, type PopconfirmProps } from "antd/lib";
 type Item = {
   id: number;
   doctor_id: string;
@@ -13,11 +12,8 @@ type Item = {
   status: string;
   createdAt: string;
 };
-type TimeItem = {
-  id: number;
-  label: string;
-};
-const BookingManage = () => {
+
+const BookingPage = () => {
   const [BookingList, setBookingList] = useState<Item[]>([]);
   const [pageSize, setPageSize] = useState<number>(10);
   const [totalBillList, setTotalBillList] = useState<number>(500);
@@ -29,34 +25,35 @@ const BookingManage = () => {
     from: "",
     to: "",
   });
-  const [timeSelected, setTimeSelected] = useState<TimeItem[]>([]);
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-  const [columns, setColumns] = useState<{ value: number; label: string }[]>(
-    []
-  );
-
-  const [checkRender, setCheckRender] = useState({
-    createdAt: false,
-  });
 
   const onLog = (page: number, pageSize: number) => {
     console.log("Đang ở trang:", page, pageSize);
   };
+  const [columns, setColumns] = useState<{ value: number; label: string }[]>(
+    []
+  );
+  const [checkRender, setCheckRender] = useState({
+    createdAt: false,
+  });
+
+  // initial value
+  const handleGetBookingList = () => {
+    const columnArr = Object.keys(BookingData[0]).map((item, index) => {
+      return {
+        value: index,
+        label: item,
+      };
+    });
+    setColumns(columnArr);
+    setBookingList(BookingData);
+    setPageSize(10);
+    setTotalBillList(BookingData.length);
+    setCurrentPage(1);
+  };
 
   // handle change option (status and clinic)
   const handleChange = (value: string) => {
+    console.log(`selected ${value}`);
     let BookingListClone = BookingData;
     BookingListClone = BookingListClone.filter((item) => {
       return item.status === value;
@@ -105,7 +102,7 @@ const BookingManage = () => {
   const handleSearchBooking = (value: string, key: string) => {
     let BookingListClone = BookingData;
     switch (key) {
-      case "phone":
+      case "doctor":
         BookingListClone = BookingListClone.filter((item) => {
           return item.doctor_id.includes(value);
         });
@@ -122,27 +119,21 @@ const BookingManage = () => {
         break;
     }
   };
+  const confirm: PopconfirmProps["onConfirm"] = (e) => {
+    console.log(e);
+    message.success("Click on Yes");
+  };
 
-  // initial value
-  const handleGetBookingList = () => {
-    const columnArr = Object.keys(BookingData[0]).map((item, index) => {
-      return {
-        value: index,
-        label: item,
-      };
-    });
-    setColumns(columnArr);
-    setBookingList(BookingData);
-    setPageSize(10);
-    setTotalBillList(BookingData.length);
-    setCurrentPage(1);
+  const cancel: PopconfirmProps["onCancel"] = (e) => {
+    console.log(e);
+    message.error("Click on No");
   };
   useEffect(() => {
     handleGetBookingList();
   }, []);
   return (
     <div className="p-5 bg-white mx-5">
-      <BookingTableManage
+      <BookingTablePage
         BookingList={BookingList}
         pageSize={pageSize}
         currentPage={currentPage}
@@ -156,18 +147,11 @@ const BookingManage = () => {
         setFilterCreatedAt={setFilterCreatedAt}
         filterCreatedAt={filterCreatedAt}
         handleGetBookingList={handleGetBookingList}
-        showModal={showModal}
-      />
-      <ModalRegisterTime
-        isModalOpen={isModalOpen}
-        handleOk={handleOk}
-        handleCancel={handleCancel}
-        timeSelected={timeSelected}
-        setTimeSelected={setTimeSelected}
-        key={timeSelected[0]?.id || null}
+        confirm={confirm}
+        cancel={cancel}
       />
     </div>
   );
 };
 
-export default BookingManage;
+export default BookingPage;

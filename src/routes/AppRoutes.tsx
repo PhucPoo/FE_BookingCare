@@ -4,18 +4,19 @@ import Statistics from "../pages/Statistics/Statistics";
 import ServiceList from "../pages/Services/ServicesList/ServiceList";
 import ErrorPage from "../components/ErrorPage/ErrorPage";
 import BillPage from "../pages/Bill/BillPage";
-import BookingPage from "../pages/BookingPage/BookingPage";
-import BookingManage from "../pages/Doctor/BookingManage";
+import BookingPage from "../pages/SupportBookingPage/BookingPage";
+import BookingManage from "../pages/DoctorManage/BookingManage";
 import DoctorDashboard from "../pages/Dashboard/DoctorDashboard/DoctorDashboard";
 import SupportDashboard from "../pages/Dashboard/SupportDashboard/SupportDashboard";
 import DoctorManagement from "../pages/Accounts/DoctorList/DoctorManagement";
-import Dashboard from "../pages/Dashboard/Dashboard";
+
 import SupportList from "../pages/Accounts/SupportList/SupportList";
 import PatientList from "../pages/Accounts/PatientList/PatientList";
 import UserList from "../pages/Accounts/UserList/UserList";
 import SpecialtyGrid from "../pages/Specialty/SpecialtyGrid";
 import ListPatient_Doctor from "../pages/Doctors/ListPatient_Doctor";
 import { Navigate, Route, Routes } from "react-router-dom";
+import Dashboard from "../pages/Dashboard/AdminDashboard/Dashboard";
 
 const AppRoutes = () => {
   return (
@@ -63,7 +64,7 @@ const AppRoutes = () => {
           path="/support-dashboard"
           element={<Navigate to={"booking-support-manage"} replace={true} />}
         />
-        <Route path="booking-support-manage" element={<BookingManage />} />
+        <Route path="booking-support-manage" element={<BookingPage />} />
       </Route>
 
       {/* error page */}

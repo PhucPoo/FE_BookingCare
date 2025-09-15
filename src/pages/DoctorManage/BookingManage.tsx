@@ -1,6 +1,9 @@
-import React, { useEffect, useState } from "react";
-import BookingTablePage from "./BookingTablePage";
+import { useEffect, useState } from "react";
+import BookingTableManage from "./BookingTableManage";
 import BookingData from "../../MockData/BookingData";
+import ModalRegisterTime from "./ModalRegisterTime";
+import { testGetAccountsApi, testLoginApi } from "../../api/testApi";
+
 type Item = {
   id: number;
   doctor_id: string;
@@ -11,8 +14,11 @@ type Item = {
   status: string;
   createdAt: string;
 };
-
-const BookingPage = () => {
+type TimeItem = {
+  id: number;
+  label: string;
+};
+const BookingManage = () => {
   const [BookingList, setBookingList] = useState<Item[]>([]);
   const [pageSize, setPageSize] = useState<number>(10);
   const [totalBillList, setTotalBillList] = useState<number>(500);
@@ -24,35 +30,34 @@ const BookingPage = () => {
     from: "",
     to: "",
   });
+  const [timeSelected, setTimeSelected] = useState<TimeItem[]>([]);
 
-  const onLog = (page: number, pageSize: number) => {
-    console.log("Đang ở trang:", page, pageSize);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
   };
   const [columns, setColumns] = useState<{ value: number; label: string }[]>(
     []
   );
+
   const [checkRender, setCheckRender] = useState({
     createdAt: false,
   });
 
-  // initial value
-  const handleGetBookingList = () => {
-    const columnArr = Object.keys(BookingData[0]).map((item, index) => {
-      return {
-        value: index,
-        label: item,
-      };
-    });
-    setColumns(columnArr);
-    setBookingList(BookingData);
-    setPageSize(10);
-    setTotalBillList(BookingData.length);
-    setCurrentPage(1);
+  const onLog = (page: number, pageSize: number) => {
+    console.log("Đang ở trang:", page, pageSize);
   };
 
   // handle change option (status and clinic)
   const handleChange = (value: string) => {
-    console.log(`selected ${value}`);
     let BookingListClone = BookingData;
     BookingListClone = BookingListClone.filter((item) => {
       return item.status === value;
@@ -101,7 +106,7 @@ const BookingPage = () => {
   const handleSearchBooking = (value: string, key: string) => {
     let BookingListClone = BookingData;
     switch (key) {
-      case "doctor":
+      case "phone":
         BookingListClone = BookingListClone.filter((item) => {
           return item.doctor_id.includes(value);
         });
@@ -118,12 +123,32 @@ const BookingPage = () => {
         break;
     }
   };
+
+  // initial value
+  const handleGetBookingList = () => {
+    const columnArr = Object.keys(BookingData[0]).map((item, index) => {
+      return {
+        value: index,
+        label: item,
+      };
+    });
+    setColumns(columnArr);
+    setBookingList(BookingData);
+    setPageSize(10);
+    setTotalBillList(BookingData.length);
+    setCurrentPage(1);
+  };
+  const handleTestLoginApi = async () => {
+    // testLoginApi();
+    testGetAccountsApi();
+  };
   useEffect(() => {
     handleGetBookingList();
+    handleTestLoginApi();
   }, []);
   return (
     <div className="p-5 bg-white mx-5">
-      <BookingTablePage
+      <BookingTableManage
         BookingList={BookingList}
         pageSize={pageSize}
         currentPage={currentPage}
@@ -137,9 +162,18 @@ const BookingPage = () => {
         setFilterCreatedAt={setFilterCreatedAt}
         filterCreatedAt={filterCreatedAt}
         handleGetBookingList={handleGetBookingList}
+        showModal={showModal}
+      />
+      <ModalRegisterTime
+        isModalOpen={isModalOpen}
+        handleOk={handleOk}
+        handleCancel={handleCancel}
+        timeSelected={timeSelected}
+        setTimeSelected={setTimeSelected}
+        key={timeSelected[0]?.id || null}
       />
     </div>
   );
 };
 
-export default BookingPage;
+export default BookingManage;
