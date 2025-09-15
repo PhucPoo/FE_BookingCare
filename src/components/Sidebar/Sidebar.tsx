@@ -4,7 +4,6 @@ import {
   FaClipboardList,
   FaCalendarAlt,
   FaUsers,
-  FaCog,
   FaChevronUp,
   FaChevronDown,
   FaServicestack,
@@ -42,6 +41,11 @@ const SidebarDashboard: React.FC = () => {
               <FaClipboardList />
               <Link to="/admin-dashboard/user-list">Quản lý Người dùng</Link>
             </div>
+            {userMenuOpen ? (
+              <FaChevronUp size={12} />
+            ) : (
+              <FaChevronDown size={12} />
+            )}
             {userMenuOpen ? (
               <FaChevronUp size={12} />
             ) : (

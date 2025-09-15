@@ -1,0 +1,74 @@
+.support {
+    padding: 40px 20px;
+    background: #eaf3ff;
+}
+
+.support-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-image: url("https://cdn-pkh.longvan.net/prod-partner/0f04db66-ff2a-49b5-9f63-e18f4c7ef354-bg-contact-desktop.webp");
+    background-size: cover;
+    background-position: center;
+    border-radius: 20px;
+    padding: 20px 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    color: #fff;
+    overflow: hidden;
+    min-height: 300px;
+}
+
+.support-center {
+    display: flex;
+    align-items: center;
+    
+    gap: 15px;
+    padding-left: 35%;
+}
+
+.support-center .icon-phone img {
+    width: 70px;
+    background: #fff;
+    border-radius: 50%;
+    
+}
+
+.support-text h3 {
+    font-size: 28px;
+    margin: 0;
+
+}
+
+.support-text .hotline {
+    font-size: 40px;
+    font-weight: bold;
+    color: #fff;
+    
+}
+
+.support-right {
+    display: flex;
+    gap: 20px;
+}
+
+.qr-card {
+    background: #fff;
+    padding: 10px;
+    border-radius: 12px;
+    text-align: center;
+    color: #333;
+    min-width: 100px;
+}
+
+.qr-card img {
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+    margin-bottom: 8px;
+}
+
+.qr-card p {
+    font-size: 14px;
+    font-weight: 500;
+}
