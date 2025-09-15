@@ -10,7 +10,7 @@ function App() {
         <div className="flex-1 ml-64 min-h-screen bg-gray-50">
           {/* Place your main dashboard content here */}
           <Header />
-          <div className="p-10">
+          <div className="p-3">
             <AppRoutes />
           </div>
         </div>

@@ -31,8 +31,8 @@ const Adduser: React.FC<AdduserProps> = ({ open, onCancel, onAdd }) => {
       phoneNumber,
       password,
       date_of_birth: undefined,
-      create_at: new Date(),
-      update_at: new Date(),
+      createAt: new Date(),
+      updateAt: new Date(),
     };
     testPostAccountsApi(newuser);
     // onAdd(newuser);
