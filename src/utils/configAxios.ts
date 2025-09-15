@@ -32,13 +32,15 @@ customAxiosInstance.interceptors.response.use(
     // Bất kì mã trạng thái nào lọt ra ngoài tầm 2xx đều khiến hàm này được trigger\
     // Làm gì đó với lỗi response
     if (error.response?.status === 401) {
+      // alert("error 401");
       //401 Unauthorized
       //   axiosReduxStore.dispatch(logoutUserAPI());
     }
     if (error.response?.status === 410) {
+      // alert("error 410");
       //410 Gone: token da het han, can phai refresh token
     }
-    const originalRequest = error.config;
+    // const originalRequest = error.config;
     return Promise.reject(error);
   }
 );

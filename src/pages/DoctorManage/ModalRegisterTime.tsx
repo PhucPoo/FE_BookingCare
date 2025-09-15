@@ -1,4 +1,4 @@
-import { Button, Divider, Modal } from "antd";
+import { Button, Divider, Modal } from "antd/lib";
 import TimeData from "../../MockData/TimaData";
 import { useEffect, useState } from "react";
 type Props = {
