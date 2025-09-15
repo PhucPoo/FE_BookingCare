@@ -7,8 +7,7 @@ import {
   Select,
   type MenuProps,
   type PopconfirmProps,
-} from "antd";
-import React from "react";
+} from "antd/lib";
 
 type Props = {
   BookingList: {
@@ -122,7 +121,7 @@ const BookingTableManage = ({
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
             Danh sách lịch khám
           </h1>
-          <p className="text-gray-600">Thông tin lịch khám hiện có</p>
+          <p className="text-gray-600">Danh sách lịch khám hiện có</p>
         </div>
 
         <div className="mb-6">
@@ -144,7 +143,7 @@ const BookingTableManage = ({
           <div className="w-full lg:w-auto">
             <input
               type="number"
-              placeholder="Tìm kiếm theo số điệnthoại..."
+              placeholder="Tìm theo số điện thoại..."
               onChange={(e) => {
                 setTimeout(() => {
                   handleSearchBooking(e.target.value, "phone");
@@ -298,7 +297,7 @@ const BookingTableManage = ({
                             }}
                           >
                             <Popconfirm
-                              title={"Xác nhận khám hoặc huỷ "}
+                              title={"Xác nhận khám"}
                               onConfirm={confirm}
                               onCancel={cancel}
                               okText="Xác nhận"

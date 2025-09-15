@@ -4,7 +4,7 @@ import React from "react";
 import Modal from "antd/es/modal";
 import Button from "antd/es/button";
 import type { User } from "./UserTable";
- // đảm bảo đường dẫn đúng
+// đảm bảo đường dẫn đúng
 
 interface InformationuserProps {
   open: boolean;
@@ -34,9 +34,26 @@ const Informationuser: React.FC<InformationuserProps> = ({
   user,
   onClose,
 }) => {
+  const handleFormatDay = (time: string | number | Date) => {
+    const date = new Date(time);
+    const VNTime = date.toLocaleString("vi-VN", {
+      timeZone: "Asia/Ho_Chi_Minh",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+    return VNTime;
+  };
   return (
     <Modal
-      title={<div className="text-center text-lg font-semibold">Thông tin chi tiết người dùng</div>}
+      title={
+        <div className="text-center text-lg font-semibold">
+          Thông tin chi tiết người dùng
+        </div>
+      }
       open={open}
       onCancel={onClose}
       footer={[
@@ -64,10 +81,12 @@ const Informationuser: React.FC<InformationuserProps> = ({
             <strong>SĐT:</strong> {user.phoneNumber}
           </p>
           <p>
-            <strong>Ngày tạo:</strong> {user.createAt}
+            <strong>Ngày tạo:</strong>
+            {handleFormatDay(user.createAt)}
           </p>
           <p>
-            <strong>Cập nhật:</strong> {user.updateAt}
+            <strong>Cập nhật:</strong>
+            {handleFormatDay(user.updateAt)}
           </p>
           {/* <p>
             <strong>Trạng thái:</strong> {getcreate_atBadge(user.create_at)}

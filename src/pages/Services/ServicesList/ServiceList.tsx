@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 
 import ModalAddServices from "./ModalServices/ModalAddServices.tsx";
-import ServiceListData from "../../../MockData/ServiceListData.ts";
 import ModalUpdateServices from "./ModalServices/ModalUpdateServices.tsx";
 import ServiceListTable from "./ServiceListTable.tsx";
+import { getAllService } from "../../../api/Services/ServiceApi.ts";
+import { toast } from "react-toastify";
 interface Item {
   id: number;
   name: string;
@@ -14,18 +15,16 @@ const ServiceList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
   const [ServiceList, setServiceList] = useState<Item[]>([]);
-  const [columns, setColumns] = useState<{ value: number; label: string }[]>(
-    []
-  );
+
   const [pageSize, setPageSize] = useState<number>(10);
-  const [totalServiceList, setTotalServiceList] = useState<number>(500);
+  const [totalServiceList, setTotalServiceList] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [filterData, setFilterData] = useState<{
-    from: number;
-    to: number;
+    from: string;
+    to: string;
   }>({
-    from: 0,
-    to: 0,
+    from: "",
+    to: "",
   });
 
   const [checkRender, setCheckRender] = useState({
@@ -33,6 +32,7 @@ const ServiceList = () => {
     name: false,
     cost: false,
   });
+
   const [DataToUpdate, setDataToUpdate] = useState<Item>({
     id: 0,
     name: "",
@@ -44,13 +44,14 @@ const ServiceList = () => {
     setDataToUpdate(item);
     setIsModalUpdateOpen(true);
   };
+
   const onLog = (currentPage: number, pageSize: number) => {
     console.log("Đang ở trang:", currentPage, pageSize);
     setCurrentPage(currentPage);
     setPageSize(pageSize);
   };
+
   const handleSort = (value: number) => {
-    console.log("search:", value);
     let ServiceListClone = ServiceList;
     switch (value) {
       case 0:
@@ -102,35 +103,45 @@ const ServiceList = () => {
         break;
     }
   };
+
   const filterService = () => {
-    let ServiceListClone = ServiceListData;
+    let ServiceListClone = ServiceList;
+    if (
+      filterData.from > filterData.to ||
+      !filterData.from ||
+      !filterData.to ||
+      +filterData.from < 0 ||
+      +filterData.to < 0
+    ) {
+      toast.error("error filter");
+      return;
+    }
     ServiceListClone = ServiceListClone.filter((item) => {
-      return filterData.from <= item.cost && item.cost <= filterData.to;
+      return +filterData.from <= item.cost && item.cost <= +filterData.to;
     });
     setServiceList(ServiceListClone);
   };
+
   const handleSearchService = (value: string) => {
-    let ServiceListClone = ServiceListData;
+    let ServiceListClone = ServiceList;
+
     ServiceListClone = ServiceListClone.filter((item) => {
       return item.name.includes(value);
     });
     setServiceList(ServiceListClone);
   };
-  const handleGetServiceList = () => {
-    const columnArr = Object.keys(ServiceListData[0]).map((item, index) => {
-      return {
-        value: index,
-        label: item,
-      };
-    });
-    setColumns(columnArr);
-    setServiceList(ServiceListData);
+
+  const handleGetServiceList = async () => {
+    const result = await getAllService();
+
+    setServiceList(result.data.result);
     setFilterData({
-      from: 0,
-      to: 0,
+      from: "",
+      to: "",
     });
-    setTotalServiceList(500);
+    setTotalServiceList(result.data.result.length);
   };
+
   useEffect(() => {
     handleGetServiceList();
   }, []);
@@ -155,7 +166,6 @@ const ServiceList = () => {
             handleGetServiceList={handleGetServiceList}
             setFilterData={setFilterData}
             setIsModalOpen={setIsModalOpen}
-            columns={columns}
             handleSort={handleSort}
             ServiceList={ServiceList}
             handleUpdateService={handleUpdateService}
@@ -166,6 +176,7 @@ const ServiceList = () => {
       <ModalAddServices
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
+        handleGetServiceList={handleGetServiceList}
       />
       <ModalUpdateServices
         key={DataToUpdate?.id || null}
@@ -173,6 +184,7 @@ const ServiceList = () => {
         isModalUpdateOpen={isModalUpdateOpen}
         setIsModalUpdateOpen={setIsModalUpdateOpen}
         DataToUpdateFromParent={DataToUpdate}
+        handleGetServiceList={handleGetServiceList}
       />
     </>
   );

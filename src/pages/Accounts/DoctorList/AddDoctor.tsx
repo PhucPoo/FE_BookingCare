@@ -24,7 +24,7 @@ const AddDoctor: React.FC<AddDoctorProps> = ({ open, onCancel, onAdd }) => {
     const { name, email, phoneNumber,password, cccd, price, status } = values;
 
     const newDoctor: Doctor = {
-        roleId: Date.now(),
+        id: Date.now(),
         name,
         email,
         phoneNumber,
@@ -83,7 +83,7 @@ const AddDoctor: React.FC<AddDoctorProps> = ({ open, onCancel, onAdd }) => {
                 </Form.Item>
 
                 <Form.Item
-                    name="phone"
+                    name="phoneNumber"
                     label="Số điện thoại"
                     rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}
                 >

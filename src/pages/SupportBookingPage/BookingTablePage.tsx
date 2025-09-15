@@ -1,4 +1,11 @@
-import { Button, Dropdown, Pagination, Select, type MenuProps } from "antd/lib";
+import {
+  Button,
+  Dropdown,
+  Pagination,
+  Popconfirm,
+  Select,
+  type MenuProps,
+} from "antd/lib";
 
 type Props = {
   BookingList: {
@@ -23,6 +30,8 @@ type Props = {
   setFilterCreatedAt: (value: { from: string; to: string }) => void;
   filterCreatedAt: { from: string; to: string };
   handleGetBookingList: () => void;
+  confirm: () => void;
+  cancel: () => void;
 };
 
 const BookingTablePage = ({
@@ -39,6 +48,8 @@ const BookingTablePage = ({
   setFilterCreatedAt,
   filterCreatedAt,
   handleGetBookingList,
+  confirm,
+  cancel,
 }: Props) => {
   const items: MenuProps["items"] = [
     {
@@ -250,6 +261,22 @@ const BookingTablePage = ({
                               }}
                             >
                               Xem chi tiết
+                            </Button>
+                            <Button
+                              type="primary"
+                              onClick={() => {
+                                // handleUpdateService(item);
+                              }}
+                            >
+                              <Popconfirm
+                                title={"Xác nhận đặt lịch từ bệnh nhân"}
+                                onConfirm={confirm}
+                                onCancel={cancel}
+                                okText="Xác nhận"
+                                cancelText="huỷ"
+                              >
+                                Thao tác
+                              </Popconfirm>
                             </Button>
                           </div>
                         </td>
