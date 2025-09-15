@@ -19,18 +19,23 @@ const Adduser: React.FC<AdduserProps> = ({ open, onCancel, onAdd }) => {
     const [form] = Form.useForm();
 
     const handleSubmit = (values:any) => {
-         const { name, email, phone, cccd,  } = values;
+         const { name, email, phoneNumber,password, createAt, updateAt} = values;
 
         const newuser: User = {
             id: Date.now(),
             name,
             email,
-            cccd: Number(cccd),
-            phone,
-            date_of_birth: undefined,
-            create_at: new Date(),
-            update_at: new Date(),
-            
+            // cccd: Number(cccd),
+            password,
+            phoneNumber,
+            // date_of_birth: undefined,
+            createAt,
+            updateAt,
+            gender: undefined,
+            address: undefined,
+            birth: undefined,
+            cccd: undefined,
+            role: "USER"
         };
 
         onAdd(newuser);
@@ -72,20 +77,27 @@ const Adduser: React.FC<AdduserProps> = ({ open, onCancel, onAdd }) => {
                     <Input placeholder="Nhập email" size="large" className="rounded-md px-3 py-2" />
                 </Form.Item>
 
-                <Form.Item
+                {/* <Form.Item
                     name="cccd"
                     label="CCCD"
                     rules={[{ required: true, message: 'Vui lòng nhập CCCD!' }]}
                 >
                     <Input placeholder="Nhập số CCCD" size="large" className="rounded-md px-3 py-2" />
-                </Form.Item>
+                </Form.Item> */}
 
                 <Form.Item
-                    name="phone"
+                    name="phoneNumber"
                     label="Số điện thoại"
                     rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}
                 >
                     <Input placeholder="Nhập số điện thoại" size="large" className="rounded-md px-3 py-2" />
+                </Form.Item>
+                <Form.Item
+                    name="password"
+                    label="Mật khẩu"
+                    rules={[{ required: true, message: 'Vui lòng nhập Mật khẩu!' }]}
+                >
+                    <Input placeholder="Nhập mật khẩu" size="large" className="rounded-md px-3 py-2" />
                 </Form.Item>
 
                 <Form.Item

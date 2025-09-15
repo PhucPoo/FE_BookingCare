@@ -57,17 +57,17 @@ const Informationuser: React.FC<InformationuserProps> = ({
           <p>
             <strong>Email:</strong> {user.email}
           </p>
-          <p>
+          {/* <p>
             <strong>CCCD:</strong> {user.cccd}
+          </p> */}
+          <p>
+            <strong>SĐT:</strong> {user.phoneNumber}
           </p>
           <p>
-            <strong>SĐT:</strong> {user.phone}
+            <strong>Ngày tạo:</strong> {user.createAt}
           </p>
           <p>
-            <strong>Ngày tạo:</strong> {user.create_at.toLocaleDateString()}
-          </p>
-          <p>
-            <strong>Cập nhật:</strong> {user.update_at.toLocaleDateString()}
+            <strong>Cập nhật:</strong> {user.updateAt}
           </p>
           {/* <p>
             <strong>Trạng thái:</strong> {getcreate_atBadge(user.create_at)}

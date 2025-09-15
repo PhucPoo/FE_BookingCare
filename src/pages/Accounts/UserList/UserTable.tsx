@@ -5,17 +5,25 @@ import Detailuser from "./DetailUser";
 import Edituser from "./EditUser";
 
 export interface User {
-  id: number;
-  name: string;
-  email: string;
-  cccd: number;
-  phone: string;
-  price?: number;
-  date_of_birth?: Date;
-  create_at: Date;
-  update_at: Date;
-  
+  id: number
+  name: string
+  email: string
+  phoneNumber: string
+  gender: any
+  address: any
+  password: string,
+  birth: any
+  createAt: string
+  updateAt: string
+  cccd: any
+  role: Role | "USER" | "ADMIN"
 }
+
+export interface Role {
+  id: number
+  name: string
+}
+
 
 interface userTableProps {
   users: User[];
@@ -79,8 +87,8 @@ const userTable: React.FC<userTableProps> = ({ users, onUpdateuser, onDeleteuser
           bVal = b.name.toLowerCase();
           break;
         case "create_at":
-          aVal = a.create_at.getTime();
-          bVal = b.create_at.getTime();
+          aVal = a.createAt;
+          bVal = b.createAt
           break;
         default:
           return 0;
@@ -147,7 +155,7 @@ const userTable: React.FC<userTableProps> = ({ users, onUpdateuser, onDeleteuser
               Tên người dùng {renderSortArrow("name")}
             </th>
             <th className="p-3 border hidden md:table-cell">Email</th>
-            <th className="p-3 border hidden lg:table-cell">CCCD</th>
+            {/* <th className="p-3 border hidden lg:table-cell">Password</th> */}
             <th className="p-3 border hidden md:table-cell">SĐT</th>
             <th
               className="p-3 border hidden md:table-cell cursor-pointer select-none"
@@ -166,13 +174,13 @@ const userTable: React.FC<userTableProps> = ({ users, onUpdateuser, onDeleteuser
               <td className="p-3 border text-center">{index + 1}</td>
               <td className="p-3 border">{u.name}</td>
               <td className="p-3 border hidden md:table-cell">{u.email}</td>
-              <td className="p-3 border hidden lg:table-cell">{u.cccd}</td>
-              <td className="p-3 border hidden md:table-cell">{u.phone}</td>
+              {/* <td className="p-3 border hidden lg:table-cell">{u.password}</td> */}
+              <td className="p-3 border hidden md:table-cell">{u.phoneNumber}</td>
               <td className="p-3 border hidden md:table-cell">
-                {u.create_at.toLocaleDateString()}
+                {u.createAt}
               </td>
               <td className="p-3 border hidden xl:table-cell">
-                {u.update_at.toLocaleDateString()}
+                {u.updateAt}
               </td>
               {/* <td className="p-3 border">{getStatusBadge(u.status)}</td> */}
               <td className="p-3 border text-center">

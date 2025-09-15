@@ -24,9 +24,9 @@ const Edituser: React.FC<EdituserProps> = ({ open, onCancel, onUpdate, user }) =
             form.setFieldsValue({
                 name: user.name,
                 email: user.email,
-                cccd: user.cccd.toString(),
-                phone: user.phone,
-                create_at: user.create_at,
+                cccd: user.cccd,
+                phoneNumber: user.phoneNumber,
+                create_at: user.createAt,
             });
         }
     }, [user, form]);
@@ -39,9 +39,9 @@ const Edituser: React.FC<EdituserProps> = ({ open, onCancel, onUpdate, user }) =
             name: values.name,
             email: values.email,
             cccd: Number(values.cccd),
-            phone: values.phone,
-            create_at: values.create_at,
-            update_at: new Date(),
+            phoneNumber: values.phoneNumber,
+            createAt: values.createAt,
+            updateAt: values.updateAt,
         };
 
         onUpdate(updateduser); 
@@ -85,16 +85,16 @@ const Edituser: React.FC<EdituserProps> = ({ open, onCancel, onUpdate, user }) =
                     <Input placeholder="Nhập email" size="large" className="rounded-md px-3 py-2" />
                 </Form.Item>
 
-                <Form.Item
-                    name="cccd"
-                    label="CCCD"
-                    rules={[{ required: true, message: "Vui lòng nhập CCCD!" }]}
+                {/* <Form.Item
+                    name="password"
+                    label="Password"
+                    rules={[{ required: true, message: "Vui lòng nhập password!" }]}
                 >
-                    <Input placeholder="Nhập số CCCD" size="large" className="rounded-md px-3 py-2" />
-                </Form.Item>
+                    <Input placeholder="Nhập số password" size="large" className="rounded-md px-3 py-2" />
+                </Form.Item> */}
 
                 <Form.Item
-                    name="phone"
+                    name="phoneNumber"
                     label="Số điện thoại"
                     rules={[{ required: true, message: "Vui lòng nhập số điện thoại!" }]}
                 >
@@ -102,7 +102,7 @@ const Edituser: React.FC<EdituserProps> = ({ open, onCancel, onUpdate, user }) =
                 </Form.Item>
 
                 <Form.Item
-                    name="create_at"
+                    name="createAt"
                     label="Trạng thái"
                     rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
                 >

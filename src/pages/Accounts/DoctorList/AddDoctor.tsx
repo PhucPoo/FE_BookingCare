@@ -21,13 +21,14 @@ const AddDoctor: React.FC<AddDoctorProps> = ({ open, onCancel, onAdd }) => {
     
 
    const handleSubmit = (values: any) => {
-    const { name, email, phone, cccd, price, status } = values;
+    const { name, email, phoneNumber,password, cccd, price, status } = values;
 
     const newDoctor: Doctor = {
-        id: Date.now(),
+        roleId: Date.now(),
         name,
         email,
-        phone,
+        phoneNumber,
+        password,
         cccd: Number(cccd),
         price: price ? Number(price) : undefined,
         create_at: new Date(),
