@@ -17,14 +17,12 @@ import SpecialtyGrid from "../pages/Specialty/SpecialtyGrid";
 import ListPatient_Doctor from "../pages/Doctors/ListPatient_Doctor";
 import { Navigate, Route, Routes } from "react-router-dom";
 import Dashboard from "../pages/Dashboard/AdminDashboard/Dashboard";
+import MainPage from "../pages/MainPage/MainPage";
 
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route
-        path="/"
-        element={<Navigate to={"admin-dashboard"} replace={true} />}
-      />
+      <Route path="/" element={<MainPage />} />
 
       {/* admin */}
       <Route path="/admin-dashboard" element={<Dashboard />}>
