@@ -24,12 +24,15 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/" element={<MainPage />} />
 
+      <Route path="/danh-sach">
+        {/* <Route path="co-so-y-te" element={<Statistics />} /> */}
+      </Route>
       {/* admin */}
       <Route path="/admin-dashboard" element={<Dashboard />}>
         <Route
           path="/admin-dashboard"
           element={<Navigate to={"statistics"} replace={true} />}
-        /> 
+        />
         <Route path="statistics" element={<Statistics />} />
         <Route path="service-list" element={<ServiceList />} />
         <Route path="bill-manage" element={<BillPage />} />
