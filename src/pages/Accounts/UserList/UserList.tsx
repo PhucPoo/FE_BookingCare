@@ -9,6 +9,7 @@ import Adduser from "./AddUser";
 import { DatePicker, Select, Space } from "antd/lib";
 import Input from "antd/es/input";
 import { testGetAccountsApi } from "../../../api/testApi";
+import api from "../../../api/axios";
 
 // const initialusers: User[] = [
 //   { id: 2, name: "Nguyễn Văn B", email: "hp234@gmail.com", cccd: 1289389, phone: "0942234567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), },
@@ -20,6 +21,7 @@ import { testGetAccountsApi } from "../../../api/testApi";
 //   { id: 7, name: "Nguyễn Văn ABC", email: "hp@gmail.com", cccd: 1289389, phone: "0910784567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), },
 // ];
 
+
 const userManagement: React.FC = () => {
   const [users, setusers] = useState<User[]>([]);
   const [filteredusers, setFilteredusers] = useState<User[]>([]);
@@ -27,10 +29,16 @@ const userManagement: React.FC = () => {
   const { Option, OptGroup } = Select;
 
   // Thêm người dùng mới
-  const handleAdduser = (newuser: User) => {
-    const updatedusers = [...users, newuser];
-    setusers(updatedusers);
-    setFilteredusers(updatedusers);
+  const handleAdduser = async (user: any) => {
+    console.log(user)
+    const newUser = await api.post("/v1/accounts", {
+      ...user
+    });
+
+    console.log(newUser)
+
+    setusers((prevUsers: any) => [...prevUsers, newUser.data.data]);
+    // setFilteredusers(updatedusers);
     setIsAddModalOpen(false);
   };
 
@@ -51,6 +59,28 @@ const userManagement: React.FC = () => {
     setusers(updatedusers);
     setFilteredusers(updatedusers);
   };
+
+
+
+
+  // Xóa người dùng
+ const handleDeleteUser = async (id: number) => {
+  try {
+    console.log("Deleting user id:", id);
+
+    const res = await api.delete(`/v1/accounts/${id}`);
+
+    console.log("✅ Delete success:", res.data);
+
+    setusers((prev: User[]) =>
+      prev.filter((u) => u.id !== id)
+    );
+  } catch (error: any) {
+    console.error("❌ Delete user failed:", error.response?.data || error.message);
+  }
+};
+
+
   function handleChange(value: any) {
     console.log(`selected ${value}`);
   }
@@ -116,9 +146,9 @@ const userManagement: React.FC = () => {
       </div>
 
       <UserTable
-        users={filteredusers}
+        users={users}
         onUpdateuser={handleUpdateuser}
-        onDeleteuser={handleDeleteuser}
+        onDeleteuser={handleDeleteUser}
       />
 
       <Adduser

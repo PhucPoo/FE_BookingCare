@@ -1,3 +1,4 @@
+import type { User } from "../pages/Accounts/UserList/UserTable";
 import customAxiosInstance from "../utils/configAxios";
 
 const config = {
@@ -24,7 +25,7 @@ export const testGetAccountsApi = async () => {
   console.log("🚀 ~ testGetAccountsApi ~ response:", response);
   return response.data;
 };
-export const testPostAccountsApi = async (data) => {
+export const testPostAccountsApi = async (data: User) => {
   const response = await customAxiosInstance.post(
     `http://localhost:8080/api/v1/accounts`,
     data,
@@ -33,7 +34,7 @@ export const testPostAccountsApi = async (data) => {
   console.log("🚀 ~ testGetAccountsApi ~ response:", response);
   //   return response.data;
 };
-export const testPutAccountsApi = async (data) => {
+export const testPutAccountsApi = async (data: User) => {
   const response = await customAxiosInstance.put(
     `http://localhost:8080/api/v1/accounts`,
     data,
@@ -42,7 +43,7 @@ export const testPutAccountsApi = async (data) => {
   console.log("🚀 ~ testPutAccountsApi ~ response:", response);
   //   return response.data;
 };
-export const testDeleteAccountsApi = async (id) => {
+export const testDeleteAccountsApi = async (id: number) => {
   const response = await customAxiosInstance.delete(
     `http://localhost:8080/api/v1/accounts/${id}`,
     config

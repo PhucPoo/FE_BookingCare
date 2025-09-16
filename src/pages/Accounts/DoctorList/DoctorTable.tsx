@@ -9,7 +9,8 @@ export interface Doctor {
   name: string;
   email: string;
   cccd: number;
-  phone: string;
+  password: number;
+  phoneNumber: string;
   price?: number;
   create_at: Date;
   update_at: Date;
@@ -167,7 +168,7 @@ const DoctorTable: React.FC<DoctorTableProps> = ({ doctors, onUpdateDoctor, onDe
               <td className="p-3 border">{doc.name}</td>
               <td className="p-3 border hidden md:table-cell">{doc.email}</td>
               <td className="p-3 border hidden lg:table-cell">{doc.cccd}</td>
-              <td className="p-3 border hidden md:table-cell">{doc.phone}</td>
+              <td className="p-3 border hidden md:table-cell">{doc.phoneNumber}</td>
               <td className="p-3 border hidden xl:table-cell">{doc.price}</td>
               <td className="p-3 border hidden md:table-cell">
                 {doc.create_at.toLocaleDateString()}

@@ -32,7 +32,7 @@ const Edituser: React.FC<EdituserProps> = ({
         email: user.email,
         cccd: user.cccd,
         phoneNumber: user.phoneNumber,
-        create_at: user.create_at,
+        create_at: user.createAt,
       });
     }
   }, [user, form]);
@@ -46,8 +46,8 @@ const Edituser: React.FC<EdituserProps> = ({
       email: values.email,
       cccd: Number(values.cccd),
       phoneNumber: values.phoneNumber,
-      create_at: values.create_at,
-      update_at: new Date(),
+      createAt: values.create_at,
+      updateAt: new Date(),
     };
     testPutAccountsApi(updateduser);
     // onUpdate(updateduser);

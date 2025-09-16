@@ -34,7 +34,7 @@ const Informationuser: React.FC<InformationuserProps> = ({
   user,
   onClose,
 }) => {
-  const handleFormatDay = (time) => {
+  const handleFormatDay = (time: string | number | Date) => {
     const date = new Date(time);
     const VNTime = date.toLocaleString("vi-VN", {
       timeZone: "Asia/Ho_Chi_Minh",
@@ -74,9 +74,9 @@ const Informationuser: React.FC<InformationuserProps> = ({
           <p>
             <strong>Email:</strong> {user.email}
           </p>
-          <p>
+          {/* <p>
             <strong>CCCD:</strong> {user.cccd}
-          </p>
+          </p> */}
           <p>
             <strong>SĐT:</strong> {user.phoneNumber}
           </p>
