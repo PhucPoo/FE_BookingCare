@@ -1,5 +1,6 @@
 .medicalFacility_item_contain {
-  padding: 5px;
+  padding-bottom: 5px;
+  margin-top: 40px;
   border-bottom: 1px solid rgb(204 204 204 / 1);
 }
 .medicalFacility_item-img {

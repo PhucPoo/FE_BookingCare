@@ -1,6 +1,10 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getAllSpecialties } from "../../../api/Specialties/SpecialtiesApi";
-import LoadingPage from "../../../components/LoadingPage/LoadingPage";
+const LoadingPage = React.lazy(
+  () => import("../../../components/LoadingPage/LoadingPage")
+);
+import { HomeOutlined } from "@ant-design/icons";
+import { Breadcrumb } from "antd/lib";
 import "./Specialties.css";
 type DoctorsModel = {
   id?: number;
@@ -29,6 +33,19 @@ const SpecialtyList = () => {
   }
   return (
     <div className="container">
+      <Breadcrumb
+        items={[
+          {
+            href: "/",
+            title: <HomeOutlined />,
+          },
+
+          {
+            title: "Chuyên khoa dành cho bạn",
+          },
+        ]}
+        className="breadcrumb_margin"
+      />
       <p className="text-xl font-bold " style={{ marginTop: "20px" }}>
         Chuyên khoa dành cho bạn
       </p>

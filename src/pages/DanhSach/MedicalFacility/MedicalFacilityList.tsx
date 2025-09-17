@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getAllMedicalFacility } from "../../../api/Medical/MedicalFacilityApi";
+import { HomeOutlined } from "@ant-design/icons";
+import { Breadcrumb } from "antd/lib";
 const LoadingPage = React.lazy(
   () => import("../../../components/LoadingPage/LoadingPage")
 );
@@ -36,6 +38,19 @@ const MedicalFacilityList = () => {
   }
   return (
     <div className="container">
+      <Breadcrumb
+        items={[
+          {
+            href: "/",
+            title: <HomeOutlined />,
+          },
+
+          {
+            title: "Cơ sở y tế dành cho bạn",
+          },
+        ]}
+        className="breadcrumb_margin"
+      />
       <p className="text-xl font-bold " style={{ marginTop: "20px" }}>
         Cơ sở y tế dành cho bạn
       </p>
