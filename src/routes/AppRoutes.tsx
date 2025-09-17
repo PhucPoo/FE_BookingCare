@@ -17,6 +17,8 @@ import SpecialtyGrid from "../pages/Specialty/SpecialtyGrid";
 import ListPatient_Doctor from "../pages/Doctors/ListPatient_Doctor";
 import { Navigate, Route, Routes } from "react-router-dom";
 import Dashboard from "../pages/Dashboard/AdminDashboard/Dashboard";
+import ClinicDashboard from "../pages/Dashboard/ClinicDashboard/ClinicDashboard";
+import ClinicManagement from "../pages/Clinic/ClinicManagement";
 
 const AppRoutes = () => {
   return (
@@ -47,6 +49,15 @@ const AppRoutes = () => {
         <Route path="specialty" element={<SpecialtyGrid />} />
 
         <Route path="patient_list" element={<ListPatient_Doctor />} />
+      </Route>
+
+      {/* Phòng khám */}
+       <Route path="/clinic-dashboard" element={<ClinicDashboard />}>
+        <Route
+          path="/clinic-dashboard"
+          element={<Navigate to={"clinic-list"} replace={true} />}
+        />
+        <Route path="clinic-list" element={<ClinicManagement />} />
       </Route>
 
       {/* doctor */}

@@ -3,8 +3,7 @@
 import React from "react";
 import Modal from "antd/es/modal";
 import Button from "antd/es/button";
-import type { Doctor } from "./DoctorTable";
- // đảm bảo đường dẫn đúng
+import type { Doctor } from "./DoctorTable"; // đảm bảo đường dẫn đúng
 
 interface InformationDoctorProps {
   open: boolean;
@@ -12,7 +11,7 @@ interface InformationDoctorProps {
   onClose: () => void;
 }
 
-const getStatusBadge = (status: Doctor["status"]) => {
+const getStatusBadge = (status?: Doctor["status"]) => {
   if (status === "active") {
     return (
       <span className="bg-green-500 text-white px-2 py-1 rounded text-sm">
@@ -26,7 +25,7 @@ const getStatusBadge = (status: Doctor["status"]) => {
       </span>
     );
   }
-  return null;
+  return <span className="text-gray-500">Không xác định</span>;
 };
 
 const InformationDoctor: React.FC<InformationDoctorProps> = ({
@@ -36,7 +35,11 @@ const InformationDoctor: React.FC<InformationDoctorProps> = ({
 }) => {
   return (
     <Modal
-      title={<div className="text-center text-lg font-semibold">Thông tin chi tiết bác sĩ</div>}
+      title={
+        <div className="text-center text-lg font-semibold">
+          Thông tin chi tiết bác sĩ
+        </div>
+      }
       open={open}
       onCancel={onClose}
       footer={[
@@ -46,36 +49,53 @@ const InformationDoctor: React.FC<InformationDoctorProps> = ({
       ]}
       centered
     >
-      {doctor && (
+      {doctor ? (
         <div className="space-y-2 text-sm">
           <p>
             <strong>ID:</strong> {doctor.id}
           </p>
           <p>
-            <strong>Tên:</strong> {doctor.name}
+            <strong>Tên:</strong> {doctor.account?.name || "—"}
           </p>
           <p>
-            <strong>Email:</strong> {doctor.email}
+            <strong>Email:</strong> {doctor.account?.email || "—"}
           </p>
           <p>
-            <strong>CCCD:</strong> {doctor.cccd}
+            <strong>CCCD:</strong> {doctor.account?.cccd || "—"}
           </p>
           <p>
-            <strong>SĐT:</strong> {doctor.phone}
+            <strong>SĐT:</strong> {doctor.account?.phoneNumber || "—"}
           </p>
           <p>
-            <strong>Giá khám:</strong> {doctor.price}
+            <strong>Chi phí khám:</strong> {doctor.cost?.toLocaleString()} VNĐ
           </p>
           <p>
-            <strong>Ngày tạo:</strong> {doctor.create_at.toLocaleDateString()}
+            <strong>Bằng cấp:</strong> {doctor.degree || "—"}
           </p>
           <p>
-            <strong>Cập nhật:</strong> {doctor.update_at.toLocaleDateString()}
+            <strong>Phòng khám:</strong> {doctor.clinic?.id || "—"}
+          </p>
+          <p>
+            <strong>Chuyên khoa:</strong> {doctor.specialty?.id || "—"}
+          </p>
+          <p>
+            <strong>Ngày tạo:</strong>{" "}
+            {doctor.create_at
+              ? new Date(doctor.create_at).toLocaleDateString()
+              : "—"}
+          </p>
+          <p>
+            <strong>Cập nhật:</strong>{" "}
+            {doctor.update_at
+              ? new Date(doctor.update_at).toLocaleDateString()
+              : "—"}
           </p>
           <p>
             <strong>Trạng thái:</strong> {getStatusBadge(doctor.status)}
           </p>
         </div>
+      ) : (
+        <p className="text-center text-gray-500">Không có dữ liệu bác sĩ</p>
       )}
     </Modal>
   );

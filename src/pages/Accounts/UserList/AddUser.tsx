@@ -35,9 +35,10 @@ const Adduser: React.FC<AdduserProps> = ({ open, onCancel, onAdd }) => {
       updateAt: new Date(),
     };
     testPostAccountsApi(newuser);
-    // onAdd(newuser);
+    onAdd(newuser);
     // reset form
     form.resetFields();
+     onCancel();
   };
 
   return (
