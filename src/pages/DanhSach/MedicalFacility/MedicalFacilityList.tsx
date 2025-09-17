@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getAllMedicalFacility } from "../../../api/Medical/MedicalFacilityApi";
-import LoadingPage from "../../../components/LoadingPage/LoadingPage";
+const LoadingPage = React.lazy(
+  () => import("../../../components/LoadingPage/LoadingPage")
+);
 import "./MedicalFacility.css";
 type MedicalFacilityModel = {
   id?: number;
@@ -22,6 +24,7 @@ const MedicalFacilityList = () => {
     }
   };
   useEffect(() => {
+    window.scrollTo(0, 0);
     handleGetAllMedicalFacility();
   }, []);
   if (medicalFacilities.length === 0) {
