@@ -1,0 +1,11 @@
+.medicalFacility_item_contain {
+  padding: 5px;
+  border-bottom: 1px solid rgb(204 204 204 / 1);
+}
+.medicalFacility_item-img {
+  width: 200px;
+  height: 105px;
+  border: 0;
+}
+.medicalFacility_item-name {
+}

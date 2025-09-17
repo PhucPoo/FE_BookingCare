@@ -8,13 +8,21 @@ import {
 } from "react-icons/fa";
 import { MdOutlinePhoneAndroid } from "react-icons/md";
 import { TfiHeadphoneAlt } from "react-icons/tfi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 const MainPageHeader = () => {
+  const navigate = useNavigate();
   return (
     <div>
       <header className="header">
         <div className="header-left">
-          <div className="logo">Bookingcare</div>
+          <div
+            className="logo"
+            onClick={() => {
+              navigate("/");
+            }}
+          >
+            Bookingcare
+          </div>
         </div>
 
         <div className="header-right">

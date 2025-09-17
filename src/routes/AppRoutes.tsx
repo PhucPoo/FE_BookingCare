@@ -18,14 +18,26 @@ import ListPatient_Doctor from "../pages/Doctors/ListPatient_Doctor";
 import { Navigate, Route, Routes } from "react-router-dom";
 import Dashboard from "../pages/Dashboard/AdminDashboard/Dashboard";
 import MainPage from "../pages/MainPage/MainPage";
+import MedicalFacilityList from "../pages/DanhSach/MedicalFacility/MedicalFacilityList";
+import DoctorList from "../pages/DanhSach/Doctor/DoctorList";
+import SpecialtyList from "../pages/DanhSach/Specialty/SpecialtyList";
+import ArticleList from "../pages/DanhSach/Article/ArticleList";
+import List from "../pages/DanhSach/List";
 
 const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<MainPage />} />
 
-      <Route path="/danh-sach">
-        {/* <Route path="co-so-y-te" element={<Statistics />} /> */}
+      <Route path="/danh-sach" element={<List />}>
+        <Route
+          path="/danh-sach"
+          element={<Navigate to={"co-so-y-te"} replace={true} />}
+        />
+        <Route path="co-so-y-te" element={<MedicalFacilityList />} />
+        <Route path="bac-si" element={<DoctorList />} />
+        <Route path="chuyen-khoa" element={<SpecialtyList />} />
+        <Route path="bai-viet" element={<ArticleList />} />
       </Route>
       {/* admin */}
       <Route path="/admin-dashboard" element={<Dashboard />}>

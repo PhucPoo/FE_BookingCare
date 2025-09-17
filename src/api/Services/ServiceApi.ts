@@ -9,15 +9,12 @@ const config = {
 };
 
 export const getAllService = async () => {
-  const response = await customAxiosInstance.get(
-    `${api}/api/v1/services`,
-    config
-  );
+  const response = await customAxiosInstance.get(`${api}/services`, config);
   return response.data;
 };
 export const createService = async (data: createServiceModel) => {
   const response = await customAxiosInstance.post(
-    `${api}/api/v1/services`,
+    `${api}/services`,
     data,
     config
   );
@@ -25,7 +22,7 @@ export const createService = async (data: createServiceModel) => {
 };
 export const updateService = async (data: createServiceModel) => {
   const response = await customAxiosInstance.put(
-    `${api}/api/v1/services`,
+    `${api}/services`,
     data,
     config
   );
@@ -33,7 +30,7 @@ export const updateService = async (data: createServiceModel) => {
 };
 export const deleteService = async (id: number) => {
   const response = await customAxiosInstance.delete(
-    `${api}/api/v1/services/${id}`,
+    `${api}/services/${id}`,
     config
   );
   return response.data;

@@ -14,7 +14,7 @@ const MainPageRecommend = () => {
             <div
               className="recommend_content-item"
               key={item.id}
-              onClick={() => navigate(`${item.link}`)}
+              onClick={() => navigate(`/danh-sach${item.link}`)}
             >
               <img src={item.image} />
               <p>{item.title}</p>
