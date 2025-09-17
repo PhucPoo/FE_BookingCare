@@ -16,6 +16,7 @@ import MainPageHealthCare from "./MainPageHealthCare/MainPageHealthCare";
 import MainPageStatistics from "./MainPageStatistics/MainPageStatistics";
 import MainPageNews from "./MainPageNews/MainPageNews";
 import Footer from "../../components/Footer/Footer";
+import MainPageRecommend from "./MainPageRecommend/MainPageRecommend";
 
 const MainPage = () => {
   return (
@@ -23,6 +24,7 @@ const MainPage = () => {
       <MainPageHeader />
       <MainSectionServicePage />
       <MainPartnersSwiper />
+      <MainPageRecommend />
       <MainPageHospitals />
       <MainPageDoctor />
       <MainPageHealthCare />
