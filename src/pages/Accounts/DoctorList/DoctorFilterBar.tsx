@@ -1,24 +1,33 @@
-import React, { useState } from 'react';
-import type { Doctor } from './DoctorTable'; // hoặc import từ doctorTypes.ts nếu tách riêng
+import React, { useState } from "react";
+import type { Doctor } from "./DoctorTable"; // hoặc import từ doctorTypes.ts nếu tách riêng
 
 interface DoctorFilterBarProps {
   doctors: Doctor[];
   onFilter: (filtered: Doctor[]) => void;
 }
 
-const DoctorFilterBar: React.FC<DoctorFilterBarProps> = ({ doctors, onFilter,   }) => {
-  const [name, setName] = useState('');
-  const [price, setPrice] = useState('');
-  const [phone, setPhone] = useState('');
-  const [status, setStatus] = useState('');
+const DoctorFilterBar: React.FC<DoctorFilterBarProps> = ({ doctors, onFilter }) => {
+  const [name, setName] = useState("");
+  const [cost, setCost] = useState("");
+  const [phone, setPhone] = useState("");
+  const [status, setStatus] = useState("");
 
   const handleSearch = () => {
     const filtered = doctors.filter((doctor) => {
-      const matchName = name === '' || doctor.name.toLowerCase().includes(name.toLowerCase());
-      const matchPrice = price === '' || doctor.price?.toString().includes(price);
-      const matchPhone = phone === '' || doctor.phone.includes(phone);
-      const matchStatus = status === '' || doctor.status === status;
-      return matchName && matchPrice && matchPhone && matchStatus;
+      const matchName =
+        name === "" ||
+        doctor.account.name.toLowerCase().includes(name.toLowerCase());
+
+      const matchCost =
+        cost === "" || doctor.cost.toString().includes(cost);
+
+      const matchPhone =
+        phone === "" ||
+        doctor.account.phoneNumber.includes(phone);
+
+      const matchStatus = status === "" || doctor.status === status;
+
+      return matchName && matchCost && matchPhone && matchStatus;
     });
 
     onFilter(filtered);
@@ -35,9 +44,9 @@ const DoctorFilterBar: React.FC<DoctorFilterBarProps> = ({ doctors, onFilter,   
       />
       <input
         type="text"
-        value={price}
-        onChange={(e) => setPrice(e.target.value)}
-        placeholder="Giá tiền"
+        value={cost}
+        onChange={(e) => setCost(e.target.value)}
+        placeholder="Giá khám"
         className="border rounded px-3 py-2 flex-1 min-w-[150px]"
       />
       <input
@@ -62,10 +71,7 @@ const DoctorFilterBar: React.FC<DoctorFilterBarProps> = ({ doctors, onFilter,   
       >
         Tìm kiếm
       </button>
-
     </div>
-
-
   );
 };
 

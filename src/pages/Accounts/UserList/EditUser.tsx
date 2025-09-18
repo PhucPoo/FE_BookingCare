@@ -50,7 +50,7 @@ const Edituser: React.FC<EdituserProps> = ({
       updateAt: new Date(),
     };
     testPutAccountsApi(updateduser);
-    // onUpdate(updateduser);
+    onUpdate(updateduser);
     form.resetFields();
   };
 
@@ -115,7 +115,7 @@ const Edituser: React.FC<EdituserProps> = ({
           />
         </Form.Item>
 
-        <Form.Item
+        {/* <Form.Item
           name="password"
           label="Password"
           rules={[{ required: true, message: "Vui lòng nhập password!" }]}
@@ -125,7 +125,7 @@ const Edituser: React.FC<EdituserProps> = ({
             size="large"
             className="rounded-md px-3 py-2"
           />
-        </Form.Item>
+        </Form.Item> */}
 
         <Form.Item
           name="phoneNumber"
@@ -138,9 +138,9 @@ const Edituser: React.FC<EdituserProps> = ({
             className="rounded-md px-3 py-2"
           />
         </Form.Item>
-
+{/* 
         <Form.Item
-          name="create_at"
+          name="stas"
           label="Trạng thái"
           rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
         >
@@ -152,7 +152,7 @@ const Edituser: React.FC<EdituserProps> = ({
             <Option value="active">Hoạt động</Option>
             <Option value="inactive">Nghỉ</Option>
           </Select>
-        </Form.Item>
+        </Form.Item> */}
 
         <Form.Item>
           <div className="flex justify-end space-x-3 pt-2">

@@ -64,21 +64,21 @@ const userManagement: React.FC = () => {
 
 
   // Xóa người dùng
- const handleDeleteUser = async (id: number) => {
-  try {
-    console.log("Deleting user id:", id);
+  const handleDeleteUser = async (id: number) => {
+    try {
+      console.log("Deleting user id:", id);
 
-    const res = await api.delete(`/v1/accounts/${id}`);
+      const res = await api.delete(`/v1/accounts/${id}`);
 
-    console.log("✅ Delete success:", res.data);
+      console.log("✅ Delete success:", res.data);
 
-    setusers((prev: User[]) =>
-      prev.filter((u) => u.id !== id)
-    );
-  } catch (error: any) {
-    console.error("❌ Delete user failed:", error.response?.data || error.message);
-  }
-};
+      setusers((prev: User[]) =>
+        prev.filter((u) => u.id !== id)
+      );
+    } catch (error: any) {
+      console.error("❌ Delete user failed:", error.response?.data || error.message);
+    }
+  };
 
 
   function handleChange(value: any) {
@@ -93,21 +93,22 @@ const userManagement: React.FC = () => {
     handleGetAccounts();
   }, []);
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4 text-blue-700">
+    <div className="p-6 bg-white rounded-xl shadow-sm">
+      <h1 className="text-2xl font-bold mb-6 text-blue-700">
         Quản lý người dùng
       </h1>
 
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-6">
         <div className="flex-1">
           <UserFilterBar users={users} onFilter={setFilteredusers} />
         </div>
       </div>
 
-      <div className="mb-4">
+      <div className="mb-6 flex flex-wrap items-center gap-4">
         <Select
           defaultValue="role"
-          style={{ width: 200, height: 36 }}
+          style={{ width: 200 }}
+          size="large"
           onChange={handleChange}
         >
           <OptGroup label="Manager">
@@ -116,10 +117,11 @@ const userManagement: React.FC = () => {
             <Option value="support">Support</Option>
           </OptGroup>
         </Select>
-        ,
+
         <Select
           defaultValue="gender"
-          style={{ width: 200, height: 36 }}
+          style={{ width: 200 }}
+          size="large"
           onChange={handleChange}
         >
           <OptGroup label="Manager">
@@ -128,18 +130,21 @@ const userManagement: React.FC = () => {
             <Option value="other">Khác</Option>
           </OptGroup>
         </Select>
-        ,
+
         <Space.Compact size="large">
           <DatePicker
             placeholder="Ngày tạo"
-            style={{ width: 160, marginRight: 5 }}
+            style={{ width: 180 }}
+            size="large"
           />
         </Space.Compact>
+
         <Button
           type="primary"
           size="large"
+          className="!bg-blue-600 hover:!bg-blue-700 rounded-lg font-medium shadow-sm"
           onClick={() => setIsAddModalOpen(true)}
-          style={{ minWidth: 150 }}
+          style={{ minWidth: 180 }}
         >
           + Thêm người dùng
         </Button>
@@ -157,6 +162,7 @@ const userManagement: React.FC = () => {
         onAdd={handleAdduser}
       />
     </div>
+
   );
 };
 

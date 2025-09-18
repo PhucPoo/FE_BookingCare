@@ -1,68 +1,47 @@
 import React, { useState, useMemo } from "react";
 import Button from "antd/lib/button";
-import DetailDoctor from "./DetailDoctor";
-import EditDoctor from "./EditDoctor";
+import InformationClinic from "./DetailClinic";
+import EditClinic from "./EditClinic";
 import Modal from "antd/lib/modal";
 
-export interface Doctor {
+export interface Clinic {
   id: number;
-  cost: number;
-  degree: "BACHELOR" | "MASTER" | "DOCTOR";
-  account: {
+  name: string;
+  description: string;
+  position: string;
+  phoneNumber: string;
+  email?: string;
+  image?: string | null;
+  address: {
     id: number;
-    name: string;
-    email: string;
-    phoneNumber: string;
-    cccd: string;
-  }; // chứa thông tin account
-  clinic: { id: number };
-  specialty: { id: number };
-  create_at: Date;
-  update_at: Date;
-  status: "active" | "inactive";
+    city: string;
+  };
+  create_at?: Date;
+  update_at?: Date;
 }
 
-interface DoctorTableProps {
-  doctors: Doctor[];
-  onUpdateDoctor: (updatedDoctor: Doctor) => void;
-  onDeleteDoctor: (id: number) => void;
+interface ClinicTableProps {
+  clinics: Clinic[];
+  onUpdateClinic: (updatedClinic: Clinic) => void;
+  onDeleteClinic: (id: number) => void;
 }
-
-// Hiển thị trạng thái bác sĩ
-const getStatusBadge = (status: Doctor["status"]) => {
-  if (status === "active") {
-    return (
-      <span className="bg-green-500 text-white px-2 py-1 rounded text-sm">
-        Hoạt động
-      </span>
-    );
-  }
-  if (status === "inactive") {
-    return (
-      <span className="bg-red-500 text-white px-2 py-1 rounded text-sm">
-        Nghỉ
-      </span>
-    );
-  }
-  return null;
-};
 
 type SortColumn = "name" | "create_at" | "";
 type SortDirection = "asc" | "desc";
 
-const DoctorTable: React.FC<DoctorTableProps> = ({
-  doctors,
-  onUpdateDoctor,
-  onDeleteDoctor,
+const ClinicTable: React.FC<ClinicTableProps> = ({
+  clinics,
+  onUpdateClinic,
+  onDeleteClinic,
 }) => {
   // State sắp xếp
   const [sortColumn, setSortColumn] = useState<SortColumn>("");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [deleteDoctorId, setDeleteDoctorId] = useState<number>(0);
+  const [deleteClinicId, setDeleteClinicId] = useState<number>(0);
 
   const handleOk = () => {
-    onDeleteDoctor(deleteDoctorId);
+    onDeleteClinic(deleteClinicId);
     setIsModalOpen(false);
   };
 
@@ -70,22 +49,22 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
     setIsModalOpen(false);
   };
 
-  // Sắp xếp dữ liệu theo cột và chiều
-  const sortedDoctors = useMemo(() => {
-    if (!sortColumn) return doctors;
+  // Sắp xếp dữ liệu
+  const sortedClinics = useMemo(() => {
+    if (!sortColumn) return clinics;
 
-    return [...doctors].sort((a, b) => {
+    return [...clinics].sort((a, b) => {
       let aVal: any;
       let bVal: any;
 
       switch (sortColumn) {
         case "name":
-          aVal = a.account.name.toLowerCase();
-          bVal = b.account.name.toLowerCase();
+          aVal = a.name.toLowerCase();
+          bVal = b.name.toLowerCase();
           break;
         case "create_at":
-          aVal = a.create_at.getTime();
-          bVal = b.create_at.getTime();
+          aVal = a.create_at ? a.create_at.getTime() : 0;
+          bVal = b.create_at ? b.create_at.getTime() : 0;
           break;
         default:
           return 0;
@@ -95,7 +74,7 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
       if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
       return 0;
     });
-  }, [doctors, sortColumn, sortDirection]);
+  }, [clinics, sortColumn, sortDirection]);
 
   // Xử lý click sort cột
   const handleSort = (column: SortColumn) => {
@@ -107,33 +86,32 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
     }
   };
 
-  // Render mũi tên sắp xếp
   const renderSortArrow = (column: SortColumn) => {
     if (sortColumn !== column) return null;
     return <span className="ml-1">{sortDirection === "asc" ? "▲" : "▼"}</span>;
   };
 
-  // Modal xem chi tiết
+  // Modal chi tiết
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
+  const [selectedClinic, setSelectedClinic] = useState<Clinic | null>(null);
 
-  const showDetailModal = (doctor: Doctor) => {
-    setSelectedDoctor(doctor);
+  const showDetailModal = (clinic: Clinic) => {
+    setSelectedClinic(clinic);
     setIsDetailModalOpen(true);
   };
 
   const closeDetailModal = () => {
     setIsDetailModalOpen(false);
-    setSelectedDoctor(null);
+    setSelectedClinic(null);
   };
 
-  // Modal sửa bác sĩ
+  // Modal sửa
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editingDoctor, setEditingDoctor] = useState<Doctor | null>(null);
+  const [editingClinic, setEditingClinic] = useState<Clinic | null>(null);
 
-  const handleUpdateDoctor = (doctor: Doctor) => {
-    onUpdateDoctor(doctor); // Gọi về component cha
-    setEditingDoctor(null);
+  const handleUpdateClinic = (clinic: Clinic) => {
+    onUpdateClinic(clinic);
+    setEditingClinic(null);
     setIsEditModalOpen(false);
   };
 
@@ -147,13 +125,12 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
               className="p-3 border cursor-pointer select-none"
               onClick={() => handleSort("name")}
             >
-              Tên bác sĩ {renderSortArrow("name")}
+              Tên phòng khám {renderSortArrow("name")}
             </th>
-            <th className="p-3 border hidden md:table-cell">Email</th>
-            <th className="p-3 border hidden lg:table-cell">CCCD</th>
+            <th className="p-3 border hidden md:table-cell">Mô tả</th>
+            <th className="p-3 border hidden lg:table-cell">Vị trí</th>
             <th className="p-3 border hidden md:table-cell">SĐT</th>
-            <th className="p-3 border hidden xl:table-cell">Chi phí</th>
-            <th className="p-3 border hidden xl:table-cell">Bằng cấp</th>
+            <th className="p-3 border hidden md:table-cell">Thành phố</th>
             <th
               className="p-3 border hidden md:table-cell cursor-pointer select-none"
               onClick={() => handleSort("create_at")}
@@ -161,35 +138,36 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
               Ngày tạo {renderSortArrow("create_at")}
             </th>
             <th className="p-3 border hidden xl:table-cell">Ngày cập nhật</th>
-            <th className="p-3 border">Trạng thái</th>
             <th className="p-3 border text-center">Thao tác</th>
           </tr>
         </thead>
         <tbody>
-          {sortedDoctors.map((doc, index) => (
-            <tr key={doc.id} className="hover:bg-gray-50">
+          {sortedClinics.map((clinic, index) => (
+            <tr key={clinic.id} className="hover:bg-gray-50">
               <td className="p-3 border text-center">{index + 1}</td>
-              <td className="p-3 border">{doc.account.name}</td>
+              <td className="p-3 border">{clinic.name}</td>
               <td className="p-3 border hidden md:table-cell">
-                {doc.account.email}
+                {clinic.description}
               </td>
               <td className="p-3 border hidden lg:table-cell">
-                {doc.account.cccd}
+                {clinic.position}
               </td>
               <td className="p-3 border hidden md:table-cell">
-                {doc.account.phoneNumber}
+                {clinic.phoneNumber}
               </td>
-              <td className="p-3 border hidden xl:table-cell">{doc.cost}</td>
-              <td className="p-3 border hidden xl:table-cell">{doc.degree}</td>
               <td className="p-3 border hidden md:table-cell">
-                {doc.create_at ? new Date (doc.create_at).toLocaleDateString()
-                  : "—" }
+                {clinic.address?.city}
+              </td>
+              <td className="p-3 border hidden md:table-cell">
+                {clinic.create_at
+                  ? new Date(clinic.create_at).toLocaleDateString()
+                  : "—"}
               </td>
               <td className="p-3 border hidden xl:table-cell">
-                {doc.update_at ? new Date (doc.update_at).toLocaleDateString()
-                  : "—" }
+                {clinic.update_at
+                  ? new Date(clinic.update_at).toLocaleDateString()
+                  : "—"}
               </td>
-              <td className="p-3 border">{getStatusBadge(doc.status)}</td>
               <td className="p-3 border text-center">
                 <div className="flex flex-wrap justify-center gap-2">
                   <Button
@@ -200,7 +178,7 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
                       color: "#000",
                     }}
                     onClick={() => {
-                      setEditingDoctor(doc);
+                      setEditingClinic(clinic);
                       setIsEditModalOpen(true);
                     }}
                   >
@@ -215,12 +193,12 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
                     }}
                     onClick={() => {
                       setIsModalOpen(true);
-                      setDeleteDoctorId(doc.id);
+                      setDeleteClinicId(clinic.id);
                     }}
                   >
                     Xóa
                   </Button>
-                  <Button size="small" onClick={() => showDetailModal(doc)}>
+                  <Button size="small" onClick={() => showDetailModal(clinic)}>
                     Xem
                   </Button>
                 </div>
@@ -230,33 +208,35 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
         </tbody>
       </table>
 
-      {/* Modal thông tin chi tiết */}
-      <DetailDoctor
+      {/* Modal chi tiết */}
+      <InformationClinic
         open={isDetailModalOpen}
-        doctor={selectedDoctor}
+        clinic={selectedClinic}
         onClose={closeDetailModal}
       />
 
-      {/* Modal sửa bác sĩ */}
-      <EditDoctor
+      {/* Modal sửa */}
+      <EditClinic
         open={isEditModalOpen}
-        doctor={editingDoctor}
+        clinic={editingClinic}
         onCancel={() => {
           setIsEditModalOpen(false);
-          setEditingDoctor(null);
+          setEditingClinic(null);
         }}
-        onUpdate={handleUpdateDoctor}
+        onUpdate={handleUpdateClinic}
       />
+
+      {/* Modal xóa */}
       <Modal
-        title="Xác nhận xóa"
+        title="Xóa phòng khám"
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
       >
-        <p>Bạn có chắc chắn muốn xóa bác sĩ này không?</p>
+        <p>Bạn có chắc chắn muốn xóa phòng khám này không?</p>
       </Modal>
     </div>
   );
 };
 
-export default DoctorTable;
+export default ClinicTable;
