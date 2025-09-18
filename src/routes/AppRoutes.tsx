@@ -5,7 +5,7 @@ import ServiceList from "../pages/Services/ServicesList/ServiceList";
 import ErrorPage from "../components/ErrorPage/ErrorPage";
 import BillPage from "../pages/Bill/BillPage";
 import BookingPage from "../pages/SupportBookingPage/BookingPage";
-import BookingManage from "../pages/DoctorManage/BookingManage";
+import DoctorBookingPage from "../pages/DoctorManage/DoctorBookingManage";
 import DoctorDashboard from "../pages/Dashboard/DoctorDashboard/DoctorDashboard";
 import SupportDashboard from "../pages/Dashboard/SupportDashboard/SupportDashboard";
 import DoctorManagement from "../pages/Accounts/DoctorList/DoctorManagement";
@@ -24,6 +24,7 @@ import SpecialtyList from "../pages/DanhSach/Specialty/SpecialtyList";
 import ArticleList from "../pages/DanhSach/Article/ArticleList";
 import List from "../pages/DanhSach/List";
 import MedicalFacilityDetail from "../pages/DanhSach/MedicalFacility/MedicalFacilityDetail";
+import AdminBookingManage from "../pages/Admin/AdminBookingManage/AdminBookingManage";
 
 const AppRoutes = () => {
   return (
@@ -38,9 +39,11 @@ const AppRoutes = () => {
         <Route path="co-so-y-te" element={<MedicalFacilityList />} />
         <Route path="co-so-y-te/:id" element={<MedicalFacilityDetail />} />
         <Route path="bac-si" element={<DoctorList />} />
+        <Route path="bac-si/:id" element={<DoctorList />} />
         <Route path="chuyen-khoa" element={<SpecialtyList />} />
         <Route path="bai-viet" element={<ArticleList />} />
       </Route>
+
       {/* admin */}
       <Route path="/admin-dashboard" element={<Dashboard />}>
         <Route
@@ -50,7 +53,7 @@ const AppRoutes = () => {
         <Route path="statistics" element={<Statistics />} />
         <Route path="service-list" element={<ServiceList />} />
         <Route path="bill-manage" element={<BillPage />} />
-        <Route path="booking-manage" element={<BookingPage />} />
+        <Route path="booking-manage" element={<AdminBookingManage />} />
 
         <Route path="user-list" element={<UserList />} />
 
@@ -70,7 +73,7 @@ const AppRoutes = () => {
           path="/doctor-dashboard"
           element={<Navigate to={"booking-manage"} replace={true} />}
         />
-        <Route path="booking-manage" element={<BookingManage />} />
+        <Route path="booking-manage" element={<DoctorBookingPage />} />
       </Route>
 
       {/* support */}

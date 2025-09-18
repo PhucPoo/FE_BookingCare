@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import BookingTableManage from "./BookingTableManage";
+import BookingTableManage from "./DoctorBookingTableManage";
 import BookingData from "../../MockData/BookingData";
-import ModalRegisterTime from "./ModalRegisterTime";
+import ModalRegisterTime from "./DoctorModalRegisterTime";
 import { testGetAccountsApi } from "../../api/testApi";
 
 type Item = {

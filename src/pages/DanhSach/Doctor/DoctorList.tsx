@@ -6,6 +6,7 @@ const LoadingPage = React.lazy(
 import { HomeOutlined } from "@ant-design/icons";
 import { Breadcrumb } from "antd/lib";
 import "./Doctor.css";
+import { useNavigate } from "react-router-dom";
 type DoctorsModel = {
   id?: number;
   degree?: string;
@@ -13,6 +14,7 @@ type DoctorsModel = {
   image?: string;
 };
 const DoctorList = () => {
+  const navigate = useNavigate();
   const [doctors, setDoctors] = useState<DoctorsModel[]>([]);
   const handleGetAllDoctors = async () => {
     const res = await getAllDoctors();
@@ -54,7 +56,10 @@ const DoctorList = () => {
         {doctors &&
           doctors.length > 0 &&
           doctors.map((doctor) => (
-            <div className="flex gap-5 items-center doctors_item_contain">
+            <div
+              className="flex gap-5 items-center doctors_item_contain cursor-pointer"
+              onClick={() => navigate(`${doctor.id}`)}
+            >
               <img src={doctor?.image} className="doctors_item-img" />
               <div className="doctors_item-name text-xl">
                 {`${doctor.degree} ${doctor?.account?.name}`}
