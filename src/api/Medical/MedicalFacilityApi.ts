@@ -11,3 +11,10 @@ export const getAllMedicalFacility = async () => {
   const response = await customAxiosInstance.get(`${api}/clinics`, config);
   return response.data;
 };
+export const getMedicalFacilityDetail = async (id: string | undefined) => {
+  const response = await customAxiosInstance.get(
+    `${api}/clinics/${id}`,
+    config
+  );
+  return response.data;
+};

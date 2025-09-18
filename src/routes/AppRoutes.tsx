@@ -23,6 +23,7 @@ import DoctorList from "../pages/DanhSach/Doctor/DoctorList";
 import SpecialtyList from "../pages/DanhSach/Specialty/SpecialtyList";
 import ArticleList from "../pages/DanhSach/Article/ArticleList";
 import List from "../pages/DanhSach/List";
+import MedicalFacilityDetail from "../pages/DanhSach/MedicalFacility/MedicalFacilityDetail";
 
 const AppRoutes = () => {
   return (
@@ -35,6 +36,7 @@ const AppRoutes = () => {
           element={<Navigate to={"co-so-y-te"} replace={true} />}
         />
         <Route path="co-so-y-te" element={<MedicalFacilityList />} />
+        <Route path="co-so-y-te/:id" element={<MedicalFacilityDetail />} />
         <Route path="bac-si" element={<DoctorList />} />
         <Route path="chuyen-khoa" element={<SpecialtyList />} />
         <Route path="bai-viet" element={<ArticleList />} />

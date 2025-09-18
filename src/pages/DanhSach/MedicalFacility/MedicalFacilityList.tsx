@@ -6,6 +6,7 @@ const LoadingPage = React.lazy(
   () => import("../../../components/LoadingPage/LoadingPage")
 );
 import "./MedicalFacility.css";
+import { useNavigate } from "react-router-dom";
 type MedicalFacilityModel = {
   id?: number;
   address?: { city?: string; id?: number };
@@ -16,6 +17,7 @@ type MedicalFacilityModel = {
   position?: string;
 };
 const MedicalFacilityList = () => {
+  const navigate = useNavigate();
   const [medicalFacilities, setMedicalFacilities] = useState<
     MedicalFacilityModel[]
   >([]);
@@ -58,7 +60,10 @@ const MedicalFacilityList = () => {
         {medicalFacilities &&
           medicalFacilities.length > 0 &&
           medicalFacilities.map((medicalFacility) => (
-            <div className="flex gap-5 medicalFacility_item_contain items-center">
+            <div
+              className="flex gap-5 medicalFacility_item_contain items-center cursor-pointer"
+              onClick={() => navigate(`${medicalFacility.id}`)}
+            >
               <img
                 src={medicalFacility?.image}
                 className="medicalFacility_item-img"
