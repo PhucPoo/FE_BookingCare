@@ -18,56 +18,72 @@ import {
   PhoneOutlined,
   HomeOutlined,
 } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
-import {
-  checkLogin,
-  registerUser,
-  validatePassword,
-  validateCCCD,
-  validatePhone,
-} from "../../utils/AuthHelper/AuthHelper";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
 
-interface AuthFormProps {
-  role: "admin" | "doctor" | "support" | "client";
-  type: "login" | "signup";
-}
-
-const roleConfig = {
+const roleConfig: Record<
+  string,
+  { color: string; bg: string }
+> = {
   admin: { color: "#46d9f6ff", bg: "/bg_admin.jpg" },
   doctor: { color: "#46d9f6ff", bg: "/bg_doctor.jpg" },
   support: { color: "#46d9f6ff", bg: "/bg_support.jpg" },
   client: { color: "#46d9f6ff", bg: "/bg_client.jpg" },
 };
 
-const AuthForm: React.FC<AuthFormProps> = ({ role, type }) => {
-  const { color } = roleConfig[role];
+const AuthForm: React.FC = () => {
+  const { role = "client", type = "login" } = useParams<{
+    role: string;
+    type: string;
+  }>();
+
+  const { color } = roleConfig[role] || roleConfig["client"];
   const navigate = useNavigate();
 
-  const onFinish = (values: any) => {
-    if (type === "login") {
-      if (!checkLogin(values.username, values.password)) {
-        alert("Sai tên đăng nhập hoặc mật khẩu!");
-        return;
+  const onFinish = async (values: any) => {
+    try {
+      if (type === "login") {
+        // gọi API login
+        const res = await axios.post("http://localhost:8080/api/v1/auth/login", {
+          userName: values.userName, // backend yêu cầu username
+          password: values.password,
+        });
+
+        if (res.data?.data?.accessToken) {
+          localStorage.setItem("accessToken", res.data.data.accessToken);
+          alert("Đăng nhập thành công!");
+          // Chuyển hướng tuỳ role
+          navigate(`/${role}/dashboard`);
+        } else {
+          alert("Đăng nhập thất bại!");
+        }
+      } else {
+        // gọi API signup
+        const res = await axios.post("http://localhost:8080/api/v1/auth/register", {
+          userName: values.userName,
+          password: values.password,
+          email: values.email,
+          cccd: values.cccd,
+          phoneNumber: values.phoneNumber,
+          address: values.address,
+          gender: values.gender,
+          birth: values.birth ? values.birth.format("YYYY-MM-DD") : null,
+
+        }, {
+          headers: { "Content-Type": "application/json" }
+        });
+
+
+        if (res.data?.statusCode === 201) {
+          alert("Đăng ký thành công!");
+          navigate(`/${role}/login`);
+        } else {
+          alert(res.data?.message || "Đăng ký thất bại!");
+        }
       }
-      alert(`Đăng nhập thành công!`);
-    } else {
-      if (!validatePassword(values.password)) {
-        alert("Mật khẩu phải có ít nhất 8 ký tự!");
-        return;
-      }
-      if (!validateCCCD(values.cccd)) {
-        alert("CCCD phải đúng 12 số!");
-        return;
-      }
-      if (!validatePhone(values.phone)) {
-        alert("Số điện thoại phải đúng 10 số!");
-        return;
-      }
-      if (!registerUser(values.username, values.password)) {
-        alert("Tên đăng nhập đã tồn tại!");
-        return;
-      }
-      alert(`Đăng ký thành công!`);
+    } catch (error: any) {
+      console.error(error);
+      alert("Có lỗi xảy ra, vui lòng thử lại!");
     }
   };
 
@@ -105,12 +121,12 @@ const AuthForm: React.FC<AuthFormProps> = ({ role, type }) => {
               size="large"
             >
               <Form.Item
-                name="username"
+                name="userName"
                 rules={[{ required: true, message: "Hãy nhập tên đăng nhập!" }]}
               >
                 <Input
                   prefix={<UserOutlined />}
-                  placeholder="Tên đăng nhập"
+                  placeholder="Tên đăng nhập / Email"
                   allowClear
                 />
               </Form.Item>
@@ -127,70 +143,93 @@ const AuthForm: React.FC<AuthFormProps> = ({ role, type }) => {
               </Form.Item>
 
               {type === "signup" && role === "client" && (
-                <>
-                  <Form.Item
-                    name="confirmPassword"
-                    rules={[{ required: true, message: "Hãy nhập lại mật khẩu!" }]}
-                  >
-                    <Input.Password
-                      prefix={<LockOutlined />}
-                      placeholder="Xác nhận mật khẩu"
-                      allowClear
-                    />
-                  </Form.Item>
+            <>
+              <Form.Item
+                name="userName"
+                rules={[{ required: true, message: "Hãy nhập họ tên!" }]}
+              >
+                <Input
+                  prefix={<UserOutlined />}
+                  placeholder="Họ và tên"
+                  allowClear
+                />
+              </Form.Item>
 
-                  <Form.Item
-                    name="email"
-                    rules={[
-                      { required: true, type: "email", message: "Hãy nhập email!" },
-                    ]}
-                  >
-                    <Input prefix={<MailOutlined />} placeholder="Email" allowClear />
-                  </Form.Item>
+              <Form.Item
+              name="confirmPassword"
+              dependencies={["password"]}
+              hasFeedback
+              rules={[
+                { required: true, message: "Hãy nhập lại mật khẩu!" },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue("password") === value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(new Error("Mật khẩu nhập lại không khớp!"));
+                  },
+                }),
+              ]}
+            >
+              <Input.Password
+                prefix={<LockOutlined />}
+                placeholder="Xác nhận mật khẩu"
+                allowClear
+              />
+            </Form.Item>
 
-                  <Form.Item
-                    name="cccd"
-                    rules={[{ required: true, message: "Hãy nhập số CCCD!" }]}
-                  >
-                    <Input
-                      prefix={<IdcardOutlined />}
-                      placeholder="Số căn cước công dân"
-                      allowClear
-                    />
-                  </Form.Item>
 
-                  <Form.Item name="phone">
-                    <Input
-                      prefix={<PhoneOutlined />}
-                      placeholder="Số điện thoại (Không bắt buộc)"
-                      allowClear
-                    />
-                  </Form.Item>
+              <Form.Item
+                name="email"
+                rules={[{ required: true, type: "email", message: "Hãy nhập email!" }]}
+              >
+                <Input prefix={<MailOutlined />} placeholder="Email" allowClear />
+              </Form.Item>
 
-                  <Form.Item name="address">
-                    <Input
-                      prefix={<HomeOutlined />}
-                      placeholder="Địa chỉ (Không bắt buộc)"
-                      allowClear
-                    />
-                  </Form.Item>
+              <Form.Item
+                name="cccd"
+                rules={[{ required: true, message: "Hãy nhập số CCCD!" }]}
+              >
+                <Input
+                  prefix={<IdcardOutlined />}
+                  placeholder="Số căn cước công dân"
+                  allowClear
+                />
+              </Form.Item>
 
-                  <Form.Item
-                    name="gender"
-                    rules={[{ required: true, message: "Hãy chọn giới tính!" }]}
-                  >
-                    <Select placeholder="Giới tính">
-                      <Select.Option value="male">Nam</Select.Option>
-                      <Select.Option value="female">Nữ</Select.Option>
-                      <Select.Option value="other">Khác</Select.Option>
-                    </Select>
-                  </Form.Item>
+              <Form.Item name="phoneNumber">
+                <Input
+                  prefix={<PhoneOutlined />}
+                  placeholder="Số điện thoại (Không bắt buộc)"
+                  allowClear
+                />
+              </Form.Item>
 
-                  <Form.Item name="dob">
-                    <DatePicker placeholder="Ngày sinh" style={{ width: "100%" }} />
-                  </Form.Item>
-                </>
-              )}
+              <Form.Item name="address">
+                <Input
+                  prefix={<HomeOutlined />}
+                  placeholder="Địa chỉ (Không bắt buộc)"
+                  allowClear
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="gender"
+                rules={[{ required: true, message: "Hãy chọn giới tính!" }]}
+              >
+                <Select placeholder="Giới tính">
+                  <Select.Option value="male">Nam</Select.Option>
+                  <Select.Option value="female">Nữ</Select.Option>
+                  <Select.Option value="other">Khác</Select.Option>
+                </Select>
+              </Form.Item>
+
+              <Form.Item name="birth">
+                <DatePicker placeholder="Ngày sinh" style={{ width: "100%" }} />
+              </Form.Item>
+            </>
+          )}
+
 
               {type === "login" && (
                 <Form.Item>
@@ -220,39 +259,38 @@ const AuthForm: React.FC<AuthFormProps> = ({ role, type }) => {
                 </Button>
               </Form.Item>
 
-            {role === "client" && (
-              <Form.Item style={{ textAlign: "center" }}>
-                {type === "login" ? (
-                  <>
-                    Don’t have an account?{" "}
-                    <Button
-                      type="link"
-                      style={{ padding: 0 }}
-                      onClick={() => navigate(`/${role}/signup`)}
-                    >
-                      Sign up
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    Already have an account?{" "}
-                    <Button
-                      type="link"
-                      style={{ padding: 0 }}
-                      onClick={() => navigate(`/${role}/login`)}
-                    >
-                      Login
-                    </Button>
-                  </>
-                )}
-              </Form.Item>
-            )}
+              {role === "client" && (
+                <Form.Item style={{ textAlign: "center" }}>
+                  {type === "login" ? (
+                    <>
+                      Don’t have an account?{" "}
+                      <Button
+                        type="link"
+                        style={{ padding: 0 }}
+                        onClick={() => navigate(`/${role}/signup`)}
+                      >
+                        Sign up
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      Already have an account?{" "}
+                      <Button
+                        type="link"
+                        style={{ padding: 0 }}
+                        onClick={() => navigate(`/${role}/login`)}
+                      >
+                        Login
+                      </Button>
+                    </>
+                  )}
+                </Form.Item>
+              )}
             </Form>
           </Card>
         </Col>
       </Row>
 
-      {/* CSS riêng cho hover nút */}
       <style>
         {`
           .auth-btn {

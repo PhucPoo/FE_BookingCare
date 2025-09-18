@@ -1,15 +1,27 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ChangeEvent } from "react";
 import { Link } from "react-router-dom";
 
+// Định nghĩa kiểu hóa đơn
+interface InvoiceType {
+  id: number;
+  patient_id: string;
+  meadicalRecords_id: string;
+  total_bill: number;
+  create_at: string;
+  update_at: string;
+  support_id: string;
+  status: string;
+}
+
 export default function InvoiceList() {
-  const [invoices, setInvoices] = useState([]);
+  const [invoices, setInvoices] = useState<InvoiceType[]>([]);
   const [search, setSearch] = useState("");
-  const [sortField, setSortField] = useState("create_at");
-  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortField, setSortField] = useState<"create_at" | "total_bill">("create_at");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   // Mock data để test frontend mà không cần database
   useEffect(() => {
-    const mockInvoices = [
+    const mockInvoices: InvoiceType[] = [
       {
         id: 1,
         patient_id: "BN001",
@@ -52,13 +64,11 @@ export default function InvoiceList() {
     .sort((a, b) => {
       if (sortField === "create_at") {
         return sortOrder === "asc"
-          ? new Date(a.create_at) - new Date(b.create_at)
-          : new Date(b.create_at) - new Date(a.create_at);
+          ? new Date(a.create_at).getTime() - new Date(b.create_at).getTime()
+          : new Date(b.create_at).getTime() - new Date(a.create_at).getTime();
       }
       if (sortField === "total_bill") {
-        return sortOrder === "asc"
-          ? a.total_bill - b.total_bill
-          : b.total_bill - a.total_bill;
+        return sortOrder === "asc" ? a.total_bill - b.total_bill : b.total_bill - a.total_bill;
       }
       return 0;
     });
@@ -73,12 +83,14 @@ export default function InvoiceList() {
           type="text"
           placeholder="Tìm kiếm theo Patient ID..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
           className="border rounded px-3 py-2"
         />
         <select
           value={sortField}
-          onChange={(e) => setSortField(e.target.value)}
+          onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+            setSortField(e.target.value as "create_at" | "total_bill")
+          }
           className="border rounded px-3 py-2"
         >
           <option value="create_at">Ngày tạo</option>
@@ -86,7 +98,9 @@ export default function InvoiceList() {
         </select>
         <select
           value={sortOrder}
-          onChange={(e) => setSortOrder(e.target.value)}
+          onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+            setSortOrder(e.target.value as "asc" | "desc")
+          }
           className="border rounded px-3 py-2"
         >
           <option value="asc">Tăng dần</option>
@@ -121,7 +135,7 @@ export default function InvoiceList() {
               <td className="border px-4 py-2">{invoice.status}</td>
               <td className="border px-4 py-2 flex gap-2">
                 <Link to="#" className="bg-green-500 text-white px-2 py-1 rounded">
-                    Xem
+                  Xem
                 </Link>
                 <Link
                   to="#"
@@ -142,7 +156,7 @@ export default function InvoiceList() {
           ))}
           {filteredInvoices.length === 0 && (
             <tr>
-              <td colSpan="6" className="text-center py-4 text-gray-500">
+              <td colSpan={6} className="text-center py-4 text-gray-500">
                 Không tìm thấy hóa đơn
               </td>
             </tr>

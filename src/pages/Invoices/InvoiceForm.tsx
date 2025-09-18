@@ -1,33 +1,45 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, type FormEvent } from "react";
+import type { ChangeEvent } from "react"
 import { useNavigate, useParams } from "react-router-dom";
 
+// Định nghĩa kiểu cho form hóa đơn
+interface InvoiceFormType {
+  patient_id: string;
+  total_bill: number;
+  status: "Paid" | "Unpaid" | "Cancelled";
+}
+
 export default function InvoiceForm() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isEdit = Boolean(id);
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<InvoiceFormType>({
     patient_id: "",
     total_bill: 0,
     status: "Unpaid",
   });
 
   useEffect(() => {
-    if (isEdit) {
+    if (isEdit && id) {
       fetch(`http://localhost:3000/bills/${id}`)
         .then(res => res.json())
-        .then(data => setForm(data))
+        .then((data: InvoiceFormType) => setForm(data))
         .catch(err => console.error(err));
     }
   }, [id, isEdit]);
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setForm(prev => ({
+      ...prev,
+      [name]: name === "total_bill" ? Number(value) : value,
+    }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    const url = isEdit
+    const url = isEdit && id
       ? `http://localhost:3000/bills/${id}`
       : "http://localhost:3000/bills";
     const method = isEdit ? "PUT" : "POST";

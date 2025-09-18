@@ -1,28 +1,23 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import AuthForm from "./components/AuthForm/AuthForm";
 import ForgotPasswordForm from "./components/ForgotPasswordForm/ForgotPasswordForm";
 import NotFound from "./pages/NotFound/NotFound";
-import { Navigate } from "react-router-dom";
+import UpdateUserForm from "./components/updateinfo/updateinfo";
 
 function App() {
   return (
     <Router>
       <Routes>
+        {/* Default → client login */}
         <Route path="/" element={<Navigate to="/client/login" replace />} />
-        {/* Admin */}
-        <Route path="/admin/login" element={<AuthForm role="admin" type="login" />} />
 
-        {/* Doctor */}
-        <Route path="/doctor/login" element={<AuthForm role="doctor" type="login" />} />
+        {/* Auth route chung cho tất cả role */}
+        <Route path="/:role/:type" element={<AuthForm />} />
 
-        {/* Support */}
-        <Route path="/support/login" element={<AuthForm role="support" type="login" />} />
-
-        {/* Client */}
-        <Route path="/client/login" element={<AuthForm role="client" type="login" />} />
-        <Route path="/client/signup" element={<AuthForm role="client" type="signup" />} />
+        {/* Forgot password */}
         <Route path="/:role/forgot-password" element={<ForgotPasswordForm />} />
 
+        <Route path="/:role/profile" element={<UpdateUserForm />} />
         {/* 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>

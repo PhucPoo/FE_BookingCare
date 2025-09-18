@@ -16,7 +16,7 @@ const ForgotPasswordForm: React.FC = () => {
 
   if (!role || !roleConfig[role]) return <div>Invalid role</div>;
 
-  const { title, color, } = roleConfig[role];
+  const { color, } = roleConfig[role];
 
   const onFinish = (values: any) => {
     console.log("Forgot password submit:", values);

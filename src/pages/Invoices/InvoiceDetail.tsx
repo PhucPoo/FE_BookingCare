@@ -1,14 +1,33 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 
+// Định nghĩa kiểu cho chi tiết dịch vụ
+interface InvoiceServiceDetail {
+  id: number;
+  service_id: string;
+  service_cost: number;
+  quantity: number;
+  total_service: number;
+}
+
+// Định nghĩa kiểu cho hóa đơn
+interface InvoiceDetailType {
+  id: number;
+  patient_id: number;
+  total_bill: number;
+  status: string;
+  details: InvoiceServiceDetail[];
+}
+
 export default function InvoiceDetail() {
-  const { id } = useParams();
-  const [invoice, setInvoice] = useState(null);
+  const { id } = useParams<{ id: string }>();
+  const [invoice, setInvoice] = useState<InvoiceDetailType | null>(null);
 
   useEffect(() => {
+    if (!id) return;
     fetch(`http://localhost:3000/bills/${id}`)
       .then(res => res.json())
-      .then(data => setInvoice(data))
+      .then((data: InvoiceDetailType) => setInvoice(data))
       .catch(err => console.error(err));
   }, [id]);
 
