@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import BookingTableManage from "./BookingTableManage";
 import BookingData from "../../MockData/BookingData";
 import ModalRegisterTime from "./ModalRegisterTime";
-import { testGetAccountsApi, testLoginApi } from "../../api/testApi";
+import { testGetAccountsApi } from "../../api/testApi";
 
 type Item = {
   id: number;
