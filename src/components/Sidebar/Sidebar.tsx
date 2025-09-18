@@ -20,7 +20,6 @@ const Sidebar: React.FC = () => {
   const normalBase =
     "hover:bg-[#3a3d46] hover:text-indigo-300 text-gray-300";
 
-  // linkClass hỗ trợ exact (so sánh tuyệt đối) hoặc startsWith
   const linkClass = (path: string, exact = false) => {
     const isActive = exact
       ? location.pathname === path

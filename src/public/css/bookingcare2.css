@@ -55,6 +55,7 @@
   flex-shrink: 0;
   text-align: left;
   transition: 0.3s;
+  width: 300px !important;
 }
 
 .doctor-card:hover {
@@ -76,6 +77,7 @@
   font-size: 13px;
   margin-bottom: 10px;
   color: #f39c12;
+  width: 100%;
 }
 
 .doctor-card h3 {
@@ -105,8 +107,6 @@
 .doctor-card button:hover {
   background: #1a8cff;
 }
-
-
 
 /* Healthcare Section */
 .healthcare {
@@ -169,11 +169,13 @@
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  width: 250px;
+  padding: 20px;
+  width: 230px;
   flex-shrink: 0;
-
   text-align: left;
   transition: 0.3s;
+  width: 300px !important;
+  height: 365px !important;
 }
 
 .health-card:hover {
@@ -201,6 +203,7 @@
   font-size: 16px;
   margin-bottom: 8px;
   color: #333;
+  height: 40px;
 }
 
 .health-card .hospital {
@@ -231,8 +234,6 @@
 .health-card button:hover {
   background: #1a8cff;
 }
-
-
 
 /* Departments */
 .departments {
@@ -293,7 +294,6 @@
 .department img:hover {
   background: #e0f0ff;
 }
-
 
 /* Statistics */
 .statistics {
