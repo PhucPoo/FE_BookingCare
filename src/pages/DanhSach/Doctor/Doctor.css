@@ -7,6 +7,7 @@
   width: 105px;
   height: 105px;
   border: 0;
+  border-color: transparent;
 }
 .doctors_item-name {
 }

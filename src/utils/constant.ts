@@ -1,5 +1,5 @@
 export const api = "http://localhost:8080/api/v1";
-export const formatDate = (target: string) => {
+export const formatDate = (target: string | undefined) => {
   const date = new Date(target);
 
   // Format theo múi giờ Việt Nam
@@ -8,9 +8,6 @@ export const formatDate = (target: string) => {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
-    // hour: "2-digit",
-    // minute: "2-digit",
-    // second: "2-digit",
   });
 
   return vnTime;

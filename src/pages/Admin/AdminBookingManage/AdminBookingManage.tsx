@@ -53,7 +53,6 @@ const AdminBookingManage = () => {
           };
         }
       );
-      console.log("🚀 ~ handleAdminGetAllBookings ~ columnArr:", columnArr);
       delete columnArr[4];
       delete columnArr[0];
       setColumns(columnArr);
@@ -66,7 +65,7 @@ const AdminBookingManage = () => {
     handleAdminGetAllBookings();
   }, []);
   return (
-    <div className="p-5 bg-white mx-5">
+    <div className="p-5 bg-white mx-5 border-2 rounded border-gray-200">
       <AdminBookingTable
         AdminBookingList={bookings}
         pageSize={pageSize}

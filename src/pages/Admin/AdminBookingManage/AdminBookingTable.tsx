@@ -65,7 +65,6 @@ const AdminBookingTable = ({
   pageSize,
   currentPage,
   totalBookingList,
-  columns,
   handleAdminGetAllBookings,
 }: Props) => {
   const items: MenuProps["items"] = [
@@ -123,13 +122,12 @@ const AdminBookingTable = ({
     },
   ];
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-7xl mx-auto ">
       <div className="flex justify-between items-center">
         <div className="mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-xl sm:text-xl font-bold text-gray-900 mb-2">
             Danh sách lịch khám
           </h1>
-          <p className="text-gray-600">Danh sách lịch khám hiện có</p>
         </div>
       </div>
 
@@ -220,48 +218,29 @@ const AdminBookingTable = ({
             <thead className="bg-gray-50">
               {/* column header */}
               <tr>
-                {/* {columns &&
-                  columns.length > 0 &&
-                  columns.map((item) => {
-                    return (
-                      <th
-                        className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
-                        key={item.value}
-                        onClick={() => {
-                          if (item.value === 7) {
-                            // handleSort();
-                          }
-                        }}
-                      >
-                        {item.label}
-                      </th>
-                    );
-                  })} */}
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
+                <th className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
                   Ngày khám
                 </th>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
-                  Miêu tả
-                </th>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
+
+                <th className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
                   Ngày tạo
                 </th>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
+                <th className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
                   Status
                 </th>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
-                  Doctor
+                <th className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
+                  Bác sĩ
                 </th>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
+                <th className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
                   Bệnh nhân
                 </th>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
-                  Clinic
+                <th className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
+                  Bệnh viện
                 </th>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
+                <th className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
                   Time
                 </th>
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center hover:bg-gray-500 hover:text-white transition-all delay-100">
+                <th className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center hover:bg-gray-500 hover:text-white transition-all delay-100">
                   Hành động
                 </th>
               </tr>
@@ -279,10 +258,6 @@ const AdminBookingTable = ({
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
                         {item.appointmentDate}
                       </td>
-
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                        {item.description}
-                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
                         {formatDate(item?.createAt)}
                       </td>
@@ -296,35 +271,21 @@ const AdminBookingTable = ({
                         {item.patient?.account?.name}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                        {item.clinic?.name}
+                        {item?.clinic?.name?.length > 20
+                          ? item.clinic?.name?.slice(0, 20) + "..."
+                          : item.clinic?.name}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
                         {`${item.time?.end}-${item.time?.start}`}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex items-center justify-center space-x-5">
+                        <div className="flex items-center justify-center space-x-2">
                           <Button
                             onClick={() => {
                               // handleUpdateService(item);
                             }}
                           >
-                            Xem chi tiết
-                          </Button>
-                          <Button
-                            type="primary"
-                            onClick={() => {
-                              // handleUpdateService(item);
-                            }}
-                          >
-                            <Popconfirm
-                              title={"Xác nhận khám"}
-                              //   onConfirm={confirm}
-                              //   onCancel={cancel}
-                              okText="Xác nhận"
-                              cancelText="huỷ"
-                            >
-                              Thao tác
-                            </Popconfirm>
+                            Chi tiết
                           </Button>
                         </div>
                       </td>
