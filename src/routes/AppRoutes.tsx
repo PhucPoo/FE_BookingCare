@@ -25,6 +25,7 @@ import ArticleList from "../pages/DanhSach/Article/ArticleList";
 import List from "../pages/DanhSach/List";
 import MedicalFacilityDetail from "../pages/DanhSach/MedicalFacility/MedicalFacilityDetail";
 import AdminBookingManage from "../pages/Admin/AdminBookingManage/AdminBookingManage";
+import DoctorDetail from "../pages/DanhSach/Doctor/DoctorDetail";
 
 const AppRoutes = () => {
   return (
@@ -34,12 +35,12 @@ const AppRoutes = () => {
       <Route path="/danh-sach" element={<List />}>
         <Route
           path="/danh-sach"
-          element={<Navigate to={"co-so-y-te"} replace={true} />}
+          element={<Navigate to={"error-page"} replace={true} />}
         />
         <Route path="co-so-y-te" element={<MedicalFacilityList />} />
         <Route path="co-so-y-te/:id" element={<MedicalFacilityDetail />} />
         <Route path="bac-si" element={<DoctorList />} />
-        <Route path="bac-si/:id" element={<DoctorList />} />
+        <Route path="bac-si/:id" element={<DoctorDetail />} />
         <Route path="chuyen-khoa" element={<SpecialtyList />} />
         <Route path="bai-viet" element={<ArticleList />} />
       </Route>

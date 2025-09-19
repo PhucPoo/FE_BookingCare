@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { getAllMedicalFacility } from "../../../api/Medical/MedicalFacilityApi";
-import { HomeOutlined } from "@ant-design/icons";
-import { Breadcrumb } from "antd/lib";
 const LoadingPage = React.lazy(
   () => import("../../../components/LoadingPage/LoadingPage")
 );
 import "./MedicalFacility.css";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import Breadcrumb from "../../../components/Breadcrumb/Breadcrumb";
 type MedicalFacilityModel = {
   id?: number;
   address?: { city?: string; id?: number };
@@ -18,6 +17,8 @@ type MedicalFacilityModel = {
 };
 const MedicalFacilityList = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
   const [medicalFacilities, setMedicalFacilities] = useState<
     MedicalFacilityModel[]
   >([]);
@@ -40,19 +41,7 @@ const MedicalFacilityList = () => {
   }
   return (
     <div className="container">
-      <Breadcrumb
-        items={[
-          {
-            href: "/",
-            title: <HomeOutlined />,
-          },
-
-          {
-            title: "Cơ sở y tế dành cho bạn",
-          },
-        ]}
-        className="breadcrumb_margin"
-      />
+      <Breadcrumb location={location.pathname} />
       <p className="text-xl font-bold " style={{ marginTop: "20px" }}>
         Cơ sở y tế dành cho bạn
       </p>

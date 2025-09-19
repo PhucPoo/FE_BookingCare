@@ -1,3 +1,6 @@
+import { useLocation } from "react-router-dom";
+import Breadcrumb from "../../../components/Breadcrumb/Breadcrumb";
+
 type DoctorDetailModel = {
   id?: number;
   degree?: string;
@@ -6,7 +9,13 @@ type DoctorDetailModel = {
 };
 
 const DoctorDetail = () => {
-  return <div>DoctorDetail</div>;
+  const location = useLocation();
+
+  return (
+    <div className="container">
+      <Breadcrumb location={location.pathname} />
+    </div>
+  );
 };
 
 export default DoctorDetail;

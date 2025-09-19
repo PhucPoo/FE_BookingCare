@@ -3,9 +3,9 @@ import { getAllSpecialties } from "../../../api/Specialties/SpecialtiesApi";
 const LoadingPage = React.lazy(
   () => import("../../../components/LoadingPage/LoadingPage")
 );
-import { HomeOutlined } from "@ant-design/icons";
-import { Breadcrumb } from "antd/lib";
 import "./Specialties.css";
+import { useLocation } from "react-router-dom";
+import Breadcrumb from "../../../components/Breadcrumb/Breadcrumb";
 type DoctorsModel = {
   id?: number;
   name?: string;
@@ -13,6 +13,8 @@ type DoctorsModel = {
 };
 
 const SpecialtyList = () => {
+  const location = useLocation();
+
   const [specialties, setSpecialties] = useState<DoctorsModel[]>([]);
   const handleGetAllDoctors = async () => {
     const res = await getAllSpecialties();
@@ -33,19 +35,8 @@ const SpecialtyList = () => {
   }
   return (
     <div className="container">
-      <Breadcrumb
-        items={[
-          {
-            href: "/",
-            title: <HomeOutlined />,
-          },
+      <Breadcrumb location={location.pathname} />
 
-          {
-            title: "Chuyên khoa dành cho bạn",
-          },
-        ]}
-        className="breadcrumb_margin"
-      />
       <p className="text-xl font-bold " style={{ marginTop: "20px" }}>
         Chuyên khoa dành cho bạn
       </p>
