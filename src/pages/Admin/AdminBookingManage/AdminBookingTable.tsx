@@ -1,11 +1,4 @@
-import {
-  Button,
-  Dropdown,
-  Pagination,
-  Popconfirm,
-  Select,
-  type MenuProps,
-} from "antd/lib";
+import { Button, Dropdown, Pagination, Select, type MenuProps } from "antd/lib";
 import { formatDate } from "../../../utils/constant";
 
 type AdminBookingTableModel = {

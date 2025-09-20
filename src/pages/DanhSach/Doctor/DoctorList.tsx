@@ -6,6 +6,7 @@ const LoadingPage = React.lazy(
 import "./Doctor.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import Breadcrumb from "../../../components/Breadcrumb/Breadcrumb";
+import { getDegree } from "../../../utils/constant";
 type DoctorsModel = {
   id?: number;
   degree?: string;
@@ -51,7 +52,7 @@ const DoctorList = () => {
             >
               <img src={doctor?.image} className="doctors_item-img" />
               <div className="doctors_item-name text-xl">
-                {`${doctor.degree} ${doctor?.account?.name}`}
+                {`${getDegree(doctor.degree)} ${doctor?.account?.name}`}
               </div>
             </div>
           ))}

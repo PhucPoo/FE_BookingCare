@@ -10,3 +10,14 @@ export const getAllDoctors = async () => {
   const res = await customAxiosInstance.get(`${api}/doctors`, config);
   return res.data;
 };
+export const getDoctorById = async (id: string) => {
+  const res = await customAxiosInstance.get(`${api}/doctors/${id}`, config);
+  return res.data;
+};
+export const getAvailableTimeOfDoctor = async (id: string, date: string) => {
+  const res = await customAxiosInstance.get(
+    `${api}/bookings/doctor/${id}/available-times?appointmentDate=${date}`,
+    config
+  );
+  return res.data;
+};

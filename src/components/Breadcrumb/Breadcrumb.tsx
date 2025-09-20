@@ -17,7 +17,7 @@ const Breadcrumb = ({ location }: Props) => {
   return (
     <div className="breadcrumbs my-2 ">
       <Link to="/">
-        <HomeOutlined className="mx-2" />
+        <HomeOutlined className="mx-2" style={{ color: "#5ccad8" }} />
       </Link>
       {pathnames.map((name, index) => {
         breadcrumbPath += `/${name}`;
@@ -30,7 +30,11 @@ const Breadcrumb = ({ location }: Props) => {
         ) : (
           <span key={breadcrumbPath}>
             /
-            <Link to={breadcrumbPath} className="mx-2">
+            <Link
+              to={breadcrumbPath}
+              className="mx-2"
+              style={{ color: "#5ccad8" }}
+            >
               {name}
             </Link>
           </span>
