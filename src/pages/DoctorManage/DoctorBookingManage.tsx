@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import BookingTableManage from "./DoctorBookingTableManage";
 import BookingData from "../../MockData/BookingData";
 import ModalRegisterTime from "./DoctorModalRegisterTime";
-import { testGetAccountsApi } from "../../api/testApi";
+import { getBookingsByDoctorId } from "../../api/Doctor/DoctorApi";
 
 type Item = {
   id: number;
@@ -44,9 +44,6 @@ const BookingManage = () => {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-  const [columns, setColumns] = useState<{ value: number; label: string }[]>(
-    []
-  );
 
   const [checkRender, setCheckRender] = useState({
     createdAt: false,
@@ -125,26 +122,20 @@ const BookingManage = () => {
   };
 
   // initial value
-  const handleGetBookingList = () => {
-    const columnArr = Object.keys(BookingData[0]).map((item, index) => {
-      return {
-        value: index,
-        label: item,
-      };
-    });
-    setColumns(columnArr);
-    setBookingList(BookingData);
-    setPageSize(10);
-    setTotalBillList(BookingData.length);
-    setCurrentPage(1);
+  const handleGetBookingList = async () => {
+    const res = await getBookingsByDoctorId("2");
+    setBookingList(res.data.result);
+    const {
+      meta: { page, pageSize, totals },
+    } = res.data;
+
+    setPageSize(pageSize);
+    setTotalBillList(totals);
+    setCurrentPage(page);
   };
-  const handleTestLoginApi = async () => {
-    // testLoginApi();
-    testGetAccountsApi();
-  };
+
   useEffect(() => {
     handleGetBookingList();
-    handleTestLoginApi();
   }, []);
   return (
     <div className="p-5 bg-white mx-5">
@@ -154,7 +145,6 @@ const BookingManage = () => {
         currentPage={currentPage}
         totalBillList={totalBillList}
         onLog={onLog}
-        columns={columns}
         handleChange={handleChange}
         handleFindByDate={handleFindByDate}
         handleSort={handleSort}

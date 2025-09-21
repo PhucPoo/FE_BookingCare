@@ -8,19 +8,40 @@ import {
   type MenuProps,
   type PopconfirmProps,
 } from "antd/lib";
+import { formatDate } from "../../utils/constant";
 
 type Props = {
   BookingList: {
-    id: number;
-    doctor_id: string;
-    patient_id: string;
-    time_id: number;
-    clinic_id: number;
-    description: string;
-    status: string;
-    createdAt: string;
+    id?: number;
+    appointmentDate?: string;
+    description?: string;
+    status?: string;
+    doctor?: {
+      id?: number;
+      account?: {
+        id?: number;
+        name?: string;
+      };
+    };
+    patient?: {
+      id?: number;
+      account?: {
+        id?: number;
+        name?: string;
+      };
+    };
+    time?: {
+      id?: number;
+      start?: string;
+      end?: string;
+    };
+    clinic?: {
+      id?: number;
+      name?: string;
+    };
+    createAt?: string;
   }[];
-  columns: { value: number; label: string }[];
+
   pageSize: number;
   currentPage: number;
   totalBillList: number;
@@ -37,12 +58,12 @@ type Props = {
 
 const BookingTableManage = ({
   BookingList,
-  columns,
+
   pageSize,
   currentPage,
   totalBillList,
   onLog,
-  handleSort,
+  // handleSort,
   handleChange,
   handleFindByDate,
   handleSearchBooking,
@@ -223,7 +244,7 @@ const BookingTableManage = ({
             <thead className="bg-gray-50">
               {/* column header */}
               <tr>
-                {columns &&
+                {/* {columns &&
                   columns.length > 0 &&
                   columns.map((item) => {
                     return (
@@ -239,8 +260,30 @@ const BookingTableManage = ({
                         {item.label}
                       </th>
                     );
-                  })}
-                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center hover:bg-gray-500 hover:text-white transition-all delay-100">
+                  })} */}
+                <th className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
+                  Ngày khám
+                </th>
+
+                <th className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
+                  Ngày tạo
+                </th>
+                <th className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
+                  Bác sĩ
+                </th>
+                <th className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
+                  Bệnh nhân
+                </th>
+                <th className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
+                  Bệnh viện
+                </th>
+                <th className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
+                  Time
+                </th>
+                <th className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center hover:bg-gray-500 hover:text-white transition-all delay-100">
                   Hành động
                 </th>
               </tr>
@@ -256,39 +299,36 @@ const BookingTableManage = ({
                       key={item.id}
                     >
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                        {item.id}
-                      </td>
-
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                        {item.doctor_id}
-                      </td>
-
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                        {item.patient_id}
+                        {item.appointmentDate}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                        {item.time_id}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                        {item.clinic_id}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                        {item.description}
+                        {formatDate(item?.createAt)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
                         {item.status}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                        {item.createdAt}
+                        {item.doctor?.account?.name}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
+                        {item.patient?.account?.name}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
+                        {item?.clinic?.name && item?.clinic?.name?.length > 20
+                          ? item.clinic?.name?.slice(0, 20) + "..."
+                          : item.clinic?.name}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
+                        {`${item.time?.end}-${item.time?.start}`}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex items-center justify-center space-x-5">
+                        <div className="flex items-center justify-center space-x-2">
                           <Button
                             onClick={() => {
                               // handleUpdateService(item);
                             }}
                           >
-                            Xem chi tiết
+                            Chi tiết
                           </Button>
                           <Button
                             type="primary"
@@ -319,9 +359,9 @@ const BookingTableManage = ({
       {/* pagination */}
       <div className="mt-6 flex flex-col sm:flex-row items-center justify-between bg-white px-6 py-3 rounded-lg shadow-sm border border-gray-200">
         <div className="text-sm text-gray-700 mb-4 sm:mb-0">
-          Hiển thị <span className="font-semibold">1</span> đến{" "}
-          <span className="font-semibold">5</span>
-          của <span className="font-semibold">20</span> kết quả
+          Hiển thị <span className="font-semibold">{currentPage}</span> đến{" "}
+          <span className="font-semibold">{pageSize}</span>
+          của <span className="font-semibold">{totalBillList}</span> kết quả
         </div>
         <div className="flex items-center space-x-1">
           <Pagination

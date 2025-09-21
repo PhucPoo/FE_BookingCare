@@ -21,3 +21,10 @@ export const getAvailableTimeOfDoctor = async (id: string, date: string) => {
   );
   return res.data;
 };
+export const getBookingsByDoctorId = async (id: string) => {
+  const res = await customAxiosInstance.get(
+    `${api}/bookings/doctor/${id}`,
+    config
+  );
+  return res.data;
+};

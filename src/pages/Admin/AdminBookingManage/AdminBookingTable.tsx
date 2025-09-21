@@ -264,7 +264,7 @@ const AdminBookingTable = ({
                         {item.patient?.account?.name}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                        {item?.clinic?.name?.length > 20
+                        {item?.clinic?.name && item?.clinic?.name?.length > 20
                           ? item.clinic?.name?.slice(0, 20) + "..."
                           : item.clinic?.name}
                       </td>
