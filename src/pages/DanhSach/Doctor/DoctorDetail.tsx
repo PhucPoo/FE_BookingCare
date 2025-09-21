@@ -15,8 +15,13 @@ import "./Doctor.css";
 type DoctorDetailModel = {
   id?: number;
   degree?: string;
-  account?: { id?: number; name: string; email: string; address: string };
-  image?: string;
+  account?: {
+    id?: number;
+    name: string;
+    email: string;
+    address: string;
+    avatar?: string;
+  };
   description?: string;
   cost?: number;
   clinic?: {
@@ -55,6 +60,7 @@ const DoctorDetail = () => {
     }
   };
   useEffect(() => {
+    window.scroll(0, 0);
     handleGetDetailDoctor();
   }, []);
 
@@ -67,7 +73,7 @@ const DoctorDetail = () => {
         <Breadcrumb location={location.pathname} />
         <div className="flex gap-5 mt-5 items-center">
           <img
-            src={detailDoctor?.image}
+            src={detailDoctor?.account?.avatar}
             className="doctor_detail-img rounded-full"
             style={{
               border: "2px solid black",

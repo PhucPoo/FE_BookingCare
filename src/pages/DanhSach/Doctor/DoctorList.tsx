@@ -10,8 +10,11 @@ import { getDegree } from "../../../utils/constant";
 type DoctorsModel = {
   id?: number;
   degree?: string;
-  account?: { id?: number; name: string };
-  image?: string;
+  account?: {
+    id?: number;
+    name: string;
+    avatar?: string;
+  };
 };
 const DoctorList = () => {
   const navigate = useNavigate();
@@ -50,7 +53,7 @@ const DoctorList = () => {
               className="flex gap-5 items-center doctors_item_contain cursor-pointer"
               onClick={() => navigate(`${doctor.id}`)}
             >
-              <img src={doctor?.image} className="doctors_item-img" />
+              <img src={doctor?.account?.avatar} className="doctors_item-img" />
               <div className="doctors_item-name text-xl">
                 {`${getDegree(doctor.degree)} ${doctor?.account?.name}`}
               </div>

@@ -47,7 +47,7 @@ const ServiceListTable = ({
   const handleDeleteService = async (id: number) => {
     const result = await deleteService(id);
     if (!result?.error) {
-      toast.success("Sửa dịch vụ hoàn tất");
+      toast.success("Xoá dịch vụ hoàn tất");
       handleGetServiceList();
     }
   };
@@ -138,7 +138,6 @@ const ServiceListTable = ({
               <tr>
                 <th
                   className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
-                  // key={item.value}
                   onClick={() => {
                     handleSort(0);
                   }}
@@ -147,7 +146,6 @@ const ServiceListTable = ({
                 </th>
                 <th
                   className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
-                  // key={item.value}
                   onClick={() => {
                     handleSort(1);
                   }}
@@ -156,20 +154,13 @@ const ServiceListTable = ({
                 </th>
                 <th
                   className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
-                  // key={item.value}
                   onClick={() => {
                     handleSort(2);
                   }}
                 >
                   Giá
                 </th>
-                <th
-                  className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
-                  // key={item.value}
-                  // onClick={() => {
-                  //   handleSort(item.value);
-                  // }}
-                >
+                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
                   Miêu tả
                 </th>
                 <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center hover:bg-gray-500 hover:text-white transition-all delay-100">
