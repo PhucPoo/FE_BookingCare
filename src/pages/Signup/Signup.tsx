@@ -6,25 +6,46 @@ import {
   Card,
   Row,
   Col,
-  DatePicker,
-  Select,
+  message,
 } from "antd";
 import {
   UserOutlined,
   LockOutlined,
   MailOutlined,
   PhoneOutlined,
-  IdcardOutlined,
-  HomeOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const { Option } = Select;
-
 const Signup: React.FC = () => {
   const navigate = useNavigate();
+  const [form] = Form.useForm();
+  const [password, setPassword] = React.useState("");
 
+  const requiredLabel = (label: string) => (
+    <span>
+      {label} <span style={{ color: "red" }}>*</span>
+    </span>
+  );
+
+  // Password rules checklist
+  const passwordRules = [
+    { label: "Mật khẩu phải có ít nhất 8 ký tự", test: (pw: string) => pw.length >= 8 },
+    { label: "Mật khẩu phải có ít nhất 1 chữ thường [a-z]", test: (pw: string) => /[a-z]/.test(pw) },
+    { label: "Mật khẩu phải có ít nhất 1 chữ hoa [A-Z]", test: (pw: string) => /[A-Z]/.test(pw) },
+    { label: "Mật khẩu phải có ít nhất 1 số [0-9]", test: (pw: string) => /[0-9]/.test(pw) },
+    { label: "Mật khẩu phải có ít nhất 1 ký tự đặc biệt (!@#$%^&*)", test: (pw: string) => /[!@#$%^&*]/.test(pw) },
+  ];
+
+  const validatePassword = (value: string) => {
+    if (!value) return "Hãy nhập mật khẩu!";
+    for (let rule of passwordRules) {
+      if (!rule.test(value)) return `Mật khẩu chưa đạt yêu cầu: ${rule.label}`;
+    }
+    return "";
+  };
+
+  // ================== SUBMIT ==================
   const onFinish = async (values: any) => {
     try {
       const res = await axios.post(
@@ -34,33 +55,42 @@ const Signup: React.FC = () => {
           password: values.password,
           email: values.email,
           phoneNumber: values.phoneNumber,
-          cccd: values.cccd,
-          address: values.address,
-          gender: values.gender,
-          birth: values.birth ? values.birth.format("YYYY-MM-DD") : null,
         },
-        {
-          headers: { "Content-Type": "application/json" },
-        }
+        { headers: { "Content-Type": "application/json" } }
       );
 
-      if (res.data?.statusCode === 201) {
-        alert("Đăng ký thành công!");
+      if (res.status === 201 || res.data?.statusCode === 201) {
+        message.success("Đăng ký thành công!");
         navigate("/login");
-      } else {
-        alert(res.data?.message || "Đăng ký thất bại!");
       }
     } catch (error: any) {
       console.error(error);
-      alert("Có lỗi xảy ra, vui lòng thử lại!");
+
+      if (error.response && error.response.data) {
+        let msgs = error.response.data.message;
+        if (!Array.isArray(msgs)) msgs = [msgs];
+
+        const fieldErrors: any[] = [];
+        msgs.forEach((msg: string) => {
+          if (msg.toLowerCase().includes("mật khẩu")) {
+            fieldErrors.push({ name: "password", errors: [msg] });
+          } else if (msg.toLowerCase().includes("email")) {
+            fieldErrors.push({ name: "email", errors: [msg] });
+          } else if (msg.toLowerCase().includes("tên đăng nhập")) {
+            fieldErrors.push({ name: "name", errors: [msg] });
+          } else if (msg.toLowerCase().includes("số điện thoại")) {
+            fieldErrors.push({ name: "phoneNumber", errors: [msg] });
+          } else {
+            fieldErrors.push({ name: "name", errors: [msg] });
+          }
+        });
+
+        form.setFields(fieldErrors);
+      } else {
+        message.error("Có lỗi xảy ra, vui lòng thử lại!");
+      }
     }
   };
-
-  const requiredLabel = (label: string) => (
-    <span>
-      {label} <span style={{ color: "red" }}>*</span>
-    </span>
-  );
 
   return (
     <div
@@ -89,94 +119,126 @@ const Signup: React.FC = () => {
               boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
             }}
           >
-            <Form name="signup" layout="vertical" onFinish={onFinish} size="large">
+            <Form
+              form={form}
+              name="signup"
+              layout="vertical"
+              onFinish={onFinish}
+              size="large"
+            >
               {/* Tên đăng nhập */}
               <Form.Item
-                className="compact-form-item"
                 label={requiredLabel("Tên đăng nhập")}
                 name="name"
-                rules={[{ required: true, message: "Hãy nhập tên đăng nhập!" }]}
+                validateFirst={false}
+                rules={[
+                  { required: true, message: "Hãy nhập tên đăng nhập!" },
+                  { min: 4, message: "Tên đăng nhập phải >= 4 ký tự" },
+                ]}
               >
                 <Input prefix={<UserOutlined />} placeholder="Tên đăng nhập" allowClear />
               </Form.Item>
 
               {/* Mật khẩu */}
               <Form.Item
-                className="compact-form-item"
                 label={requiredLabel("Mật khẩu")}
                 name="password"
-                rules={[{ required: true, message: "Hãy nhập mật khẩu!" }]}
+                validateFirst={false}
+                rules={[
+                  { required: true, message: "Hãy nhập mật khẩu!" },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      const error = validatePassword(value);
+                      if (error) return Promise.reject(new Error(error));
+                      return Promise.resolve();
+                    },
+                  }),
+                ]}
               >
-                <Input.Password prefix={<LockOutlined />} placeholder="Mật khẩu" allowClear />
+                <Input.Password
+                  prefix={<LockOutlined />}
+                  placeholder="Mật khẩu"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  allowClear
+                />
               </Form.Item>
+
+              {/* Password checklist */}
+              <div style={{ textAlign: "left", marginTop: -10, marginBottom: 12 }}>
+                {passwordRules.map((rule) => {
+                  const isValid = rule.test(password);
+                  return (
+                    <div
+                      key={rule.label}
+                      style={{
+                        color: isValid ? "green" : "gray",
+                        display: "flex",
+                        alignItems: "center",
+                        fontSize: 12,
+                      }}
+                    >
+                      <span style={{ marginRight: 6 }}>{isValid ? "" : ""}</span>
+                      {rule.label}
+                    </div>
+                  );
+                })}
+              </div>
 
               {/* Xác nhận mật khẩu */}
               <Form.Item
-                className="compact-form-item"
                 label={requiredLabel("Xác nhận mật khẩu")}
                 name="confirmPassword"
                 dependencies={["password"]}
+                validateFirst={false}
                 hasFeedback
                 rules={[
                   { required: true, message: "Hãy nhập lại mật khẩu!" },
                   ({ getFieldValue }) => ({
                     validator(_, value) {
-                      if (!value || getFieldValue("password") === value) {
+                      if (!value || getFieldValue("password") === value)
                         return Promise.resolve();
-                      }
                       return Promise.reject(new Error("Mật khẩu nhập lại không khớp!"));
                     },
                   }),
                 ]}
               >
-                <Input.Password prefix={<LockOutlined />} placeholder="Xác nhận mật khẩu" allowClear />
+                <Input.Password
+                  prefix={<LockOutlined />}
+                  placeholder="Xác nhận mật khẩu"
+                  allowClear
+                />
               </Form.Item>
 
               {/* Email */}
               <Form.Item
-                className="compact-form-item"
                 label={requiredLabel("Email")}
                 name="email"
-                rules={[{ required: true, type: "email", message: "Hãy nhập email!" }]}
+                validateFirst={false}
+                rules={[
+                  { required: true, type: "email", message: "Email không hợp lệ!" },
+                ]}
               >
                 <Input prefix={<MailOutlined />} placeholder="Email" allowClear />
               </Form.Item>
 
-              {/* Số điện thoại (optional) */}
-              <Form.Item className="compact-form-item" label="Số điện thoại" name="phoneNumber">
-                <Input prefix={<PhoneOutlined />} placeholder="Số điện thoại (không bắt buộc)" allowClear />
-              </Form.Item>
-
-              {/* CCCD (optional) */}
-              <Form.Item className="compact-form-item" label="CCCD" name="cccd">
-                <Input prefix={<IdcardOutlined />} placeholder="Số CCCD" allowClear />
-              </Form.Item>
-
-              {/* Địa chỉ (optional) */}
-              <Form.Item className="compact-form-item" label="Địa chỉ" name="address">
-                <Input prefix={<HomeOutlined />} placeholder="Địa chỉ" allowClear />
-              </Form.Item>
-
-              {/* Giới tính */}
+              {/* Số điện thoại */}
               <Form.Item
-                className="compact-form-item"
-                label={requiredLabel("Giới tính")}
-                name="gender"
-                rules={[{ required: true, message: "Hãy chọn giới tính!" }]}
+                label={requiredLabel("Số điện thoại")}
+                name="phoneNumber"
+                validateFirst={false}
+                rules={[
+                  { required: true, message: "Hãy nhập số điện thoại!" },
+                  {
+                    pattern: /^(0|\+84)\d{9}$/,
+                    message: "Số điện thoại không hợp lệ!",
+                  },
+                ]}
               >
-                <Select placeholder="Chọn giới tính">
-                  <Option value="male">Nam</Option>
-                  <Option value="female">Nữ</Option>
-                  <Option value="other">Khác</Option>
-                </Select>
+                <Input prefix={<PhoneOutlined />} placeholder="Số điện thoại" allowClear />
               </Form.Item>
 
-              {/* Ngày sinh (optional) */}
-              <Form.Item className="compact-form-item" label="Ngày sinh" name="birth">
-                <DatePicker style={{ width: "100%" }} format="YYYY-MM-DD" placeholder="Ngày sinh" />
-              </Form.Item>
-
-              {/* Nút Đăng ký */}
+              {/* Submit */}
               <Form.Item>
                 <Button
                   type="primary"
@@ -189,7 +251,7 @@ const Signup: React.FC = () => {
                   }}
                   className="auth-btn"
                 >
-                  Sign up
+                  Đăng ký
                 </Button>
               </Form.Item>
 
