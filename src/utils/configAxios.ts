@@ -1,4 +1,5 @@
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const customAxiosInstance = axios.create();
 
@@ -29,6 +30,8 @@ customAxiosInstance.interceptors.response.use(
     return response;
   },
   function (error) {
+    console.log("🚀 ~ error:", error);
+    toast.error(error.response.data.message);
     // Bất kì mã trạng thái nào lọt ra ngoài tầm 2xx đều khiến hàm này được trigger\
     // Làm gì đó với lỗi response
     if (error.response?.status === 401) {

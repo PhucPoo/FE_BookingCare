@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Modal from "antd/es/modal";
 import Input from "antd/es/input";
 import Select from "antd/es/select";
@@ -9,34 +9,28 @@ import { testPostAccountsApi } from "../../../api/testApi";
 
 const { Option } = Select;
 
-interface AdduserProps {
+interface AddUserProps {
   open: boolean;
   onCancel: () => void;
   onAdd: (user: User) => void;
 }
 
-const Adduser: React.FC<AdduserProps> = ({ open, onCancel, onAdd }) => {
+const Adduser: React.FC<AddUserProps> = ({ open, onCancel, onAdd }) => {
   const [form] = Form.useForm();
 
-  const handleSubmit = (values: any) => {
-    console.log("dadsa");
-
+  const handleSubmit = async (values: any) => {
     const { name, email, phoneNumber, cccd, password } = values;
 
-    const newuser: User = {
-      id: Date.now(),
+    const newUser: User = {
       name,
       email,
-      cccd: Number(cccd),
+      cccd,
       phoneNumber,
       password,
       date_of_birth: undefined,
-      createAt: new Date(),
-      updateAt: new Date(),
     };
-    testPostAccountsApi(newuser);
-    // onAdd(newuser);
-    // reset form
+    await testPostAccountsApi(newUser);
+
     form.resetFields();
   };
 
