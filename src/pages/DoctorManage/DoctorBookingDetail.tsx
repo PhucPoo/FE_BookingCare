@@ -1,5 +1,6 @@
 import { Divider, Modal } from "antd/lib";
-import { formatDate, getDegree } from "../../../utils/constant";
+import { formatDate, getDegree } from "../../utils/constant";
+
 type accountModel = {
   id?: number;
   name?: string;
@@ -9,7 +10,7 @@ type accountModel = {
   email?: string;
   birth?: string;
 };
-type AdminBookingDetailModel = {
+type DoctorBookingDetailModel = {
   id?: number;
   appointmentDate?: string;
   description?: string;
@@ -37,12 +38,12 @@ type AdminBookingDetailModel = {
   createAt?: string;
 };
 type Props = {
-  BookingDetail: AdminBookingDetailModel;
+  BookingDetail: DoctorBookingDetailModel;
   isModalOpen: boolean;
   setIsModalOpen: (value: boolean) => void;
 };
 
-const AdminBookingDetail = ({
+const DoctorBookingDetail = ({
   BookingDetail,
   isModalOpen,
   setIsModalOpen,
@@ -109,4 +110,4 @@ const AdminBookingDetail = ({
   );
 };
 
-export default AdminBookingDetail;
+export default DoctorBookingDetail;

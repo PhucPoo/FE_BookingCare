@@ -1,9 +1,17 @@
 import { useEffect, useState } from "react";
 import BookingTableManage from "./DoctorBookingTableManage";
-import BookingData from "../../MockData/BookingData";
 import ModalRegisterTime from "./DoctorModalRegisterTime";
 import { getBookingsByDoctorId } from "../../api/Doctor/DoctorApi";
-
+import DoctorBookingDetail from "./DoctorBookingDetail";
+type accountModel = {
+  id?: number;
+  name?: string;
+  avatar?: string;
+  address?: string;
+  phoneNumber?: string;
+  email?: string;
+  birth?: string;
+};
 type Item = {
   id: number;
   doctor_id: string;
@@ -13,6 +21,27 @@ type Item = {
   description: string;
   status: string;
   createdAt: string;
+  doctor?: {
+    id?: number;
+    account?: accountModel;
+    degree?: string;
+    specialtyName?: string;
+  };
+  appointmentDate?: string;
+  patient?: {
+    id?: number;
+    account?: accountModel;
+    bhyt?: string;
+  };
+  time?: {
+    id?: number;
+    start?: string;
+    end?: string;
+  };
+  clinic?: {
+    id?: number;
+    name?: string;
+  };
 };
 type TimeItem = {
   id: number;
@@ -33,7 +62,9 @@ const BookingManage = () => {
   const [timeSelected, setTimeSelected] = useState<TimeItem[]>([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDoctorDetailModalOpen, setIsDoctorDetailModalOpen] = useState(false);
 
+  const [detailDoctorBooking, setDetailDoctorBooking] = useState({});
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -46,7 +77,13 @@ const BookingManage = () => {
   };
 
   const [checkRender, setCheckRender] = useState({
+    appointmentDate: false,
     createdAt: false,
+    status: false,
+    doctor: false,
+    patient: false,
+    clinic: false,
+    time: false,
   });
 
   const onLog = (page: number, pageSize: number) => {
@@ -55,7 +92,7 @@ const BookingManage = () => {
 
   // handle change option (status and clinic)
   const handleChange = (value: string) => {
-    let BookingListClone = BookingData;
+    let BookingListClone = BookingList;
     BookingListClone = BookingListClone.filter((item) => {
       return item.status === value;
     });
@@ -74,7 +111,7 @@ const BookingManage = () => {
     }
     const from = new Date(filterCreatedAt.from);
     const to = new Date(filterCreatedAt.to);
-    let BookingListClone = BookingData;
+    let BookingListClone = BookingList;
     BookingListClone = BookingListClone.filter((item) => {
       return from <= new Date(item.createdAt) && new Date(item.createdAt) <= to;
     });
@@ -82,37 +119,223 @@ const BookingManage = () => {
   };
 
   //handle sort
-  const handleSort = () => {
+  const handleSort = (key: string) => {
     let BookingListCLone = BookingList;
-    if (checkRender.createdAt) {
-      BookingListCLone = BookingListCLone.sort((a: Item, b: Item) =>
-        a.createdAt.localeCompare(b.createdAt)
-      );
-      setCheckRender({ ...checkRender, createdAt: !checkRender.createdAt });
-      setBookingList(BookingListCLone);
-    } else {
-      BookingListCLone = BookingListCLone.sort((a: Item, b: Item) =>
-        b.createdAt.localeCompare(a.createdAt)
-      );
-      setCheckRender({ ...checkRender, createdAt: !checkRender.createdAt });
-      setBookingList(BookingListCLone);
+    switch (key) {
+      case "createdAt":
+        if (checkRender.createdAt) {
+          BookingListCLone = BookingListCLone.sort((a, b) => {
+            if (a.createdAt && b.createdAt) {
+              return a?.createdAt?.localeCompare(b?.createdAt);
+            }
+            return 0;
+          });
+          setCheckRender({
+            ...checkRender,
+            createdAt: !checkRender.createdAt,
+          });
+          setBookingList(BookingListCLone);
+        } else {
+          BookingListCLone = BookingListCLone.sort((a, b) => {
+            if (a.createdAt && b.createdAt) {
+              return b?.createdAt?.localeCompare(a?.createdAt);
+            }
+            return 0;
+          });
+          setCheckRender({
+            ...checkRender,
+            createdAt: !checkRender.createdAt,
+          });
+          setBookingList(BookingListCLone);
+        }
+        break;
+      case "doctor":
+        if (checkRender.doctor) {
+          BookingListCLone = BookingListCLone.sort((a, b) => {
+            if (a.doctor?.account?.name && b.doctor?.account?.name) {
+              return a?.doctor?.account?.name?.localeCompare(
+                b?.doctor?.account?.name
+              );
+            }
+            return 0;
+          });
+          setCheckRender({
+            ...checkRender,
+            doctor: !checkRender.doctor,
+          });
+          setBookingList(BookingListCLone);
+        } else {
+          BookingListCLone = BookingListCLone.sort((a, b) => {
+            if (a.doctor?.account?.name && b.doctor?.account?.name) {
+              return b?.doctor?.account?.name?.localeCompare(
+                a?.doctor?.account?.name
+              );
+            }
+            return 0;
+          });
+          setCheckRender({
+            ...checkRender,
+            doctor: !checkRender.doctor,
+          });
+          setBookingList(BookingListCLone);
+        }
+        break;
+      case "appointmentDate":
+        if (checkRender.appointmentDate) {
+          BookingListCLone = BookingListCLone.sort((a, b) => {
+            if (a.appointmentDate && b.appointmentDate) {
+              return a?.appointmentDate?.localeCompare(b?.appointmentDate);
+            }
+            return 0;
+          });
+          setCheckRender({
+            ...checkRender,
+            appointmentDate: !checkRender.appointmentDate,
+          });
+          setBookingList(BookingListCLone);
+        } else {
+          BookingListCLone = BookingListCLone.sort((a, b) => {
+            if (a.appointmentDate && b.appointmentDate) {
+              return b?.appointmentDate?.localeCompare(a?.appointmentDate);
+            }
+            return 0;
+          });
+          setCheckRender({
+            ...checkRender,
+            appointmentDate: !checkRender.appointmentDate,
+          });
+          setBookingList(BookingListCLone);
+        }
+        break;
+      case "status":
+        if (checkRender.status) {
+          BookingListCLone = BookingListCLone.sort((a, b) => {
+            if (a.status && b.status) {
+              return a?.status?.localeCompare(b?.status);
+            }
+            return 0;
+          });
+          setCheckRender({
+            ...checkRender,
+            status: !checkRender.status,
+          });
+          setBookingList(BookingListCLone);
+        } else {
+          BookingListCLone = BookingListCLone.sort((a, b) => {
+            if (a.status && b.status) {
+              return b?.status?.localeCompare(a?.status);
+            }
+            return 0;
+          });
+          setCheckRender({
+            ...checkRender,
+            status: !checkRender.status,
+          });
+          setBookingList(BookingListCLone);
+        }
+        break;
+      case "patient":
+        if (checkRender.patient) {
+          BookingListCLone = BookingListCLone.sort((a, b) => {
+            if (a.patient?.account?.name && b.patient?.account?.name) {
+              return a?.patient?.account?.name?.localeCompare(
+                b?.patient?.account?.name
+              );
+            }
+            return 0;
+          });
+          setCheckRender({
+            ...checkRender,
+            patient: !checkRender.patient,
+          });
+          setBookingList(BookingListCLone);
+        } else {
+          BookingListCLone = BookingListCLone.sort((a, b) => {
+            if (a.patient?.account?.name && b.patient?.account?.name) {
+              return b?.patient?.account?.name?.localeCompare(
+                a?.patient?.account?.name
+              );
+            }
+            return 0;
+          });
+          setCheckRender({
+            ...checkRender,
+            patient: !checkRender.patient,
+          });
+          setBookingList(BookingListCLone);
+        }
+        break;
+      case "clinic":
+        if (checkRender.clinic) {
+          BookingListCLone = BookingListCLone.sort((a, b) => {
+            if (a.clinic?.name && b.clinic?.name) {
+              return a?.clinic?.name?.localeCompare(b?.clinic?.name);
+            }
+            return 0;
+          });
+          setCheckRender({
+            ...checkRender,
+            clinic: !checkRender.clinic,
+          });
+          setBookingList(BookingListCLone);
+        } else {
+          BookingListCLone = BookingListCLone.sort((a, b) => {
+            if (a.clinic?.name && b.clinic?.name) {
+              return b?.clinic?.name?.localeCompare(a?.clinic?.name);
+            }
+            return 0;
+          });
+          setCheckRender({
+            ...checkRender,
+            clinic: !checkRender.clinic,
+          });
+          setBookingList(BookingListCLone);
+        }
+        break;
+      case "time":
+        if (checkRender.time) {
+          BookingListCLone = BookingListCLone.sort((a, b) => {
+            if (a.time?.start && b.time?.start) {
+              return a?.time?.start?.localeCompare(b?.time?.start);
+            }
+            return 0;
+          });
+          setCheckRender({
+            ...checkRender,
+            time: !checkRender.time,
+          });
+          setBookingList(BookingListCLone);
+        } else {
+          BookingListCLone = BookingListCLone.sort((a, b) => {
+            if (a.time?.start && b.time?.start) {
+              return b?.time?.start?.localeCompare(a?.time?.start);
+            }
+            return 0;
+          });
+          setCheckRender({
+            ...checkRender,
+            time: !checkRender.time,
+          });
+          setBookingList(BookingListCLone);
+        }
+        break;
     }
   };
-
+  const handleSearchByClinic = (value: string) => {
+    let cloneBookings = BookingList;
+    cloneBookings = cloneBookings.filter((item) => {
+      return item.clinic?.name?.includes(value);
+    });
+    setBookingList(cloneBookings);
+  };
   //handle search
   const handleSearchBooking = (value: string, key: string) => {
-    let BookingListClone = BookingData;
+    let BookingListClone = BookingList;
     switch (key) {
-      case "phone":
-        BookingListClone = BookingListClone.filter((item) => {
-          return item.doctor_id.includes(value);
-        });
-        setBookingList(BookingListClone);
-        break;
-
       case "patient":
         BookingListClone = BookingListClone.filter((item) => {
-          return item.patient_id.includes(value);
+          if (item && item.patient?.account?.name)
+            return item.patient?.account?.name.includes(value);
         });
         setBookingList(BookingListClone);
         break;
@@ -153,6 +376,9 @@ const BookingManage = () => {
         filterCreatedAt={filterCreatedAt}
         handleGetBookingList={handleGetBookingList}
         showModal={showModal}
+        setDetailDoctorBooking={setDetailDoctorBooking}
+        setIsDoctorDetailModalOpen={setIsDoctorDetailModalOpen}
+        handleSearchByClinic={handleSearchByClinic}
       />
       <ModalRegisterTime
         isModalOpen={isModalOpen}
@@ -161,6 +387,11 @@ const BookingManage = () => {
         timeSelected={timeSelected}
         setTimeSelected={setTimeSelected}
         key={timeSelected[0]?.id || null}
+      />
+      <DoctorBookingDetail
+        BookingDetail={detailDoctorBooking}
+        isModalOpen={isDoctorDetailModalOpen}
+        setIsModalOpen={setIsDoctorDetailModalOpen}
       />
     </div>
   );

@@ -9,44 +9,44 @@ import {
   type PopconfirmProps,
 } from "antd/lib";
 import { formatDate } from "../../utils/constant";
-
-type Props = {
-  BookingList: {
+type BookingListModel = {
+  id?: number;
+  appointmentDate?: string;
+  description?: string;
+  status?: string;
+  createAt?: string;
+  doctor?: {
     id?: number;
-    appointmentDate?: string;
-    description?: string;
-    status?: string;
-    doctor?: {
-      id?: number;
-      account?: {
-        id?: number;
-        name?: string;
-      };
-    };
-    patient?: {
-      id?: number;
-      account?: {
-        id?: number;
-        name?: string;
-      };
-    };
-    time?: {
-      id?: number;
-      start?: string;
-      end?: string;
-    };
-    clinic?: {
+    account?: {
       id?: number;
       name?: string;
     };
-    createAt?: string;
-  }[];
+  };
 
+  patient?: {
+    id?: number;
+    account?: {
+      id?: number;
+      name?: string;
+    };
+  };
+  time?: {
+    id?: number;
+    start?: string;
+    end?: string;
+  };
+  clinic?: {
+    id?: number;
+    name?: string;
+  };
+};
+type Props = {
+  BookingList: BookingListModel[];
   pageSize: number;
   currentPage: number;
   totalBillList: number;
   onLog: (page: number, pageSize: number) => void;
-  handleSort: () => void;
+  handleSort: (value: string) => void;
   handleChange: (value: string) => void;
   handleFindByDate: () => void;
   handleSearchBooking: (value: string, key: string) => void;
@@ -54,6 +54,9 @@ type Props = {
   filterCreatedAt: { from: string; to: string };
   handleGetBookingList: () => void;
   showModal: () => void;
+  setDetailDoctorBooking: (data: BookingListModel) => void;
+  setIsDoctorDetailModalOpen: (value: boolean) => void;
+  handleSearchByClinic: (value: string) => void;
 };
 
 const BookingTableManage = ({
@@ -63,7 +66,7 @@ const BookingTableManage = ({
   currentPage,
   totalBillList,
   onLog,
-  // handleSort,
+  handleSort,
   handleChange,
   handleFindByDate,
   handleSearchBooking,
@@ -71,6 +74,9 @@ const BookingTableManage = ({
   filterCreatedAt,
   handleGetBookingList,
   showModal,
+  setDetailDoctorBooking,
+  setIsDoctorDetailModalOpen,
+  handleSearchByClinic,
 }: Props) => {
   const items: MenuProps["items"] = [
     {
@@ -160,19 +166,6 @@ const BookingTableManage = ({
       {/* table search feature */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6 p-4">
         <div className="flex flex-col lg:flex-row gap-2 items-center justify-between">
-          {/* phone */}
-          <div className="w-full lg:w-auto">
-            <input
-              type="number"
-              placeholder="Tìm theo số điện thoại..."
-              onChange={(e) => {
-                setTimeout(() => {
-                  handleSearchBooking(e.target.value, "phone");
-                }, 500);
-              }}
-              className="w-full lg:w-45 not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
           {/* patient */}
           <div className="w-full lg:w-auto">
             <input
@@ -211,15 +204,15 @@ const BookingTableManage = ({
           </div>
           {/* clinic */}
           <div className="w-full lg:w-auto">
-            <Select
-              style={{ width: 120 }}
-              onChange={handleChange}
-              placeholder="Phòng khám"
-              size="large"
-              options={[
-                { value: 1, label: "aaa" },
-                { value: 2, label: "bbb" },
-              ]}
+            <input
+              type="text"
+              placeholder="Tìm kiếm theo nơi khám..."
+              onChange={(e) => {
+                setTimeout(() => {
+                  handleSearchByClinic(e.target.value);
+                }, 500);
+              }}
+              className="w-full lg:w-45 not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
           {/* refresh */}
@@ -244,43 +237,61 @@ const BookingTableManage = ({
             <thead className="bg-gray-50">
               {/* column header */}
               <tr>
-                {/* {columns &&
-                  columns.length > 0 &&
-                  columns.map((item) => {
-                    return (
-                      <th
-                        className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
-                        key={item.value}
-                        onClick={() => {
-                          if (item.value === 7) {
-                            handleSort();
-                          }
-                        }}
-                      >
-                        {item.label}
-                      </th>
-                    );
-                  })} */}
-                <th className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
+                <th
+                  className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
+                  onClick={() => {
+                    handleSort("appointmentDate");
+                  }}
+                >
                   Ngày khám
                 </th>
 
-                <th className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
+                <th
+                  className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
+                  onClick={() => {
+                    handleSort("createdAt");
+                  }}
+                >
                   Ngày tạo
                 </th>
-                <th className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
+                <th
+                  className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
+                  onClick={() => {
+                    handleSort("status");
+                  }}
+                >
                   Status
                 </th>
-                <th className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
+                <th
+                  className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
+                  onClick={() => {
+                    handleSort("doctor");
+                  }}
+                >
                   Bác sĩ
                 </th>
-                <th className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
+                <th
+                  className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
+                  onClick={() => {
+                    handleSort("patient");
+                  }}
+                >
                   Bệnh nhân
                 </th>
-                <th className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
+                <th
+                  className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
+                  onClick={() => {
+                    handleSort("clinic");
+                  }}
+                >
                   Bệnh viện
                 </th>
-                <th className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
+                <th
+                  className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
+                  onClick={() => {
+                    handleSort("time");
+                  }}
+                >
                   Time
                 </th>
                 <th className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center hover:bg-gray-500 hover:text-white transition-all delay-100">
@@ -325,17 +336,13 @@ const BookingTableManage = ({
                         <div className="flex items-center justify-center space-x-2">
                           <Button
                             onClick={() => {
-                              // handleUpdateService(item);
+                              setDetailDoctorBooking(item);
+                              setIsDoctorDetailModalOpen(true);
                             }}
                           >
                             Chi tiết
                           </Button>
-                          <Button
-                            type="primary"
-                            onClick={() => {
-                              // handleUpdateService(item);
-                            }}
-                          >
+                          <Button type="primary">
                             <Popconfirm
                               title={"Xác nhận khám"}
                               onConfirm={confirm}
