@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import BookingTablePage from "./BookingTablePage";
+import BookingTablePage from "./SupportBookingTablePage";
 import BookingData from "../../MockData/BookingData";
 import { message, type PopconfirmProps } from "antd/lib";
 type Item = {

@@ -1,14 +1,13 @@
 import {
   Button,
   Dropdown,
-  message,
   Pagination,
   Popconfirm,
   Select,
   type MenuProps,
-  type PopconfirmProps,
 } from "antd/lib";
 import { formatDate } from "../../utils/constant";
+import { handleDoctorUpdateBooking } from "../../api/Doctor/DoctorApi";
 type BookingListModel = {
   id?: number;
   appointmentDate?: string;
@@ -132,14 +131,12 @@ const BookingTableManage = ({
       key: "3",
     },
   ];
-  const confirm: PopconfirmProps["onConfirm"] = (e) => {
-    console.log(e);
-    message.success("Click on Yes");
-  };
-
-  const cancel: PopconfirmProps["onCancel"] = (e) => {
-    console.log(e);
-    message.error("Click on No");
+  const handleUpdateBooking = async (id: string, status: string) => {
+    console.log("🚀 ~ handleUpdateBooking ~ status:", status);
+    console.log("🚀 ~ handleUpdateBooking ~ id:", typeof id);
+    // return;
+    handleDoctorUpdateBooking(id, status);
+    handleGetBookingList();
   };
   return (
     <div className="max-w-7xl mx-auto">
@@ -345,10 +342,24 @@ const BookingTableManage = ({
                           <Button type="primary">
                             <Popconfirm
                               title={"Xác nhận khám"}
-                              onConfirm={confirm}
-                              onCancel={cancel}
+                              onConfirm={() => {
+                                if (item && item.id) {
+                                  handleUpdateBooking(
+                                    `${item.id}`,
+                                    "CONFIRMED"
+                                  );
+                                }
+                              }}
+                              onCancel={() => {
+                                if (item && item.id) {
+                                  handleUpdateBooking(
+                                    `${item.id}`,
+                                    "CANCELLED"
+                                  );
+                                }
+                              }}
                               okText="Xác nhận"
-                              cancelText="huỷ"
+                              cancelText="Từ chối"
                             >
                               Thao tác
                             </Popconfirm>
