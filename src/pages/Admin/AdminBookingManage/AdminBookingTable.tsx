@@ -45,6 +45,8 @@ type Props = {
   setFilterCreatedAt: (value: { from: string; to: string }) => void;
   filterCreatedAt: { from: string; to: string };
   handleSearchByClinic: (value: string) => void;
+  setBookingDetail: (value: AdminBookingTableModel) => void;
+  setIsModalOpen: (value: boolean) => void;
 };
 const AdminBookingTable = ({
   onLog,
@@ -60,6 +62,8 @@ const AdminBookingTable = ({
   totalBookingList,
   handleAdminGetAllBookings,
   handleSearchByClinic,
+  setBookingDetail,
+  setIsModalOpen,
 }: Props) => {
   const items: MenuProps["items"] = [
     {
@@ -298,7 +302,8 @@ const AdminBookingTable = ({
                         <div className="flex items-center justify-center space-x-2">
                           <Button
                             onClick={() => {
-                              // handleUpdateService(item);
+                              setBookingDetail(item);
+                              setIsModalOpen(true);
                             }}
                           >
                             Chi tiết
