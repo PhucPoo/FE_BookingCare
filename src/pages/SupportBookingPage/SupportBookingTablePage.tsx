@@ -138,7 +138,9 @@ const BookingTablePage = ({
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
             Danh sách lịch khám
           </h1>
-          <p className="text-gray-600">Thông tin lịch khám hiện có</p>
+          <p className="text-gray-600">
+            Thông tin lịch khám hiện được quản lí bởi người hỗ trợ
+          </p>
         </div>
 
         {/* table search feature */}

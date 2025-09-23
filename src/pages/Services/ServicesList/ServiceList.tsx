@@ -3,7 +3,10 @@ import React, { useEffect, useState } from "react";
 import ModalAddServices from "./ModalServices/ModalAddServices.tsx";
 import ModalUpdateServices from "./ModalServices/ModalUpdateServices.tsx";
 import ServiceListTable from "./ServiceListTable.tsx";
-import { getAllService } from "../../../api/Services/ServiceApi.ts";
+import {
+  getAllService,
+  getSortService,
+} from "../../../api/Services/ServiceApi.ts";
 import { toast } from "react-toastify";
 interface Item {
   id: number;
@@ -51,52 +54,39 @@ const ServiceList = () => {
     setPageSize(pageSize);
   };
 
-  const handleSort = (value: number) => {
-    let ServiceListClone = ServiceList;
+  const handleSort = async (value: number) => {
     switch (value) {
       case 0:
         if (checkRender.id) {
-          ServiceListClone = ServiceListClone.sort(
-            (a: Item, b: Item) => a.id - b.id
-          );
+          const result = await getSortService("id", "asc");
           setCheckRender({ ...checkRender, id: !checkRender.id });
-          setServiceList(ServiceListClone);
+          setServiceList(result.data.result);
         } else {
-          ServiceListClone = ServiceListClone.sort(
-            (a: Item, b: Item) => b.id - a.id
-          );
+          const result = await getSortService("id", "desc");
           setCheckRender({ ...checkRender, id: !checkRender.id });
-          setServiceList(ServiceListClone);
+          setServiceList(result.data.result);
         }
         break;
       case 1:
         if (checkRender.name) {
-          ServiceListClone = ServiceListClone.sort((a: Item, b: Item) =>
-            a.name.localeCompare(b.name)
-          );
+          const result = await getSortService("name", "asc");
           setCheckRender({ ...checkRender, name: !checkRender.name });
-          setServiceList(ServiceListClone);
+          setServiceList(result.data.result);
         } else {
-          ServiceListClone = ServiceListClone.sort((a: Item, b: Item) =>
-            b.name.localeCompare(a.name)
-          );
+          const result = await getSortService("name", "desc");
           setCheckRender({ ...checkRender, name: !checkRender.name });
-          setServiceList(ServiceListClone);
+          setServiceList(result.data.result);
         }
         break;
       case 2:
         if (checkRender.cost) {
-          ServiceListClone = ServiceListClone.sort(
-            (a: Item, b: Item) => a.cost - b.cost
-          );
+          const result = await getSortService("cost", "asc");
           setCheckRender({ ...checkRender, cost: !checkRender.cost });
-          setServiceList(ServiceListClone);
+          setServiceList(result.data.result);
         } else {
-          ServiceListClone = ServiceListClone.sort(
-            (a: Item, b: Item) => b.cost - a.cost
-          );
+          const result = await getSortService("cost", "desc");
           setCheckRender({ ...checkRender, cost: !checkRender.cost });
-          setServiceList(ServiceListClone);
+          setServiceList(result.data.result);
         }
         break;
       default:

@@ -145,7 +145,7 @@ const BookingTableManage = ({
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
             Danh sách lịch khám
           </h1>
-          <p className="text-gray-600">Danh sách lịch khám hiện có</p>
+          <p className="text-gray-600">Danh sách lịch khám bởi bác sĩ</p>
         </div>
 
         <div className="mb-6">

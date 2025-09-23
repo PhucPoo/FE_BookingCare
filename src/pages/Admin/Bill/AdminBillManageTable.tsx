@@ -1,23 +1,22 @@
-import { Button, Pagination } from "antd";
-import React from "react";
+import { Button, Pagination } from "antd/lib";
+
+import type { AdminBillManageModel } from "./AdminBillManageModel";
+import { formatDate } from "../../../utils/constant";
+import type { searchDataModel } from "./BillSearchModel";
 
 type Props = {
-  BillList: {
-    id: number;
-    patient_id: string;
-    email: string;
-    medicalRecords_id: number;
-    total_bill: number;
-    support_id: string;
-    status: string;
-    createdAt: string;
-    phoneNumber: string;
-  }[];
+  BillList: AdminBillManageModel[];
   pageSize: number;
   currentPage: number;
   totalBillList: number;
   onLog: (page: number, pageSize: number) => void;
-  handleSort: () => void;
+  handleSearchBillByCondition: (value: string, key: string) => void;
+  handleSort: (value: string) => void;
+  handleGetBillList: () => void;
+  searchData: searchDataModel;
+  setSearchData: (value: searchDataModel) => void;
+  setBillDetail: (value: AdminBillManageModel) => void;
+  setIsModalOpen: (value: boolean) => void;
 };
 
 const BillTable = ({
@@ -26,7 +25,13 @@ const BillTable = ({
   pageSize,
   totalBillList,
   handleSort,
+  handleSearchBillByCondition,
   onLog,
+  handleGetBillList,
+  searchData,
+  setSearchData,
+  setBillDetail,
+  setIsModalOpen,
 }: Props) => {
   return (
     <>
@@ -44,14 +49,39 @@ const BillTable = ({
             <div className="w-full sm:w-auto">
               <input
                 type="text"
-                placeholder="Tìm kiếm hoá đơn..."
-                //   onChange={(e) => {
-                // setTimeout(() => {
-                //   handleSearchService(e.target.value);
-                // }, 500);
-                //   }}
+                placeholder="Tên bệnh nhân"
+                defaultValue={searchData.patient}
+                onChange={(e) => {
+                  setTimeout(() => {
+                    setSearchData({ ...searchData, patient: e.target.value });
+                    handleSearchBillByCondition(e.target.value, "patient");
+                  }, 500);
+                }}
                 className="w-full sm:w-15 md:w-25 lg:w-50  not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
+            </div>
+            <div className="w-full sm:w-auto">
+              <input
+                type="text"
+                placeholder="Tên nhân viên hỗ trợ"
+                defaultValue={searchData.support}
+                onChange={(e) => {
+                  setTimeout(() => {
+                    setSearchData({ ...searchData, support: e.target.value });
+                    handleSearchBillByCondition(e.target.value, "support");
+                  }, 500);
+                }}
+                className="w-full sm:w-15 md:w-25 lg:w-50  not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <div className="w-full sm:w-auto">
+              <Button
+                size="large"
+                type="primary"
+                onClick={() => handleGetBillList()}
+              >
+                Làm mới
+              </Button>
             </div>
           </div>
         </div>
@@ -65,7 +95,7 @@ const BillTable = ({
                   <th
                     className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
                     onClick={() => {
-                      //   handleSort(item.value);
+                      handleSort("patient");
                     }}
                   >
                     Tên bệnh nhân
@@ -74,25 +104,16 @@ const BillTable = ({
                   <th
                     className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
                     onClick={() => {
-                      //   handleSort(item.value);
+                      handleSort("support");
                     }}
                   >
-                    Giá tiền
+                    người lập đơn
                   </th>
 
                   <th
                     className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
                     onClick={() => {
-                      //   handleSort(item.value);
-                    }}
-                  >
-                    Support
-                  </th>
-
-                  <th
-                    className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
-                    onClick={() => {
-                      //   handleSort(item.value);
+                      handleSort("status");
                     }}
                   >
                     Trạng thái
@@ -101,29 +122,21 @@ const BillTable = ({
                   <th
                     className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
                     onClick={() => {
-                      //   handleSort(item.value);
+                      handleSort("totalBill");
                     }}
                   >
-                    email
+                    Tổng giá
                   </th>
 
                   <th
                     className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
                     onClick={() => {
-                      handleSort();
+                      handleSort("createAt");
                     }}
                   >
                     Ngày tạo
                   </th>
 
-                  <th
-                    className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
-                    onClick={() => {
-                      //   handleSort(item.value);
-                    }}
-                  >
-                    Số điện thoại
-                  </th>
                   <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center hover:bg-gray-500 hover:text-white transition-all delay-100">
                     Hành động
                   </th>
@@ -140,33 +153,28 @@ const BillTable = ({
                         key={item.id}
                       >
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                          {item.patient_id}
+                          {item.patient?.name}
                         </td>
 
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                          {item.total_bill}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                          {item.support_id}
+                          {item.support?.name}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
                           {item.status}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                          {item.email}
+                          {item.totalBill}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                          {item.createdAt}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                          {item.phoneNumber}
+                          {formatDate(item.createAt)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <div className="flex items-center justify-center space-x-5">
                             <Button
                               type="primary"
                               onClick={() => {
-                                // handleUpdateService(item);
+                                setBillDetail(item);
+                                setIsModalOpen(true);
                               }}
                             >
                               Xem chi tiết

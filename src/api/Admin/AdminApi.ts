@@ -10,3 +10,7 @@ export const adminGetAllBooking = async () => {
   const res = await customAxiosInstance.get(`${api}/bookings`, config);
   return res.data;
 };
+export const adminGetAllBill = async () => {
+  const res = await customAxiosInstance.get(`${api}/bill`, config);
+  return res.data;
+};

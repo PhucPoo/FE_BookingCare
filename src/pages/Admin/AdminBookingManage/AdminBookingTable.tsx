@@ -124,7 +124,7 @@ const AdminBookingTable = ({
       <div className="flex justify-between items-center">
         <div className="mb-6">
           <h1 className="text-xl sm:text-xl font-bold text-gray-900 mb-2">
-            Danh sách lịch khám
+            Danh sách lịch khám được quản lí bởi quản trị viên
           </h1>
         </div>
       </div>

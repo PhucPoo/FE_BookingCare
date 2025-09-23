@@ -3,7 +3,7 @@ import React from "react";
 import Statistics from "../pages/Statistics/Statistics";
 import ServiceList from "../pages/Services/ServicesList/ServiceList";
 import ErrorPage from "../components/ErrorPage/ErrorPage";
-import BillPage from "../pages/Bill/BillPage";
+import BillPage from "../pages/Admin/Bill/AdminBillManagePage";
 import BookingPage from "../pages/SupportBookingPage/SupportBookingPage";
 import DoctorBookingPage from "../pages/DoctorManage/DoctorBookingManage";
 import DoctorDashboard from "../pages/Dashboard/DoctorDashboard/DoctorDashboard";
