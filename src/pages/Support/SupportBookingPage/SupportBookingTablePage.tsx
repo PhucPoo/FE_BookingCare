@@ -6,7 +6,7 @@ import {
   Select,
   type MenuProps,
 } from "antd/lib";
-import { formatDate } from "../../utils/constant";
+import { formatDate } from "../../../utils/constant";
 type BookingListModel = {
   id?: number;
   appointmentDate?: string;

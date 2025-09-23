@@ -1,5 +1,5 @@
 import { Divider, Modal } from "antd/lib";
-import { formatDate, getDegree } from "../../utils/constant";
+import { formatDate, getDegree } from "../../../utils/constant";
 
 type accountModel = {
   id?: number;

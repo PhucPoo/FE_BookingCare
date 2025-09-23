@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import BookingTablePage from "./SupportBookingTablePage";
 import { message, type PopconfirmProps } from "antd/lib";
-import { getBookingByClinicId } from "../../api/Support/SupportApi";
+import { getBookingByClinicId } from "../../../api/Support/SupportApi";
 import SupportBookingDetail from "./SupportBookingDetail";
 type accountModel = {
   id?: number;

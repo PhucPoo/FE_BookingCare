@@ -4,7 +4,7 @@ import Statistics from "../pages/Statistics/Statistics";
 import ServiceList from "../pages/Services/ServicesList/ServiceList";
 import ErrorPage from "../components/ErrorPage/ErrorPage";
 import BillPage from "../pages/Admin/Bill/AdminBillManagePage";
-import BookingPage from "../pages/SupportBookingPage/SupportBookingPage";
+import BookingPage from "../pages/Support/SupportBookingPage/SupportBookingPage";
 import DoctorBookingPage from "../pages/DoctorManage/DoctorBookingManage";
 import DoctorDashboard from "../pages/Dashboard/DoctorDashboard/DoctorDashboard";
 import SupportDashboard from "../pages/Dashboard/SupportDashboard/SupportDashboard";
