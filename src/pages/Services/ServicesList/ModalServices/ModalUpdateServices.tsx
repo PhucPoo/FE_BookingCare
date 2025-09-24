@@ -26,12 +26,11 @@ const ModalUpdateServices = ({
   id,
   handleGetServiceList,
 }: Props) => {
-  const { handleSubmit, control, reset } = useForm();
-  const [value, setValue] = useState<string>("");
+  const { handleSubmit, control } = useForm();
+  const [value, setValue] = useState<string | undefined>("");
 
   const handleCancel = () => {
     setIsModalUpdateOpen(false);
-    reset();
   };
   const onSubmit = async (data: object) => {
     const res = await updateService({
@@ -43,12 +42,12 @@ const ModalUpdateServices = ({
       toast.success("Sửa dịch vụ hoàn tất");
       handleGetServiceList();
       setIsModalUpdateOpen(false);
-      setValue("");
-      reset();
     }
   };
 
-  useEffect(() => {}, [id]);
+  useEffect(() => {
+    setValue(DataToUpdateFromParent?.description);
+  }, [id]);
   return (
     <>
       <Modal
@@ -65,15 +64,12 @@ const ModalUpdateServices = ({
             <br />
             <Controller
               name="name"
+              defaultValue={DataToUpdateFromParent?.name}
               control={control}
               rules={{ required: "Yêu cầu nhập tên" }}
               render={({ field, fieldState }) => (
                 <>
-                  <Input
-                    {...field}
-                    placeholder="Tên"
-                    defaultValue={DataToUpdateFromParent?.name}
-                  />
+                  <Input {...field} placeholder="Tên" type="text" />
                   {fieldState.error && (
                     <p style={{ color: "red" }}>{fieldState.error.message}</p>
                   )}

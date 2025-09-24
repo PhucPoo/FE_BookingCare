@@ -3,31 +3,23 @@ import Button from "antd/lib/button";
 import Modal from "antd/lib/modal";
 import Detailuser from "./DetailUser";
 import Edituser from "./EditUser";
-import {
-  testDeleteAccountsApi,
-  testSortAccountsApi,
-  // testSortAccountsApi,
-} from "../../../api/testApi";
+import { testDeleteAccountsApi } from "../../../api/testApi";
 import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
 
 export interface User {
-  id: number;
   name: string;
   email: string;
-  cccd: number;
+  cccd: string;
   phoneNumber: string;
   password: string;
   price?: number;
   date_of_birth?: Date;
-  createAt: Date;
-  updateAt: Date;
 }
 
 export interface Role {
-  id: number
-  name: string
+  id: number;
+  name: string;
 }
-
 
 interface userTableProps {
   users: User[];
@@ -96,7 +88,7 @@ const userTable: React.FC<userTableProps> = ({
           break;
         case "createAt":
           aVal = a.createAt;
-          bVal = b.createAt
+          bVal = b.createAt;
           break;
         default:
           return 0;
@@ -164,7 +156,9 @@ const userTable: React.FC<userTableProps> = ({
             </th>
             <th className="p-3 border hidden md:table-cell">Email</th>
             {/* <th className="p-3 border hidden lg:table-cell">Password</th> */}
-            <th className="p-3 border hidden lg:table-cell">Căn cước công dân</th>
+            <th className="p-3 border hidden lg:table-cell">
+              Căn cước công dân
+            </th>
             <th className="p-3 border hidden md:table-cell">SĐT</th>
             <th
               className="p-3 border hidden md:table-cell cursor-pointer select-none"

@@ -1,9 +1,22 @@
 import { useEffect, useState } from "react";
-import BookingTableManage from "./BookingTableManage";
-import BookingData from "../../MockData/BookingData";
-import ModalRegisterTime from "./ModalRegisterTime";
-import { testGetAccountsApi, testLoginApi } from "../../api/testApi";
+import BookingTableManage from "./DoctorBookingTableManage";
+import ModalRegisterTime from "./DoctorModalRegisterTime";
+import {
+  doctorSortBooking,
+  getBookingsByDoctorId,
+} from "../../api/Doctor/DoctorApi";
+import DoctorBookingDetail from "./DoctorBookingDetail";
+import type { DoctorBookingSortKeyModel } from "./DoctorBookingSortKeyModel";
 
+type accountModel = {
+  id?: number;
+  name?: string;
+  avatar?: string;
+  address?: string;
+  phoneNumber?: string;
+  email?: string;
+  birth?: string;
+};
 type Item = {
   id: number;
   doctor_id: string;
@@ -13,6 +26,27 @@ type Item = {
   description: string;
   status: string;
   createdAt: string;
+  doctor?: {
+    id?: number;
+    account?: accountModel;
+    degree?: string;
+    specialtyName?: string;
+  };
+  appointmentDate?: string;
+  patient?: {
+    id?: number;
+    account?: accountModel;
+    bhyt?: string;
+  };
+  time?: {
+    id?: number;
+    start?: string;
+    end?: string;
+  };
+  clinic?: {
+    id?: number;
+    name?: string;
+  };
 };
 type TimeItem = {
   id: number;
@@ -33,7 +67,9 @@ const BookingManage = () => {
   const [timeSelected, setTimeSelected] = useState<TimeItem[]>([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDoctorDetailModalOpen, setIsDoctorDetailModalOpen] = useState(false);
 
+  const [detailDoctorBooking, setDetailDoctorBooking] = useState({});
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -44,12 +80,17 @@ const BookingManage = () => {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-  const [columns, setColumns] = useState<{ value: number; label: string }[]>(
-    []
-  );
 
-  const [checkRender, setCheckRender] = useState({
-    createdAt: false,
+  const [checkRender, setCheckRender] = useState<
+    Record<DoctorBookingSortKeyModel, boolean>
+  >({
+    appointmentDate: false,
+    createAt: false,
+    status: false,
+    doctor: false,
+    patient: false,
+    clinic: false,
+    time: false,
   });
 
   const onLog = (page: number, pageSize: number) => {
@@ -58,7 +99,7 @@ const BookingManage = () => {
 
   // handle change option (status and clinic)
   const handleChange = (value: string) => {
-    let BookingListClone = BookingData;
+    let BookingListClone = BookingList;
     BookingListClone = BookingListClone.filter((item) => {
       return item.status === value;
     });
@@ -77,7 +118,7 @@ const BookingManage = () => {
     }
     const from = new Date(filterCreatedAt.from);
     const to = new Date(filterCreatedAt.to);
-    let BookingListClone = BookingData;
+    let BookingListClone = BookingList;
     BookingListClone = BookingListClone.filter((item) => {
       return from <= new Date(item.createdAt) && new Date(item.createdAt) <= to;
     });
@@ -85,37 +126,30 @@ const BookingManage = () => {
   };
 
   //handle sort
-  const handleSort = () => {
-    let BookingListCLone = BookingList;
-    if (checkRender.createdAt) {
-      BookingListCLone = BookingListCLone.sort((a: Item, b: Item) =>
-        a.createdAt.localeCompare(b.createdAt)
-      );
-      setCheckRender({ ...checkRender, createdAt: !checkRender.createdAt });
-      setBookingList(BookingListCLone);
-    } else {
-      BookingListCLone = BookingListCLone.sort((a: Item, b: Item) =>
-        b.createdAt.localeCompare(a.createdAt)
-      );
-      setCheckRender({ ...checkRender, createdAt: !checkRender.createdAt });
-      setBookingList(BookingListCLone);
-    }
+  const handleSort = async (key: DoctorBookingSortKeyModel) => {
+    const res = await doctorSortBooking(
+      "2",
+      key,
+      checkRender[key] ? "asc" : "desc"
+    );
+    setCheckRender({ ...checkRender, [key]: !checkRender[key] });
+    setBookingList(res.data.result);
   };
-
+  const handleSearchByClinic = (value: string) => {
+    let cloneBookings = BookingList;
+    cloneBookings = cloneBookings.filter((item) => {
+      return item.clinic?.name?.includes(value);
+    });
+    setBookingList(cloneBookings);
+  };
   //handle search
   const handleSearchBooking = (value: string, key: string) => {
-    let BookingListClone = BookingData;
+    let BookingListClone = BookingList;
     switch (key) {
-      case "phone":
-        BookingListClone = BookingListClone.filter((item) => {
-          return item.doctor_id.includes(value);
-        });
-        setBookingList(BookingListClone);
-        break;
-
       case "patient":
         BookingListClone = BookingListClone.filter((item) => {
-          return item.patient_id.includes(value);
+          if (item && item.patient?.account?.name)
+            return item.patient?.account?.name.includes(value);
         });
         setBookingList(BookingListClone);
         break;
@@ -125,26 +159,20 @@ const BookingManage = () => {
   };
 
   // initial value
-  const handleGetBookingList = () => {
-    const columnArr = Object.keys(BookingData[0]).map((item, index) => {
-      return {
-        value: index,
-        label: item,
-      };
-    });
-    setColumns(columnArr);
-    setBookingList(BookingData);
-    setPageSize(10);
-    setTotalBillList(BookingData.length);
-    setCurrentPage(1);
+  const handleGetBookingList = async () => {
+    const res = await getBookingsByDoctorId("2");
+    setBookingList(res.data.result);
+    const {
+      meta: { page, pageSize, totals },
+    } = res.data;
+
+    setPageSize(pageSize);
+    setTotalBillList(totals);
+    setCurrentPage(page);
   };
-  const handleTestLoginApi = async () => {
-    // testLoginApi();
-    testGetAccountsApi();
-  };
+
   useEffect(() => {
     handleGetBookingList();
-    handleTestLoginApi();
   }, []);
   return (
     <div className="p-5 bg-white mx-5">
@@ -154,7 +182,6 @@ const BookingManage = () => {
         currentPage={currentPage}
         totalBillList={totalBillList}
         onLog={onLog}
-        columns={columns}
         handleChange={handleChange}
         handleFindByDate={handleFindByDate}
         handleSort={handleSort}
@@ -163,6 +190,9 @@ const BookingManage = () => {
         filterCreatedAt={filterCreatedAt}
         handleGetBookingList={handleGetBookingList}
         showModal={showModal}
+        setDetailDoctorBooking={setDetailDoctorBooking}
+        setIsDoctorDetailModalOpen={setIsDoctorDetailModalOpen}
+        handleSearchByClinic={handleSearchByClinic}
       />
       <ModalRegisterTime
         isModalOpen={isModalOpen}
@@ -171,6 +201,11 @@ const BookingManage = () => {
         timeSelected={timeSelected}
         setTimeSelected={setTimeSelected}
         key={timeSelected[0]?.id || null}
+      />
+      <DoctorBookingDetail
+        BookingDetail={detailDoctorBooking}
+        isModalOpen={isDoctorDetailModalOpen}
+        setIsModalOpen={setIsDoctorDetailModalOpen}
       />
     </div>
   );

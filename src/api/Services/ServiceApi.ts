@@ -35,3 +35,10 @@ export const deleteService = async (id: number) => {
   );
   return response.data;
 };
+export const getSortService = async (sortValue: string, order: string) => {
+  const response = await customAxiosInstance.get(
+    `${api}/services?sort=${sortValue},${order}`,
+    config
+  );
+  return response.data;
+};

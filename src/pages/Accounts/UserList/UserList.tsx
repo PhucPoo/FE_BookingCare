@@ -21,7 +21,6 @@ import api from "../../../api/axios";
 //   { id: 7, name: "Nguyễn Văn ABC", email: "hp@gmail.com", cccd: 1289389, phone: "0910784567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), },
 // ];
 
-
 const userManagement: React.FC = () => {
   const [users, setusers] = useState<User[]>([]);
   const [filteredusers, setFilteredusers] = useState<User[]>([]);
@@ -30,12 +29,12 @@ const userManagement: React.FC = () => {
 
   // Thêm người dùng mới
   const handleAdduser = async (user: any) => {
-    console.log(user)
+    console.log(user);
     const newUser = await api.post("/v1/accounts", {
-      ...user
+      ...user,
     });
 
-    console.log(newUser)
+    console.log(newUser);
 
     setusers((prevUsers: any) => [...prevUsers, newUser.data.data]);
     // setFilteredusers(updatedusers);
@@ -60,26 +59,23 @@ const userManagement: React.FC = () => {
     setFilteredusers(updatedusers);
   };
 
-
-
-
   // Xóa người dùng
- const handleDeleteUser = async (id: number) => {
-  try {
-    console.log("Deleting user id:", id);
+  const handleDeleteUser = async (id: number) => {
+    try {
+      console.log("Deleting user id:", id);
 
-    const res = await api.delete(`/v1/accounts/${id}`);
+      const res = await api.delete(`/v1/accounts/${id}`);
 
-    console.log("✅ Delete success:", res.data);
+      console.log("✅ Delete success:", res.data);
 
-    setusers((prev: User[]) =>
-      prev.filter((u) => u.id !== id)
-    );
-  } catch (error: any) {
-    console.error("❌ Delete user failed:", error.response?.data || error.message);
-  }
-};
-
+      setusers((prev: User[]) => prev.filter((u) => u.id !== id));
+    } catch (error: any) {
+      console.error(
+        "❌ Delete user failed:",
+        error.response?.data || error.message
+      );
+    }
+  };
 
   function handleChange(value: any) {
     console.log(`selected ${value}`);

@@ -22,17 +22,14 @@ export const testGetAccountsApi = async () => {
     `http://localhost:8080/api/v1/accounts`,
     config
   );
-  console.log("🚀 ~ testGetAccountsApi ~ response:", response);
   return response.data;
 };
 export const testPostAccountsApi = async (data: User) => {
-  const response = await customAxiosInstance.post(
+  await customAxiosInstance.post(
     `http://localhost:8080/api/v1/accounts`,
     data,
     config
   );
-  console.log("🚀 ~ testGetAccountsApi ~ response:", response);
-  //   return response.data;
 };
 export const testPutAccountsApi = async (data: User) => {
   const response = await customAxiosInstance.put(
