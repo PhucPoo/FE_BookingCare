@@ -1,5 +1,6 @@
 import { Button, Dropdown, Pagination, Select, type MenuProps } from "antd/lib";
 import { formatDate } from "../../../utils/constant";
+import type { CheckRenderKey } from "./CheckRenderKeyModel";
 
 type AdminBookingTableModel = {
   id?: number;
@@ -38,7 +39,7 @@ type Props = {
   totalBookingList: number;
   handleAdminGetAllBookings: () => void;
   onLog: (page: number, pageSize: number) => void;
-  handleSort: (value: string) => void;
+  handleSort: (value: CheckRenderKey) => void;
   handleChange: (value: string) => void;
   handleFindByDate: () => void;
   handleSearchBooking: (value: string) => void;
@@ -206,6 +207,14 @@ const AdminBookingTable = ({
                 <th
                   className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
                   onClick={() => {
+                    handleSort("id");
+                  }}
+                >
+                  Id
+                </th>
+                <th
+                  className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
+                  onClick={() => {
                     handleSort("appointmentDate");
                   }}
                 >
@@ -215,7 +224,7 @@ const AdminBookingTable = ({
                 <th
                   className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
                   onClick={() => {
-                    handleSort("createdAt");
+                    handleSort("createAt");
                   }}
                 >
                   Ngày tạo
@@ -276,6 +285,9 @@ const AdminBookingTable = ({
                       key={item.id}
                     >
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
+                        {item.id}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
                         {item.appointmentDate}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
@@ -296,7 +308,7 @@ const AdminBookingTable = ({
                           : item.clinic?.name}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                        {`${item.time?.end}-${item.time?.start}`}
+                        {`${item.time?.start}-${item.time?.end}`}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex items-center justify-center space-x-2">

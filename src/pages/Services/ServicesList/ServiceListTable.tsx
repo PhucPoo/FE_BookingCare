@@ -2,6 +2,7 @@ import { IoIosAddCircle } from "react-icons/io";
 import { Button, Pagination, Popconfirm } from "antd/lib";
 import { deleteService } from "../../../api/Services/ServiceApi";
 import { toast } from "react-toastify";
+import type { CheckServiceSortKeyModel } from "./CheckServiceSortKeyModel";
 
 type Props = {
   pageSize: number;
@@ -13,7 +14,7 @@ type Props = {
   setFilterData: (value: { from: string; to: string }) => void;
   filterData: { from: string; to: string };
   setIsModalOpen: (e: boolean) => void;
-  handleSort: (value: number) => void;
+  handleSort: (value: CheckServiceSortKeyModel) => void;
   ServiceList: {
     id: number;
     name: string;
@@ -139,7 +140,7 @@ const ServiceListTable = ({
                 <th
                   className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
                   onClick={() => {
-                    handleSort(0);
+                    handleSort("id");
                   }}
                 >
                   id
@@ -147,7 +148,7 @@ const ServiceListTable = ({
                 <th
                   className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
                   onClick={() => {
-                    handleSort(1);
+                    handleSort("name");
                   }}
                 >
                   Tên
@@ -155,7 +156,7 @@ const ServiceListTable = ({
                 <th
                   className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
                   onClick={() => {
-                    handleSort(2);
+                    handleSort("cost");
                   }}
                 >
                   Giá

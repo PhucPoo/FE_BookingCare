@@ -3,6 +3,7 @@ import { Button, Pagination } from "antd/lib";
 import type { AdminBillManageModel } from "./AdminBillManageModel";
 import { formatDate } from "../../../utils/constant";
 import type { searchDataModel } from "./BillSearchModel";
+import type { CheckBillSortKeyModel } from "./CheckBillSortKeyModel";
 
 type Props = {
   BillList: AdminBillManageModel[];
@@ -11,7 +12,7 @@ type Props = {
   totalBillList: number;
   onLog: (page: number, pageSize: number) => void;
   handleSearchBillByCondition: (value: string, key: string) => void;
-  handleSort: (value: string) => void;
+  handleSort: (value: CheckBillSortKeyModel) => void;
   handleGetBillList: () => void;
   searchData: searchDataModel;
   setSearchData: (value: searchDataModel) => void;
@@ -95,6 +96,14 @@ const BillTable = ({
                   <th
                     className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
                     onClick={() => {
+                      handleSort("id");
+                    }}
+                  >
+                    Id
+                  </th>
+                  <th
+                    className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
+                    onClick={() => {
                       handleSort("patient");
                     }}
                   >
@@ -153,9 +162,11 @@ const BillTable = ({
                         key={item.id}
                       >
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
+                          {item.id}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
                           {item.patient?.name}
                         </td>
-
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
                           {item.support?.name}
                         </td>

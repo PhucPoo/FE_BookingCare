@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Breadcrumb from "../../../components/Breadcrumb/Breadcrumb";
 import { useEffect, useState } from "react";
 import {
@@ -12,27 +12,8 @@ import { RiCalendarScheduleFill } from "react-icons/ri";
 import { FaRegHandPointUp } from "react-icons/fa";
 import { Button, Select } from "antd/lib";
 import "./Doctor.css";
-type DoctorDetailModel = {
-  id?: number;
-  degree?: string;
-  account?: {
-    id?: number;
-    name: string;
-    email: string;
-    address: string;
-    avatar?: string;
-  };
-  description?: string;
-  cost?: number;
-  clinic?: {
-    id?: number;
-    name?: string;
-    address?: {
-      id?: number;
-      city?: string;
-    };
-  };
-};
+import type { DoctorDetailModel } from "./DoctorDetailModel";
+
 type availableTime = {
   id?: number;
   start?: string;
@@ -44,8 +25,10 @@ const DoctorDetail = () => {
   const id =
     location.pathname.split("/")[location.pathname.split("/").length - 1];
   const [detailDoctor, setDetailDoctor] = useState<DoctorDetailModel>({});
+  const [DateSelected, SetDateSelected] = useState<string>("");
   const [availableTime, setAvailableTime] = useState<availableTime[]>([]);
   const [openInsurance, setOpenInsurance] = useState<boolean>(false);
+  const navigate = useNavigate();
   const handleGetDetailDoctor = async () => {
     const res = await getDoctorById(id);
     if (!res.error) {
@@ -54,9 +37,11 @@ const DoctorDetail = () => {
   };
 
   const handleGetAvailableOfDoctor = async (date: string) => {
+    console.log("🚀 ~ handleGetAvailableOfDoctor ~ date:", date);
     const res = await getAvailableTimeOfDoctor(id, date);
     if (!res.error) {
       setAvailableTime(res.data);
+      SetDateSelected(date);
     }
   };
   useEffect(() => {
@@ -107,7 +92,25 @@ const DoctorDetail = () => {
                   "Hiện bác sĩ không có lịch khám"}
                 {availableTime?.length > 1 &&
                   availableTime.map((item) => (
-                    <Button>{`${item.start} - ${item.start}`}</Button>
+                    <Button
+                      key={item.id}
+                      onClick={() => {
+                        navigate(
+                          `/dat-lich-kham/${id}?timeStart=${item.start}&timeEnd=${item.end}`,
+                          {
+                            state: {
+                              data: {
+                                appointmentDate: DateSelected,
+                                doctorId: id,
+                                patientId: "5",
+                                clinicId: `${detailDoctor.clinic?.id}`,
+                                timeId: item.id,
+                              },
+                            },
+                          }
+                        );
+                      }}
+                    >{`${item.start} - ${item.start}`}</Button>
                   ))}
               </div>
               <p className="flex mt-2 text-sm gap-1">

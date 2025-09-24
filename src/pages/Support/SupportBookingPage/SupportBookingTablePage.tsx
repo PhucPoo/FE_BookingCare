@@ -7,6 +7,7 @@ import {
   type MenuProps,
 } from "antd/lib";
 import { formatDate } from "../../../utils/constant";
+import type { SupportSortKey } from "./SupportSortKey";
 type BookingListModel = {
   id?: number;
   appointmentDate?: string;
@@ -44,7 +45,7 @@ type Props = {
   currentPage: number;
   totalBillList: number;
   onLog: (page: number, pageSize: number) => void;
-  handleSort: (value: string) => void;
+  handleSort: (value: SupportSortKey) => void;
   handleChange: (value: string) => void;
   handleFindByDate: () => void;
   handleSearchBooking: (value: string, key: string) => void;

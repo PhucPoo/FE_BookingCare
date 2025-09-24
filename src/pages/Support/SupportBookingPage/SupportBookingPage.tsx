@@ -3,6 +3,7 @@ import BookingTablePage from "./SupportBookingTablePage";
 import { message, type PopconfirmProps } from "antd/lib";
 import { getBookingByClinicId } from "../../../api/Support/SupportApi";
 import SupportBookingDetail from "./SupportBookingDetail";
+import type { SupportSortKey } from "./SupportSortKey";
 type accountModel = {
   id?: number;
   name?: string;
@@ -56,7 +57,9 @@ const BookingPage = () => {
     from: "",
     to: "",
   });
-  const [checkRender, setCheckRender] = useState({
+  const [checkRender, setCheckRender] = useState<
+    Record<SupportSortKey, boolean>
+  >({
     appointmentDate: false,
     createdAt: false,
     status: false,
@@ -117,7 +120,7 @@ const BookingPage = () => {
   };
 
   //handle sort
-  const handleSort = (key: string) => {
+  const handleSort = (key: SupportSortKey) => {
     let BookingListCLone = BookingList;
     switch (key) {
       case "createdAt":

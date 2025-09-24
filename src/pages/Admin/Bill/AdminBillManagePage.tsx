@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import BillTable from "./AdminBillManageTable";
 import type { AdminBillManageModel } from "./AdminBillManageModel";
-import { adminGetAllBill } from "../../../api/Admin/AdminApi";
+import { adminGetAllBill, adminSortBill } from "../../../api/Admin/AdminApi";
 import type { searchDataModel } from "./BillSearchModel";
-import AdminBillDetail from "./AdminbillDetail";
+import AdminBillDetail from "./AdminBillDetail";
+import type { CheckBillSortKeyModel } from "./CheckBillSortKeyModel";
 
 const BillManage = () => {
   const [BillList, setBillList] = useState<AdminBillManageModel[]>([]);
@@ -17,11 +18,15 @@ const BillManage = () => {
     patient: "",
     support: "",
   });
-  const [checkSort, setCheckSort] = useState({
-    createdAt: false,
+  const [checkSort, setCheckSort] = useState<
+    Record<CheckBillSortKeyModel, boolean>
+  >({
+    createAt: false,
     patient: false,
     support: false,
     totalBill: false,
+    status: false,
+    id: false,
   });
   const onLog = (page: number, pageSize: number) => {
     console.log("Đang ở trang:", page, pageSize);
@@ -49,98 +54,10 @@ const BillManage = () => {
         break;
     }
   };
-  const handleSort = (value: string) => {
-    let BillListClone = BillList;
-    switch (value) {
-      case "patient":
-        if (checkSort.patient) {
-          BillListClone = BillListClone.sort((a, b) => {
-            if (a.patient?.name && b.patient?.name) {
-              setCheckSort({ ...checkSort, patient: checkSort.patient });
-              return a.patient?.name?.localeCompare(b.patient?.name);
-            }
-            return 0;
-          });
-          setCheckSort({ ...checkSort, patient: !checkSort.patient });
-          setBillList(BillListClone);
-        } else {
-          BillListClone = BillListClone.sort((a, b) => {
-            if (a.patient?.name && b.patient?.name) {
-              setCheckSort({ ...checkSort, patient: checkSort.patient });
-              return b.patient?.name?.localeCompare(a.patient?.name);
-            }
-            return 0;
-          });
-          setCheckSort({ ...checkSort, patient: !checkSort.patient });
-          setBillList(BillListClone);
-        }
-        break;
-      case "support":
-        if (checkSort.support) {
-          BillListClone = BillListClone.sort((a, b) => {
-            if (a.support?.name && b.support?.name) {
-              return a.support?.name?.localeCompare(b.support?.name);
-            }
-            return 0;
-          });
-          setCheckSort({ ...checkSort, support: !checkSort.support });
-          setBillList(BillListClone);
-        } else {
-          BillListClone = BillListClone.sort((a, b) => {
-            if (a.support?.name && b.support?.name) {
-              return b.support?.name?.localeCompare(a.support?.name);
-            }
-            return 0;
-          });
-          setCheckSort({ ...checkSort, support: !checkSort.support });
-          setBillList(BillListClone);
-        }
-        break;
-      case "createAt":
-        if (checkSort.createdAt) {
-          BillListClone = BillListClone.sort((a, b) => {
-            if (a.createAt && b.createAt) {
-              return a.createAt?.localeCompare(b.createAt);
-            }
-            return 0;
-          });
-          setCheckSort({ ...checkSort, createdAt: !checkSort.createdAt });
-          setBillList(BillListClone);
-        } else {
-          BillListClone = BillListClone.sort((a, b) => {
-            if (a.createAt && b.createAt) {
-              return b.createAt?.localeCompare(a.createAt);
-            }
-            return 0;
-          });
-          setCheckSort({ ...checkSort, createdAt: !checkSort.createdAt });
-          setBillList(BillListClone);
-        }
-        break;
-      case "totalBill":
-        if (checkSort.totalBill) {
-          BillListClone = BillListClone.sort((a, b) => {
-            if (a.totalBill && b.totalBill) {
-              return a.totalBill - b.totalBill;
-            }
-            return 0;
-          });
-          setCheckSort({ ...checkSort, totalBill: !checkSort.totalBill });
-          setBillList(BillListClone);
-        } else {
-          BillListClone = BillListClone.sort((a, b) => {
-            if (a.totalBill && b.totalBill) {
-              return b.totalBill - a.totalBill;
-            }
-            return 0;
-          });
-          setCheckSort({ ...checkSort, totalBill: !checkSort.totalBill });
-          setBillList(BillListClone);
-        }
-        break;
-      default:
-        break;
-    }
+  const handleSort = async (key: CheckBillSortKeyModel) => {
+    const res = await adminSortBill(key, checkSort[key] ? "asc" : "desc");
+    setCheckSort({ ...checkSort, [key]: !checkSort[key] });
+    setBillList(res.data.result);
   };
   const handleGetBillList = async () => {
     const result = await adminGetAllBill();

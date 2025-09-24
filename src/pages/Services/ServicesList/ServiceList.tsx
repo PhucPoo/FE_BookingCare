@@ -8,6 +8,7 @@ import {
   getSortService,
 } from "../../../api/Services/ServiceApi.ts";
 import { toast } from "react-toastify";
+import type { CheckServiceSortKeyModel } from "./CheckServiceSortKeyModel.ts";
 interface Item {
   id: number;
   name: string;
@@ -30,7 +31,9 @@ const ServiceList = () => {
     to: "",
   });
 
-  const [checkRender, setCheckRender] = useState({
+  const [checkRender, setCheckRender] = useState<
+    Record<CheckServiceSortKeyModel, boolean>
+  >({
     id: false,
     name: false,
     cost: false,
@@ -54,44 +57,10 @@ const ServiceList = () => {
     setPageSize(pageSize);
   };
 
-  const handleSort = async (value: number) => {
-    switch (value) {
-      case 0:
-        if (checkRender.id) {
-          const result = await getSortService("id", "asc");
-          setCheckRender({ ...checkRender, id: !checkRender.id });
-          setServiceList(result.data.result);
-        } else {
-          const result = await getSortService("id", "desc");
-          setCheckRender({ ...checkRender, id: !checkRender.id });
-          setServiceList(result.data.result);
-        }
-        break;
-      case 1:
-        if (checkRender.name) {
-          const result = await getSortService("name", "asc");
-          setCheckRender({ ...checkRender, name: !checkRender.name });
-          setServiceList(result.data.result);
-        } else {
-          const result = await getSortService("name", "desc");
-          setCheckRender({ ...checkRender, name: !checkRender.name });
-          setServiceList(result.data.result);
-        }
-        break;
-      case 2:
-        if (checkRender.cost) {
-          const result = await getSortService("cost", "asc");
-          setCheckRender({ ...checkRender, cost: !checkRender.cost });
-          setServiceList(result.data.result);
-        } else {
-          const result = await getSortService("cost", "desc");
-          setCheckRender({ ...checkRender, cost: !checkRender.cost });
-          setServiceList(result.data.result);
-        }
-        break;
-      default:
-        break;
-    }
+  const handleSort = async (key: CheckServiceSortKeyModel) => {
+    const res = await getSortService(key, checkRender[key] ? "asc" : "desc");
+    setCheckRender({ ...checkRender, [key]: !checkRender[key] });
+    setServiceList(res.data.result);
   };
 
   const filterService = () => {

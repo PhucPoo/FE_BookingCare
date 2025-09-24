@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { adminGetAllBooking } from "../../../api/Admin/AdminApi";
+import {
+  adminGetAllBooking,
+  adminSortBooking,
+} from "../../../api/Admin/AdminApi";
 import AdminBookingTable from "./AdminBookingTable";
 import { toast } from "react-toastify";
 import AdminBookingDetail from "./AdminBookingDetail";
+import type { CheckRenderKey } from "./CheckRenderKeyModel";
 
 type AdminBookingTableModel = {
   id?: number;
@@ -40,14 +44,17 @@ const AdminBookingManage = () => {
   const [pageSize, setPageSize] = useState<number>(10);
   const [totalBookingList, setTotalBookingList] = useState<number>(500);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [checkRender, setCheckRender] = useState({
+  const [checkRender, setCheckRender] = useState<
+    Record<CheckRenderKey, boolean>
+  >({
     appointmentDate: false,
-    createdAt: false,
+    createAt: false,
     status: false,
     doctor: false,
     patient: false,
     clinic: false,
     time: false,
+    id: false,
   });
   const [filterCreatedAt, setFilterCreatedAt] = useState<{
     from: string;
@@ -85,207 +92,10 @@ const AdminBookingManage = () => {
     console.log("Đang ở trang:", page, pageSize);
   };
   //handle sort
-  const handleSort = (key: string) => {
-    let BookingListCLone = bookings;
-    switch (key) {
-      case "createdAt":
-        if (checkRender.createdAt) {
-          BookingListCLone = BookingListCLone.sort((a, b) => {
-            if (a.createdAt && b.createdAt) {
-              return a?.createdAt?.localeCompare(b?.createdAt);
-            }
-            return 0;
-          });
-          setCheckRender({
-            ...checkRender,
-            createdAt: !checkRender.createdAt,
-          });
-          setBookings(BookingListCLone);
-        } else {
-          BookingListCLone = BookingListCLone.sort((a, b) => {
-            if (a.createdAt && b.createdAt) {
-              return b?.createdAt?.localeCompare(a?.createdAt);
-            }
-            return 0;
-          });
-          setCheckRender({
-            ...checkRender,
-            createdAt: !checkRender.createdAt,
-          });
-          setBookings(BookingListCLone);
-        }
-        break;
-      case "doctor":
-        if (checkRender.doctor) {
-          BookingListCLone = BookingListCLone.sort((a, b) => {
-            if (a.doctor?.account?.name && b.doctor?.account?.name) {
-              return a?.doctor?.account?.name?.localeCompare(
-                b?.doctor?.account?.name
-              );
-            }
-            return 0;
-          });
-          setCheckRender({
-            ...checkRender,
-            doctor: !checkRender.doctor,
-          });
-          setBookings(BookingListCLone);
-        } else {
-          BookingListCLone = BookingListCLone.sort((a, b) => {
-            if (a.doctor?.account?.name && b.doctor?.account?.name) {
-              return b?.doctor?.account?.name?.localeCompare(
-                a?.doctor?.account?.name
-              );
-            }
-            return 0;
-          });
-          setCheckRender({
-            ...checkRender,
-            doctor: !checkRender.doctor,
-          });
-          setBookings(BookingListCLone);
-        }
-        break;
-      case "appointmentDate":
-        if (checkRender.appointmentDate) {
-          BookingListCLone = BookingListCLone.sort((a, b) => {
-            if (a.appointmentDate && b.appointmentDate) {
-              return a?.appointmentDate?.localeCompare(b?.appointmentDate);
-            }
-            return 0;
-          });
-          setCheckRender({
-            ...checkRender,
-            appointmentDate: !checkRender.appointmentDate,
-          });
-          setBookings(BookingListCLone);
-        } else {
-          BookingListCLone = BookingListCLone.sort((a, b) => {
-            if (a.appointmentDate && b.appointmentDate) {
-              return b?.appointmentDate?.localeCompare(a?.appointmentDate);
-            }
-            return 0;
-          });
-          setCheckRender({
-            ...checkRender,
-            appointmentDate: !checkRender.appointmentDate,
-          });
-          setBookings(BookingListCLone);
-        }
-        break;
-      case "status":
-        if (checkRender.status) {
-          BookingListCLone = BookingListCLone.sort((a, b) => {
-            if (a.status && b.status) {
-              return a?.status?.localeCompare(b?.status);
-            }
-            return 0;
-          });
-          setCheckRender({
-            ...checkRender,
-            status: !checkRender.status,
-          });
-          setBookings(BookingListCLone);
-        } else {
-          BookingListCLone = BookingListCLone.sort((a, b) => {
-            if (a.status && b.status) {
-              return b?.status?.localeCompare(a?.status);
-            }
-            return 0;
-          });
-          setCheckRender({
-            ...checkRender,
-            status: !checkRender.status,
-          });
-          setBookings(BookingListCLone);
-        }
-        break;
-      case "patient":
-        if (checkRender.patient) {
-          BookingListCLone = BookingListCLone.sort((a, b) => {
-            if (a.patient?.account?.name && b.patient?.account?.name) {
-              return a?.patient?.account?.name?.localeCompare(
-                b?.patient?.account?.name
-              );
-            }
-            return 0;
-          });
-          setCheckRender({
-            ...checkRender,
-            patient: !checkRender.patient,
-          });
-          setBookings(BookingListCLone);
-        } else {
-          BookingListCLone = BookingListCLone.sort((a, b) => {
-            if (a.patient?.account?.name && b.patient?.account?.name) {
-              return b?.patient?.account?.name?.localeCompare(
-                a?.patient?.account?.name
-              );
-            }
-            return 0;
-          });
-          setCheckRender({
-            ...checkRender,
-            patient: !checkRender.patient,
-          });
-          setBookings(BookingListCLone);
-        }
-        break;
-      case "clinic":
-        if (checkRender.clinic) {
-          BookingListCLone = BookingListCLone.sort((a, b) => {
-            if (a.clinic?.name && b.clinic?.name) {
-              return a?.clinic?.name?.localeCompare(b?.clinic?.name);
-            }
-            return 0;
-          });
-          setCheckRender({
-            ...checkRender,
-            clinic: !checkRender.clinic,
-          });
-          setBookings(BookingListCLone);
-        } else {
-          BookingListCLone = BookingListCLone.sort((a, b) => {
-            if (a.clinic?.name && b.clinic?.name) {
-              return b?.clinic?.name?.localeCompare(a?.clinic?.name);
-            }
-            return 0;
-          });
-          setCheckRender({
-            ...checkRender,
-            clinic: !checkRender.clinic,
-          });
-          setBookings(BookingListCLone);
-        }
-        break;
-      case "time":
-        if (checkRender.time) {
-          BookingListCLone = BookingListCLone.sort((a, b) => {
-            if (a.time?.start && b.time?.start) {
-              return a?.time?.start?.localeCompare(b?.time?.start);
-            }
-            return 0;
-          });
-          setCheckRender({
-            ...checkRender,
-            time: !checkRender.time,
-          });
-          setBookings(BookingListCLone);
-        } else {
-          BookingListCLone = BookingListCLone.sort((a, b) => {
-            if (a.time?.start && b.time?.start) {
-              return b?.time?.start?.localeCompare(a?.time?.start);
-            }
-            return 0;
-          });
-          setCheckRender({
-            ...checkRender,
-            time: !checkRender.time,
-          });
-          setBookings(BookingListCLone);
-        }
-        break;
-    }
+  const handleSort = async (key: CheckRenderKey) => {
+    const res = await adminSortBooking(key, checkRender[key] ? "asc" : "desc");
+    setCheckRender({ ...checkRender, [key]: !checkRender[key] });
+    setBookings(res.data.result);
   };
   // handle change option (status and clinic)
   const handleChange = (value: string) => {

@@ -26,6 +26,7 @@ import List from "../pages/DanhSach/List";
 import MedicalFacilityDetail from "../pages/DanhSach/MedicalFacility/MedicalFacilityDetail";
 import AdminBookingManage from "../pages/Admin/AdminBookingManage/AdminBookingManage";
 import DoctorDetail from "../pages/DanhSach/Doctor/DoctorDetail";
+import BookingDoctor from "../pages/BookingDoctor/BookingDoctor";
 
 const AppRoutes = () => {
   return (
@@ -44,7 +45,7 @@ const AppRoutes = () => {
         <Route path="chuyen-khoa" element={<SpecialtyList />} />
         <Route path="bai-viet" element={<ArticleList />} />
       </Route>
-
+      <Route path="dat-lich-kham/:id" element={<BookingDoctor />} />
       {/* admin */}
       <Route path="/admin-dashboard" element={<Dashboard />}>
         <Route

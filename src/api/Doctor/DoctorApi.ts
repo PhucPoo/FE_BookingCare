@@ -28,9 +28,21 @@ export const getBookingsByDoctorId = async (id: string) => {
   );
   return res.data;
 };
+
 export const handleDoctorUpdateBooking = async (id: string, status: string) => {
   const res = await customAxiosInstance.put(
     `${api}/bookings/${+id}/status?status=${status}`,
+    config
+  );
+  return res.data;
+};
+export const doctorSortBooking = async (
+  id: string,
+  sortValue: string,
+  order: string
+) => {
+  const res = await customAxiosInstance.get(
+    `${api}/bookings/doctor/${id}?sort=${sortValue},${order}`,
     config
   );
   return res.data;

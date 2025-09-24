@@ -8,6 +8,7 @@ import {
 } from "antd/lib";
 import { formatDate } from "../../utils/constant";
 import { handleDoctorUpdateBooking } from "../../api/Doctor/DoctorApi";
+import type { DoctorBookingSortKeyModel } from "./DoctorBookingSortKeyModel";
 type BookingListModel = {
   id?: number;
   appointmentDate?: string;
@@ -45,7 +46,7 @@ type Props = {
   currentPage: number;
   totalBillList: number;
   onLog: (page: number, pageSize: number) => void;
-  handleSort: (value: string) => void;
+  handleSort: (value: DoctorBookingSortKeyModel) => void;
   handleChange: (value: string) => void;
   handleFindByDate: () => void;
   handleSearchBooking: (value: string, key: string) => void;
@@ -246,7 +247,7 @@ const BookingTableManage = ({
                 <th
                   className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
                   onClick={() => {
-                    handleSort("createdAt");
+                    handleSort("createAt");
                   }}
                 >
                   Ngày tạo
