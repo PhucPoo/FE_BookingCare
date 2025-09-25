@@ -1,5 +1,8 @@
 import Slider from "react-slick";
-import { MainPageDoctorsData } from "./MainPageDoctorsData";
+import { useEffect, useState } from "react";
+import { getAllDoctors } from "../../../api/Doctor/DoctorApi";
+import type { DoctorListModel } from "../../DanhSach/Doctor/DoctorListModel";
+import { useNavigate } from "react-router-dom";
 
 const MainPageDoctor = () => {
   const settings = {
@@ -10,6 +13,26 @@ const MainPageDoctor = () => {
     slidesToShow: 4,
     slidesToScroll: 1,
   };
+  const navigate = useNavigate();
+  const [Doctors, setDoctors] = useState<DoctorListModel[]>([]);
+  const handleGetDoctor = async () => {
+    const result = await getAllDoctors();
+    for (let i = result.data.result.length - 1; i > 0; i--) {
+      // Chọn ngẫu nhiên chỉ số j (từ 0 đến i)
+      const j = Math.floor(Math.random() * (i + 1));
+
+      // Hoán đổi phần tử tại vị trí i và j
+      [result.data.result[i], result.data.result[j]] = [
+        result.data.result[j],
+        result.data.result[i],
+      ];
+    }
+    setDoctors(result.data.result);
+  };
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    handleGetDoctor();
+  }, []);
   return (
     <div>
       <section className="doctors">
@@ -17,27 +40,33 @@ const MainPageDoctor = () => {
 
         <div style={{ width: "1290px", margin: "40px auto" }}>
           <Slider {...settings}>
-            {MainPageDoctorsData.map((item) => {
+            {Doctors.map((item) => {
               return (
                 <div className="doctor-card" key={item.id}>
                   <img
                     className="doctor-photo"
-                    src={item.image}
+                    src={item.account?.avatar}
                     alt="Bác sĩ 1"
                   />
                   <div className="doctor-rating">
                     <span>
-                      Đánh giá: <b>{item.rate}</b> ⭐
+                      Đánh giá: <b>5</b> ⭐
                     </span>
                     <span>
-                      Lượt khám: <b>{item.booked}</b> 👤
+                      Lượt khám: <b>30</b> 👤
                     </span>
                   </div>
-                  <h3>{item.name}</h3>
-                  <p style={{ paddingTop: "18px" }}>{item.specialty}</p>
-                  <p>{item.cost}</p>
-                  <p>{item.title}</p>
-                  <button>{item.content}</button>
+                  <h3>{item.account?.name}</h3>
+                  <p style={{ paddingTop: "18px" }}>{item.clinic?.name}</p>
+                  {/* <p>{item.cost}</p> */}
+                  <p>Địa chỉ nơi khám: {item.clinic?.address?.city}</p>
+                  <button
+                    onClick={() => {
+                      navigate(`danh-sach/bac-si/${item.id}`);
+                    }}
+                  >
+                    Tư vấn ngay
+                  </button>
                 </div>
               );
             })}

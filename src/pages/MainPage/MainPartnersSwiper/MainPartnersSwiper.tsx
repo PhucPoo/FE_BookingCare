@@ -3,10 +3,12 @@ import banner2 from "../../../public/img/baner2.png";
 import banner3 from "../../../public/img/baner3.png";
 import "./MainPartnersSwiper.css";
 import Slider from "react-slick";
-import { MainPertnersSwiperDataList } from "./MainPartnersSwiperData";
 import { Pagination } from "swiper/modules";
 import "swiper/css/pagination";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { useEffect, useState } from "react";
+import type { MedicalFacilitiesModel } from "../../DanhSach/MedicalFacility/MedicalFacilitiesModel";
+import { getAllMedicalFacility } from "../../../api/Medical/MedicalFacilityApi";
 const MainPartnersSwiper = () => {
   const settings = {
     dots: false,
@@ -16,7 +18,17 @@ const MainPartnersSwiper = () => {
     slidesToShow: 4,
     slidesToScroll: 1,
   };
+  const [MedicalFacilities, setMedicalFacilities] = useState<
+    MedicalFacilitiesModel[]
+  >([]);
+  const handleGetMedicalFacilities = async () => {
+    const res = await getAllMedicalFacility();
 
+    setMedicalFacilities(res.data.result);
+  };
+  useEffect(() => {
+    handleGetMedicalFacilities();
+  }, []);
   return (
     <div>
       <div style={{ width: "1290px", margin: "40px auto" }}>
@@ -32,7 +44,7 @@ const MainPartnersSwiper = () => {
           ĐƯỢC TIN TƯỞNG HỢP TÁC VÀ ĐỒNG HÀNH
         </h2>
         <Slider {...settings}>
-          {MainPertnersSwiperDataList.map(({ id, image, title }) => (
+          {MedicalFacilities.map(({ id, image, name }) => (
             <div key={id}>
               <div
                 style={{
@@ -46,8 +58,16 @@ const MainPartnersSwiper = () => {
                   border: "2px solid rgba(181,231,237,1)",
                 }}
               >
-                <img src={image} />
-                <p>{title}</p>
+                <img
+                  src={image}
+                  style={{
+                    width: "80px",
+                    height: "80px",
+                    objectFit: "cover",
+                  }}
+                  alt={name}
+                />
+                <p>{name}</p>
               </div>
             </div>
           ))}

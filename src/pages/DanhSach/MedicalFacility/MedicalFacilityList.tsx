@@ -6,21 +6,14 @@ const LoadingPage = React.lazy(
 import "./MedicalFacility.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import Breadcrumb from "../../../components/Breadcrumb/Breadcrumb";
-type MedicalFacilityModel = {
-  id?: number;
-  address?: { city?: string; id?: number };
-  description?: string;
-  image?: string;
-  name?: string;
-  phoneNumber?: string;
-  position?: string;
-};
+import type { MedicalFacilitiesModel } from "./MedicalFacilitiesModel";
+
 const MedicalFacilityList = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const [medicalFacilities, setMedicalFacilities] = useState<
-    MedicalFacilityModel[]
+    MedicalFacilitiesModel[]
   >([]);
   const handleGetAllMedicalFacility = async () => {
     const res = await getAllMedicalFacility();

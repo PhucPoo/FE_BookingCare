@@ -7,20 +7,13 @@ import "./Doctor.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import Breadcrumb from "../../../components/Breadcrumb/Breadcrumb";
 import { getDegree } from "../../../utils/constant";
-type DoctorsModel = {
-  id?: number;
-  degree?: string;
-  account?: {
-    id?: number;
-    name: string;
-    avatar?: string;
-  };
-};
+import type { DoctorListModel } from "./DoctorListModel";
+
 const DoctorList = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [doctors, setDoctors] = useState<DoctorsModel[]>([]);
+  const [doctors, setDoctors] = useState<DoctorListModel[]>([]);
   const handleGetAllDoctors = async () => {
     const res = await getAllDoctors();
     if (!res.error) {
