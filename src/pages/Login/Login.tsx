@@ -1,126 +1,168 @@
-import React from "react";
-import { Form, Input, Button, Checkbox, Card, Row, Col } from "antd";
-import { UserOutlined, LockOutlined } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import React, { useState } from 'react';
+import { UserOutlined, LockOutlined, EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
+import './login.css';
+
+interface LoginFormData {
+  userName: string; // Changed from 'email' to 'userName'
+  password: string;
+}
+
+interface LoginResponse {
+  statusCode: number;
+  error: any;
+  message: string;
+  data: {
+    accessToken: string;
+    userLogin: {
+      id: number;
+      name: string;
+      email: string;
+      role: string;
+    };
+  };
+}
 
 const Login: React.FC = () => {
-  const navigate = useNavigate();
+  const [formData, setFormData] = useState<LoginFormData>({
+    userName: '', // Changed from 'email' to 'userName'
+    password: ''
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
-  const onFinish = async (values: any) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    // Clear error and success when user starts typing
+    if (error) setError('');
+    if (success) setSuccess('');
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+    setSuccess('');
+
     try {
-      const res = await axios.post("http://localhost:8080/api/v1/auth/login", {
-        userName: values.userName,
-        password: values.password,
+      const response = await fetch('http://localhost:8080/api/v1/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Added to handle cookies
+        body: JSON.stringify(formData)
       });
 
-      if (res.data?.data?.accessToken) {
-        localStorage.setItem("accessToken", res.data.data.accessToken);
-        localStorage.setItem("user", JSON.stringify(res.data.data.user));
-        alert("Đăng nhập thành công!");
+      const data: LoginResponse = await response.json();
 
-        const user = res.data.data.user;
-        if (user?.role) {
-          navigate(`/${user.role}/dashboard`);
-        } else {
-          navigate("/");
-        }
+      if (response.ok && data.statusCode === 200 && data.data?.accessToken) {
+        // Handle successful login - DO NOT show any message
+        localStorage.setItem('token', data.data.accessToken);
+        localStorage.setItem('user', JSON.stringify(data.data.userLogin));
+        // Redirect to dashboard or home page
+        // window.location.href = '/dashboard';
+        setSuccess('Đăng nhập thành công!');
       } else {
-        alert("Đăng nhập thất bại!");
+        setError(data.message || 'Đăng nhập thất bại');
       }
     } catch (error) {
-      console.error(error);
-      alert("Có lỗi xảy ra!");
+      setError('Có lỗi xảy ra, vui lòng thử lại');
+      console.error('Login error:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        backgroundImage:
-          'linear-gradient(to top, rgba(255, 255, 255, 0.9), rgba(0,0,0,0)), url("/public/bg_login.jpg")',
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        padding: "16px",
-      }}
-    >
-      <Row justify="center" align="middle" style={{ width: "100%", margin: 0 }}>
-        <Col xs={24} sm={18} md={12} lg={8}>
-          <Card
-            title="Login"
-            headStyle={{ fontSize: 20, fontWeight: "bold", textAlign: "center" }}
-            style={{
-              width: "100%",
-              borderRadius: 16,
-              textAlign: "center",
-              padding: "20px",
-              backgroundColor: "#fff",
-              boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
-            }}
-          >
-            <Form name="login" layout="vertical" onFinish={onFinish} size="large">
-              <Form.Item
-                name="userName"
-                rules={[{ required: true, message: "Hãy nhập tên đăng nhập!" }]}
-              >
-                <Input prefix={<UserOutlined />} placeholder="Tên đăng nhập / Email" />
-              </Form.Item>
-
-              <Form.Item
-                name="password"
-                rules={[{ required: true, message: "Hãy nhập mật khẩu!" }]}
-              >
-                <Input.Password prefix={<LockOutlined />} placeholder="Mật khẩu" />
-              </Form.Item>
-
-              <Form.Item>
-                <Checkbox style={{ float: "left" }}>Remember me</Checkbox>
-                <a style={{ float: "right" }} onClick={() => navigate("/forgot-password")}>
-                  Forgot password?
-                </a>
-              </Form.Item>
-
-              <Form.Item>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  block
-                  style={{
-                    backgroundColor: "#46d9f6ff",
-                    borderColor: "#46d9f6ff",
-                    fontWeight: "bold",
-                  }}
-                  className="auth-btn"
+    <div className="login-container">
+      <div className="login-card">
+        <div className="login-left">
+          <div className="illustration">
+            <img src="/bg_1.png" alt="Login illustration" className="bg-image" />
+          </div>
+        </div>
+        
+        <div className="login-right">
+          <div className="login-header">
+            <h1 className="brand-title">BOOKING CARE</h1>
+          </div>
+          
+          <form onSubmit={handleSubmit} className="login-form">
+            <h2 className="form-title">Đăng nhập</h2>
+            
+            {error && <div className="error-message">{error}</div>}
+            {success && <div className="success-message">{success}</div>}
+            
+            <div className="form-group">
+              <div className="input-wrapper">
+                <span className="input-icon">
+                  <UserOutlined />
+                </span>
+                <input
+                  type="email"
+                  name="userName" // Changed from 'email' to 'userName'
+                  placeholder="Tên đăng nhập / Email"
+                  value={formData.userName} // Changed from formData.email
+                  onChange={handleInputChange}
+                  required
+                  className="form-input"
+                />
+              </div>
+            </div>
+            
+            <div className="form-group">
+              <div className="input-wrapper">
+                <span className="input-icon">
+                  <LockOutlined />
+                </span>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="Mật khẩu"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  required
+                  className="form-input"
+                />
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="password-toggle"
                 >
-                  Login
-                </Button>
-              </Form.Item>
-
-              <Form.Item style={{ textAlign: "center" }}>
-                Chưa có tài khoản?{" "}
-                <Button type="link" style={{ padding: 0 }} onClick={() => navigate("/signup")}>
-                  Sign up
-                </Button>
-              </Form.Item>
-            </Form>
-          </Card>
-        </Col>
-      </Row>
-
-      <style>
-        {`
-          .auth-btn {
-            transition: all 0.3s ease;
-          }
-          .auth-btn:hover {
-            background-color: #30a4fdff !important;
-            border-color: #30a4fdff !important;
-          }
-        `}
-      </style>
+                  {showPassword ? <EyeInvisibleOutlined /> : <EyeTwoTone />}
+                </button>
+              </div>
+            </div>
+            
+            <div className="form-actions">
+              <a href="#" className="forgot-password">Quên mật khẩu?</a>
+            </div>
+            
+            <button
+              type="submit"
+              disabled={isLoading}
+              className={`login-button ${isLoading ? 'loading' : ''}`}
+            >
+              {isLoading ? 'ĐANG ĐĂNG NHẬP...' : 'ĐĂNG NHẬP'}
+            </button>
+            
+            <div className="signup-link">
+              <span>Bạn chưa có tài khoản? </span>
+              <a href="#" className="signup-text">Đăng ký</a>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   );
 };
