@@ -3,18 +3,22 @@ import Button from "antd/lib/button";
 import Modal from "antd/lib/modal";
 import Detailuser from "./DetailUser";
 import Edituser from "./EditUser";
+import { testDeleteAccountsApi } from "../../../api/testApi";
+import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
 
 export interface User {
-  id: number;
   name: string;
   email: string;
-  cccd: number;
-  phone: string;
+  cccd: string;
+  phoneNumber: string;
+  password: string;
   price?: number;
   date_of_birth?: Date;
-  create_at: Date;
-  update_at: Date;
-  
+}
+
+export interface Role {
+  id: number;
+  name: string;
 }
 
 interface userTableProps {
@@ -42,28 +46,32 @@ interface userTableProps {
 //   return null;
 // };
 
-type SortColumn = "name" | "create_at" | "";
+type SortColumn = "name" | "createAt" | "";
 type SortDirection = "asc" | "desc";
 
-const userTable: React.FC<userTableProps> = ({ users, onUpdateuser, onDeleteuser }) => {
+const userTable: React.FC<userTableProps> = ({
+  users,
+  onUpdateuser,
+  onDeleteuser,
+}) => {
   // State sắp xếp
   const [sortColumn, setSortColumn] = useState<SortColumn>("");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
-   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const showModal = () => {
     setIsModalOpen(true);
   };
   const handleOk = () => {
     // console.log('OK clicked', editinguser?.id);
-    onDeleteuser(Number(deleteuserid)); 
+    testDeleteAccountsApi(deleteuserid);
+    // onDeleteuser(Number(deleteuserid));
     setIsModalOpen(false);
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-
 
   // Sắp xếp dữ liệu theo cột và chiều
   const sortedusers = useMemo(() => {
@@ -78,9 +86,9 @@ const userTable: React.FC<userTableProps> = ({ users, onUpdateuser, onDeleteuser
           aVal = a.name.toLowerCase();
           bVal = b.name.toLowerCase();
           break;
-        case "create_at":
-          aVal = a.create_at.getTime();
-          bVal = b.create_at.getTime();
+        case "createAt":
+          aVal = a.createAt;
+          bVal = b.createAt;
           break;
         default:
           return 0;
@@ -93,7 +101,7 @@ const userTable: React.FC<userTableProps> = ({ users, onUpdateuser, onDeleteuser
   }, [users, sortColumn, sortDirection]);
 
   // Xử lý click sort cột
-  const handleSort = (column: SortColumn) => {
+  const handleSort = async (column: SortColumn) => {
     if (sortColumn === column) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
@@ -147,13 +155,16 @@ const userTable: React.FC<userTableProps> = ({ users, onUpdateuser, onDeleteuser
               Tên người dùng {renderSortArrow("name")}
             </th>
             <th className="p-3 border hidden md:table-cell">Email</th>
-            <th className="p-3 border hidden lg:table-cell">CCCD</th>
+            {/* <th className="p-3 border hidden lg:table-cell">Password</th> */}
+            <th className="p-3 border hidden lg:table-cell">
+              Căn cước công dân
+            </th>
             <th className="p-3 border hidden md:table-cell">SĐT</th>
             <th
               className="p-3 border hidden md:table-cell cursor-pointer select-none"
-              onClick={() => handleSort("create_at")}
+              onClick={() => handleSort("createAt")}
             >
-              Ngày tạo {renderSortArrow("create_at")}
+              Ngày tạo {renderSortArrow("createAt")}
             </th>
             <th className="p-3 border hidden xl:table-cell">Cập nhật</th>
             {/* <th className="p-3 border">Trạng thái</th> */}
@@ -167,34 +178,37 @@ const userTable: React.FC<userTableProps> = ({ users, onUpdateuser, onDeleteuser
               <td className="p-3 border">{u.name}</td>
               <td className="p-3 border hidden md:table-cell">{u.email}</td>
               <td className="p-3 border hidden lg:table-cell">{u.cccd}</td>
-              <td className="p-3 border hidden md:table-cell">{u.phone}</td>
               <td className="p-3 border hidden md:table-cell">
-                {u.create_at.toLocaleDateString()}
+                {u.phoneNumber}
+              </td>
+              <td className="p-3 border hidden md:table-cell">
+                {new Date(u.createAt).toLocaleString()}
               </td>
               <td className="p-3 border hidden xl:table-cell">
-                {u.update_at.toLocaleDateString()}
+                {new Date(u.updateAt).toLocaleString()}
               </td>
               {/* <td className="p-3 border">{getStatusBadge(u.status)}</td> */}
               <td className="p-3 border text-center">
                 <div className="flex flex-wrap justify-center gap-2">
+                  {/* Nút sửa */}
                   <Button
                     size="small"
+                    icon={<FaEdit />}
                     style={{
                       backgroundColor: "#facc15",
                       borderColor: "#facc15",
                       color: "#000",
                     }}
                     onClick={() => {
-                      
                       setEditinguser(u);
-                     
                       setIsEditModalOpen(true);
                     }}
-                  >
-                    Sửa
-                  </Button>
+                  />
+
+                  {/* Nút xóa */}
                   <Button
                     size="small"
+                    icon={<FaTrash />}
                     style={{
                       backgroundColor: "#b91c1c",
                       borderColor: "#b91c1c",
@@ -204,12 +218,19 @@ const userTable: React.FC<userTableProps> = ({ users, onUpdateuser, onDeleteuser
                       setIsModalOpen(true);
                       setDeleteuserid(u.id);
                     }}
-                  >
-                    Xóa
-                  </Button>
-                  <Button size="small" onClick={() => showDetailModal(u)}>
-                    Xem
-                  </Button>
+                  />
+
+                  {/* Nút xem */}
+                  <Button
+                    size="small"
+                    icon={<FaEye />}
+                    style={{
+                      backgroundColor: "#3b82f6",
+                      borderColor: "#3b82f6",
+                      color: "#fff",
+                    }}
+                    onClick={() => showDetailModal(u)}
+                  />
                 </div>
               </td>
             </tr>
@@ -236,7 +257,7 @@ const userTable: React.FC<userTableProps> = ({ users, onUpdateuser, onDeleteuser
       />
       <Modal
         title="Basic Modal"
-        closable={{ 'aria-label': 'Custom Close Button' }}
+        closable={{ "aria-label": "Custom Close Button" }}
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}

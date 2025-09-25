@@ -1,89 +1,90 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DoctorFilterBar from "./DoctorFilterBar";
 import DoctorTable, { type Doctor } from "./DoctorTable";
 import AddDoctor from "./AddDoctor";
 import Button from "antd/lib/button";
 import { DatePicker } from "antd/lib";
 import Input from "antd/es/input";
+import api from "../../../api/axios";
 
 const initialDoctors: Doctor[] = [
-  {
-    id: 2,
-    name: "BS. Nguyễn Văn B",
-    email: "hp@gmail.com",
-    cccd: 1289389,
-    phone: "0942234567",
-    price: 15000,
-    create_at: new Date("2025-08-27"),
-    update_at: new Date("2025-08-27"),
-    status: "active",
-  },
-  {
-    id: 1,
-    name: "BS. Nguyễn Văn A",
-    email: "hp@gmail.com",
-    cccd: 1289389,
-    phone: "0901234567",
-    price: 20000,
-    create_at: new Date("2025-08-27"),
-    update_at: new Date("2025-08-27"),
-    status: "active",
-  },
-  {
-    id: 3,
-    name: "BS. Nguyễn Văn C",
-    email: "hp@gmail.com",
-    cccd: 1289389,
-    phone: "0939234567",
-    price: 15000,
-    create_at: new Date("2025-08-27"),
-    update_at: new Date("2025-08-27"),
-    status: "active",
-  },
-  {
-    id: 4,
-    name: "BS. Nguyễn Văn D",
-    email: "hp@gmail.com",
-    cccd: 1289389,
-    phone: "0920234567",
-    price: 15000,
-    create_at: new Date("2025-08-27"),
-    update_at: new Date("2025-08-27"),
-    status: "inactive",
-  },
-  {
-    id: 5,
-    name: "BS. Nguyễn Văn CD",
-    email: "hp@gmail.com",
-    cccd: 1289389,
-    phone: "0901234567",
-    price: 15000,
-    create_at: new Date("2025-08-27"),
-    update_at: new Date("2025-08-27"),
-    status: "inactive",
-  },
-  {
-    id: 6,
-    name: "BS. Nguyễn Văn AB",
-    email: "hp@gmail.com",
-    cccd: 1289389,
-    phone: "0910744567",
-    price: 15000,
-    create_at: new Date("2025-08-27"),
-    update_at: new Date("2025-08-27"),
-    status: "active",
-  },
-  {
-    id: 7,
-    name: "BS. Nguyễn Văn ABC",
-    email: "hp@gmail.com",
-    cccd: 1289389,
-    phone: "0910784567",
-    price: 15000,
-    create_at: new Date("2025-08-27"),
-    update_at: new Date("2025-08-27"),
-    status: "inactive",
-  },
+  // {
+  //   id: 2,
+  //   name: "BS. Nguyễn Văn B",
+  //   email: "hp@gmail.com",
+  //   cccd: 1289389,
+  //   phone: "0942234567",
+  //   price: 15000,
+  //   create_at: new Date("2025-08-27"),
+  //   update_at: new Date("2025-08-27"),
+  //   status: "active",
+  // },
+  // {
+  //   id: 1,
+  //   name: "BS. Nguyễn Văn A",
+  //   email: "hp@gmail.com",
+  //   cccd: 1289389,
+  //   phone: "0901234567",
+  //   price: 20000,
+  //   create_at: new Date("2025-08-27"),
+  //   update_at: new Date("2025-08-27"),
+  //   status: "active",
+  // },
+  // {
+  //   id: 3,
+  //   name: "BS. Nguyễn Văn C",
+  //   email: "hp@gmail.com",
+  //   cccd: 1289389,
+  //   phone: "0939234567",
+  //   price: 15000,
+  //   create_at: new Date("2025-08-27"),
+  //   update_at: new Date("2025-08-27"),
+  //   status: "active",
+  // },
+  // {
+  //   id: 4,
+  //   name: "BS. Nguyễn Văn D",
+  //   email: "hp@gmail.com",
+  //   cccd: 1289389,
+  //   phone: "0920234567",
+  //   price: 15000,
+  //   create_at: new Date("2025-08-27"),
+  //   update_at: new Date("2025-08-27"),
+  //   status: "inactive",
+  // },
+  // {
+  //   id: 5,
+  //   name: "BS. Nguyễn Văn CD",
+  //   email: "hp@gmail.com",
+  //   cccd: 1289389,
+  //   phone: "0901234567",
+  //   price: 15000,
+  //   create_at: new Date("2025-08-27"),
+  //   update_at: new Date("2025-08-27"),
+  //   status: "inactive",
+  // },
+  // {
+  //   id: 6,
+  //   name: "BS. Nguyễn Văn AB",
+  //   email: "hp@gmail.com",
+  //   cccd: 1289389,
+  //   phone: "0910744567",
+  //   price: 15000,
+  //   create_at: new Date("2025-08-27"),
+  //   update_at: new Date("2025-08-27"),
+  //   status: "active",
+  // },
+  // {
+  //   id: 7,
+  //   name: "BS. Nguyễn Văn ABC",
+  //   email: "hp@gmail.com",
+  //   cccd: 1289389,
+  //   phone: "0910784567",
+  //   price: 15000,
+  //   create_at: new Date("2025-08-27"),
+  //   update_at: new Date("2025-08-27"),
+  //   status: "inactive",
+  // },
 ];
 
 const DoctorManagement: React.FC = () => {
@@ -92,6 +93,20 @@ const DoctorManagement: React.FC = () => {
     useState<Doctor[]>(initialDoctors);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await api.get("/v1/doctors");
+        console.log(res.data.data.result);
+        setDoctors(res.data.data.result)
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, []);
   // Thêm bác sĩ mới
   const handleAddDoctor = (newDoctor: Doctor) => {
     const updatedDoctors = [...doctors, newDoctor];

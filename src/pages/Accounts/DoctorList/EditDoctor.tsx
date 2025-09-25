@@ -25,7 +25,7 @@ const EditDoctor: React.FC<EditDoctorProps> = ({ open, onCancel, onUpdate, docto
                 name: doctor.name,
                 email: doctor.email,
                 cccd: doctor.cccd.toString(),
-                phone: doctor.phone,
+                phoneNumber: doctor.phoneNumber,
                 price: doctor.price?.toString(),
                 status: doctor.status,
             });
@@ -40,13 +40,13 @@ const EditDoctor: React.FC<EditDoctorProps> = ({ open, onCancel, onUpdate, docto
             name: values.name,
             email: values.email,
             cccd: Number(values.cccd),
-            phone: values.phone,
+            phoneNumber: values.phoneNumber,
             price: Number(values.price),
             status: values.status,
             update_at: new Date(),
         };
 
-        onUpdate(updatedDoctor); // 👈 Gọi hàm cập nhật truyền từ DoctorTable
+        onUpdate(updatedDoctor); 
         form.resetFields();
     };
 

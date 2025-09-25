@@ -3,27 +3,43 @@ import React from "react";
 import Statistics from "../pages/Statistics/Statistics";
 import ServiceList from "../pages/Services/ServicesList/ServiceList";
 import ErrorPage from "../components/ErrorPage/ErrorPage";
-import BillPage from "../pages/Bill/BillPage";
-import BookingPage from "../pages/BookingPage/BookingPage";
-import BookingManage from "../pages/Doctor/BookingManage";
+import BillPage from "../pages/Admin/Bill/AdminBillManagePage";
+import BookingPage from "../pages/Support/SupportBookingPage/SupportBookingPage";
+import DoctorBookingPage from "../pages/DoctorManage/DoctorBookingManage";
 import DoctorDashboard from "../pages/Dashboard/DoctorDashboard/DoctorDashboard";
 import SupportDashboard from "../pages/Dashboard/SupportDashboard/SupportDashboard";
 import DoctorManagement from "../pages/Accounts/DoctorList/DoctorManagement";
+
 import Dashboard from "../pages/Dashboard/Dashboard";
 import DashboardLayout from "../layouts/DashboardLayout"
+
 import SupportList from "../pages/Accounts/SupportList/SupportList";
 import PatientList from "../pages/Accounts/PatientList/PatientList";
 import UserList from "../pages/Accounts/UserList/UserList";
 import SpecialtyGrid from "../pages/Specialty/SpecialtyGrid";
 import ListPatient_Doctor from "../pages/Doctors/ListPatient_Doctor";
 import { Navigate, Route, Routes } from "react-router-dom";
+
 import Login from "../pages/Login/Login";
 import Signup from "../pages/Signup/Signup";
 import ForgotPasswordForm from "../components/ForgotPasswordForm/ForgotPasswordForm";
 
+import Dashboard from "../pages/Dashboard/AdminDashboard/Dashboard";
+import MainPage from "../pages/MainPage/MainPage";
+import MedicalFacilityList from "../pages/DanhSach/MedicalFacility/MedicalFacilityList";
+import DoctorList from "../pages/DanhSach/Doctor/DoctorList";
+import SpecialtyList from "../pages/DanhSach/Specialty/SpecialtyList";
+import ArticleList from "../pages/DanhSach/Article/ArticleList";
+import List from "../pages/DanhSach/List";
+import MedicalFacilityDetail from "../pages/DanhSach/MedicalFacility/MedicalFacilityDetail";
+import AdminBookingManage from "../pages/Admin/AdminBookingManage/AdminBookingManage";
+import DoctorDetail from "../pages/DanhSach/Doctor/DoctorDetail";
+import BookingDoctor from "../pages/BookingDoctor/BookingDoctor";
+
 const AppRoutes = () => {
   return ( 
     <Routes>
+
       <Route
         path="/"
         element={<Navigate to={"admin-dashboard"} replace={true} />}
@@ -34,6 +50,22 @@ const AppRoutes = () => {
         <Route path="forgot-password" element={<ForgotPasswordForm/>}/>
       </Route>
 
+      <Route path="/" element={<MainPage />} />
+
+
+      <Route path="/danh-sach" element={<List />}>
+        <Route
+          path="/danh-sach"
+          element={<Navigate to={"error-page"} replace={true} />}
+        />
+        <Route path="co-so-y-te" element={<MedicalFacilityList />} />
+        <Route path="co-so-y-te/:id" element={<MedicalFacilityDetail />} />
+        <Route path="bac-si" element={<DoctorList />} />
+        <Route path="bac-si/:id" element={<DoctorDetail />} />
+        <Route path="chuyen-khoa" element={<SpecialtyList />} />
+        <Route path="bai-viet" element={<ArticleList />} />
+      </Route>
+      <Route path="dat-lich-kham/:id" element={<BookingDoctor />} />
       {/* admin */}
       <Route path="/admin-dashboard" element={<DashboardLayout />}>
         <Route
@@ -43,7 +75,7 @@ const AppRoutes = () => {
         <Route path="statistics" element={<Statistics />} />
         <Route path="service-list" element={<ServiceList />} />
         <Route path="bill-manage" element={<BillPage />} />
-        <Route path="booking-manage" element={<BookingPage />} />
+        <Route path="booking-manage" element={<AdminBookingManage />} />
 
         <Route path="user-list" element={<UserList />} />
 
@@ -63,7 +95,7 @@ const AppRoutes = () => {
           path="/doctor-dashboard"
           element={<Navigate to={"booking-manage"} replace={true} />}
         />
-        <Route path="booking-manage" element={<BookingManage />} />
+        <Route path="booking-manage" element={<DoctorBookingPage />} />
       </Route>
 
       {/* support */}
@@ -72,7 +104,7 @@ const AppRoutes = () => {
           path="/support-dashboard"
           element={<Navigate to={"booking-support-manage"} replace={true} />}
         />
-        <Route path="booking-support-manage" element={<BookingManage />} />
+        <Route path="booking-support-manage" element={<BookingPage />} />
       </Route>
 
       {/* error page */}
