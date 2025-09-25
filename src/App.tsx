@@ -9,6 +9,7 @@ import SupportDashboard from "./pages/Dashboard/SupportDashboard";
 import Home from "./pages/Home/Home";
 import Login from "./pages/Login/Login";
 import Signup from "./pages/Signup/Signup";
+import ForgotPasswordOTPTest from "./components/ForgotPasswordForm/PasswordOTP";
 
 function App() {
   return (
@@ -22,15 +23,17 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot-password" element={<ForgotPasswordForm />} />
 
+        {/* <Route path="/forgot-password-test" element={<ForgotPasswordOTPTest />} /> */}
         {/* Dashboard theo role */}
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
         <Route path="/client/dashboard" element={<ClientDashboard />} />
         <Route path="/support/dashboard" element={<SupportDashboard />} />
 
-        {/* Trang update profile */}
-        <Route path="/profile" element={<UpdateUserForm />} />
 
+        {/* Profile update route */}
+        <Route path="/profile/update" element={<UpdateUserForm />} />
+        
         {/* 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>

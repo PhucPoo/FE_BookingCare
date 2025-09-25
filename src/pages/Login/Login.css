@@ -1,0 +1,275 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #e8f5f3;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 20px;
+}
+
+.login-card {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  display: flex;
+  min-height: 600px;
+  overflow: hidden;
+  border: 3px solid #20b2aa;
+}
+
+.login-left {
+  flex: 1;
+  background: linear-gradient(135deg, #e8f5f3 0%, #b8e6e1 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 40px;
+}
+
+.illustration {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bg-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 10px;
+}
+
+.login-right {
+  flex: 1;
+  padding: 60px 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: white;
+}
+
+.login-header {
+  margin-bottom: 40px;
+}
+
+.brand-title {
+  color: #20b2aa;
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+.login-form {
+  width: 100%;
+  max-width: 350px;
+}
+
+.form-title {
+  color: #333;
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 15px;
+  font-size: 16px;
+  color: #666;
+  z-index: 1;
+}
+
+.form-input {
+  width: 100%;
+  padding: 15px 15px 15px 45px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 16px;
+  outline: none;
+  transition: all 0.3s ease;
+  background: #f9f9f9;
+}
+
+.form-input:focus {
+  border-color: #20b2aa;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(32, 178, 170, 0.1);
+}
+
+.form-input::placeholder {
+  color: #999;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 15px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 5px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.password-toggle:hover {
+  background-color: #f0f0f0;
+}
+
+.form-actions {
+  text-align: right;
+  margin-bottom: 25px;
+}
+
+.forgot-password {
+  color: #20b2aa;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.3s ease;
+}
+
+.forgot-password:hover {
+  color: #1a9b96;
+  text-decoration: underline;
+}
+
+.login-button {
+  width: 100%;
+  padding: 15px;
+  background: #20b2aa;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.login-button:hover:not(:disabled) {
+  background: #1a9b96;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(32, 178, 170, 0.3);
+}
+
+.login-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.login-button.loading {
+  background: #1a9b96;
+}
+
+.signup-link {
+  text-align: center;
+  margin-top: 25px;
+  font-size: 14px;
+  color: #666;
+}
+
+.signup-text {
+  color: #20b2aa;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.signup-text:hover {
+  color: #1a9b96;
+  text-decoration: underline;
+}
+
+.error-message {
+  background: #ffe6e6;
+  color: #d63031;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  border: 1px solid #ff9999;
+}
+
+.success-message {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .login-content {
+    flex-direction: column;
+  }
+  
+  .login-header {
+    text-align: center;
+  }
+  
+  .login-left {
+    min-height: 200px;
+    padding: 20px;
+  }
+  
+  .illustration {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .login-right {
+    padding: 30px 25px;
+  }
+  
+  .form-title {
+    font-size: 24px;
+  }
+  
+  .brand-title {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-right {
+    padding: 20px 15px;
+  }
+  
+  .form-input {
+    padding: 12px 12px 12px 40px;
+    font-size: 14px;
+  }
+  
+  .login-button {
+    padding: 12px;
+    font-size: 14px;
+  }
+}

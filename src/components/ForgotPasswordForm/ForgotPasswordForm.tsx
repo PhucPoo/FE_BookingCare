@@ -1,26 +1,33 @@
-import React from "react";
-import { Form, Input, Button, Card } from "antd";
-import { MailOutlined, UserOutlined } from "@ant-design/icons";
-import { useNavigate, useParams } from "react-router-dom";
-
-const roleConfig = {
-  admin: { title: "Admin", color: "#46d9f6ff", bg: "/bg_admin.jpg" },
-  doctor: { title: "Doctor", color: "#46d9f6ff", bg: "/bg_doctor.jpg" },
-  support: { title: "Support", color: "#46d9f6ff", bg: "/bg_support.jpg" },
-  client: { title: "Client", color: "#46d9f6ff", bg: "/bg_client.jpg" },
-};
+import React, { useState } from "react";
+import { Form, Input, Button, Card, message } from "antd";
+import { MailOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const ForgotPasswordForm: React.FC = () => {
   const navigate = useNavigate();
-  const { role } = useParams<{ role: "admin" | "doctor" | "support" | "client" }>();
+  const [loading, setLoading] = useState(false);
 
-  if (!role || !roleConfig[role]) return <div>Invalid role</div>;
+  const onFinish = async (values: any) => {
+    setLoading(true);
+    try {
+      // Gọi API backend gửi email OTP
+      const res = await axios.post("http://localhost:8080/api/v1/auth/forgot-password", {
+        email: values.email,
+      });
 
-  const { color, } = roleConfig[role];
+      // giả sử backend trả về success message
+      message.success(res.data?.message || "Email OTP đã được gửi!");
 
-  const onFinish = (values: any) => {
-    console.log("Forgot password submit:", values);
-    alert(`Email khôi phục mật khẩu đã được gửi tới: ${values.email}`);
+      // redirect tới trang nhập OTP nếu có
+      navigate("/forgot-password/otp", { state: { email: values.email } });
+    } catch (error: any) {
+      console.error(error);
+      const msg = error.response?.data?.message || "Có lỗi xảy ra!";
+      message.error(msg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -31,7 +38,7 @@ const ForgotPasswordForm: React.FC = () => {
         alignItems: "center",
         justifyContent: "center",
         padding: "20px",
-        backgroundImage: `linear-gradient(to top, rgba(255,255,255,0.85), rgba(0,0,0,0)), url("/public/bg_login.jpg")`,
+        backgroundImage: `linear-gradient(to top, rgba(255,255,255,0.85), rgba(0,0,0,0)), url("/bg_login.jpg")`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
@@ -50,17 +57,6 @@ const ForgotPasswordForm: React.FC = () => {
       >
         <Form onFinish={onFinish}>
           <Form.Item
-            name="username"
-            rules={[{ required: true, message: "Nhập tên đăng nhập!" }]}
-          >
-            <Input
-              prefix={<UserOutlined />}
-              placeholder="Tên đăng nhập"
-              autoComplete="username"
-            />
-          </Form.Item>
-
-          <Form.Item
             name="email"
             rules={[
               { required: true, message: "Nhập email đã đăng ký!" },
@@ -74,35 +70,14 @@ const ForgotPasswordForm: React.FC = () => {
             />
           </Form.Item>
 
-          {/* Nút gửi yêu cầu khôi phục */}
           <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              block
-              style={{
-                backgroundColor: color,
-                borderColor: color,
-                fontWeight: "bold",
-                borderRadius: 8,
-                transition: "all 0.3s ease",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.backgroundColor = "#30a4fdff";
-                (e.currentTarget as HTMLElement).style.borderColor = "#30a4fdff";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.backgroundColor = color;
-                (e.currentTarget as HTMLElement).style.borderColor = color;
-              }}
-            >
+            <Button type="primary" htmlType="submit" block loading={loading}>
               Gửi yêu cầu khôi phục
             </Button>
           </Form.Item>
 
-          {/* Quay lại login */}
           <Form.Item>
-            <Button type="link" block onClick={() => navigate(`/${role}/login`)}>
+            <Button type="link" block onClick={() => navigate("/login")}>
               Quay lại đăng nhập
             </Button>
           </Form.Item>
