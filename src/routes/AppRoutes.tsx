@@ -13,7 +13,7 @@ import DoctorManagement from "../pages/Accounts/DoctorList/DoctorManagement";
 import SupportList from "../pages/Accounts/SupportList/SupportList";
 import PatientList from "../pages/Accounts/PatientList/PatientList";
 import UserList from "../pages/Accounts/UserList/UserList";
-import SpecialtyGrid from "../pages/Specialty/SpecialtyGrid";
+import SpecialtyGrid from "../pages/Specialty/SpecialtyList";
 import ListPatient_Doctor from "../pages/Doctors/ListPatient_Doctor";
 import { Navigate, Route, Routes } from "react-router-dom";
 import Dashboard from "../pages/Dashboard/AdminDashboard/Dashboard";

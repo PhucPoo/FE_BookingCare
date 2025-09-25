@@ -4,7 +4,7 @@ import Modal from "antd/lib/modal";
 import DetailDoctor from "./DetailDoctor";
 import EditDoctor from "./EditDoctor";
 import type { Clinic } from "../../Clinic/ClinicTable";
-import type { Specialty } from "../../Specialty/SpecialtyGrid";
+import type { Specialty } from "../../Specialty/SpecialtyList";
 
 export interface Doctor {
   id: number;

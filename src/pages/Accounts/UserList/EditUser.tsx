@@ -28,6 +28,7 @@ const Edituser: React.FC<EdituserProps> = ({ open, onCancel, onUpdate, user }) =
         email: user.email,
         phoneNumber: user.phoneNumber,
         cccd: user.cccd,
+        gender: user.gender,
         address: user.address,
       });
       setSelectedFile(null);
@@ -49,6 +50,7 @@ const Edituser: React.FC<EdituserProps> = ({ open, onCancel, onUpdate, user }) =
     formData.append("email", values.email || "");
     formData.append("phoneNumber", values.phoneNumber);
     formData.append("cccd", values.cccd);
+    formData.append("gender", values.gender);
     formData.append("address", values.address);
 
     formData.append("createAt", user.createAt);
@@ -138,14 +140,25 @@ const Edituser: React.FC<EdituserProps> = ({ open, onCancel, onUpdate, user }) =
           <Input placeholder="Nhập số điện thoại" size="large" className="rounded-md px-3 py-2" />
         </Form.Item>
         <Form.Item
+          name="gender"
+          label="Giới tính"
+          rules={[{ required: true, message: "Vui lòng chọn giới tính!" }]}
+        >
+          <Select placeholder="Chọn vai trò" size="large">
+            <Option value="MALE">Nam</Option>
+            <Option value="FEMALE">Nữ</Option>
+            <Option value="OTHER">Khác</Option>
+          </Select>
+        </Form.Item>
+        <Form.Item
           name="address"
           label="Địa chỉ"
           rules={[
             { required: true, message: "Vui lòng nhập Địa chỉ!" },
-           
+
           ]}
         >
-          <Input placeholder="Nhập số điện thoại" size="large" className="rounded-md px-3 py-2" />
+          <Input placeholder="Nhập địa chỉ" size="large" className="rounded-md px-3 py-2" />
         </Form.Item>
 
         <Form.Item name="avatar" label="Ảnh" rules={[{ required: true, message: "Vui lòng tải ảnh!" }]}>

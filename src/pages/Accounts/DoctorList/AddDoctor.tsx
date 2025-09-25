@@ -7,7 +7,7 @@ import Form from "antd/es/form";
 import type { Doctor } from "./DoctorTable";
 import type { Clinic } from "../../Clinic/ClinicTable";
 import type { User } from "../UserList/UserTable";
-import type { Specialty } from "../../Specialty/SpecialtyGrid";
+import type { Specialty } from "../../Specialty/SpecialtyList";
 import { testGetClinicApi } from "../../../api/testClinic";
 import { testGetAccountsApi } from "../../../api/testApi";
 import { testGetSpecialtyApi } from "../../../api/testSpecialty";

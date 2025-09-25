@@ -1,44 +1,52 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { Modal, Form, Input, Button, Upload } from "antd/lib";
 import { UploadOutlined } from "@ant-design/icons";
 import type { Specialty } from "./SpecialtyList";
 
-interface AddSpecialtyProps {
+interface EditSpecialtyProps {
   open: boolean;
+  specialty: Specialty | null;
   onCancel: () => void;
-  onAdd: (specialty: Specialty) => void;
+  onUpdate: (updated: Specialty) => void;
 }
 
-const AddSpecialty: React.FC<AddSpecialtyProps> = ({ open, onCancel, onAdd }) => {
+const EditSpecialty: React.FC<EditSpecialtyProps> = ({
+  open,
+  specialty,
+  onCancel,
+  onUpdate,
+}) => {
   const [form] = Form.useForm();
-  const [file, setFile] = useState<File | null>(null);
+
+  useEffect(() => {
+    if (specialty) {
+      form.setFieldsValue({
+        name: specialty.name,
+        description: specialty.description,
+        img: specialty.img,
+      });
+    } else {
+      form.resetFields();
+    }
+  }, [specialty, form]);
 
   const handleSubmit = () => {
     form.validateFields().then((values) => {
-      const newSpecialty: Specialty = {
-        id: Date.now(),
-        name: values.name,
-        description: values.description || "",
-        img: file || null,
-        createdAt: new Date().toISOString(),
-      };
-      onAdd(newSpecialty);
-      form.resetFields();
-      setFile(null);
+      if (specialty) {
+        const updated: Specialty = {
+          ...specialty,
+          name: values.name,
+          description: values.description,
+          img: values.img || specialty.img,
+        };
+        onUpdate(updated);
+      }
     });
-  };
-
-  const handleUploadChange = (info: any) => {
-    if (info.fileList.length > 0) {
-      setFile(info.fileList[0].originFileObj);
-    } else {
-      setFile(null);
-    }
   };
 
   return (
     <Modal
-      title="Thêm chuyên khoa mới"
+      title="Sửa chuyên khoa"
       open={open}
       onCancel={onCancel}
       footer={null}
@@ -56,22 +64,20 @@ const AddSpecialty: React.FC<AddSpecialtyProps> = ({ open, onCancel, onAdd }) =>
           <Input.TextArea rows={3} placeholder="Nhập mô tả" />
         </Form.Item>
 
-        <Form.Item label="Ảnh">
+        <Form.Item label="Ảnh" name="img">
           <Upload
-            beforeUpload={() => false}
-            onChange={handleUploadChange}
-            maxCount={1}
+            beforeUpload={() => false} // chặn upload tự động
             listType="picture"
+            maxCount={1}
           >
             <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
           </Upload>
-          {file && <p className="mt-2 text-sm text-gray-500">Ảnh: {file.name}</p>}
         </Form.Item>
 
-        <div className="flex justify-end gap-2 mt-4">
+        <div className="flex justify-end gap-2">
           <Button onClick={onCancel}>Hủy</Button>
           <Button type="primary" onClick={handleSubmit}>
-            Thêm
+            Lưu
           </Button>
         </div>
       </Form>
@@ -79,4 +85,4 @@ const AddSpecialty: React.FC<AddSpecialtyProps> = ({ open, onCancel, onAdd }) =>
   );
 };
 
-export default AddSpecialty;
+export default EditSpecialty;

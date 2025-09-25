@@ -3,47 +3,69 @@ import Modal from "antd/es/modal";
 import Input from "antd/es/input";
 import Button from "antd/es/button";
 import Form from "antd/es/form";
+import Select from "antd/es/select";
 import type { Clinic } from "./ClinicTable";
-import api from "../../api/axios";
-import { testGetClinicApi } from "../../api/testClinic";
+import { notification } from "antd";
+import { testGetClinicApi, testPostClinicApi } from "../../api/testClinic";
+import { testGetAddressApi } from "../../api/testAddress";
+
+const { Option } = Select;
 
 interface AddClinicProps {
+  clinics: Clinic[];
+  setclinic: (clinic: Clinic[]) => void;
   open: boolean;
   onCancel: () => void;
   onAdd: (clinic: Clinic) => void;
 }
-// interface Address {
-//   id: number;
-//   city: string;
-// }
+
+interface Address {
+  id: number;
+  city: string;
+}
+
 const AddClinic: React.FC<AddClinicProps> = ({ open, onCancel, onAdd }) => {
   const [form] = Form.useForm();
-  // const [address, setAddress] = useState<Address[]>([]);
+  const [addresses, setAddresses] = useState<Address[]>([]);
 
-  const handleSubmit = (values: any) => {
-    const { name, description, position, phoneNumber, city } = values;
+  const handleSubmit = async (values: any) => {
+  const { name, description, position, phoneNumber, addressId } = values;
 
-    const newClinic: Clinic = {
-      id: Date.now(),
-      name,
-      description,
-      position,
-      phoneNumber,
-      image: null,
-      address: {
-        id: Date.now(),
-        city,
-      },
-    };
-
-    onAdd(newClinic);
-    form.resetFields();
+  const newClinic = {
+    name,
+    description,
+    position,
+    phoneNumber,
+    image: null,
+    address: {
+      id: addressId, // 👈 backend cần object
+    },
   };
+
+  try {
+    const res = await testPostClinicApi(newClinic);
+    onAdd(res);
+    notification.success({
+      message: "Thêm thành công",
+      description: `Phòng khám ${res.name} đã được thêm`,
+    });
+    form.resetFields();
+    onCancel();
+  } catch (error: any) {
+    notification.error({
+      message: "Thêm thất bại",
+      description: error.response?.data?.message || "Có lỗi xảy ra",
+    });
+  }
+   console.log("Payload gửi lên:", newClinic);
+};
+
+
   useEffect(() => {
     const fetchAddresses = async () => {
       try {
-        const res = await testGetClinicApi();
-        setAddress(res.data.data.result);
+        const res = await testGetAddressApi();
+        setAddresses(res.data.result || []);
       } catch (error) {
         console.error("Lỗi load addresses:", error);
       }
@@ -51,15 +73,13 @@ const AddClinic: React.FC<AddClinicProps> = ({ open, onCancel, onAdd }) => {
     if (open) fetchAddresses();
   }, [open]);
 
-  const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const id = Number(e.target.value);
-    const found = address.find((a) => a.id === id);
-    form.setFieldsValue({ city: found ? found.city : "" });
-  };
-
   return (
     <Modal
-      title={<div className="text-center text-lg font-semibold">Thêm phòng khám mới</div>}
+      title={
+        <div className="text-center text-lg font-semibold">
+          Thêm phòng khám mới
+        </div>
+      }
       open={open}
       onCancel={onCancel}
       footer={null}
@@ -77,7 +97,7 @@ const AddClinic: React.FC<AddClinicProps> = ({ open, onCancel, onAdd }) => {
           label="Tên phòng khám"
           rules={[{ required: true, message: "Vui lòng nhập tên phòng khám!" }]}
         >
-          <Input placeholder="Nhập tên phòng khám" size="large" className="rounded-md px-3 py-2" />
+          <Input placeholder="Nhập tên phòng khám" size="large" />
         </Form.Item>
 
         <Form.Item
@@ -85,7 +105,7 @@ const AddClinic: React.FC<AddClinicProps> = ({ open, onCancel, onAdd }) => {
           label="Mô tả"
           rules={[{ required: true, message: "Vui lòng nhập mô tả!" }]}
         >
-          <Input placeholder="Nhập mô tả" size="large" className="rounded-md px-3 py-2" />
+          <Input placeholder="Nhập mô tả" size="large" />
         </Form.Item>
 
         <Form.Item
@@ -93,7 +113,7 @@ const AddClinic: React.FC<AddClinicProps> = ({ open, onCancel, onAdd }) => {
           label="Vị trí"
           rules={[{ required: true, message: "Vui lòng nhập vị trí!" }]}
         >
-          <Input placeholder="Nhập vị trí" size="large" className="rounded-md px-3 py-2" />
+          <Input placeholder="Nhập vị trí" size="large" />
         </Form.Item>
 
         <Form.Item
@@ -101,26 +121,21 @@ const AddClinic: React.FC<AddClinicProps> = ({ open, onCancel, onAdd }) => {
           label="Số điện thoại"
           rules={[{ required: true, message: "Vui lòng nhập số điện thoại!" }]}
         >
-          <Input placeholder="Nhập số điện thoại" size="large" className="rounded-md px-3 py-2" />
+          <Input placeholder="Nhập số điện thoại" size="large" />
         </Form.Item>
 
         <Form.Item
-          name="address.name"
-          label="ID địa chỉ"
-          rules={[{ required: true, message: "Vui lòng nhập ID địa chỉ!" }]}
+          name="addressId"
+          label="Địa chỉ"
+          rules={[{ required: true, message: "Vui lòng chọn địa chỉ!" }]}
         >
-          <Input
-            placeholder="Nhập ID địa chỉ"
-            size="large"
-            onChange={handleAddressChange}
-          />
-        </Form.Item>
-        <Form.Item
-          name="city"
-          label="Thành phố"
-          rules={[{ required: true, message: "Vui lòng nhập thành phố!" }]}
-        >
-          <Input placeholder="Nhập thành phố" size="large" className="rounded-md px-3 py-2" />
+          <Select placeholder="Chọn địa chỉ" size="large" allowClear>
+            {addresses.map((addr) => (
+              <Option key={addr.id} value={addr.id}>
+                {addr.city}
+              </Option>
+            ))}
+          </Select>
         </Form.Item>
 
         <Form.Item>

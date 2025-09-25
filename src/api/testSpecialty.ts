@@ -1,13 +1,16 @@
+import type { Specialty } from "../pages/Specialty/SpecialtyList";
 import customAxiosInstance from "../utils/configAxios";
 
 const config = {
   headers: {
-    Authorization: `Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJob2FuZ3BodWMxMjNAZ21haWwuY29tIiwiZXhwIjoxNzY3MzY3NjI1LCJpYXQiOjE3NTg3Mjc2MjUsInVzZXIiOnsiaWQiOjE4LCJuYW1lIjoiUCIsImVtYWlsIjoiaG9hbmdwaHVjMTIzQGdtYWlsLmNvbSIsInJvbGUiOiJET0NUT1IifX0.b4FAUa66CDN4TjIvk_3Bjn5fbDolTLvknRm8pO4AswdHOAMjxjTA49pPO_LH21AR_vw1u_jLlfc2pInKtKzheA`,
+    Authorization: `Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJob2FuZ3BodWMxMTYxOTk4QGdtYWlsLmNvbSIsImV4cCI6MTc2NzQ0Nzg0MywiaWF0IjoxNzU4ODA3ODQzLCJ1c2VyIjp7ImlkIjoyOCwibmFtZSI6bnVsbCwiZW1haWwiOiJob2FuZ3BodWMxMTYxOTk4QGdtYWlsLmNvbSIsInJvbGUiOiJDTElFTlQifX0.FrU4ZPgtEgWatW9b4n2AjtQMYQOdKhfX9nLZxzBlZ56BniFIJEqSFt_juLPbBSB_RETS7l35a7_r1TJNPc7-gg`,
+    "Content-Type": 'multipart/form-data'
   },
 };
-export const testPostSpecialtyApi =async() => {
+export const testPostSpecialtyApi =async(data:Specialty) => {
     const response = await customAxiosInstance.post(
     `http://localhost:8080/api/v1/specialties`,
+    data,
     config
   );
   console.log("🚀 ~ testGetSpecialtysApi ~ response:", response);

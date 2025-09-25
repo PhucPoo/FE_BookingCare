@@ -134,6 +134,8 @@ const ClinicManagement: React.FC = () => {
 
       {/* Modal thêm */}
       <AddClinic
+        clinics={filteredClinics}
+        setclinics={setClinics}
         open={isAddModalOpen}
         onCancel={() => setIsAddModalOpen(false)}
         onAdd={handleAddClinic}
