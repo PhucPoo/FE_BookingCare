@@ -21,13 +21,14 @@ const AddDoctor: React.FC<AddDoctorProps> = ({ open, onCancel, onAdd }) => {
     
 
    const handleSubmit = (values: any) => {
-    const { name, email, phone, cccd, price, status } = values;
+    const { name, email, phoneNumber,password, cccd, price, status } = values;
 
     const newDoctor: Doctor = {
         id: Date.now(),
         name,
         email,
-        phone,
+        phoneNumber,
+        password,
         cccd: Number(cccd),
         price: price ? Number(price) : undefined,
         create_at: new Date(),
@@ -82,7 +83,7 @@ const AddDoctor: React.FC<AddDoctorProps> = ({ open, onCancel, onAdd }) => {
                 </Form.Item>
 
                 <Form.Item
-                    name="phone"
+                    name="phoneNumber"
                     label="Số điện thoại"
                     rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}
                 >

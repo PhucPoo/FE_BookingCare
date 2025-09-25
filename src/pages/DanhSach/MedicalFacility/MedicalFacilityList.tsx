@@ -1,0 +1,63 @@
+import React, { useEffect, useState } from "react";
+import { getAllMedicalFacility } from "../../../api/Medical/MedicalFacilityApi";
+const LoadingPage = React.lazy(
+  () => import("../../../components/LoadingPage/LoadingPage")
+);
+import "./MedicalFacility.css";
+import { useLocation, useNavigate } from "react-router-dom";
+import Breadcrumb from "../../../components/Breadcrumb/Breadcrumb";
+import type { MedicalFacilitiesModel } from "./MedicalFacilitiesModel";
+
+const MedicalFacilityList = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const [medicalFacilities, setMedicalFacilities] = useState<
+    MedicalFacilitiesModel[]
+  >([]);
+  const handleGetAllMedicalFacility = async () => {
+    const res = await getAllMedicalFacility();
+    if (!res.error) {
+      setMedicalFacilities(res.data.result);
+    }
+  };
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    handleGetAllMedicalFacility();
+  }, []);
+  if (medicalFacilities.length === 0) {
+    return (
+      <div className="container">
+        <LoadingPage></LoadingPage>
+      </div>
+    );
+  }
+  return (
+    <div className="container">
+      <Breadcrumb location={location.pathname} />
+      <p className="text-xl font-bold " style={{ marginTop: "20px" }}>
+        Cơ sở y tế dành cho bạn
+      </p>
+      <div>
+        {medicalFacilities &&
+          medicalFacilities.length > 0 &&
+          medicalFacilities.map((medicalFacility) => (
+            <div
+              className="flex gap-5 medicalFacility_item_contain items-center cursor-pointer"
+              onClick={() => navigate(`${medicalFacility.id}`)}
+            >
+              <img
+                src={medicalFacility?.image}
+                className="medicalFacility_item-img"
+              />
+              <div className="medicalFacility_item-name text-xl">
+                {medicalFacility.name}
+              </div>
+            </div>
+          ))}
+      </div>
+    </div>
+  );
+};
+
+export default MedicalFacilityList;

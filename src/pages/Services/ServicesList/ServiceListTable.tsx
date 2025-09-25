@@ -1,11 +1,8 @@
 import { IoIosAddCircle } from "react-icons/io";
-import {
-  Button,
-  message,
-  Pagination,
-  Popconfirm,
-  type PopconfirmProps,
-} from "antd";
+import { Button, Pagination, Popconfirm } from "antd/lib";
+import { deleteService } from "../../../api/Services/ServiceApi";
+import { toast } from "react-toastify";
+import type { CheckServiceSortKeyModel } from "./CheckServiceSortKeyModel";
 
 type Props = {
   pageSize: number;
@@ -14,11 +11,10 @@ type Props = {
   handleSearchService: (value: string) => void;
   filterService: () => void;
   handleGetServiceList: () => void;
-  setFilterData: (value: { from: number; to: number }) => void;
-  filterData: { from: number; to: number };
+  setFilterData: (value: { from: string; to: string }) => void;
+  filterData: { from: string; to: string };
   setIsModalOpen: (e: boolean) => void;
-  columns: { value: number; label: string }[];
-  handleSort: (value: number) => void;
+  handleSort: (value: CheckServiceSortKeyModel) => void;
   ServiceList: {
     id: number;
     name: string;
@@ -44,21 +40,17 @@ const ServiceListTable = ({
   setFilterData,
   filterData,
   setIsModalOpen,
-  columns,
   handleSort,
   ServiceList,
   handleUpdateService,
   onLog,
 }: Props) => {
-  const confirm: PopconfirmProps["onConfirm"] = (e) => {
-    console.log(e);
-    message.success("Click on Yes");
-    alert("Cút");
-  };
-
-  const cancel: PopconfirmProps["onCancel"] = (e) => {
-    console.log(e);
-    message.error("Click on No");
+  const handleDeleteService = async (id: number) => {
+    const result = await deleteService(id);
+    if (!result?.error) {
+      toast.success("Xoá dịch vụ hoàn tất");
+      handleGetServiceList();
+    }
   };
   return (
     <>
@@ -86,17 +78,19 @@ const ServiceListTable = ({
               <input
                 type="number"
                 placeholder="Từ"
+                value={filterData.from}
                 className="w-full sm:w-16 md:w-32  px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 onChange={(e) => {
-                  setFilterData({ ...filterData, from: +e.target.value });
+                  setFilterData({ ...filterData, from: e.target.value });
                 }}
               />
               <input
                 type="number"
                 placeholder="Đến"
+                value={filterData.to}
                 className="w-full sm:w-16 md:w-32   px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 onChange={(e) => {
-                  setFilterData({ ...filterData, to: +e.target.value });
+                  setFilterData({ ...filterData, to: e.target.value });
                 }}
               />
             </div>
@@ -143,21 +137,33 @@ const ServiceListTable = ({
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                {columns &&
-                  columns.length > 0 &&
-                  columns.map((item) => {
-                    return (
-                      <th
-                        className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
-                        key={item.value}
-                        onClick={() => {
-                          handleSort(item.value);
-                        }}
-                      >
-                        {item.label}
-                      </th>
-                    );
-                  })}
+                <th
+                  className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
+                  onClick={() => {
+                    handleSort("id");
+                  }}
+                >
+                  id
+                </th>
+                <th
+                  className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
+                  onClick={() => {
+                    handleSort("name");
+                  }}
+                >
+                  Tên
+                </th>
+                <th
+                  className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
+                  onClick={() => {
+                    handleSort("cost");
+                  }}
+                >
+                  Giá
+                </th>
+                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
+                  Miêu tả
+                </th>
                 <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center hover:bg-gray-500 hover:text-white transition-all delay-100">
                   Hành động
                 </th>
@@ -199,8 +205,7 @@ const ServiceListTable = ({
                             <Popconfirm
                               title={"Xoá " + item.name}
                               description="Bạn có muốn xoá không?"
-                              onConfirm={confirm}
-                              onCancel={cancel}
+                              onConfirm={() => handleDeleteService(item.id)}
                               okText="Có"
                               cancelText="Không"
                             >
@@ -220,8 +225,8 @@ const ServiceListTable = ({
       {/* pagination */}
       <div className="mt-6 flex flex-col sm:flex-row items-center justify-between bg-white px-6 py-3 rounded-lg shadow-sm border border-gray-200">
         <div className="text-sm text-gray-700 mb-4 sm:mb-0">
-          Hiển thị <span className="font-semibold">1</span> đến{" "}
-          <span className="font-semibold">5</span>
+          Hiển thị <span className="font-semibold">{currentPage}</span> đến
+          <span className="font-semibold">{pageSize}</span>
           của <span className="font-semibold">{totalServiceList}</span> kết quả
         </div>
         <div className="flex items-center space-x-1">

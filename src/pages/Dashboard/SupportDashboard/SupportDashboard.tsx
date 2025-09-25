@@ -1,9 +1,20 @@
 import { Outlet } from "react-router-dom";
+import SidebarDashboard from "../../../components/Sidebar/Sidebar";
+import Header from "../../../components/Header/Header";
 
 const SupportDashboard = () => {
   return (
     <>
-      <Outlet />
+      <div className="flex">
+        <SidebarDashboard />
+        <div className="flex-1 ml-64 min-h-screen bg-gray-50">
+          {/* Place your main dashboard content here */}
+          <Header />
+          <div className="p-5">
+            <Outlet />
+          </div>
+        </div>
+      </div>
     </>
   );
 };

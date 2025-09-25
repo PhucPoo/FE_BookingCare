@@ -1,0 +1,12 @@
+.specialties_item-contain {
+  padding-bottom: 5px;
+  margin-top: 40px;
+  border-bottom: 1px solid rgb(204 204 204 / 1);
+}
+.specialties_item-img {
+  width: 200px;
+  height: 105px;
+  border: 0;
+}
+.specialties_item-name {
+}

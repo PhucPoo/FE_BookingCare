@@ -19,7 +19,7 @@ const Addpatient: React.FC<AddpatientProps> = ({ open, onCancel, onAdd }) => {
      const [form] = Form.useForm();
 
     const handleSubmit = (values:any) => {
-         const { name, email, phone, cccd, price, status } = values;
+         const { name, email, phone, cccd,  status } = values;
 
         const newpatient: Patient = {
             id: Date.now(),
