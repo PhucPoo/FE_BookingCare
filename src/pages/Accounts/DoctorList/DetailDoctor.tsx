@@ -1,9 +1,8 @@
-// src/components/InformationDoctor.tsx
-
 import React from "react";
 import Modal from "antd/es/modal";
 import Button from "antd/es/button";
-import type { Doctor } from "./DoctorTable"; // đảm bảo đường dẫn đúng
+import type { Doctor } from "./DoctorTable";
+import type { Clinic } from "../../Clinic/ClinicTable";
 
 interface InformationDoctorProps {
   open: boolean;
@@ -12,20 +11,22 @@ interface InformationDoctorProps {
 }
 
 const getStatusBadge = (status?: Doctor["status"]) => {
-  if (status === "active") {
-    return (
-      <span className="bg-green-500 text-white px-2 py-1 rounded text-sm">
-        Hoạt động
-      </span>
-    );
-  } else if (status === "inactive") {
-    return (
-      <span className="bg-red-500 text-white px-2 py-1 rounded text-sm">
-        Nghỉ
-      </span>
-    );
+  switch (status) {
+    case "active":
+      return (
+        <span className="bg-green-500 text-white px-2 py-1 rounded text-sm">
+          Hoạt động
+        </span>
+      );
+    case "inactive":
+      return (
+        <span className="bg-red-500 text-white px-2 py-1 rounded text-sm">
+          Nghỉ
+        </span>
+      );
+    default:
+      return <span className="text-gray-500">Không xác định</span>;
   }
-  return <span className="text-gray-500">Không xác định</span>;
 };
 
 const InformationDoctor: React.FC<InformationDoctorProps> = ({
@@ -50,44 +51,84 @@ const InformationDoctor: React.FC<InformationDoctorProps> = ({
       centered
     >
       {doctor ? (
-        <div className="space-y-2 text-sm">
+        <div className="space-y-3 text-sm">
           <p>
             <strong>ID:</strong> {doctor.id}
           </p>
           <p>
-            <strong>Tên:</strong> {doctor.account?.name || "—"}
+            <strong>Tên:</strong> {doctor.account?.name ?? "—"}
           </p>
           <p>
-            <strong>Email:</strong> {doctor.account?.email || "—"}
+            <strong>Email:</strong> {doctor.account?.email ?? "—"}
           </p>
           <p>
-            <strong>CCCD:</strong> {doctor.account?.cccd || "—"}
+            <strong>CCCD:</strong> {doctor.account?.cccd ?? "—"}
+          </p>
+           <p>
+            <strong>CCCD:</strong> {doctor.account?.address ?? "—"}
           </p>
           <p>
-            <strong>SĐT:</strong> {doctor.account?.phoneNumber || "—"}
+            <strong>SĐT:</strong> {doctor.account?.phoneNumber ?? "—"}
           </p>
           <p>
-            <strong>Chi phí khám:</strong> {doctor.cost?.toLocaleString()} VNĐ
+            <strong>Chi phí khám:</strong>{" "}
+            {doctor.cost ? `${doctor.cost.toLocaleString()} VNĐ` : "—"}
           </p>
           <p>
-            <strong>Bằng cấp:</strong> {doctor.degree || "—"}
+            <strong>Bằng cấp:</strong> {doctor.degree ?? "—"}
           </p>
-          <p>
-            <strong>Phòng khám:</strong> {doctor.clinic?.id || "—"}
-          </p>
-          <p>
-            <strong>Chuyên khoa:</strong> {doctor.specialty?.id || "—"}
-          </p>
+
+          {/* Phòng khám chi tiết */}
+          <div>
+            <strong>Phòng khám:</strong>
+            {doctor.clinic ? (
+              <div className="ml-4 space-y-1">
+                <p>
+                  <b>ID:</b> {doctor.clinic.id}
+                </p>
+                {doctor.clinic.name && (
+                  <>
+                    <p>
+                      <b>Tên:</b> {doctor.clinic.name}
+                    </p>
+                    <p>
+                      <b>Mô tả:</b> {doctor.clinic.description}
+                    </p>
+                    <p>
+                      <b>SĐT:</b> {doctor.clinic.phoneNumber}
+                    </p>
+                    <p>
+                      <b>Địa chỉ:</b> {doctor.clinic.address?.city}
+                    </p>
+                  </>
+                )}
+              </div>
+            ) : (
+              " —"
+            )}
+          </div>
+
+          {/* Chuyên khoa */}
+          
+          <div>
+            <strong>Chuyên khoa:</strong>
+            {doctor.specialtyName ? (
+              <span className="ml-2">
+                {doctor.specialtyName} - {doctor.specialtyDescription ?? "—"}
+              </span>
+            ) : "—"}
+          </div>
+
           <p>
             <strong>Ngày tạo:</strong>{" "}
-            {doctor.create_at
-              ? new Date(doctor.create_at).toLocaleDateString()
+            {doctor.createAt
+              ? new Date(doctor.createAt).toLocaleDateString()
               : "—"}
           </p>
           <p>
             <strong>Cập nhật:</strong>{" "}
-            {doctor.update_at
-              ? new Date(doctor.update_at).toLocaleDateString()
+            {doctor.updateAt
+              ? new Date(doctor.updateAt).toLocaleDateString()
               : "—"}
           </p>
           <p>

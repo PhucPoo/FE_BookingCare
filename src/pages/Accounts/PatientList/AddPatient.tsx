@@ -1,120 +1,123 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "antd/es/modal";
-import Input from "antd/es/input";
 import Select from "antd/es/select";
 import Button from "antd/es/button";
 import Form from "antd/es/form";
+import Input from "antd/es/input";
+import { notification } from "antd";
 import type { Patient } from "./PatientTable";
-
+import type { User } from "../UserList/UserTable";
+import api from "../../../api/axios";
+import { testGetAccountsApi } from "../../../api/testApi";
+import { testPostPatientApi } from "../../../api/testPatient";
 
 const { Option } = Select;
 
-interface AddpatientProps {
-    open: boolean;
-    onCancel: () => void;
-    onAdd: (patient: Patient) => void;
+interface AddPatientProps {
+  open: boolean;
+  onCancel: () => void;
+  onAdd: (patient: Patient) => void;
+  patients: Patient[];
+  setpatients: (patients: Patient[]) => void;
 }
 
-const Addpatient: React.FC<AddpatientProps> = ({ open, onCancel, onAdd }) => {
-     const [form] = Form.useForm();
+const AddPatient: React.FC<AddPatientProps> = ({
+  open,
+  onCancel,
+  onAdd,
+  patients,
+  setpatients,
+}) => {
+  const [form] = Form.useForm();
+  const [accounts, setAccounts] = useState<User[]>([]);
 
-    const handleSubmit = (values:any) => {
-         const { name, email, phone, cccd,  status } = values;
-
-        const newpatient: Patient = {
-            id: Date.now(),
-            name,
-            email,
-            cccd: Number(cccd),
-            phone,
-            date_of_birth: undefined,
-            create_at: new Date(),
-            update_at: new Date(),
-            status,
-        };
-
-        onAdd(newpatient);
-        // reset form
-        form.resetFields();
+  // load accounts dropdown
+  useEffect(() => {
+    const fetchAccounts = async () => {
+      try {
+        const res = await testGetAccountsApi();
+        setAccounts(res.data.result || []);
+      } catch (error) {
+        console.error("Fetch accounts failed:", error);
+      }
     };
+    fetchAccounts();
+  }, []);
 
-    return (
-        <Modal
-            title={<div className="text-center text-lg font-semibold">Thêm bệnh nhân mới</div>}
-            open={open}
-            onCancel={onCancel}
-            footer={null}
-            centered
-            width={520}
-           
+  // submit form
+  const handleSubmit = async (values: any) => {
+    try {
+      const payload = {
+        account: { id: Number(values.accountId) },
+        bhyt: values.bhyt || null,
+      };
+
+      const res = await testPostPatientApi(payload);
+      const newPatient: Patient = res.data.data;
+
+      // update state
+      setpatients([...patients, newPatient]);
+      onAdd(newPatient);
+
+      notification.success({
+        message: "Thêm thành công",
+        description: `Đã thêm bệnh nhân: ${newPatient.account?.name || ""}`,
+      });
+
+      form.resetFields();
+      onCancel();
+    } catch (err: any) {
+      console.error("Thêm bệnh nhân thất bại:", err);
+      notification.error({
+        message: "Thêm thất bại",
+        description: err?.response?.data?.message || "Có lỗi xảy ra",
+      });
+    }
+  };
+
+  return (
+    <Modal
+      title={<div className="text-center text-lg font-semibold">Thêm bệnh nhân mới</div>}
+      open={open}
+      onCancel={onCancel}
+      footer={null}
+      centered
+      width={500}
+    >
+      <Form form={form} layout="vertical" onFinish={handleSubmit} className="space-y-4">
+        {/* Chọn account */}
+        <Form.Item
+          name="accountId"
+          label="Account"
+          rules={[{ required: true, message: "Vui lòng chọn account!" }]}
         >
-            <Form
-                layout="vertical"
-                onFinish={handleSubmit}
-                className="space-y-4"
-            >
-                <Form.Item
-                    name="name"
-                    label="Tên bệnh nhân"
-                    rules={[{ required: true, message: 'Vui lòng nhập tên bệnh nhân!' }]}
-                >
-                    <Input placeholder="Nhập tên bệnh nhân" size="large" className="rounded-md px-3 py-2" />
-                </Form.Item>
+          <Select placeholder="Chọn account" size="large" showSearch>
+            {accounts.map((acc) => (
+              <Option key={acc.id} value={acc.id}>
+                {acc.name} – {acc.gender} ({acc.email})
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
 
-                <Form.Item
-                    name="email"
-                    label="Email"
-                    rules={[
-                        { required: true, message: 'Vui lòng nhập email!' },
-                        { type: 'email', message: 'Email không hợp lệ!' },
-                    ]}
-                >
-                    <Input placeholder="Nhập email" size="large" className="rounded-md px-3 py-2" />
-                </Form.Item>
+        {/* Mã BHYT */}
+        <Form.Item name="bhyt" label="Mã BHYT">
+          <Input placeholder="Nhập mã BHYT (nếu có)" size="large" />
+        </Form.Item>
 
-                <Form.Item
-                    name="cccd"
-                    label="CCCD"
-                    rules={[{ required: true, message: 'Vui lòng nhập CCCD!' }]}
-                >
-                    <Input placeholder="Nhập số CCCD" size="large" className="rounded-md px-3 py-2" />
-                </Form.Item>
-
-                <Form.Item
-                    name="phone"
-                    label="Số điện thoại"
-                    rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}
-                >
-                    <Input placeholder="Nhập số điện thoại" size="large" className="rounded-md px-3 py-2" />
-                </Form.Item>
-
-                <Form.Item
-                    name="status"
-                    label="Trạng thái"
-                    rules={[{ required: true, message: 'Vui lòng chọn trạng thái!' }]}
-                >
-                    <Select placeholder="Chọn trạng thái" size="large" className="rounded-md">
-                        <Option value="active">Hoạt động</Option>
-                        <Option value="inactive">Nghỉ</Option>
-                    </Select>
-                </Form.Item>
-
-                <Form.Item>
-                    <div className="flex justify-end space-x-3 pt-2">
-                        <Button onClick={onCancel} size="large">
-                            Hủy
-                        </Button>
-                        <Button type="primary" htmlType="submit" size="large">
-                            Thêm
-                        </Button>
-                    </div>
-                </Form.Item>
-            </Form>
-        </Modal>
-
-
-
-    );
+        <Form.Item>
+          <div className="flex justify-end space-x-3 pt-2">
+            <Button onClick={onCancel} size="large">
+              Hủy
+            </Button>
+            <Button type="primary" htmlType="submit" size="large">
+              Thêm
+            </Button>
+          </div>
+        </Form.Item>
+      </Form>
+    </Modal>
+  );
 };
 
-export default Addpatient;
+export default AddPatient;

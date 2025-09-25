@@ -83,10 +83,11 @@ const Sidebar: React.FC = () => {
         <Link to="/admin-dashboard/bill-manage" className={linkClass("/admin-dashboard/bill-manage")}>
           <FaMoneyBill /> Quản lý hóa đơn
         </Link>
-
+        
+        {/* 
         <Link to="/admin-dashboard/patient_list" className={linkClass("/admin-dashboard/patient_list")}>
           <FaFaceFlushed /> Quản lý bệnh nhân
-        </Link>
+        </Link> */}
 
         <Link to="/admin-dashboard/service-list" className={linkClass("/admin-dashboard/service-list")}>
           <FaConciergeBell /> Quản lý dịch vụ

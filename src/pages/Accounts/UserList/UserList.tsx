@@ -7,77 +7,54 @@ import UserFilterBar from "./UserFilterBar";
 import UserTable from "./UserTable";
 import Adduser from "./AddUser";
 import { DatePicker, Select, Space } from "antd/lib";
-import Input from "antd/es/input";
-import { testGetAccountsApi } from "../../../api/testApi";
+// import Input from "antd/es/input";
+import { testGetAccountsApi, testPutAccountsApi } from "../../../api/testApi";
 import api from "../../../api/axios";
+import UserAdvancedFilter from "./UserAdvancedFilter";
 
-// const initialusers: User[] = [
-//   { id: 2, name: "Nguyễn Văn B", email: "hp234@gmail.com", cccd: 1289389, phone: "0942234567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), },
-//   { id: 1, name: "Nguyễn Văn A", email: "hp@gmail.com", cccd: 1289389, phone: "0901234567", create_at: new Date("2025-08-20"), update_at: new Date("2025-08-27"), },
-//   { id: 3, name: "Nguyễn Văn C", email: "hp36@gmail.com", cccd: 1289389, phone: "0939234567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), },
-//   { id: 4, name: "Nguyễn Văn D", email: "hp@gmail.com", cccd: 1289389, phone: "0920234567", create_at: new Date("2025-06-27"), update_at: new Date("2025-08-27"), },
-//   { id: 5, name: "Nguyễn Văn CD", email: "hp@gmail.com", cccd: 1289389, phone: "0901234567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), },
-//   { id: 6, name: "Nguyễn Văn AB", email: "hp@gmail.com", cccd: 1289389, phone: "0910744567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), },
-//   { id: 7, name: "Nguyễn Văn ABC", email: "hp@gmail.com", cccd: 1289389, phone: "0910784567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), },
-// ];
 
 
 const userManagement: React.FC = () => {
   const [users, setusers] = useState<User[]>([]);
-  const [filteredusers, setFilteredusers] = useState<User[]>([]);
+   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const { Option, OptGroup } = Select;
+  // const { Option, OptGroup } = Select;
 
-  // Thêm người dùng mới
-  const handleAdduser = async (user: any) => {
-    console.log(user)
-    const newUser = await api.post("/v1/accounts", {
-      ...user
-    });
-
-    console.log(newUser)
-
-    setusers((prevUsers: any) => [...prevUsers, newUser.data.data]);
-    // setFilteredusers(updatedusers);
-    setIsAddModalOpen(false);
-  };
+  // state filter
+  const [roleFilter, setRoleFilter] = useState<string | null>(null);
+  const [genderFilter, setGenderFilter] = useState<string | null>(null);
+  const [dateFilter, setDateFilter] = useState<string | null>(null);
 
   // Cập nhật người dùng
-  const handleUpdateuser = (updateduser: User) => {
-    const updatedList = users.map((u) =>
-      u.id === updateduser.id
-        ? { ...u, ...updateduser, update_at: new Date() }
-        : u
-    );
-    setusers(updatedList);
-    setFilteredusers(updatedList); // rất quan trọng để table hiển thị đúng
+  const handleUpdateUser = async (updatedUser: User) => {
+    try {
+      // Giả sử backend trả về user mới
+      const res = await testGetAccountsApi();
+      const updatedData = res.data.data;
+
+      // Cập nhật users gốc
+      const updatedList = users.map(u =>
+        u.id === updatedUser.id ? { ...u, ...updatedData } : u
+      );
+      setusers(updatedList);
+
+      // Cập nhật filteredUsers dựa trên users đã lọc
+      const updatedFilteredList = users.map(u =>
+        u.id === updatedUser.id ? { ...u, ...updatedData } : u
+      );
+      setusers(updatedFilteredList);
+
+      console.log("Cập nhật user thành công:", updatedData);
+    } catch (error) {
+      console.error("Lỗi cập nhật user:", error);
+    }
   };
   // Xóa người dùng
-  const handleDeleteuser = (id: number) => {
+  const handleDeleteUser = (id: number) => {
     console.log("Deleted user with id:", id);
     const updatedusers = users.filter((d) => d.id !== id);
     setusers(updatedusers);
-    setFilteredusers(updatedusers);
-  };
-
-
-
-
-  // Xóa người dùng
-  const handleDeleteUser = async (id: number) => {
-    try {
-      console.log("Deleting user id:", id);
-
-      const res = await api.delete(`/v1/accounts/${id}`);
-
-      console.log("✅ Delete success:", res.data);
-
-      setusers((prev: User[]) =>
-        prev.filter((u) => u.id !== id)
-      );
-    } catch (error: any) {
-      console.error("❌ Delete user failed:", error.response?.data || error.message);
-    }
+    setusers(updatedusers);
   };
 
 
@@ -87,11 +64,36 @@ const userManagement: React.FC = () => {
   const handleGetAccounts = async () => {
     const result = await testGetAccountsApi();
     setusers(result.data.result);
-    setFilteredusers(result.data.result);
+    setusers(result.data.result);
   };
+
+
   useEffect(() => {
     handleGetAccounts();
   }, []);
+
+   const handleFilter = () => {
+    let data = [...users];
+    if (roleFilter) {
+      data = data.filter((u) => u.role.name?.toLowerCase() === roleFilter);
+    }
+    if (genderFilter) {
+      data = data.filter((u) => u.gender?.toLowerCase() === genderFilter);
+    }
+    if (dateFilter) {
+      data = data.filter(
+        (u) =>
+          new Date(u.createAt).toLocaleDateString("vi-VN") ===
+          new Date(dateFilter).toLocaleDateString("vi-VN")
+      );
+    }
+    setFilteredUsers(data);
+  };
+
+  useEffect(() => {
+    handleFilter();
+  }, [roleFilter, genderFilter, dateFilter, users]);
+
   return (
     <div className="p-6 bg-white rounded-xl shadow-sm">
       <h1 className="text-2xl font-bold mb-6 text-blue-700">
@@ -100,11 +102,11 @@ const userManagement: React.FC = () => {
 
       <div className="flex justify-between items-center mb-6">
         <div className="flex-1">
-          <UserFilterBar users={users} onFilter={setFilteredusers} />
+          <UserFilterBar users={users} onFilter={setusers} />
         </div>
       </div>
 
-      <div className="mb-6 flex flex-wrap items-center gap-4">
+      {/* <div className="mb-6 flex flex-wrap items-center gap-4">
         <Select
           defaultValue="role"
           style={{ width: 200 }}
@@ -148,18 +150,29 @@ const userManagement: React.FC = () => {
         >
           + Thêm người dùng
         </Button>
-      </div>
+      </div> */}
+      {/* <UserFilterBar users={users} onFilter={setFilteredUsers} /> */}
+
+      <UserAdvancedFilter
+        onChangeRole={setRoleFilter}
+        onChangeGender={setGenderFilter}
+        onChangeDate={setDateFilter}
+        onOpenAdd={() => setIsAddModalOpen(true)}
+      />
 
       <UserTable
-        users={users}
-        onUpdateuser={handleUpdateuser}
-        onDeleteuser={handleDeleteUser}
+        users={filteredUsers}
+        setusers={setusers}
+        onUpdateUser={handleUpdateUser}
+        onDeleteUser={handleDeleteUser}
       />
 
       <Adduser
+        users={(users)}
+        setusers={setusers}
         open={isAddModalOpen}
         onCancel={() => setIsAddModalOpen(false)}
-        onAdd={handleAdduser}
+        onAdd={() => { }}
       />
     </div>
 

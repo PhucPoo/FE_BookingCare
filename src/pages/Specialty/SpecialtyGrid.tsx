@@ -2,31 +2,15 @@ import React, { useEffect, useState } from 'react';
 import api from '../../api/axios';
 import AddSpecialty from './AddSpecialty';
 
+
 export type Specialty = {
   id: number;
   name: string;
   img: string;
+  description: string;
   createdAt: string;      // ngày tạo chuyên khoa
 };
 
-const specialties: Specialty[] = [
-  // { id: 1, name: 'Cơ Xương Khớp', img: '/icons/bone.png', createdAt: '2023-08-01', doctorCount: 10 },
-  // { id: 2, name: 'Thần kinh', img: '/icons/brain.png', createdAt: '2023-07-15', doctorCount: 8 },
-  // { id: 3, name: 'Tiêu hóa', img: '/icons/stomach.png', createdAt: '2023-09-01', doctorCount: 12 },
-  // { id: 4, name: 'Tim mạch', img: '/icons/heart.png', createdAt: '2023-06-20', doctorCount: 15 },
-  // { id: 5, name: 'Tai Mũi Họng', img: '/icons/ear-nose-throat.png', createdAt: '2023-08-10', doctorCount: 6 },
-  // { id: 6, name: 'Cột sống', img: '/icons/spine.png', createdAt: '2023-07-05', doctorCount: 9 },
-  // { id: 7, name: 'Y học Cổ truyền', img: '/icons/traditional-medicine.png', createdAt: '2023-09-01', doctorCount: 5 },
-  // { id: 8, name: 'Châm cứu', img: '/icons/acupuncture.png', createdAt: '2023-08-21', doctorCount: 7 },
-  // { id: 9, name: 'Sản Phụ khoa', img: '/icons/obstetrics.png', createdAt: '2023-09-04', doctorCount: 14 },
-  // { id: 10, name: 'Siêu âm thai', img: '/icons/ultrasound.png', createdAt: '2023-06-30', doctorCount: 11 },
-  // { id: 11, name: 'Nhi khoa', img: '/icons/pediatrics.png', createdAt: '2023-07-22', doctorCount: 13 },
-  // { id: 12, name: 'Da liễu', img: '/icons/dermatology.png', createdAt: '2023-08-11', doctorCount: 6 },
-  // { id: 13, name: 'Bệnh Viêm gan', img: '/icons/liver.png', createdAt: '2023-07-18', doctorCount: 4 },
-  // { id: 14, name: 'Sức khỏe tâm thần', img: '/icons/mental-health.png', createdAt: '2023-09-02', doctorCount: 3 },
-  // { id: 15, name: 'Dị ứng miễn dịch', img: '/icons/immunity.png', createdAt: '2023-08-25', doctorCount: 8 },
-  // { id: 16, name: 'Hô hấp - Phổi', img: '/icons/lung.png', createdAt: '2023-09-01', doctorCount: 9 },
-];
 
 const SpecialtyGrid: React.FC = () => {
   const [specialties, setspecialties] = useState<Specialty[]>([]);

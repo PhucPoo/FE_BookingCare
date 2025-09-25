@@ -1,86 +1,101 @@
 import React, { useState, useMemo } from "react";
 import Button from "antd/lib/button";
 import Modal from "antd/lib/modal";
-import Detailpatient from "./DetailPatient";
-import Editpatient from "./EditPatient";
+import { notification } from "antd";
+import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
+
+import DetailPatient from "./DetailPatient";
+import EditPatient from "./EditPatient";
 
 export interface Patient {
   id: number;
-  name: string;
-  email: string;
-  cccd: number;
-  phone: string;
-  price?: number;
-  date_of_birth?: Date;
-  create_at: Date;
-  update_at: Date;
-  status: "active" | "inactive";
+  bhyt: string;
+  account: {
+    id: number;
+    name: string;
+    email: string;
+    phoneNumber: string;
+    avatar?: string | null;
+    gender?: string | null;
+    createAt?: string;
+    address?: string | null;
+  };
+  createAt: string;
+  updateAt: string;
 }
 
-interface patientTableProps {
+interface PatientTableProps {
   patients: Patient[];
-  onUpdatepatient: (updatedpatient: Patient) => void;
-  onDeletepatient: (id: number) => void;
+  setpatient: (patients: Patient[]) => void;
+  genderFilter?: string | null;
+  dateFilter?: string | null;
+  addressFilter?: string | null;
+  onUpdatePatient: (updatedPatient: Patient) => void;
+  onDeletePatient: (id: number) => void;
 }
 
-// Hiển thị trạng thái patient
-const getStatusBadge = (status: Patient["status"]) => {
-  if (status === "active") {
-    return (
-      <span className="bg-green-500 text-white px-2 py-1 rounded text-sm">
-        Hoạt động
-      </span>
-    );
-  }
-  if (status === "inactive") {
-    return (
-      <span className="bg-red-500 text-white px-2 py-1 rounded text-sm">
-        Nghỉ
-      </span>
-    );
-  }
-  return null;
-};
-
-type SortColumn = "name" | "create_at" | "";
+type SortColumn = "name" | "createAt";
 type SortDirection = "asc" | "desc";
 
-const patientTable: React.FC<patientTableProps> = ({ patients, onUpdatepatient, onDeletepatient }) => {
-  // State sắp xếp
-  const [sortColumn, setSortColumn] = useState<SortColumn>("");
+const PatientTable: React.FC<PatientTableProps> = ({
+  patients,
+  setpatient,
+  genderFilter,
+  dateFilter,
+  addressFilter,
+  onUpdatePatient,
+  onDeletePatient,
+}) => {
+  const [sortColumn, setSortColumn] = useState<SortColumn>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
-   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-  const handleOk = () => {
-    // console.log('OK clicked', editingpatient?.id);
-    onDeletepatient(Number(deletepatientid)); 
-    setIsModalOpen(false);
-  };
+  // Modal xoá
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deletePatientId, setDeletePatientId] = useState<number>(0);
 
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
+  // Modal chi tiết
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
 
+  // Modal sửa
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingPatient, setEditingPatient] = useState<Patient | null>(null);
 
-  // Sắp xếp dữ liệu theo cột và chiều
-  const sortedpatients = useMemo(() => {
-    if (!sortColumn) return patients;
+  // --- Filter + Sort
+  const sortedPatients = useMemo(() => {
+    let data = [...patients];
 
-    return [...patients].sort((a, b) => {
+    if (genderFilter) {
+      data = data.filter(
+        (s) => s.account.gender?.toLowerCase() === genderFilter
+      );
+    }
+    if (dateFilter) {
+      data = data.filter(
+        (s) =>
+          new Date(s.createAt).toLocaleDateString("vi-VN") ===
+          new Date(dateFilter).toLocaleDateString("vi-VN")
+      );
+    }
+    if (addressFilter) {
+      data = data.filter(
+        (s) => s.account.address?.toLowerCase() === addressFilter
+      );
+    }
+
+    // Sort
+    return data.sort((a, b) => {
       let aVal: any;
       let bVal: any;
 
       switch (sortColumn) {
         case "name":
-          aVal = a.name.toLowerCase();
-          bVal = b.name.toLowerCase();
+          aVal = a.account?.name?.toLowerCase() ?? "";
+          bVal = b.account?.name?.toLowerCase() ?? "";
           break;
-        case "create_at":
-          aVal = a.create_at.getTime();
-          bVal = b.create_at.getTime();
+        case "createAt":
+          aVal = a.createAt ? new Date(a.createAt).getTime() : 0;
+          bVal = b.createAt ? new Date(b.createAt).getTime() : 0;
           break;
         default:
           return 0;
@@ -90,47 +105,36 @@ const patientTable: React.FC<patientTableProps> = ({ patients, onUpdatepatient, 
       if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
       return 0;
     });
-  }, [patients, sortColumn, sortDirection]);
+  }, [patients, sortColumn, sortDirection, genderFilter, dateFilter, addressFilter]);
 
-  // Xử lý click sort cột
-  const handleSort = (column: SortColumn) => {
-    if (sortColumn === column) {
+  const toggleSort = (col: SortColumn) => {
+    if (sortColumn === col) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
-      setSortColumn(column);
+      setSortColumn(col);
       setSortDirection("asc");
     }
   };
 
-  // Render mũi tên sắp xếp
-  const renderSortArrow = (column: SortColumn) => {
-    if (sortColumn !== column) return null;
-    return <span className="ml-1">{sortDirection === "asc" ? "▲" : "▼"}</span>;
+  // --- Delete
+  const handleOk = async () => {
+    try {
+      onDeletePatient(deletePatientId);
+    } catch (err: any) {
+      notification.error({
+        message: "Có lỗi xảy ra",
+        description: err?.response?.data?.message ?? "Không thể xoá bệnh nhân",
+      });
+      console.error("Lỗi xoá bệnh nhân:", err);
+    } finally {
+      setIsModalOpen(false);
+    }
   };
 
-  // Modal xem chi tiết
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [selectedpatient, setSelectedpatient] = useState<Patient | null>(null);
-
-  const showDetailModal = (patient: Patient) => {
-    setSelectedpatient(patient);
-    setIsDetailModalOpen(true);
-  };
-
-  const closeDetailModal = () => {
-    setIsDetailModalOpen(false);
-    setSelectedpatient(null);
-  };
-
-  // Modal sửa bệnh nhân
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editingpatient, setEditingpatient] = useState<Patient | null>(null);
-  const [deletepatientid, setDeletepatientid] = useState<number>(0);
-
-  // Cập nhật bệnh nhân
-  const handleUpdatepatient = (patient: Patient) => {
-    onUpdatepatient(patient); // Gọi về component cha
-    setEditingpatient(null);
+  // --- Update
+  const handleUpdatePatient = (patient: Patient) => {
+    onUpdatePatient(patient);
+    setEditingPatient(null);
     setIsEditModalOpen(false);
   };
 
@@ -142,59 +146,64 @@ const patientTable: React.FC<patientTableProps> = ({ patients, onUpdatepatient, 
             <th className="p-3 border">STT</th>
             <th
               className="p-3 border cursor-pointer select-none"
-              onClick={() => handleSort("name")}
+              onClick={() => toggleSort("name")}
             >
-              Tên bệnh nhân {renderSortArrow("name")}
+              Tên bệnh nhân{" "}
+              {sortColumn === "name" && (sortDirection === "asc" ? "🔼" : "🔽")}
             </th>
             <th className="p-3 border hidden md:table-cell">Email</th>
-            <th className="p-3 border hidden lg:table-cell">CCCD</th>
             <th className="p-3 border hidden md:table-cell">SĐT</th>
             <th
               className="p-3 border hidden md:table-cell cursor-pointer select-none"
-              onClick={() => handleSort("create_at")}
+              onClick={() => toggleSort("createAt")}
             >
-              Ngày tạo {renderSortArrow("create_at")}
+              Ngày tạo{" "}
+              {sortColumn === "createAt" &&
+                (sortDirection === "asc" ? "🔼" : "🔽")}
             </th>
-            <th className="p-3 border hidden xl:table-cell">Cập nhật</th>
-            <th className="p-3 border">Trạng thái</th>
+            <th className="p-3 border hidden md:table-cell">Cập nhật</th>
             <th className="p-3 border text-center">Thao tác</th>
           </tr>
         </thead>
         <tbody>
-          {sortedpatients.map((sp, index) => (
-            <tr key={sp.id} className="hover:bg-gray-50">
+          {sortedPatients.map((bn, index) => (
+            <tr key={bn.id} className="hover:bg-gray-50">
               <td className="p-3 border text-center">{index + 1}</td>
-              <td className="p-3 border">{sp.name}</td>
-              <td className="p-3 border hidden md:table-cell">{sp.email}</td>
-              <td className="p-3 border hidden lg:table-cell">{sp.cccd}</td>
-              <td className="p-3 border hidden md:table-cell">{sp.phone}</td>
+              <td className="p-3 border">{bn.account?.name ?? "—"}</td>
               <td className="p-3 border hidden md:table-cell">
-                {sp.create_at.toLocaleDateString()}
+                {bn.account?.email ?? "—"}
               </td>
-              <td className="p-3 border hidden xl:table-cell">
-                {sp.update_at.toLocaleDateString()}
+              <td className="p-3 border hidden md:table-cell">
+                {bn.account?.phoneNumber ?? "—"}
               </td>
-              <td className="p-3 border">{getStatusBadge(sp.status)}</td>
+              <td className="p-3 border hidden md:table-cell">
+                {bn.createAt
+                  ? new Date(bn.createAt).toLocaleDateString("vi-VN")
+                  : "—"}
+              </td>
+              <td className="p-3 border hidden md:table-cell">
+                {bn.updateAt
+                  ? new Date(bn.updateAt).toLocaleDateString("vi-VN")
+                  : "—"}
+              </td>
               <td className="p-3 border text-center">
                 <div className="flex flex-wrap justify-center gap-2">
                   <Button
                     size="small"
+                    icon={<FaEdit />}
                     style={{
                       backgroundColor: "#facc15",
                       borderColor: "#facc15",
                       color: "#000",
                     }}
                     onClick={() => {
-                      
-                      setEditingpatient(sp);
-                     
+                      setEditingPatient(bn);
                       setIsEditModalOpen(true);
                     }}
-                  >
-                    Sửa
-                  </Button>
+                  />
                   <Button
                     size="small"
+                    icon={<FaTrash />}
                     style={{
                       backgroundColor: "#b91c1c",
                       borderColor: "#b91c1c",
@@ -202,14 +211,22 @@ const patientTable: React.FC<patientTableProps> = ({ patients, onUpdatepatient, 
                     }}
                     onClick={() => {
                       setIsModalOpen(true);
-                      setDeletepatientid(sp.id);
+                      setDeletePatientId(bn.id);
                     }}
-                  >
-                    Xóa
-                  </Button>
-                  <Button size="small" onClick={() => showDetailModal(sp)}>
-                    Xem
-                  </Button>
+                  />
+                  <Button
+                    size="small"
+                    icon={<FaEye />}
+                    style={{
+                      backgroundColor: "#3b82f6",
+                      borderColor: "#3b82f6",
+                      color: "#fff",
+                    }}
+                    onClick={() => {
+                      setSelectedPatient(bn);
+                      setIsDetailModalOpen(true);
+                    }}
+                  />
                 </div>
               </td>
             </tr>
@@ -217,29 +234,30 @@ const patientTable: React.FC<patientTableProps> = ({ patients, onUpdatepatient, 
         </tbody>
       </table>
 
-      {/* Modal thông tin chi tiết */}
-      <Detailpatient
+      {/* Modal chi tiết */}
+      <DetailPatient
         open={isDetailModalOpen}
-        patient={selectedpatient}
-        onClose={closeDetailModal}
+        patient={selectedPatient}
+        onClose={() => setIsDetailModalOpen(false)}
       />
 
-      {/* Modal sửa bệnh nhân */}
-      <Editpatient
+      {/* Modal sửa */}
+      <EditPatient
         open={isEditModalOpen}
-        patient={editingpatient}
+        patient={editingPatient}
         onCancel={() => {
           setIsEditModalOpen(false);
-          setEditingpatient(null);
+          setEditingPatient(null);
         }}
-        onUpdate={handleUpdatepatient}
+        onUpdate={handleUpdatePatient}
       />
+
+      {/* Modal xoá */}
       <Modal
-        title="Basic Modal"
-        closable={{ 'aria-label': 'Custom Close Button' }}
+        title="Xác nhận xoá"
         open={isModalOpen}
         onOk={handleOk}
-        onCancel={handleCancel}
+        onCancel={() => setIsModalOpen(false)}
       >
         <p>Bạn có chắc chắn muốn xóa bệnh nhân này không?</p>
       </Modal>
@@ -247,4 +265,4 @@ const patientTable: React.FC<patientTableProps> = ({ patients, onUpdatepatient, 
   );
 };
 
-export default patientTable;
+export default PatientTable;

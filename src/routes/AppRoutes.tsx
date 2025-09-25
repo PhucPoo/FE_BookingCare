@@ -25,13 +25,27 @@ import DoctorList from "../pages/DanhSach/Doctor/DoctorList";
 import SpecialtyList from "../pages/DanhSach/Specialty/SpecialtyList";
 import ArticleList from "../pages/DanhSach/Article/ArticleList";
 import List from "../pages/DanhSach/List";
+import MainPageClinic from "../pages/MainPage/MainPageHeader/MainPageUnderHeader/MainPageClinic";
 
 const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<MainPage />} />
+      
 
       <Route path="/danh-sach" element={<List />}>
+       
+        <Route
+          path="/danh-sach"
+          element={<Navigate to={"clinic-page"} replace={true} />}
+        />
+         <Route path="clinic-page" element={<MedicalFacilityList  />}>
+       
+        {/* <Route path="bac-si" element={<DoctorList />} />
+        <Route path="chuyen-khoa" element={<SpecialtyList />} />
+        <Route path="bai-viet" element={<ArticleList />} /> */}
+        </Route>
+      
         <Route
           path="/danh-sach"
           element={<Navigate to={"co-so-y-te"} replace={true} />}

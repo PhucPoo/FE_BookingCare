@@ -1,86 +1,109 @@
 import React, { useState, useMemo } from "react";
 import Button from "antd/lib/button";
 import Modal from "antd/lib/modal";
-import Detailsupport from "./DetailSupport";
-import Editsupport from "./EditSupport";
+import { notification } from "antd";
+import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
+
+import DetailSupport from "./DetailSupport";
+import EditSupport from "./EditSupport";
+import type { User } from "../UserList/UserTable";
+import type { Clinic } from "../../Clinic/ClinicTable";
+import { testDeleteSupportApi } from "../../../api/testSupport";
 
 export interface Support {
   id: number;
-  name: string;
-  email: string;
-  cccd: number;
-  phone: string;
-  price?: number;
-  date_of_birth?: Date;
-  create_at: Date;
-  update_at: Date;
-  status: "active" | "inactive";
+  isActive: boolean;
+  account: User;
+  clinic: Clinic;
+  createAt: Date;
+  updateAt: Date;
 }
 
 interface SupportTableProps {
   supports: Support[];
-  onUpdatesupport: (updatedsupport: Support) => void;
-  onDeletesupport: (id: number) => void;
+  setsupport: (supports: Support[]) => void;
+  genderFilter?: string | null;
+  dateFilter?: string | null;
+  clinicFilter?: string | null;
+  onUpdateSupport: (updatedSupport: Support) => void;
+  onDeleteSupport: (id: number) => void;
 }
 
-// Hiển thị trạng thái support
-const getStatusBadge = (status: Support["status"]) => {
-  if (status === "active") {
-    return (
-      <span className="bg-green-500 text-white px-2 py-1 rounded text-sm">
-        Hoạt động
-      </span>
-    );
-  }
-  if (status === "inactive") {
-    return (
-      <span className="bg-red-500 text-white px-2 py-1 rounded text-sm">
-        Nghỉ
-      </span>
-    );
-  }
-  return null;
-};
-
-type SortColumn = "name" | "create_at" | "";
+type SortColumn = "name" | "createAt";
 type SortDirection = "asc" | "desc";
 
-const supportTable: React.FC<SupportTableProps> = ({ supports, onUpdatesupport, onDeletesupport }) => {
-  // State sắp xếp
-  const [sortColumn, setSortColumn] = useState<SortColumn>("");
+// Badge trạng thái
+const getStatusBadge = (isActive: boolean) =>
+  isActive ? (
+    <span className="bg-green-500 text-white px-2 py-1 rounded text-sm">
+      Hoạt động
+    </span>
+  ) : (
+    <span className="bg-red-500 text-white px-2 py-1 rounded text-sm">
+      Nghỉ
+    </span>
+  );
+
+const SupportTable: React.FC<SupportTableProps> = ({
+  supports,
+  setsupport,
+  genderFilter,
+  dateFilter,
+  clinicFilter,
+  onUpdateSupport,
+  onDeleteSupport,
+}) => {
+  const [sortColumn, setSortColumn] = useState<SortColumn>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
-   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-  const handleOk = () => {
-    // console.log('OK clicked', editingsupport?.id);
-    onDeletesupport(Number(deletesupportid)); 
-    setIsModalOpen(false);
-  };
+  // Modal xoá
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deleteSupportId, setDeleteSupportId] = useState<number>(0);
 
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
+  // Modal chi tiết
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedSupport, setSelectedSupport] = useState<Support | null>(null);
 
+  // Modal sửa
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingSupport, setEditingSupport] = useState<Support | null>(null);
 
-  // Sắp xếp dữ liệu theo cột và chiều
-  const sortedsupports = useMemo(() => {
-    if (!sortColumn) return supports;
+  // --- Sort client-side (có thể thay bằng API sort nếu backend support)
+  const sorted = useMemo(() => {
+    let data = [...supports];
 
-    return [...supports].sort((a, b) => {
+    // filter
+    if (genderFilter) {
+      data = data.filter(
+        (s) => s.account.gender?.toLowerCase() === genderFilter
+      );
+    }
+    if (dateFilter) {
+      data = data.filter(
+        (s) =>
+          new Date(s.createAt).toLocaleDateString("vi-VN") ===
+          new Date(dateFilter).toLocaleDateString("vi-VN")
+      );
+    }
+    if (clinicFilter) {
+      data = data.filter(
+        (s) => s.clinic?.name?.toLowerCase() === clinicFilter
+      );
+    }
+
+    // sort
+    return data.sort((a, b) => {
       let aVal: any;
       let bVal: any;
 
       switch (sortColumn) {
         case "name":
-          aVal = a.name.toLowerCase();
-          bVal = b.name.toLowerCase();
+          aVal = a.account?.name?.toLowerCase() ?? "";
+          bVal = b.account?.name?.toLowerCase() ?? "";
           break;
-        case "create_at":
-          aVal = a.create_at.getTime();
-          bVal = b.create_at.getTime();
+        case "createAt":
+          aVal = a.createAt ? new Date(a.createAt).getTime() : 0;
+          bVal = b.createAt ? new Date(b.createAt).getTime() : 0;
           break;
         default:
           return 0;
@@ -90,47 +113,38 @@ const supportTable: React.FC<SupportTableProps> = ({ supports, onUpdatesupport, 
       if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
       return 0;
     });
-  }, [supports, sortColumn, sortDirection]);
+  }, [supports, sortColumn, sortDirection, genderFilter, dateFilter, clinicFilter]);
 
-  // Xử lý click sort cột
-  const handleSort = (column: SortColumn) => {
-    if (sortColumn === column) {
+  const toggleSort = (col: SortColumn) => {
+    if (sortColumn === col) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
-      setSortColumn(column);
+      setSortColumn(col);
       setSortDirection("asc");
     }
   };
 
-  // Render mũi tên sắp xếp
-  const renderSortArrow = (column: SortColumn) => {
-    if (sortColumn !== column) return null;
-    return <span className="ml-1">{sortDirection === "asc" ? "▲" : "▼"}</span>;
+  // --- Delete
+  const handleOk = async () => {
+    try {
+      await testDeleteSupportApi(deleteSupportId);
+      onDeleteSupport(deleteSupportId);
+    } catch (err: any) {
+      console.log(err.response.data.message)
+      notification.error({
+        message: "Có lỗi xảy ra",
+        description: err.response.data.message
+      })
+      console.error("Lỗi xoá user:", err);
+    } finally {
+      setIsModalOpen(false);
+    }
   };
 
-  // Modal xem chi tiết
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [selectedsupport, setSelectedsupport] = useState<Support | null>(null);
-
-  const showDetailModal = (support: Support) => {
-    setSelectedsupport(support);
-    setIsDetailModalOpen(true);
-  };
-
-  const closeDetailModal = () => {
-    setIsDetailModalOpen(false);
-    setSelectedsupport(null);
-  };
-
-  // Modal sửa trợ lý
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editingsupport, setEditingsupport] = useState<Support | null>(null);
-  const [deletesupportid, setDeletesupportid] = useState<number>(0);
-
-  // Cập nhật trợ lý
-  const handleUpdatesupport = (support: Support) => {
-    onUpdatesupport(support); // Gọi về component cha
-    setEditingsupport(null);
+  // --- Update
+  const handleUpdateSupport = (support: Support) => {
+    onUpdateSupport(support);
+    setEditingSupport(null);
     setIsEditModalOpen(false);
   };
 
@@ -142,59 +156,55 @@ const supportTable: React.FC<SupportTableProps> = ({ supports, onUpdatesupport, 
             <th className="p-3 border">STT</th>
             <th
               className="p-3 border cursor-pointer select-none"
-              onClick={() => handleSort("name")}
+              onClick={() => toggleSort("name")}
             >
-              Tên trợ lý {renderSortArrow("name")}
+              Tên {sortColumn === "name" && (sortDirection === "asc" ? "🔼" : "🔽")}
             </th>
-            <th className="p-3 border hidden md:table-cell">Email</th>
-            <th className="p-3 border hidden lg:table-cell">CCCD</th>
+            <th className="p-3 border hidden md:table-cell">Giới tính</th>
             <th className="p-3 border hidden md:table-cell">SĐT</th>
+            <th className="p-3 border hidden md:table-cell">Phòng khám</th>
             <th
               className="p-3 border hidden md:table-cell cursor-pointer select-none"
-              onClick={() => handleSort("create_at")}
+              onClick={() => toggleSort("createAt")}
             >
-              Ngày tạo {renderSortArrow("create_at")}
+              Ngày tạo{" "}
+              {sortColumn === "createAt" && (sortDirection === "asc" ? "🔼" : "🔽")}
             </th>
-            <th className="p-3 border hidden xl:table-cell">Cập nhật</th>
             <th className="p-3 border">Trạng thái</th>
             <th className="p-3 border text-center">Thao tác</th>
           </tr>
         </thead>
         <tbody>
-          {sortedsupports.map((sp, index) => (
+          {sorted.map((sp) => (
             <tr key={sp.id} className="hover:bg-gray-50">
-              <td className="p-3 border text-center">{index + 1}</td>
-              <td className="p-3 border">{sp.name}</td>
-              <td className="p-3 border hidden md:table-cell">{sp.email}</td>
-              <td className="p-3 border hidden lg:table-cell">{sp.cccd}</td>
-              <td className="p-3 border hidden md:table-cell">{sp.phone}</td>
-              <td className="p-3 border hidden md:table-cell">
-                {sp.create_at.toLocaleDateString()}
+              <td className="p-3 border text-center">{sp.account.id}</td>
+              {/* {JSON.stringify(sp)} */}
+              <td className="p-3 border">{sp.account?.name ?? "Unknown"}</td>
+              <td className="p-3 border">{sp.account?.gender ?? "Unknown"}</td>
+              <td className="p-3 border">{sp.account?.phoneNumber ?? "Unknown"}</td>
+              <td className="p-3 border">{sp.clinic?.name ?? "Unknown"}</td>
+              <td className="p-3 border">
+                {sp.account.createAt ? new Date(sp.account.createAt).toLocaleString() : ""}
               </td>
-              <td className="p-3 border hidden xl:table-cell">
-                {sp.update_at.toLocaleDateString()}
-              </td>
-              <td className="p-3 border">{getStatusBadge(sp.status)}</td>
+              <td className="p-3 border">{getStatusBadge(sp.isActive)}</td>
               <td className="p-3 border text-center">
                 <div className="flex flex-wrap justify-center gap-2">
                   <Button
                     size="small"
+                    icon={<FaEdit />}
                     style={{
                       backgroundColor: "#facc15",
                       borderColor: "#facc15",
                       color: "#000",
                     }}
                     onClick={() => {
-                      
-                      setEditingsupport(sp);
-                     
+                      setEditingSupport(sp);
                       setIsEditModalOpen(true);
                     }}
-                  >
-                    Sửa
-                  </Button>
+                  />
                   <Button
                     size="small"
+                    icon={<FaTrash />}
                     style={{
                       backgroundColor: "#b91c1c",
                       borderColor: "#b91c1c",
@@ -202,14 +212,22 @@ const supportTable: React.FC<SupportTableProps> = ({ supports, onUpdatesupport, 
                     }}
                     onClick={() => {
                       setIsModalOpen(true);
-                      setDeletesupportid(sp.id);
+                      setDeleteSupportId(sp.id);
                     }}
-                  >
-                    Xóa
-                  </Button>
-                  <Button size="small" onClick={() => showDetailModal(sp)}>
-                    Xem
-                  </Button>
+                  />
+                  <Button
+                    size="small"
+                    icon={<FaEye />}
+                    style={{
+                      backgroundColor: "#3b82f6",
+                      borderColor: "#3b82f6",
+                      color: "#fff",
+                    }}
+                    onClick={() => {
+                      setSelectedSupport(sp);
+                      setIsDetailModalOpen(true);
+                    }}
+                  />
                 </div>
               </td>
             </tr>
@@ -217,29 +235,30 @@ const supportTable: React.FC<SupportTableProps> = ({ supports, onUpdatesupport, 
         </tbody>
       </table>
 
-      {/* Modal thông tin chi tiết */}
-      <Detailsupport
+      {/* Modal chi tiết */}
+      <DetailSupport
         open={isDetailModalOpen}
-        support={selectedsupport}
-        onClose={closeDetailModal}
+        support={selectedSupport}
+        onClose={() => setIsDetailModalOpen(false)}
       />
 
-      {/* Modal sửa trợ lý */}
-      <Editsupport
+      {/* Modal sửa */}
+      <EditSupport
         open={isEditModalOpen}
-        support={editingsupport}
+        support={editingSupport}
         onCancel={() => {
           setIsEditModalOpen(false);
-          setEditingsupport(null);
+          setEditingSupport(null);
         }}
-        onUpdate={handleUpdatesupport}
+        onUpdate={handleUpdateSupport}
       />
+
+      {/* Modal xoá */}
       <Modal
-        title="Basic Modal"
-        closable={{ 'aria-label': 'Custom Close Button' }}
+        title="Xác nhận xoá"
         open={isModalOpen}
         onOk={handleOk}
-        onCancel={handleCancel}
+        onCancel={() => setIsModalOpen(false)}
       >
         <p>Bạn có chắc chắn muốn xóa trợ lý này không?</p>
       </Modal>
@@ -247,4 +266,4 @@ const supportTable: React.FC<SupportTableProps> = ({ supports, onUpdatesupport, 
   );
 };
 
-export default supportTable;
+export default SupportTable;

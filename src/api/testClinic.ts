@@ -2,14 +2,23 @@ import customAxiosInstance from "../utils/configAxios";
 
 const config = {
   headers: {
-    Authorization: `Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdXBlckFkbWluMDFAZ21haWwuY29tIiwiZXhwIjoxNzY2MjQ0Mjk2LCJpYXQiOjE3NTc2MDQyOTYsInVzZXIiOnsiaWQiOjEsIm5hbWUiOiJJJ20gc3VwZXIgYWRtaW4iLCJlbWFpbCI6InN1cGVyQWRtaW4wMUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4ifX0.4jVMfl3lPq4_40DPHv3s1lQrrx92Khf7D3R4KC0lWNg4wiqSpw1bdkckiGu7kpTAOPc5mOIazKYRUEnI2FPpSQ`,
+    Authorization: `Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJob2FuZ3BodWMxMjNAZ21haWwuY29tIiwiZXhwIjoxNzY3MzY3NjI1LCJpYXQiOjE3NTg3Mjc2MjUsInVzZXIiOnsiaWQiOjE4LCJuYW1lIjoiUCIsImVtYWlsIjoiaG9hbmdwaHVjMTIzQGdtYWlsLmNvbSIsInJvbGUiOiJET0NUT1IifX0.b4FAUa66CDN4TjIvk_3Bjn5fbDolTLvknRm8pO4AswdHOAMjxjTA49pPO_LH21AR_vw1u_jLlfc2pInKtKzheA`,
   },
 };
 export const testPostClinicApi =async() => {
     const response = await customAxiosInstance.post(
-    `http://localhost:8080/api/v1/accounts`,
+    `http://localhost:8080/api/v1/clinics`,
     config
   );
   console.log("🚀 ~ testGetAccountsApi ~ response:", response);
   return response.data;
 };
+export const testGetClinicApi =async() => {
+    const response = await customAxiosInstance.get(
+    `http://localhost:8080/api/v1/clinics`,
+    config
+  );
+  console.log("🚀 ~ testGetAccountsApi ~ response:", response);
+  return response.data;
+};
+

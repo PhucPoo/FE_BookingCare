@@ -1,44 +1,52 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "antd/es/modal";
 import Input from "antd/es/input";
 import Select from "antd/es/select";
-import Button from "antd/es/button";
 import Form from "antd/es/form";
-import type { User } from "./UserTable";
-import { testPostAccountsApi } from "../../../api/testApi";
-
+import type { CreateUser, User } from "./UserTable";
+import { testGetAccountsApi, testPostAccountsApi } from "../../../api/testApi";
+import { notification, message } from 'antd';
+import { Button } from "antd/lib";
 const { Option } = Select;
 
-interface AdduserProps {
+interface UserTableProps {
   open: boolean;
   onCancel: () => void;
   onAdd: (user: User) => void;
+  users: User[];
+  setusers: (users: User[]) => void
 }
 
-const Adduser: React.FC<AdduserProps> = ({ open, onCancel, onAdd }) => {
+const AddUser: React.FC<UserTableProps> = ({ users, setusers, open, onCancel, onAdd }) => {
   const [form] = Form.useForm();
+  const handleSubmit = async (values: any) => {
+    const { name, email, phoneNumber, password, cccd, address, gender, roleId } = values;
 
-  const handleSubmit = (values: any) => {
-    console.log("dadsa");
+    try {
 
-    const { name, email, phoneNumber, cccd, password } = values;
 
-    const newuser: User = {
-      id: Date.now(),
-      name,
-      email,
-      cccd: Number(cccd),
-      phoneNumber,
-      password,
-      date_of_birth: undefined,
-      createAt: new Date(),
-      updateAt: new Date(),
-    };
-    testPostAccountsApi(newuser);
-    onAdd(newuser);
-    // reset form
-    form.resetFields();
-     onCancel();
+      // 2️⃣ Nếu không trùng, tạo user mới
+      const newUser: CreateUser = {
+        name, email, phoneNumber, password, cccd, address, gender, roleId,
+
+      };
+      const res = await testPostAccountsApi(newUser);
+      setusers([...users, res])
+      onAdd(res);
+      notification.success({
+        message: `Thêm Thành công`,
+        description: "Thêm thành công user với name: " + res.name,
+      })
+      form.resetFields();
+      onCancel();
+    } catch (err: any) {
+      console.log(err.response.data.message)
+      notification.error({
+        message: "Thêm thất bại",
+        description: err.response.data.message
+      })
+      console.error("Lỗi xoá user:", err);
+    }
   };
 
   return (
@@ -54,17 +62,13 @@ const Adduser: React.FC<AdduserProps> = ({ open, onCancel, onAdd }) => {
       centered
       width={520}
     >
-      <Form layout="vertical" onFinish={handleSubmit} className="space-y-4">
+      <Form form={form} layout="vertical" onFinish={handleSubmit} className="space-y-4">
         <Form.Item
           name="name"
           label="Tên người dùng"
           rules={[{ required: true, message: "Vui lòng nhập tên người dùng!" }]}
         >
-          <Input
-            placeholder="Nhập tên người dùng"
-            size="large"
-            className="rounded-md px-3 py-2"
-          />
+          <Input placeholder="Nhập tên người dùng" size="large" />
         </Form.Item>
 
         <Form.Item
@@ -75,61 +79,100 @@ const Adduser: React.FC<AdduserProps> = ({ open, onCancel, onAdd }) => {
             { type: "email", message: "Email không hợp lệ!" },
           ]}
         >
-          <Input
-            placeholder="Nhập email"
-            size="large"
-            className="rounded-md px-3 py-2"
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="cccd"
-          label="CCCD"
-          rules={[{ required: true, message: "Vui lòng nhập CCCD!" }]}
-        >
-          <Input
-            placeholder="Nhập số CCCD"
-            size="large"
-            className="rounded-md px-3 py-2"
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="password"
-          label="Password"
-          rules={[{ required: true, message: "Vui lòng nhập password!" }]}
-        >
-          <Input
-            placeholder="Nhập số password"
-            size="large"
-            className="rounded-md px-3 py-2"
-          />
+          <Input placeholder="Nhập email" size="large" />
         </Form.Item>
 
         <Form.Item
           name="phoneNumber"
           label="Số điện thoại"
-          rules={[{ required: true, message: "Vui lòng nhập số điện thoại!" }]}
+          rules={[
+            { required: true, message: "Vui lòng nhập số điện thoại!" },
+            {
+              pattern: /^0\d{9,10}$/,
+              message: "Số điện thoại phải bắt đầu bằng 0 và có 10–11 chữ số",
+            },
+          ]}
         >
-          <Input
-            placeholder="Nhập số điện thoại"
-            size="large"
-            className="rounded-md px-3 py-2"
-          />
+          <Input placeholder="Nhập số điện thoại" size="large" />
+        </Form.Item>
+        <Form.Item
+          name="cccd"
+          label="Căn cước công dân"
+          rules={[
+            { required: true, message: "Vui lòng nhập Căn cước công dân!" },
+            { pattern: /^\d{10,}$/ },
+            // {
+            //   min: 6,
+            //   max: 20,
+            //   pattern:
+            //     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,20}$/,
+            //   message:
+            //     "Mật khẩu phải có 6–20 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt",
+            // },
+          ]}
+        >
+          <Input placeholder="Nhập số cccd" size="large" />
+        </Form.Item>
+        <Form.Item
+          name="address"
+          label="Địa chỉ"
+          rules={[
+            { required: true, message: "Vui lòng nhập địa chỉ!" },
+            // {pattern: /^\d{10,}$/},
+            // {
+            //   min: 6,
+            //   max: 20,
+            //   pattern:
+            //     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,20}$/,
+            //   message:
+            //     "Mật khẩu phải có 6–20 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt",
+            // },
+          ]}
+        >
+          <Input placeholder="Nhập địa chỉ" size="large" />
         </Form.Item>
 
+
         <Form.Item
-          name="create_at"
-          label="Trạng thái"
-          rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
+          name="password"
+          label="Mật khẩu"
+          rules={[
+            { required: true, message: "Vui lòng nhập mật khẩu!" },
+            {
+              min: 6,
+              max: 20,
+              pattern:
+                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,20}$/,
+              message:
+                "Mật khẩu phải có 6–20 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt",
+            },
+          ]}
         >
-          <Select
-            placeholder="Chọn trạng thái"
-            size="large"
-            className="rounded-md"
-          >
-            <Option value="active">Hoạt động</Option>
-            <Option value="inactive">Nghỉ</Option>
+          <Input.Password placeholder="Nhập mật khẩu" size="large" />
+        </Form.Item>
+
+
+        <Form.Item
+          name="roleId"
+          label="Vai trò"
+          rules={[{ required: true, message: "Vui lòng chọn vai trò!" }]}
+        >
+          <Select placeholder="Chọn vai trò" size="large">
+            <Option value={1}>Admin</Option>
+            <Option value={2}>Bác sĩ</Option>
+            <Option value={3}>Trợ lý</Option>
+            <Option value={4}>Người dùng</Option>
+          </Select>
+        </Form.Item>
+        <Form.Item
+          name="gender"
+          label="Giới tính"
+          rules={[{ required: true, message: "Vui lòng chọn giới tính!" }]}
+        >
+          <Select placeholder="Chọn vai trò" size="large">
+            <Option value="MALE">Nam</Option>
+            <Option value="FEMALE">Nữ</Option>
+            <Option value="OTHER">Khác</Option>
           </Select>
         </Form.Item>
 
@@ -148,4 +191,4 @@ const Adduser: React.FC<AdduserProps> = ({ open, onCancel, onAdd }) => {
   );
 };
 
-export default Adduser;
+export default AddUser;

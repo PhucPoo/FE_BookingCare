@@ -66,7 +66,9 @@ const MainPageHeader = () => {
             <nav className="nav-menu">
               <ul>
                 <li>
-                  <a href="#">Cơ sở y tế</a>
+                  <Link to="/danh-sach/clinic-page" >
+                    Cơ sở y tế
+                  </Link>
                 </li>
                 <li>
                   <a href="#">Dịch vụ y tế</a>

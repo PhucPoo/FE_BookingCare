@@ -1,154 +1,146 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Button from "antd/lib/button";
 import Modal from "antd/lib/modal";
-import Detailuser from "./DetailUser";
-import Edituser from "./EditUser";
-import {
-  testDeleteAccountsApi,
-  testSortAccountsApi,
-  // testSortAccountsApi,
-} from "../../../api/testApi";
+import DetailUser from "./DetailUser";
+import EditUser from "./EditUser";
+import { testDeleteAccountsApi, testSortAccountsApi } from "../../../api/testApi";
 import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
-
+import { notification } from 'antd'
 export interface User {
   id: number;
   name: string;
   email: string;
-  cccd: number;
   phoneNumber: string;
   password: string;
-  price?: number;
-  date_of_birth?: Date;
+  cccd: number;
+  address:string;
+  gender: string;
+  avatar: File;
+  role: {
+    id: number;
+    name: string;
+  };
+  createAt: Date;
+  updateAt: Date;
+}
+export type CreateUserForm = {
+  id: number;
+  name: string;
+  email: string;
+  phoneNumber: string;
+  cccd: number;
+  address:string;
+  gender:string;
+  password: string;
+  avatar: File;
+  roleId: number;
   createAt: Date;
   updateAt: Date;
 }
 
-export interface Role {
-  id: number
-  name: string
-}
 
+export type CreateUser = Omit<CreateUserForm, "id" | "createAt" | "updateAt">;
 
-interface userTableProps {
+interface UserTableProps {
   users: User[];
-  onUpdateuser: (updateduser: User) => void;
-  onDeleteuser: (id: number) => void;
+  setusers: (users: User[]) => void
+  roleFilter?: string | null;
+  genderFilter?: string | null;
+  dateFilter?: string | null;
+  onUpdateUser: (updatedUser: User) => void;
+  onDeleteUser: (id: number) => void;
 }
 
-// Hiển thị trạng thái user
-// const getStatusBadge = (status: User["status"]) => {
-//   if (status === "active") {
-//     return (
-//       <uan className="bg-green-500 text-white px-2 py-1 rounded text-sm">
-//         Hoạt động
-//       </uan>
-//     );
-//   }
-//   if (status === "inactive") {
-//     return (
-//       <uan className="bg-red-500 text-white px-2 py-1 rounded text-sm">
-//         Nghỉ
-//       </uan>
-//     );
-//   }
-//   return null;
-// };
-
-type SortColumn = "name" | "createAt" | "";
+type SortColumn = "name" | "createAt";
 type SortDirection = "asc" | "desc";
 
-const userTable: React.FC<userTableProps> = ({
+const UserTable: React.FC<UserTableProps> = ({
   users,
-  onUpdateuser,
-  onDeleteuser,
+  setusers,
+  roleFilter,
+  genderFilter,
+  dateFilter,
+  onUpdateUser,
+  onDeleteUser,
 }) => {
-  // State sắp xếp
-  const [sortColumn, setSortColumn] = useState<SortColumn>("");
+
+  const [sortColumn, setSortColumn] = useState<SortColumn>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deleteUserId, setDeleteUserId] = useState<number>(0);
 
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-  const handleOk = () => {
-    // console.log('OK clicked', editinguser?.id);
-    testDeleteAccountsApi(deleteuserid);
-    // onDeleteuser(Number(deleteuserid));
-    setIsModalOpen(false);
-  };
+  // Modal chi tiết
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
+  // Modal sửa
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
 
-  // Sắp xếp dữ liệu theo cột và chiều
-  const sortedusers = useMemo(() => {
-    if (!sortColumn) return users;
+  // Sắp xếp
 
-    return [...users].sort((a, b) => {
-      let aVal: any;
-      let bVal: any;
+  const fetchSortedUsers = async () => {
+    try {
+      const res = await testSortAccountsApi(1, 10, sortColumn, sortDirection);
+      console.log(">>>", res)
+      setusers(res.data.result);
 
-      switch (sortColumn) {
-        case "name":
-          aVal = a.name.toLowerCase();
-          bVal = b.name.toLowerCase();
-          break;
-        case "createAt":
-          aVal = a.createAt;
-          bVal = b.createAt
-          break;
-        default:
-          return 0;
-      }
-
-      if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
-      if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
-      return 0;
-    });
-  }, [users, sortColumn, sortDirection]);
-
-  // Xử lý click sort cột
-  const handleSort = async (column: SortColumn) => {
-    if (sortColumn === column) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      setSortColumn(column);
-      setSortDirection("asc");
+    } catch (err) {
+      console.error("Lỗi load users sort:", err);
     }
   };
 
-  // Render mũi tên sắp xếp
-  const renderSortArrow = (column: SortColumn) => {
-    if (sortColumn !== column) return null;
-    return <span className="ml-1">{sortDirection === "asc" ? "▲" : "▼"}</span>;
+  const handleClick = () => {
+    const next = sortDirection === "asc" ? "desc" : "asc";
+    setSortDirection(next);
+    fetchSortedUsers(next);
   };
 
-  // Modal xem chi tiết
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [selecteduser, setSelecteduser] = useState<User | null>(null);
 
-  const showDetailModal = (user: User) => {
-    setSelecteduser(user);
-    setIsDetailModalOpen(true);
+
+
+
+  // Modal delete
+  const handleOk = async () => {
+    try {
+      await testDeleteAccountsApi(deleteUserId);
+      onDeleteUser(deleteUserId);
+    } catch (err: any) {
+      console.log(err.response.data.message)
+      notification.error({
+        message: "Có lỗi xảy ra",
+        description: err.response.data.message
+      })
+      console.error("Lỗi xoá user:", err);
+    } finally {
+      setIsModalOpen(false);
+    }
   };
 
-  const closeDetailModal = () => {
-    setIsDetailModalOpen(false);
-    setSelecteduser(null);
-  };
+  const handleCancel = () => setIsModalOpen(false);
 
-  // Modal sửa người dùng
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editinguser, setEditinguser] = useState<User | null>(null);
-  const [deleteuserid, setDeleteuserid] = useState<number>(0);
-
-  // Cập nhật người dùng
-  const handleUpdateuser = (user: User) => {
-    onUpdateuser(user); // Gọi về component cha
-    setEditinguser(null);
+  // Update
+  const handleUpdateUser = (user: User) => {
+    onUpdateUser(user);
+    setEditingUser(null);
     setIsEditModalOpen(false);
   };
+  const roleMap: Record<number, string> = {
+    1: "Admin",
+    2: "Doctor",
+    3: "Support",
+    4: "Patient",
+
+  };
+
+  const filtered = useMemo(() => {
+    return users.filter((u) => {
+      if (roleFilter && u.role?.name.toLowerCase() !== roleFilter) return false;
+      if (genderFilter && u.gender?.toLowerCase() !== genderFilter) return false;
+      if (dateFilter && new Date(u.createAt).toLocaleDateString("vi-VN") !== new Date(dateFilter).toLocaleDateString("vi-VN")) return false;
+      return true;
+    });
+  }, [users, roleFilter, genderFilter, dateFilter]);
 
   return (
     <div className="w-full bg-white rounded shadow overflow-x-auto">
@@ -158,45 +150,47 @@ const userTable: React.FC<userTableProps> = ({
             <th className="p-3 border">STT</th>
             <th
               className="p-3 border cursor-pointer select-none"
-              onClick={() => handleSort("name")}
+              onClick={handleClick}   // ✅
             >
-              Tên người dùng {renderSortArrow("name")}
+              Tên {sortDirection === "asc" ? "🔼" : "🔽"}
             </th>
             <th className="p-3 border hidden md:table-cell">Email</th>
-            {/* <th className="p-3 border hidden lg:table-cell">Password</th> */}
-            <th className="p-3 border hidden lg:table-cell">Căn cước công dân</th>
             <th className="p-3 border hidden md:table-cell">SĐT</th>
+            <th className="p-3 border hidden md:table-cell">Gender</th>
+            <th className="p-3 border hidden md:table-cell">CCCD</th>
+            <th className="p-3 border hidden lg:table-cell">Role</th>
             <th
               className="p-3 border hidden md:table-cell cursor-pointer select-none"
-              onClick={() => handleSort("createAt")}
+              onClick={handleClick}
             >
-              Ngày tạo {renderSortArrow("createAt")}
+              Ngày tạo
+              {sortDirection === "asc" ? "🔼" : "🔽"}
             </th>
-            <th className="p-3 border hidden xl:table-cell">Cập nhật</th>
-            {/* <th className="p-3 border">Trạng thái</th> */}
+            {/* <th className="p-3 border hidden xl:table-cell">Cập nhật</th> */}
             <th className="p-3 border text-center">Thao tác</th>
           </tr>
         </thead>
         <tbody>
-          {sortedusers.map((u, index) => (
+          {filtered.map((u) => (
             <tr key={u.id} className="hover:bg-gray-50">
-              <td className="p-3 border text-center">{index + 1}</td>
+              <td className="p-3 border text-center">{u.id}</td>
               <td className="p-3 border">{u.name}</td>
               <td className="p-3 border hidden md:table-cell">{u.email}</td>
-              <td className="p-3 border hidden lg:table-cell">{u.cccd}</td>
-              <td className="p-3 border hidden md:table-cell">
-                {u.phoneNumber}
+              <td className="p-3 border hidden md:table-cell">{u.phoneNumber}</td>
+              <td className="p-3 border hidden md:table-cell">{u.gender}</td>
+              <td className="p-3 border hidden md:table-cell">{u.cccd}</td>
+              <td className="p-3 border hidden lg:table-cell">
+                {roleMap[u.role?.id || 0]}
               </td>
+
               <td className="p-3 border hidden md:table-cell">
                 {new Date(u.createAt).toLocaleString()}
               </td>
-              <td className="p-3 border hidden xl:table-cell">
+              {/* <td className="p-3 border hidden xl:table-cell">
                 {new Date(u.updateAt).toLocaleString()}
-              </td>
-              {/* <td className="p-3 border">{getStatusBadge(u.status)}</td> */}
+              </td> */}
               <td className="p-3 border text-center">
                 <div className="flex flex-wrap justify-center gap-2">
-                  {/* Nút sửa */}
                   <Button
                     size="small"
                     icon={<FaEdit />}
@@ -206,12 +200,11 @@ const userTable: React.FC<userTableProps> = ({
                       color: "#000",
                     }}
                     onClick={() => {
-                      setEditinguser(u);
+                      setEditingUser(u);
                       setIsEditModalOpen(true);
                     }}
                   />
 
-                  {/* Nút xóa */}
                   <Button
                     size="small"
                     icon={<FaTrash />}
@@ -222,11 +215,10 @@ const userTable: React.FC<userTableProps> = ({
                     }}
                     onClick={() => {
                       setIsModalOpen(true);
-                      setDeleteuserid(u.id);
+                      setDeleteUserId(u.id);
                     }}
                   />
 
-                  {/* Nút xem */}
                   <Button
                     size="small"
                     icon={<FaEye />}
@@ -235,43 +227,48 @@ const userTable: React.FC<userTableProps> = ({
                       borderColor: "#3b82f6",
                       color: "#fff",
                     }}
-                    onClick={() => showDetailModal(u)}
+                    onClick={() => {
+                      setSelectedUser(u);
+                      setIsDetailModalOpen(true);
+                    }}
                   />
                 </div>
               </td>
             </tr>
           ))}
         </tbody>
+
       </table>
 
-      {/* Modal thông tin chi tiết */}
-      <Detailuser
+      {/* Modal chi tiết */}
+      <DetailUser
         open={isDetailModalOpen}
-        user={selecteduser}
-        onClose={closeDetailModal}
+        user={selectedUser}
+        onClose={() => setIsDetailModalOpen(false)}
       />
 
-      {/* Modal sửa người dùng */}
-      <Edituser
+      {/* Modal sửa */}
+      <EditUser
         open={isEditModalOpen}
-        user={editinguser}
+        user={editingUser}
         onCancel={() => {
           setIsEditModalOpen(false);
-          setEditinguser(null);
+          setEditingUser(null);
         }}
-        onUpdate={handleUpdateuser}
+        onUpdate={handleUpdateUser}
       />
+
+      {/* Modal xoá */}
       <Modal
-        title="Basic Modal"
-        closable={{ "aria-label": "Custom Close Button" }}
+        title="Xác nhận xoá"
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
       >
         <p>Bạn có chắc chắn muốn xóa người dùng này không?</p>
       </Modal>
-    </div>
+    </div >
   );
 };
 
-export default userTable;
+export default UserTable;

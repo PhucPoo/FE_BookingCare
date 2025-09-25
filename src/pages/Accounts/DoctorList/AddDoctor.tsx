@@ -1,12 +1,22 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "antd/es/modal";
 import Input from "antd/es/input";
 import Select from "antd/es/select";
 import Button from "antd/es/button";
 import Form from "antd/es/form";
 import type { Doctor } from "./DoctorTable";
+import type { Clinic } from "../../Clinic/ClinicTable";
+import type { User } from "../UserList/UserTable";
+import type { Specialty } from "../../Specialty/SpecialtyGrid";
+import { testGetClinicApi } from "../../../api/testClinic";
+import { testGetAccountsApi } from "../../../api/testApi";
+import { testGetSpecialtyApi } from "../../../api/testSpecialty";
+import { testGetDoctorApi, testPostDoctorApi } from "../../../api/testDoctor";
+
 
 const { Option } = Select;
+
+
 
 interface AddDoctorProps {
   open: boolean;
@@ -16,30 +26,58 @@ interface AddDoctorProps {
 
 const AddDoctor: React.FC<AddDoctorProps> = ({ open, onCancel, onAdd }) => {
   const [form] = Form.useForm();
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [clinics, setClinics] = useState<Clinic[]>([]);
+  const [accounts, setAccounts] = useState<User[]>([]);
+  const [specialties, setSpecialties] = useState<Specialty[]>([]);
 
-  const handleSubmit = (values: any) => {
-    const { name, email, phoneNumber, cccd, cost, degree, clinicId, specialtyId, status } = values;
+  // Lấy dữ liệu dropdown
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [clinicRes, accountRes, specialtyRes] = await Promise.all([
+          testGetClinicApi(),
+         testGetAccountsApi(),
+          testGetSpecialtyApi(),
+        ]);
 
-    const newDoctor: Doctor = {
-      id: Date.now(),
-      cost: Number(cost),
-      degree,
-      account: {
-        id: Date.now(), // fake ID cho account, thực tế backend sẽ cấp
-        name,
-        email,
-        phoneNumber,
-        cccd,
-      },
-      clinic: { id: Number(clinicId) },
-      specialty: { id: Number(specialtyId) },
-      create_at: new Date(),
-      update_at: new Date(),
-      status,
+        setClinics(clinicRes.data.result || []);
+        setAccounts(accountRes.data.result || []);
+        setSpecialties(specialtyRes.data.result || []);
+      } catch (error) {
+        console.error("Fetch dropdown data failed:", error);
+      }
+    };
+    fetchData();
+  }, []);
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const res = await testGetDoctorApi();
+        setDoctors(res.data.result || []);
+      } catch (err) {
+        console.error("Fetch doctors failed:", err);
+      }
+    };
+    fetchDoctors();
+  }, []);
+
+  // Gửi dữ liệu tạo doctor
+  const handleSubmit = async (values: any) => {
+    const payload = {
+      cost: Number(values.cost),
+      degree: values.degree,
+      account: { id: Number(values.accountId) },
+      clinic: { id: Number(values.clinicId) },
+      specialty: { id: Number(values.specialtyId) },
     };
 
-    onAdd(newDoctor);
+    const res = await testPostDoctorApi(payload);
+    const doctor = res.data.data;
+    const detailRes = await testGetDoctorApi();
+    onAdd(detailRes.data.data);
     form.resetFields();
+
   };
 
   return (
@@ -57,55 +95,96 @@ const AddDoctor: React.FC<AddDoctorProps> = ({ open, onCancel, onAdd }) => {
         onFinish={handleSubmit}
         className="space-y-4"
       >
-        {/* Account info */}
-        <Form.Item name="name" label="Tên bác sĩ" rules={[{ required: true, message: "Vui lòng nhập tên bác sĩ!" }]}>
-          <Input placeholder="Nhập tên bác sĩ" size="large" />
-        </Form.Item>
-
+        {/* Account chọn từ danh sách */}
         <Form.Item
-          name="email"
-          label="Email"
-          rules={[
-            { required: true, message: "Vui lòng nhập email!" },
-            { type: "email", message: "Email không hợp lệ!" },
+          name="accountId"
+          label="Account"
+          rules={[{ required: true, message: "Vui lòng chọn account!" },
+          {
+            validator: (_, value) => {
+              if (!value) return Promise.resolve();
+
+              // Kiểm tra account đã có doctor chưa
+              const accountExists = accounts.some(
+                (acc) =>
+                  acc.id === value &&
+                  doctors.some((doc: any) => doc.account.id === acc.id)
+              );
+
+              return accountExists
+                ? Promise.reject(new Error("Account này đã có bác sĩ!"))
+                : Promise.resolve();
+            },
+          },
+
           ]}
         >
-          <Input placeholder="Nhập email" size="large" />
+          <Select placeholder="Chọn account" size="large">
+            {accounts.map((acc) => (
+              <Option key={acc.id} value={acc.id}>
+                {acc.id} - {acc.name} ({acc.email})
+              </Option>
+            ))}
+          </Select>
         </Form.Item>
 
-        <Form.Item name="cccd" label="CCCD" rules={[{ required: true, message: "Vui lòng nhập CCCD!" }]}>
-          <Input placeholder="Nhập số CCCD" size="large" />
+        {/* Clinic */}
+        <Form.Item
+          name="clinicId"
+          label="Clinic"
+          rules={[{ required: true, message: "Vui lòng chọn clinic!" }]}
+        >
+          <Select placeholder="Chọn clinic" size="large">
+            {clinics.map((clinic) => (
+              <Option key={clinic.id} value={clinic.id}>
+                {clinic.id} - {clinic.name}
+              </Option>
+            ))}
+          </Select>
         </Form.Item>
 
-        <Form.Item name="phoneNumber" label="Số điện thoại" rules={[{ required: true, message: "Vui lòng nhập số điện thoại!" }]}>
-          <Input placeholder="Nhập số điện thoại" size="large" />
+        {/* Specialty */}
+        <Form.Item
+          name="specialtyId"
+          label="Specialty"
+          rules={[{ required: true, message: "Vui lòng chọn specialty!" }]}
+        >
+          <Select placeholder="Chọn specialty" size="large">
+            {specialties.map((sp) => (
+              <Option key={sp.id} value={sp.id}>
+                {sp.id} - {sp.name}
+              </Option>
+            ))}
+          </Select>
         </Form.Item>
 
-        {/* Doctor info */}
-        <Form.Item name="cost" label="Giá khám (VNĐ)" rules={[{ required: true, message: "Vui lòng nhập giá khám!" }]}>
+        {/* Cost */}
+        <Form.Item
+          name="cost"
+          label="Giá khám (VNĐ)"
+          rules={[
+            { required: true, message: "Vui lòng nhập giá khám!" },
+            {
+              validator: (_, value) =>
+                value > 0
+                  ? Promise.resolve()
+                  : Promise.reject(new Error("Giá khám phải lớn hơn 0")),
+            },
+          ]}
+        >
           <Input type="number" placeholder="Nhập giá khám" size="large" />
         </Form.Item>
 
-        <Form.Item name="degree" label="Bằng cấp" rules={[{ required: true, message: "Vui lòng chọn bằng cấp!" }]}>
+        {/* Degree */}
+        <Form.Item
+          name="degree"
+          label="Bằng cấp"
+          rules={[{ required: true, message: "Vui lòng chọn bằng cấp!" }]}
+        >
           <Select placeholder="Chọn bằng cấp" size="large">
             <Option value="BACHELOR">Cử nhân</Option>
             <Option value="MASTER">Thạc sĩ</Option>
             <Option value="DOCTOR">Tiến sĩ</Option>
-          </Select>
-        </Form.Item>
-
-        <Form.Item name="clinicId" label="Clinic ID" rules={[{ required: true, message: "Vui lòng nhập Clinic ID!" }]}>
-          <Input type="number" placeholder="Nhập Clinic ID" size="large" />
-        </Form.Item>
-
-        <Form.Item name="specialtyId" label="Specialty ID" rules={[{ required: true, message: "Vui lòng nhập Specialty ID!" }]}>
-          <Input type="number" placeholder="Nhập Specialty ID" size="large" />
-        </Form.Item>
-
-        <Form.Item name="status" label="Trạng thái" rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}>
-          <Select placeholder="Chọn trạng thái" size="large">
-            <Option value="active">Hoạt động</Option>
-            <Option value="inactive">Nghỉ</Option>
           </Select>
         </Form.Item>
 

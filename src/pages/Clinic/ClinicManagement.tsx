@@ -1,55 +1,49 @@
 import React, { useEffect, useState } from "react";
 import Button from "antd/lib/button";
-import { DatePicker } from "antd/lib";
-import Input from "antd/es/input";
+import { DatePicker, Input } from "antd/lib";
 
 import ClinicTable, { type Clinic } from "./ClinicTable";
 import AddClinic from "./AddClinic";
 import api from "../../api/axios";
 
-
-const initialClinics: Clinic[] = [
-  // {
-  //   id: 1,
-  //   name: "Chi nhánh Hà Nội",
-  //   description: "Phòng khám trung tâm",
-  //   position: "123131313",
-  //   phoneNumber: "0983111111",
-  //   image: null,
-  //   address: {
-  //     id: 1,
-  //     city: "Hà Nội"
-  //   }
-  // },
-];
-
 const ClinicManagement: React.FC = () => {
-  const [clinics, setClinics] = useState<Clinic[]>(initialClinics);
-  const [filteredClinics, setFilteredClinics] =
-    useState<Clinic[]>(initialClinics);
+  const [clinics, setClinics] = useState<Clinic[]>([]);
+  const [filteredClinics, setFilteredClinics] = useState<Clinic[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await api.get("/v1/clinics");
-        console.log(res.data.data.result);
-        setClinics(res.data.data.result);
-        setFilteredClinics(res.data.data.result);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+  // filter state
+  const [nameFilter, setNameFilter] = useState<string | null>(null);
+  const [cityFilter, setCityFilter] = useState<string | null>(null);
+  const [dateFilter, setDateFilter] = useState<string | null>(null);
 
-    fetchData();
+  // Lấy danh sách phòng khám
+  const handleGetClinics = async () => {
+    try {
+      const res = await api.get("/v1/clinics");
+      setClinics(res.data.data.result);
+      setFilteredClinics(res.data.data.result);
+    } catch (error) {
+      console.error("Lỗi lấy danh sách clinic:", error);
+    }
+  };
+
+  useEffect(() => {
+    handleGetClinics();
   }, []);
 
-  // Thêm clinic mới
-  const handleAddClinic = (newClinic: Clinic) => {
-    const updatedClinics = [...clinics, newClinic];
-    setClinics(updatedClinics);
-    setFilteredClinics(updatedClinics);
-    setIsAddModalOpen(false);
+  // Thêm clinic
+  const handleAddClinic = async (newClinic: Clinic) => {
+    try {
+      const res = await api.post("/v1/clinics", newClinic);
+      const savedClinic = res.data.data;
+
+      const updated = [...clinics, savedClinic];
+      setClinics(updated);
+      setFilteredClinics(updated);
+      setIsAddModalOpen(false);
+    } catch (error) {
+      console.error("Lỗi thêm clinic:", error);
+    }
   };
 
   // Cập nhật clinic
@@ -63,43 +57,82 @@ const ClinicManagement: React.FC = () => {
 
   // Xóa clinic
   const handleDeleteClinic = (id: number) => {
-    console.log("Deleted clinic with id:", id);
-    const updatedClinics = clinics.filter((c) => c.id !== id);
-    setClinics(updatedClinics);
-    setFilteredClinics(updatedClinics);
+    const updated = clinics.filter((c) => c.id !== id);
+    setClinics(updated);
+    setFilteredClinics(updated);
   };
 
+  // Filter
+  const handleFilter = () => {
+    let data = [...clinics];
+    if (nameFilter) {
+      data = data.filter((c) =>
+        c.name.toLowerCase().includes(nameFilter.toLowerCase())
+      );
+    }
+    if (cityFilter) {
+      data = data.filter((c) =>
+        c.address?.city?.toLowerCase().includes(cityFilter.toLowerCase())
+      );
+    }
+    if (dateFilter) {
+      data = data.filter(
+        (c) =>
+          new Date(c.createAt).toLocaleDateString("vi-VN") ===
+          new Date(dateFilter).toLocaleDateString("vi-VN")
+      );
+    }
+    setFilteredClinics(data);
+  };
+
+  useEffect(() => {
+    handleFilter();
+  }, [nameFilter, cityFilter, dateFilter, clinics]);
+
   return (
-    <div className="p-4 sm:p-6">
-      <h1 className="text-xl sm:text-2xl font-bold mb-4 text-blue-700">
+    <div className="p-6 bg-white rounded-xl shadow-sm">
+      <h1 className="text-2xl font-bold mb-6 text-blue-700">
         Quản lý Phòng khám
       </h1>
 
-      {/* Thanh lọc và nút Thêm phòng khám */}
-      <div className="mb-4 overflow-x-auto">
-        <div className="flex flex-nowrap gap-2 min-w-[800px]">
-          <DatePicker placeholder="Ngày tạo" style={{ width: 160 }} />
-          <Input placeholder="Tên phòng khám" style={{ width: 160 }} />
-          <Input placeholder="Thành phố" style={{ width: 160 }} />
-          <Button
-            type="primary"
-            size="large"
-            onClick={() => setIsAddModalOpen(true)}
-            style={{ minWidth: 150 }}
-          >
-            + Thêm phòng khám
-          </Button>
-        </div>
+      {/* Filter */}
+      <div className="mb-6 flex flex-wrap items-center gap-4">
+        <Input
+          placeholder="Tên phòng khám"
+          style={{ width: 200 }}
+          onChange={(e) => setNameFilter(e.target.value || null)}
+        />
+        <Input
+          placeholder="Thành phố"
+          style={{ width: 200 }}
+          onChange={(e) => setCityFilter(e.target.value || null)}
+        />
+        <DatePicker
+          placeholder="Ngày tạo"
+          style={{ width: 180 }}
+          onChange={(_, dateString) => setDateFilter(dateString || null)}
+        />
+
+        <Button
+          type="primary"
+          size="large"
+          className="!bg-blue-600 hover:!bg-blue-700 rounded-lg font-medium shadow-sm"
+          onClick={() => setIsAddModalOpen(true)}
+          style={{ minWidth: 180 }}
+        >
+          + Thêm phòng khám
+        </Button>
       </div>
 
-      {/* Bảng phòng khám */}
+      {/* Bảng clinic */}
       <ClinicTable
         clinics={filteredClinics}
+        setclinics={setClinics}
         onUpdateClinic={handleUpdateClinic}
         onDeleteClinic={handleDeleteClinic}
       />
 
-      {/* Modal thêm phòng khám */}
+      {/* Modal thêm */}
       <AddClinic
         open={isAddModalOpen}
         onCancel={() => setIsAddModalOpen(false)}

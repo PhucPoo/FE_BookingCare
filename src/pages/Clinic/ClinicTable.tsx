@@ -22,6 +22,7 @@ export interface Clinic {
 
 interface ClinicTableProps {
   clinics: Clinic[];
+  setclinic:(clinic:Clinic[]) =>void;
   onUpdateClinic: (updatedClinic: Clinic) => void;
   onDeleteClinic: (id: number) => void;
 }
@@ -31,6 +32,7 @@ type SortDirection = "asc" | "desc";
 
 const ClinicTable: React.FC<ClinicTableProps> = ({
   clinics,
+  setclinic,
   onUpdateClinic,
   onDeleteClinic,
 }) => {

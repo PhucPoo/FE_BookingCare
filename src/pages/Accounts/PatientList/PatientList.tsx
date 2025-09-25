@@ -1,116 +1,139 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Button } from "antd/lib";
 
-import Button from "antd/lib/button";
 import type { Patient } from "./PatientTable";
-import PatientFilterBar from "./PatientFilterBar";
 import PatientTable from "./PatientTable";
 import AddPatient from "./AddPatient";
-import { DatePicker, Select, Space } from "antd/lib";
-import Input from "antd/es/input";
+import PatientFilterBar from "./PatientFilterBar";
 
+import { testGetPatientApi, testDeletePatientApi } from "../../../api/testPatient";
+import PatientAdvancedFilter from "./PatientAdvancedFilter";
 
-
-const initialpatients: Patient[] = [
-  { id: 2, name: "Bn. Nguyễn Văn B", email: "hp234@gmail.com", cccd: 1289389, phone: "0942234567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "active" },
-  { id: 1, name: "Bn. Nguyễn Văn A", email: "hp@gmail.com", cccd: 1289389, phone: "0901234567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "active" },
-  { id: 3, name: "Bn. Nguyễn Văn C", email: "hp36@gmail.com", cccd: 1289389, phone: "0939234567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "active" },
-  { id: 4, name: "Bn. Nguyễn Văn D", email: "hp@gmail.com", cccd: 1289389, phone: "0920234567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "inactive" },
-  { id: 5, name: "Bn. Nguyễn Văn CD", email: "hp@gmail.com", cccd: 1289389, phone: "0901234567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "inactive" },
-  { id: 6, name: "Bn. Nguyễn Văn AB", email: "hp@gmail.com", cccd: 1289389, phone: "0910744567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "active" },
-  { id: 7, name: "Bn. Nguyễn Văn ABC", email: "hp@gmail.com", cccd: 1289389, phone: "0910784567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "inactive" },
-];
-
-const patientManagement: React.FC = () => {
-  const [patients, setpatients] = useState<Patient[]>(initialpatients);
-  const [filteredpatients, setFilteredpatients] = useState<Patient[]>(initialpatients);
+const PatientManagement: React.FC = () => {
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const { Option, OptGroup } = Select;
 
-  // Thêm bệnh nhân mới
-  const handleAddpatient = (newpatient: Patient) => {
-    const updatedpatients = [...patients, newpatient];
-    setpatients(updatedpatients);
-    setFilteredpatients(updatedpatients);
-    setIsAddModalOpen(false);
+  // state filter
+  const [genderFilter, setGenderFilter] = useState<string | null>(null);
+  const [dateFilter, setDateFilter] = useState<string | null>(null);
+  const [addressFilter, setAddressFilter] = useState<string | null>(null);
+
+  // Lấy danh sách bệnh nhân
+  const handleGetPatients = async () => {
+    try {
+      const res = await testGetPatientApi();
+      setPatients(res.data.result);
+      setFilteredPatients(res.data.result);
+    } catch (error) {
+      console.error("Lỗi lấy danh sách bệnh nhân:", error);
+    }
   };
+
+  useEffect(() => {
+    handleGetPatients();
+  }, []);
 
   // Cập nhật bệnh nhân
-  const handleUpdatepatient = (updatedpatient: Patient) => {
-    const updatedList = patients.map((Bn) =>
-      Bn.id === updatedpatient.id
-        ? { ...Bn, ...updatedpatient, update_at: new Date() }
-        : Bn
-    );
-    setpatients(updatedList);
-    setFilteredpatients(updatedList); // rất quan trọng để table hiển thị đúng
+  const handleUpdatePatient = async (updatedPatient: Patient) => {
+    try {
+      const res = await testGetPatientApi();
+      const updatedData = res.data.result.find(
+        (p: Patient) => p.id === updatedPatient.id
+      );
+
+      const updatedList = patients.map((p) =>
+        p.id === updatedPatient.id ? { ...p, ...updatedData } : p
+      );
+      setPatients(updatedList);
+
+      const updatedFiltered = filteredPatients.map((p) =>
+        p.id === updatedPatient.id ? { ...p, ...updatedData } : p
+      );
+      setFilteredPatients(updatedFiltered);
+
+      console.log("Cập nhật bệnh nhân thành công:", updatedPatient);
+    } catch (error) {
+      console.error("Lỗi cập nhật bệnh nhân:", error);
+    }
   };
+
   // Xóa bệnh nhân
-  const handleDeletepatient = (id: number) => {
-    console.log("Deleted patient with id:", id);
-    const updatedpatients = patients.filter((d) => d.id !== id);
-    setpatients(updatedpatients);
-    setFilteredpatients(updatedpatients);
-
+  const handleDeletePatient = async (id: number) => {
+    try {
+      await testDeletePatientApi(id);
+      const updatedList = patients.filter((p) => p.id !== id);
+      setPatients(updatedList);
+      setFilteredPatients(updatedList);
+      console.log("Xóa bệnh nhân thành công:", id);
+    } catch (err) {
+      console.error("Lỗi xóa bệnh nhân:", err);
+    }
   };
-  function handleChange(value: any) {
-    console.log(`selected ${value}`);
-  }
+
+  // Lọc theo filter
+  const handleFilter = () => {
+    let data = [...patients];
+    if (genderFilter) {
+      data = data.filter(
+        (p) => p.account?.gender?.toLowerCase() === genderFilter
+      );
+    }
+    if (dateFilter) {
+      data = data.filter(
+        (p) =>
+          new Date(p.createAt).toLocaleDateString("vi-VN") ===
+          new Date(dateFilter).toLocaleDateString("vi-VN")
+      );
+    }
+    if (addressFilter) {
+      data = data.filter(
+        (p) => p.account?.address?.toLowerCase() === addressFilter
+      );
+    }
+    setFilteredPatients(data);
+  };
+
+  useEffect(() => {
+    handleFilter();
+  }, [genderFilter, dateFilter, addressFilter, patients]);
+
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4 text-blue-700">Quản lý bệnh nhân</h1>
+    <div className="p-6 bg-white rounded-xl shadow-sm">
+      <h1 className="text-2xl font-bold mb-6 text-blue-700">
+        Quản lý bệnh nhân
+      </h1>
 
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-6">
         <div className="flex-1">
-          <PatientFilterBar patients={patients} onFilter={setFilteredpatients} />
+          <PatientFilterBar patients={patients} onFilter={setFilteredPatients} />
         </div>
       </div>
 
-      <div className="mb-4">
-        {/* Filter Inputs */}
-        <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-3">
-          <DatePicker placeholder="Ngày tạo" style={{ width: 160, }} />
-          <Input
-            placeholder="Địa chỉ"
-            className="w-full sm:w-auto flex-1 min-w-[150px]"
-          />
-          <Select
-            defaultValue="gender"
-            onChange={handleChange}
-            className="w-full sm:w-auto min-w-[150px] max-w-[200px] h-[36px]"
-          >
-            <OptGroup label="Manager">
-              <Option value="male">Nam</Option>
-              <Option value="female">Nữ</Option>
-              <Option value="other">Khác</Option>
-            </OptGroup>
-          </Select>
-        </div>
-
-        {/* Add Button */}
-        <Button
-          type="primary"
-          size="large"
-          onClick={() => setIsAddModalOpen(true)}
-          className="w-full sm:w-auto min-w-[150px]"
-        >
-          + Thêm bệnh nhân
-        </Button>
-      </div>
-
+      {/* Bộ lọc nâng cao giống Support */}
+      <PatientAdvancedFilter
+        onChangeGender={setGenderFilter}
+        onChangeDate={setDateFilter}
+        onChangeAddress={setAddressFilter}
+        onOpenAdd={() => setIsAddModalOpen(true)}
+      />
 
       <PatientTable
-        patients={filteredpatients}
-        onUpdatepatient={handleUpdatepatient}
-        onDeletepatient={handleDeletepatient}
+        patients={filteredPatients}
+        setpatient={setPatients}
+        onUpdatepatient={handleUpdatePatient}
+        onDeletepatient={handleDeletePatient}
       />
 
       <AddPatient
+        patients={patients}
+        setpatients={setPatients}
         open={isAddModalOpen}
         onCancel={() => setIsAddModalOpen(false)}
-        onAdd={handleAddpatient}
+        onAdd={(newPatient) => setPatients([...patients, newPatient])}
       />
     </div>
   );
 };
 
-export default patientManagement;
+export default PatientManagement;

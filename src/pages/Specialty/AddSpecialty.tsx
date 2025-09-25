@@ -4,6 +4,7 @@ import Input from "antd/es/input";
 import Button from "antd/es/button";
 import Form from "antd/es/form";
 import type { Specialty } from "./SpecialtyGrid";
+import { UploadOutlined } from "@ant-design/icons";
 
 interface AddSpecialtyProps {
   open: boolean;
@@ -15,13 +16,14 @@ const AddSpecialty: React.FC<AddSpecialtyProps> = ({ open, onCancel, onAdd }) =>
   const [form] = Form.useForm();
 
   const handleSubmit = (values: any) => {
-    const { name,img,doctorCount,createdAt } = values;
+    const { name,img,description,createdAt } = values;
 
     const newSpecialty: Specialty = {
       id: Date.now(),
       name,
       img,
       createdAt,
+      description,
     };
 
     onAdd(newSpecialty);
@@ -54,23 +56,18 @@ const AddSpecialty: React.FC<AddSpecialtyProps> = ({ open, onCancel, onAdd }) =>
             className="rounded-md px-3 py-2"
           />
         </Form.Item>
-
+        <Form.Item name="description" label="Mô tả">
+          <Input
+            placeholder="Mô tả"
+            size="large"
+            className="rounded-md px-3 py-2"
+          />
+        </Form.Item>
        
 
         <Form.Item name="image" label="Ảnh">
           <Input
             placeholder="URL ảnh"
-            size="large"
-            className="rounded-md px-3 py-2"
-          />
-        </Form.Item>
-          <Form.Item
-          name="doctorCount"
-          label="Số lượng bác sĩ"
-          rules={[{ required: true, message: "Vui lòng nhập số lượng!" }]}
-        >
-          <Input
-            placeholder="Nhập số lượng"
             size="large"
             className="rounded-md px-3 py-2"
           />

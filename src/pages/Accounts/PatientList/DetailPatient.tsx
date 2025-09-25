@@ -1,33 +1,14 @@
 // src/components/Informationpatient.tsx
-
 import React from "react";
 import Modal from "antd/es/modal";
 import Button from "antd/es/button";
 import type { Patient } from "./PatientTable";
- // đảm bảo đường dẫn đúng
 
 interface InformationpatientProps {
   open: boolean;
   patient: Patient | null;
   onClose: () => void;
 }
-
-const getStatusBadge = (status: Patient["status"]) => {
-  if (status === "active") {
-    return (
-      <span className="bg-green-500 text-white px-2 py-1 rounded text-sm">
-        Hoạt động
-      </span>
-    );
-  } else if (status === "inactive") {
-    return (
-      <span className="bg-red-500 text-white px-2 py-1 rounded text-sm">
-        Nghỉ
-      </span>
-    );
-  }
-  return null;
-};
 
 const Informationpatient: React.FC<InformationpatientProps> = ({
   open,
@@ -36,7 +17,11 @@ const Informationpatient: React.FC<InformationpatientProps> = ({
 }) => {
   return (
     <Modal
-      title={<div className="text-center text-lg font-semibold">Thông tin chi tiết bệnh nhân</div>}
+      title={
+        <div className="text-center text-lg font-semibold">
+          Thông tin chi tiết bệnh nhân
+        </div>
+      }
       open={open}
       onCancel={onClose}
       footer={[
@@ -46,33 +31,39 @@ const Informationpatient: React.FC<InformationpatientProps> = ({
       ]}
       centered
     >
-      {patient && (
-        <div className="space-y-2 text-sm">
+      {patient ? (
+        <div className="space-y-3 text-sm">
           <p>
             <strong>ID:</strong> {patient.id}
           </p>
           <p>
-            <strong>Tên:</strong> {patient.name}
+            <strong>Tên:</strong> {patient.account?.name ?? "—"}
           </p>
           <p>
-            <strong>Email:</strong> {patient.email}
+            <strong>Email:</strong> {patient.account?.email ?? "—"}
           </p>
           <p>
-            <strong>CCCD:</strong> {patient.cccd}
+            <strong>SĐT:</strong> {patient.account?.phoneNumber ?? "—"}
           </p>
           <p>
-            <strong>SĐT:</strong> {patient.phone}
+            <strong>BHYT:</strong> {patient.bhyt ?? "—"}
+          </p>
+
+          <p>
+            <strong>Ngày tạo:</strong>{" "}
+            {patient.createAt
+              ? new Date(patient.createAt).toLocaleDateString("vi-VN")
+              : "—"}
           </p>
           <p>
-            <strong>Ngày tạo:</strong> {patient.create_at.toLocaleDateString()}
-          </p>
-          <p>
-            <strong>Cập nhật:</strong> {patient.update_at.toLocaleDateString()}
-          </p>
-          <p>
-            <strong>Trạng thái:</strong> {getStatusBadge(patient.status)}
+            <strong>Cập nhật:</strong>{" "}
+            {patient.updateAt
+              ? new Date(patient.updateAt).toLocaleDateString("vi-VN")
+              : "—"}
           </p>
         </div>
+      ) : (
+        <p className="text-center text-gray-500">Không có dữ liệu bệnh nhân</p>
       )}
     </Modal>
   );

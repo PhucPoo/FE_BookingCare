@@ -1,97 +1,144 @@
-import React, { useState } from "react";
-import supportFilterBar from "./SupportFilterBar";
-import supportTable, { type Support } from "./SupportTable";
-import Addsupport from "./AddSupport";
-import Button from "antd/lib/button";
-import SupportFilterBar from "./SupportFilterBar";
+import React, { useEffect, useState } from "react";
+import { Button, DatePicker, Space } from "antd/lib";
+
+import type { Support } from "./SupportTable";
 import SupportTable from "./SupportTable";
-import { DatePicker, Space } from "antd/lib";
-import Input from "antd/es/input";
+import AddSupport from "./AddSupport";
+import SupportFilterBar from "./SupportFilterBar";
+// import SupportAdvancedFilter from "./SupportAdvancedFilter"; 
 
-const initialsupports: Support[] = [
-  { id: 2, name: "Sp. Nguyễn Văn B", email: "hp234@gmail.com", cccd: 1289389, phone: "0942234567",  create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "active" },
-  { id: 1, name: "Sp. Nguyễn Văn A", email: "hp@gmail.com", cccd: 1289389, phone: "0901234567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "active" },
-  { id: 3, name: "Sp. Nguyễn Văn C", email: "hp36@gmail.com", cccd: 1289389, phone: "0939234567",  create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "active" },
-  { id: 4, name: "Sp. Nguyễn Văn D", email: "hp@gmail.com", cccd: 1289389, phone: "0920234567",  create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "inactive" },
-  { id: 5, name: "Sp. Nguyễn Văn CD", email: "hp@gmail.com", cccd: 1289389, phone: "0901234567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "inactive" },
-  { id: 6, name: "Sp. Nguyễn Văn AB", email: "hp@gmail.com", cccd: 1289389, phone: "0910744567",  create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "active" },
-  { id: 7, name: "Sp. Nguyễn Văn ABC", email: "hp@gmail.com", cccd: 1289389, phone: "0910784567",  create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "inactive" },
-];
+import { testDeleteSupportApi, testGetSupportApi } from "../../../api/testSupport";
+import SupportAdvancedFilter from "./SupportAdvancedFilter";
 
-const supportManagement: React.FC = () => {
-  const [supports, setsupports] = useState<Support[]>(initialsupports);
-  const [filteredsupports, setFilteredsupports] = useState<Support[]>(initialsupports);
+const SupportManagement: React.FC = () => {
+  const [supports, setSupports] = useState<Support[]>([]);
+  const [filteredSupports, setFilteredSupports] = useState<Support[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  // Thêm trợ lý mới
-  const handleAddsupport = (newsupport: Support) => {
-    const updatedsupports = [...supports, newsupport];
-    setsupports(updatedsupports);
-    setFilteredsupports(updatedsupports);
-    setIsAddModalOpen(false);
+  // state filter
+  const [genderFilter, setGenderFilter] = useState<string | null>(null);
+  const [dateFilter, setDateFilter] = useState<string | null>(null);
+  const [clinicFilter, setClinicFilter] = useState<string | null>(null);
+
+  // Lấy danh sách trợ lý
+  const handleGetSupports = async () => {
+    try {
+      const res = await testGetSupportApi();
+
+      console.log(">>>", res);
+      setSupports(res.data.result);
+      setFilteredSupports(res.data.result);
+
+    } catch (error) {
+      console.error("Lỗi lấy danh sách trợ lý:", error);
+    }
   };
+
+  useEffect(() => {
+    handleGetSupports();
+  }, []);
 
   // Cập nhật trợ lý
-  const handleUpdatesupport = (updatedsupport: Support) => {
-    const updatedList = supports.map((sp) =>
-      sp.id === updatedsupport.id
-        ? { ...sp, ...updatedsupport, update_at: new Date() }
-        : sp
-    );
-    setsupports(updatedList);
-    setFilteredsupports(updatedList); // rất quan trọng để table hiển thị đúng
-  };
-  // Xóa trợ lý
-  const handleDeletesupport = (id: number) => {
-    console.log("Deleted support with id:", id);
-    const updatedsupports = supports.filter((d) => d.id !== id);
-    setsupports(updatedsupports);
-    setFilteredsupports(updatedsupports); 
-    
-  };
-  return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4 text-blue-700">Quản lý trợ lý</h1>
+  const handleUpdateSupport = async (updatedSupport: Support) => {
+    try {
+      // Gọi lại API để lấy danh sách mới
+      const res = await testGetSupportApi();
+      const updatedData = res.data.data.result;
+      console.log(">>>", updatedData);
 
-      <div className="flex justify-between items-center mb-4">
+
+      const updatedList = supports.map((s) =>
+        s.id === updatedSupport.id ? { ...s, ...updatedData } : s
+      );
+      setSupports(updatedList);
+
+      const updatedFiltered = filteredSupports.map((s) =>
+        s.id === updatedSupport.id ? { ...s, ...updatedData } : s
+      );
+      setFilteredSupports(updatedFiltered);
+
+      console.log("Cập nhật trợ lý thành công:", updatedSupport);
+    } catch (error) {
+      console.error("Lỗi cập nhật trợ lý:", error);
+    }
+  };
+
+  // Xóa trợ lý
+  const handleDeleteSupport = async (id: number) => {
+    try {
+      await testDeleteSupportApi(id);
+      const updatedList = supports.filter((s) => s.id !== id);
+      setSupports(updatedList);
+      setFilteredSupports(updatedList);
+      console.log("Xóa trợ lý thành công:", id);
+    } catch (err) {
+      console.error("Lỗi xóa trợ lý:", err);
+    }
+  };
+
+  // Lọc theo filter
+  const handleFilter = () => {
+    let data = [...supports];
+    if (genderFilter) {
+      data = data.filter(
+        (s) => s.account.gender?.toLowerCase() === genderFilter
+      );
+    }
+    if (dateFilter) {
+      data = data.filter(
+        (s) =>
+          new Date(s.createAt).toLocaleDateString("vi-VN") ===
+          new Date(dateFilter).toLocaleDateString("vi-VN")
+      );
+    }
+    if (clinicFilter) {
+      data = data.filter(
+        (s) => s.clinic?.name?.toLowerCase() === clinicFilter
+      );
+    }
+    setFilteredSupports(data);
+  };
+
+  useEffect(() => {
+    handleFilter();
+  }, [genderFilter, dateFilter, clinicFilter, supports]);
+
+  return (
+    <div className="p-6 bg-white rounded-xl shadow-sm">
+      <h1 className="text-2xl font-bold mb-6 text-blue-700">
+        Quản lý trợ lý
+      </h1>
+
+      <div className="flex justify-between items-center mb-6">
         <div className="flex-1">
-          <SupportFilterBar supports={supports} onFilter={setFilteredsupports} />
+          <SupportFilterBar supports={supports} onFilter={setFilteredSupports} />
         </div>
       </div>
 
-      <div className="mb-4">
-        <Space.Compact size="large">
-          <DatePicker placeholder="Ngày tạo" style={{ margin:5,width:400 }} />
-          <Input placeholder="Giới tính"
-            style={{ margin: 5 }} />
-            <Input placeholder="Địa chỉ"
-            style={{ margin: 5 }} />
-            <Input placeholder="Phòng khám"
-            style={{ margin: 5 }} />
-        </Space.Compact>
-        <Button
-          type="primary"
-          size="large"
-          onClick={() => setIsAddModalOpen(true)}
-          style={{ minWidth: 150 }}
-        >
-          + Thêm trợ lý
-        </Button>
-      </div>
-
-      <SupportTable
-        supports={filteredsupports}
-        onUpdatesupport={handleUpdatesupport}
-        onDeletesupport={handleDeletesupport}
+      {/* Bộ lọc nâng cao giống User */}
+      <SupportAdvancedFilter
+        onChangeGender={setGenderFilter}
+        onChangeDate={setDateFilter}
+        onChangeClinic={setClinicFilter}
+        onOpenAdd={() => setIsAddModalOpen(true)}
       />
 
-      <Addsupport
+      <SupportTable
+        supports={filteredSupports}
+        setsupport={setSupports}
+        onUpdateSupport={handleUpdateSupport}
+        onDeleteSupport={handleDeleteSupport}
+      />
+
+      <AddSupport
+        supports={supports}
+        setsupport={setSupports}
         open={isAddModalOpen}
         onCancel={() => setIsAddModalOpen(false)}
-        onAdd={handleAddsupport}
+        onAdd={(newSupport) => setSupports([...supports, newSupport])}
       />
     </div>
   );
 };
 
-export default supportManagement;
+export default SupportManagement;

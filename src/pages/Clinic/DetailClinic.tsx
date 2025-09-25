@@ -48,9 +48,9 @@ const InformationClinic: React.FC<InformationClinicProps> = ({
           <p>
             <strong>Số điện thoại:</strong> {clinic.phoneNumber}
           </p>
-          <p>
+          {/* <p>
             <strong>Email:</strong> {clinic.email}
-          </p>
+          </p> */}
           <p>
             <strong>Ảnh:</strong>{" "}
             {clinic.image ? (
