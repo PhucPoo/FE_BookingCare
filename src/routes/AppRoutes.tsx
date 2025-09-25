@@ -10,12 +10,20 @@ import DoctorDashboard from "../pages/Dashboard/DoctorDashboard/DoctorDashboard"
 import SupportDashboard from "../pages/Dashboard/SupportDashboard/SupportDashboard";
 import DoctorManagement from "../pages/Accounts/DoctorList/DoctorManagement";
 
+import Dashboard from "../pages/Dashboard/Dashboard";
+import DashboardLayout from "../layouts/DashboardLayout"
+
 import SupportList from "../pages/Accounts/SupportList/SupportList";
 import PatientList from "../pages/Accounts/PatientList/PatientList";
 import UserList from "../pages/Accounts/UserList/UserList";
 import SpecialtyGrid from "../pages/Specialty/SpecialtyGrid";
 import ListPatient_Doctor from "../pages/Doctors/ListPatient_Doctor";
 import { Navigate, Route, Routes } from "react-router-dom";
+
+import Login from "../pages/Login/Login";
+import Signup from "../pages/Signup/Signup";
+import ForgotPasswordForm from "../components/ForgotPasswordForm/ForgotPasswordForm";
+
 import Dashboard from "../pages/Dashboard/AdminDashboard/Dashboard";
 import MainPage from "../pages/MainPage/MainPage";
 import MedicalFacilityList from "../pages/DanhSach/MedicalFacility/MedicalFacilityList";
@@ -29,9 +37,21 @@ import DoctorDetail from "../pages/DanhSach/Doctor/DoctorDetail";
 import BookingDoctor from "../pages/BookingDoctor/BookingDoctor";
 
 const AppRoutes = () => {
-  return (
+  return ( 
     <Routes>
+
+      <Route
+        path="/"
+        element={<Navigate to={"admin-dashboard"} replace={true} />}
+      />
+      <Route path="/auth">
+        <Route path="login" element={<Login />} />
+        <Route path="signup" element={<Signup/>}/>
+        <Route path="forgot-password" element={<ForgotPasswordForm/>}/>
+      </Route>
+
       <Route path="/" element={<MainPage />} />
+
 
       <Route path="/danh-sach" element={<List />}>
         <Route
@@ -47,7 +67,7 @@ const AppRoutes = () => {
       </Route>
       <Route path="dat-lich-kham/:id" element={<BookingDoctor />} />
       {/* admin */}
-      <Route path="/admin-dashboard" element={<Dashboard />}>
+      <Route path="/admin-dashboard" element={<DashboardLayout />}>
         <Route
           path="/admin-dashboard"
           element={<Navigate to={"statistics"} replace={true} />}
