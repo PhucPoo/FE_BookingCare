@@ -161,6 +161,7 @@ const BookingManage = () => {
   // initial value
   const handleGetBookingList = async () => {
     const res = await getBookingsByDoctorId("2");
+
     setBookingList(res.data.result);
     const {
       meta: { page, pageSize, totals },

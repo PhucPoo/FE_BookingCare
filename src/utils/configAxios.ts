@@ -9,6 +9,10 @@ customAxiosInstance.defaults.timeout = 1000 * 60 * 10;
 //withCredentials: cho phep axios tu dong gui cookie trong moi request len BE
 customAxiosInstance.defaults.withCredentials = true;
 
+customAxiosInstance.defaults.headers.common = {
+  Authorization: `Bearer ${document.cookie.split("=")[1]}`,
+};
+
 // Thêm một bộ đón chặn request
 customAxiosInstance.interceptors.request.use(
   function (config) {
