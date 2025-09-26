@@ -10,7 +10,7 @@
 .login-container {
   width: 100%;
   max-width: 1000px;
-  margin: 20px;
+  margin: 20px auto;
 }
 
 .login-card {

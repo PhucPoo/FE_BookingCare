@@ -7,6 +7,9 @@ import {
 } from "@ant-design/icons";
 import "./login.css";
 import { loginApi } from "../../api/auth/LoginApi";
+import MainPageHeader from "../MainPage/MainPageHeader/MainPageHeader";
+import useUserInfoStore from "../../Zustand/configZustand";
+import { toast } from "react-toastify";
 
 interface LoginFormData {
   userName: string; // Changed from 'email' to 'userName'
@@ -56,15 +59,9 @@ const Login: React.FC = () => {
     setSuccess("");
 
     try {
-      const response = await loginApi(formData);
-      document.cookie = `access_token=${response.data.accessToken}; path=/`;
-      console.log("🚀 ~ handleSubmit ~ document.cookie:", document.cookie);
-      console.log(
-        "🚀 ~ handleSubmit ~ response.data.accessToken:",
-        response.data.accessToken
-      );
+      await useUserInfoStore.getState().loginZustand(formData);
     } catch (error) {
-      setError("Có lỗi xảy ra, vui lòng thử lại");
+      toast.error("Có lỗi xảy ra, vui lòng thử lại");
       console.error("Login error:", error);
     } finally {
       setIsLoading(false);
@@ -76,91 +73,94 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <div className="login-left">
-          <div className="illustration">
-            <img
-              src="/bg_1.png"
-              alt="Login illustration"
-              className="bg-image"
-            />
-          </div>
-        </div>
-
-        <div className="login-right">
-          <div className="login-header">
-            <h1 className="brand-title">BOOKING CARE</h1>
+    <div>
+      <MainPageHeader />
+      <div className="login-container">
+        <div className="login-card">
+          <div className="login-left">
+            <div className="illustration">
+              <img
+                src="/bg_1.png"
+                alt="Login illustration"
+                className="bg-image"
+              />
+            </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="login-form">
-            <h2 className="form-title">Đăng nhập</h2>
+          <div className="login-right">
+            <div className="login-header">
+              <h1 className="brand-title">BOOKING CARE</h1>
+            </div>
 
-            {error && <div className="error-message">{error}</div>}
-            {success && <div className="success-message">{success}</div>}
+            <form onSubmit={handleSubmit} className="login-form">
+              <h2 className="form-title">Đăng nhập</h2>
 
-            <div className="form-group">
-              <div className="input-wrapper">
-                <span className="input-icon">
-                  <UserOutlined />
-                </span>
-                <input
-                  type="email"
-                  name="userName" // Changed from 'email' to 'userName'
-                  placeholder="Tên đăng nhập / Email"
-                  value={formData.userName} // Changed from formData.email
-                  onChange={handleInputChange}
-                  required
-                  className="form-input"
-                />
+              {error && <div className="error-message">{error}</div>}
+              {success && <div className="success-message">{success}</div>}
+
+              <div className="form-group">
+                <div className="input-wrapper">
+                  <span className="input-icon">
+                    <UserOutlined />
+                  </span>
+                  <input
+                    type="email"
+                    name="userName" // Changed from 'email' to 'userName'
+                    placeholder="Tên đăng nhập / Email"
+                    value={formData.userName} // Changed from formData.email
+                    onChange={handleInputChange}
+                    required
+                    className="form-input"
+                  />
+                </div>
               </div>
-            </div>
 
-            <div className="form-group">
-              <div className="input-wrapper">
-                <span className="input-icon">
-                  <LockOutlined />
-                </span>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  placeholder="Mật khẩu"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  required
-                  className="form-input"
-                />
-                <button
-                  type="button"
-                  onClick={togglePasswordVisibility}
-                  className="password-toggle"
-                >
-                  {showPassword ? <EyeInvisibleOutlined /> : <EyeTwoTone />}
-                </button>
+              <div className="form-group">
+                <div className="input-wrapper">
+                  <span className="input-icon">
+                    <LockOutlined />
+                  </span>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    placeholder="Mật khẩu"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    required
+                    className="form-input"
+                  />
+                  <button
+                    type="button"
+                    onClick={togglePasswordVisibility}
+                    className="password-toggle"
+                  >
+                    {showPassword ? <EyeInvisibleOutlined /> : <EyeTwoTone />}
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <div className="form-actions">
-              <a href="#" className="forgot-password">
-                Quên mật khẩu?
-              </a>
-            </div>
+              <div className="form-actions">
+                <a href="#" className="forgot-password">
+                  Quên mật khẩu?
+                </a>
+              </div>
 
-            <button
-              type="submit"
-              disabled={isLoading}
-              className={`login-button ${isLoading ? "loading" : ""}`}
-            >
-              {isLoading ? "ĐANG ĐĂNG NHẬP..." : "ĐĂNG NHẬP"}
-            </button>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className={`login-button ${isLoading ? "loading" : ""}`}
+              >
+                {isLoading ? "ĐANG ĐĂNG NHẬP..." : "ĐĂNG NHẬP"}
+              </button>
 
-            <div className="signup-link">
-              <span>Bạn chưa có tài khoản? </span>
-              <a href="#" className="signup-text">
-                Đăng ký
-              </a>
-            </div>
-          </form>
+              <div className="signup-link">
+                <span>Bạn chưa có tài khoản? </span>
+                <a href="#" className="signup-text">
+                  Đăng ký
+                </a>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>
