@@ -9,14 +9,17 @@ customAxiosInstance.defaults.timeout = 1000 * 60 * 10;
 //withCredentials: cho phep axios tu dong gui cookie trong moi request len BE
 customAxiosInstance.defaults.withCredentials = true;
 
-customAxiosInstance.defaults.headers.common = {
-  Authorization: `Bearer ${document.cookie.split("=")[1]}`,
-};
-
 // Thêm một bộ đón chặn request
 customAxiosInstance.interceptors.request.use(
   function (config) {
     // Làm gì đó trước khi request dược gửi đi
+    const token = document.cookie.split("=")[1];
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      document.cookie = "";
+      delete config.headers.Authorization; // tránh gửi Authorization rỗng
+    }
     return config;
   },
   function (error) {
