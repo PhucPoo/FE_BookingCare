@@ -1,30 +1,23 @@
 import customAxiosInstance from "../../utils/configAxios";
 import { api } from "../../utils/constant";
 
-const config = {
-  headers: {
-    Authorization: `Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzdXBlckFkbWluMDFAZ21haWwuY29tIiwiZXhwIjoxNzY2MzYxOTkxLCJpYXQiOjE3NTc3MjE5OTEsInVzZXIiOnsiaWQiOjEsIm5hbWUiOiJJJ20gc3VwZXIgYWRtaW4iLCJlbWFpbCI6InN1cGVyQWRtaW4wMUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4ifX0.SdYVso6tBrPhJ1XJE-EpGtBzhCl-SMLHt31SB4Eq1qghDrlmU71TiST7gHQzeQJxPPsvPLQ7yZhwAu9bhQ8W1g`,
-  },
-};
 export const adminGetAllBooking = async () => {
-  const res = await customAxiosInstance.get(`${api}/bookings`, config);
+  const res = await customAxiosInstance.get(`${api}/bookings`);
   return res.data;
 };
 export const adminSortBooking = async (sortValue: string, order: string) => {
   const res = await customAxiosInstance.get(
-    `${api}/bookings?sort=${sortValue},${order}`,
-    config
+    `${api}/bookings?sort=${sortValue},${order}`
   );
   return res.data;
 };
 export const adminGetAllBill = async () => {
-  const res = await customAxiosInstance.get(`${api}/bill`, config);
+  const res = await customAxiosInstance.get(`${api}/bill`);
   return res.data;
 };
 export const adminSortBill = async (sortValue: string, order: string) => {
   const res = await customAxiosInstance.get(
-    `${api}/bill?sort=${sortValue},${order}`,
-    config
+    `${api}/bill?sort=${sortValue},${order}`
   );
   return res.data;
 };

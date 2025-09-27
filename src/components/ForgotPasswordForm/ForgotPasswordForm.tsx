@@ -1,112 +1,316 @@
-import React from "react";
-import { Form, Input, Button, Card } from "antd";
-import { MailOutlined, UserOutlined } from "@ant-design/icons";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { Form, Input, Button, Steps, Alert, Typography, Card } from 'antd/lib';
+import { MailOutlined, LockOutlined, SafetyOutlined, CheckCircleTwoTone, EyeInvisibleOutlined, EyeTwoTone, ArrowLeftOutlined } from '@ant-design/icons';
+import './ForgotPasswordForm.css';
 
-const roleConfig = {
-  admin: { title: "Admin", color: "#46d9f6ff", bg: "/bg_admin.jpg" },
-  doctor: { title: "Doctor", color: "#46d9f6ff", bg: "/bg_doctor.jpg" },
-  support: { title: "Support", color: "#46d9f6ff", bg: "/bg_support.jpg" },
-  client: { title: "Client", color: "#46d9f6ff", bg: "/bg_client.jpg" },
-};
+const { Title, Text } = Typography;
+const { Step } = Steps;
 
 const ForgotPasswordForm: React.FC = () => {
-  const navigate = useNavigate();
-  // const { role } = useParams<{ role: "admin" | "doctor" | "support" | "client" }>();
+  const [step, setStep] = useState<'email' | 'otp' | 'newPassword' | 'success'>('email');
+  const [email, setEmail] = useState('');
+  const [otp, setOtp] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [otpTimer, setOtpTimer] = useState(0);
 
-  // if (!role || !roleConfig[role]) return <div>Invalid role</div>;
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (otpTimer > 0) {
+      interval = setInterval(() => setOtpTimer(prev => prev - 1), 1000);
+    }
+    return () => clearInterval(interval);
+  }, [otpTimer]);
 
-  // const { color, } = roleConfig[role];
+// Gửi OTP về email
+const forgotPasswordAPI = async (email: string) => {
+  setLoading(true);
+  setError('');
+  try {
+    const response = await fetch(
+      `http://localhost:8080/api/v1/auth/forgot-password-send-email?email=${encodeURIComponent(email)}`,
+      { method: 'GET' }
+    );
+    let data: any;
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      data = await response.json();
+    } else {
+      const text = await response.text();
+      data = { message: text };
+    }
+    if (response.ok) {
+      return { success: true, message: data.message || 'OTP đã được gửi đến email của bạn' };
+    } else {
+      return { success: false, message: data.message || 'Có lỗi xảy ra khi gửi email' };
+    }
+  } catch (error) {
+    return { success: false, message: 'Không thể kết nối đến server' };
+  }
+};
 
-  const onFinish = (values: any) => {
-    console.log("Forgot password submit:", values);
-    alert(`Email khôi phục mật khẩu đã được gửi tới: ${values.email}`);
+// Xác thực OTP
+const verifyOtpAPI = async (email: string, otp: string) => {
+  setLoading(true);
+  setError('');
+  try {
+    const response = await fetch(
+      'http://localhost:8080/api/v1/auth/forgot-verify-otp',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: otp, email }),
+      }
+    );
+    let data: any;
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      data = await response.json();
+    } else {
+      const text = await response.text();
+      data = { message: text };
+    }
+    if (response.ok) {
+      return { success: true, message: data.message || 'OTP xác thực thành công' };
+    } else {
+      return { success: false, message: data.message || 'OTP không đúng' };
+    }
+  } catch (error) {
+    return { success: false, message: 'Không thể kết nối đến server1' };
+  }
+};
+
+// Đổi mật khẩu mới
+const saveNewPasswordAPI = async (email: string, password: string) => {
+  setLoading(true);
+  setError('');
+  try {
+    const response = await fetch(
+      'http://localhost:8080/api/v1/auth/forgot-password',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', 
+        body: JSON.stringify({ email, password }),
+      }
+    );
+    let data: any;
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      data = await response.json();
+    } else {
+      const text = await response.text();
+      data = { message: text };
+    }
+    if (response.ok) {
+      return { success: true, message: data.message || 'Mật khẩu đã được cập nhật thành công' };
+    } else {
+      return { success: false, message: data.message || 'Có lỗi khi cập nhật mật khẩu' };
+    }
+  } catch (error) {
+    return { success: false, message: 'Không thể kết nối đến server' };
+  }
+};
+
+  const handleEmailSubmit = async () => {
+    if (!email) {
+      setError('Vui lòng nhập email');
+      return;
+    }
+    const res = await forgotPasswordAPI(email);
+    setLoading(false);
+    if (res.success) {
+      setStep('otp');
+      setOtpTimer(60);
+    } else {
+      setError(res.message);
+    }
+  };
+
+  const handleOtpSubmit = async () => {
+    if (!otp) {
+      setError('Vui lòng nhập mã OTP');
+      return;
+    }
+    const res = await verifyOtpAPI(email, otp);
+    setLoading(false);
+    if (res.success) {
+      setStep('newPassword');
+    } else {
+      setError(res.message);
+    }
+  };
+
+  const handlePasswordSubmit = async () => {
+    if (!newPassword || !confirmPassword) {
+      setError('Vui lòng nhập đầy đủ thông tin');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setError('Mật khẩu xác nhận không khớp');
+      return;
+    }
+    if (newPassword.length < 6) {
+      setError('Mật khẩu phải có ít nhất 6 ký tự');
+      return;
+    }
+    const res = await saveNewPasswordAPI(email, newPassword);
+    setLoading(false);
+    if (res.success) {
+      setStep('success');
+    } else {
+      setError(res.message);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    if (otpTimer > 0) return;
+    await forgotPasswordAPI(email);
+    setOtpTimer(60);
+    setError('');
+    setLoading(false);
+  };
+
+  const goBack = () => {
+    setError('');
+    if (step === 'otp') {
+      setStep('email');
+      setOtp('');
+    } else if (step === 'newPassword') {
+      setStep('otp');
+      setNewPassword('');
+      setConfirmPassword('');
+    }
+  };
+
+  const resetForm = () => {
+    setStep('email');
+    setEmail('');
+    setOtp('');
+    setNewPassword('');
+    setConfirmPassword('');
+    setError('');
+    setOtpTimer(0);
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "20px",
-        backgroundImage: `linear-gradient(to top, rgba(255,255,255,0.85), rgba(0,0,0,0)), url("/public/bg_login.jpg")`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
-      <Card
-        title={`Quên mật khẩu`}
-        style={{
-          width: "100%",
-          maxWidth: 400,
-          borderRadius: 16,
-          textAlign: "center",
-          backgroundColor: "rgba(255, 255, 255, 0.9)",
-          boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
-          backdropFilter: "blur(8px)",
-        }}
-      >
-        <Form onFinish={onFinish}>
-          <Form.Item
-            name="username"
-            rules={[{ required: true, message: "Nhập tên đăng nhập!" }]}
-          >
-            <Input
-              prefix={<UserOutlined />}
-              placeholder="Tên đăng nhập"
-              autoComplete="username"
-            />
-          </Form.Item>
+    <div className="forgot-bg">
+      <Card className="forgot-container" bordered={false}>
+        {step !== 'success' && (
+          <Steps current={['email', 'otp', 'newPassword'].indexOf(step)} className="forgot-steps" size="small">
+            <Step icon={<MailOutlined />} />
+            <Step icon={<SafetyOutlined />} />
+            <Step icon={<LockOutlined />} />
+          </Steps>
+        )}
 
-          <Form.Item
-            name="email"
-            rules={[
-              { required: true, message: "Nhập email đã đăng ký!" },
-              { type: "email", message: "Email không hợp lệ!" },
-            ]}
-          >
-            <Input
-              prefix={<MailOutlined />}
-              placeholder="Email đã đăng ký"
-              autoComplete="email"
-            />
-          </Form.Item>
+        {step === 'email' && (
+          <Form layout="vertical" onFinish={handleEmailSubmit} autoComplete="off">
+            <div className="forgot-icon"><MailOutlined /></div>
+            <Title level={3} className="forgot-title">Quên mật khẩu?</Title>
+            <Text className="forgot-desc">Nhập email để nhận mã xác thực</Text>
+            <Form.Item label="Email" className="forgot-label" required>
+              <Input
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="Nhập email của bạn"
+                disabled={loading}
+                size="large"
+              />
+            </Form.Item>
+            {error && <Alert type="error" message={error} showIcon className="forgot-error" />}
+            <Form.Item>
+              <Button type="primary" htmlType="submit" block loading={loading} size="large">
+                Gửi mã OTP
+              </Button>
+            </Form.Item>
+          </Form>
+        )}
 
-          {/* Nút gửi yêu cầu khôi phục */}
-          <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              block
-              style={{
-                backgroundColor: color,
-                borderColor: color,
-                fontWeight: "bold",
-                borderRadius: 8,
-                transition: "all 0.3s ease",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.backgroundColor = "#30a4fdff";
-                (e.currentTarget as HTMLElement).style.borderColor = "#30a4fdff";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.backgroundColor = color;
-                (e.currentTarget as HTMLElement).style.borderColor = color;
-              }}
-            >
-              Gửi yêu cầu khôi phục
-            </Button>
-          </Form.Item>
+        {step === 'otp' && (
+          <Form layout="vertical" onFinish={handleOtpSubmit} autoComplete="off">
+            <div className="forgot-icon"><SafetyOutlined /></div>
+            <Title level={3} className="forgot-title">Xác thực OTP</Title>
+            <Text className="forgot-desc">Mã xác thực đã được gửi đến <b>{email}</b></Text>
+            <Form.Item label="Mã OTP" className="forgot-label" required>
+              <Input
+                value={otp}
+                onChange={e => setOtp(e.target.value)}
+                placeholder="Nhập mã OTP"
+                maxLength={6}
+                disabled={loading}
+                size="large"
+              />
+            </Form.Item>
+            {error && <Alert type="error" message={error} showIcon className="forgot-error" />}
+            <div className="forgot-otp-actions">
+              <Button type="link" onClick={handleResendOtp} disabled={otpTimer > 0 || loading}>
+                {otpTimer > 0 ? `Gửi lại sau ${otpTimer}s` : 'Gửi lại mã OTP'}
+              </Button>
+            </div>
+            <div className="forgot-btn-group">
+              <Button icon={<ArrowLeftOutlined />} onClick={goBack} disabled={loading}>
+                Quay lại
+              </Button>
+              <Button type="primary" htmlType="submit" loading={loading}>
+                Xác thực
+              </Button>
+            </div>
+          </Form>
+        )}
 
-          {/* Quay lại login */}
-          <Form.Item>
-            <Button type="link" block onClick={() => navigate(`/${role}/login`)}>
+        {step === 'newPassword' && (
+          <Form layout="vertical" onFinish={handlePasswordSubmit} autoComplete="off">
+            <div className="forgot-icon"><LockOutlined /></div>
+            <Title level={3} className="forgot-title">Đặt mật khẩu mới</Title>
+            <Text className="forgot-desc">Tạo mật khẩu mới cho tài khoản của bạn</Text>
+            <Form.Item label="Mật khẩu mới" className="forgot-label" required>
+              <Input.Password
+                value={newPassword}
+                onChange={e => setNewPassword(e.target.value)}
+                placeholder="Nhập mật khẩu mới"
+                iconRender={visible => visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />}
+                size="large"
+                disabled={loading}
+              />
+            </Form.Item>
+            <Form.Item label="Xác nhận mật khẩu" className="forgot-label" required>
+              <Input.Password
+                value={confirmPassword}
+                onChange={e => setConfirmPassword(e.target.value)}
+                placeholder="Xác nhận mật khẩu mới"
+                iconRender={visible => visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />}
+                size="large"
+                disabled={loading}
+              />
+            </Form.Item>
+            {error && <Alert type="error" message={error} showIcon className="forgot-error" />}
+            <div className="forgot-btn-group">
+              <Button icon={<ArrowLeftOutlined />} onClick={goBack} disabled={loading}>
+                Quay lại
+              </Button>
+              <Button type="primary" htmlType="submit" loading={loading}>
+                Cập nhật mật khẩu
+              </Button>
+            </div>
+          </Form>
+        )}
+
+        {step === 'success' && (
+          <div className="forgot-success">
+            <CheckCircleTwoTone twoToneColor="#52c41a" style={{ fontSize: 48 }} />
+            <Title level={3} className="forgot-title">Thành công!</Title>
+            <Text className="forgot-desc">
+              Mật khẩu của bạn đã được cập nhật thành công.<br />
+              Bạn có thể đăng nhập với mật khẩu mới.
+            </Text>
+            <Button type="primary" block style={{ marginTop: 24 }} onClick={resetForm}>
               Quay lại đăng nhập
             </Button>
-          </Form.Item>
-        </Form>
+          </div>
+        )}
       </Card>
     </div>
   );

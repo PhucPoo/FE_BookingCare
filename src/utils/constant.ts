@@ -1,5 +1,3 @@
-import { Label } from "recharts";
-
 export const api = "http://localhost:8080/api/v1";
 export const formatDate = (target: string | undefined) => {
   const date = new Date(target);

@@ -13,6 +13,13 @@ customAxiosInstance.defaults.withCredentials = true;
 customAxiosInstance.interceptors.request.use(
   function (config) {
     // Làm gì đó trước khi request dược gửi đi
+    const token = document.cookie.split("=")[1];
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      document.cookie = "";
+      delete config.headers.Authorization; // tránh gửi Authorization rỗng
+    }
     return config;
   },
   function (error) {
