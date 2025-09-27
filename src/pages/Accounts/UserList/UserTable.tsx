@@ -13,6 +13,7 @@ export interface User {
   phoneNumber: string;
   password: string;
   cccd: number;
+  birth:Date;
   address:string;
   gender: string;
   avatar: File;
@@ -30,6 +31,7 @@ export type CreateUserForm = {
   phoneNumber: string;
   cccd: number;
   address:string;
+  birth: Date;
   gender:string;
   password: string;
   avatar: File;
@@ -142,6 +144,8 @@ const UserTable: React.FC<UserTableProps> = ({
     });
   }, [users, roleFilter, genderFilter, dateFilter]);
 
+  
+
   return (
     <div className="w-full bg-white rounded shadow overflow-x-auto">
       <table className="min-w-full text-sm border-collapse">
@@ -158,6 +162,7 @@ const UserTable: React.FC<UserTableProps> = ({
             <th className="p-3 border hidden md:table-cell">SĐT</th>
             <th className="p-3 border hidden md:table-cell">Gender</th>
             <th className="p-3 border hidden md:table-cell">CCCD</th>
+            {/* <th className="p-3 border hidden md:table-cell">Ngày sinh</th> */}
             <th className="p-3 border hidden lg:table-cell">Role</th>
             <th
               className="p-3 border hidden md:table-cell cursor-pointer select-none"
@@ -179,6 +184,9 @@ const UserTable: React.FC<UserTableProps> = ({
               <td className="p-3 border hidden md:table-cell">{u.phoneNumber}</td>
               <td className="p-3 border hidden md:table-cell">{u.gender}</td>
               <td className="p-3 border hidden md:table-cell">{u.cccd}</td>
+              {/* <td className="p-3 border hidden md:table-cell">
+                {new Date(u.birth).toLocaleString()}
+              </td> */}
               <td className="p-3 border hidden lg:table-cell">
                 {roleMap[u.role?.id || 0]}
               </td>

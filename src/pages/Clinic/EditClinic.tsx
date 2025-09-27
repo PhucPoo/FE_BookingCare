@@ -42,7 +42,7 @@ const EditClinic: React.FC<EditClinicProps> = ({ open, onCancel, onUpdate, clini
         description: clinic.description,
         position: clinic.position,
         phoneNumber: clinic.phoneNumber,
-        addressId: clinic.address.id,
+        addressId: clinic.address,
       });
       setSelectedFile(null);
     }
@@ -63,7 +63,7 @@ const EditClinic: React.FC<EditClinicProps> = ({ open, onCancel, onUpdate, clini
     formData.append("description", values.description);
     formData.append("position", values.position);
     formData.append("phoneNumber", values.phoneNumber);
-    formData.append("addressId", values.addressId.toString());
+    formData.append("addressId", values.address.toString());
     if (selectedFile) {
       formData.append("file", selectedFile);
     }
@@ -119,7 +119,7 @@ const EditClinic: React.FC<EditClinicProps> = ({ open, onCancel, onUpdate, clini
           {selectedFile && <div className="mt-1 text-sm">{selectedFile.name}</div>}
         </Form.Item>
 
-        <Form.Item name="addressId" label="Địa chỉ" rules={[{ required: true, message: "Vui lòng chọn địa chỉ!" }]}>
+        <Form.Item name="address " label="Địa chỉ" rules={[{ required: true, message: "Vui lòng chọn địa chỉ!" }]}>
           <Select placeholder="Chọn địa chỉ" size="large" allowClear>
             {addresses.map((addr) => (
               <Option key={addr.id} value={addr.id}>

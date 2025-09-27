@@ -3,6 +3,7 @@ import Button from "antd/lib/button";
 import InformationClinic from "./DetailClinic";
 import EditClinic from "./EditClinic";
 import Modal from "antd/lib/modal";
+import type { Address } from "./AddClinic";
 
 export interface Clinic {
   id: number;
@@ -12,17 +13,23 @@ export interface Clinic {
   phoneNumber: string;
   email?: string;
   image?: string | null;
-  address: {
-    id: number;
-    city: string;
-  };
-  create_at?: Date;
-  update_at?: Date;
+  address:Address;
+
 }
+export interface CreateClinic {
+  name: string;
+  description: string;
+  position: string;
+  phoneNumber: string;
+  email?: string;
+  image?: string | null;
+  addressId:number;
+
+}
+
 
 interface ClinicTableProps {
   clinics: Clinic[];
-  setclinic:(clinic:Clinic[]) =>void;
   onUpdateClinic: (updatedClinic: Clinic) => void;
   onDeleteClinic: (id: number) => void;
 }
@@ -32,7 +39,6 @@ type SortDirection = "asc" | "desc";
 
 const ClinicTable: React.FC<ClinicTableProps> = ({
   clinics,
-  setclinic,
   onUpdateClinic,
   onDeleteClinic,
 }) => {
@@ -95,7 +101,7 @@ const ClinicTable: React.FC<ClinicTableProps> = ({
 
   // Modal chi tiết
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [selectedClinic, setSelectedClinic] = useState<Clinic | null>(null);
+  const [selectedClinic, setSelectedClinic] = useState<Clinic| null>(null);
 
   const showDetailModal = (clinic: Clinic) => {
     setSelectedClinic(clinic);
@@ -133,20 +139,20 @@ const ClinicTable: React.FC<ClinicTableProps> = ({
             <th className="p-3 border hidden lg:table-cell">Vị trí</th>
             <th className="p-3 border hidden md:table-cell">SĐT</th>
             <th className="p-3 border hidden md:table-cell">Thành phố</th>
-            <th
+            {/* <th
               className="p-3 border hidden md:table-cell cursor-pointer select-none"
               onClick={() => handleSort("create_at")}
             >
               Ngày tạo {renderSortArrow("create_at")}
             </th>
-            <th className="p-3 border hidden xl:table-cell">Ngày cập nhật</th>
+            <th className="p-3 border hidden xl:table-cell">Ngày cập nhật</th> */}
             <th className="p-3 border text-center">Thao tác</th>
           </tr>
         </thead>
         <tbody>
-          {sortedClinics.map((clinic, index) => (
+          {sortedClinics.map((clinic) => (
             <tr key={clinic.id} className="hover:bg-gray-50">
-              <td className="p-3 border text-center">{index + 1}</td>
+              <td className="p-3 border text-center">{clinic.id}</td>
               <td className="p-3 border">{clinic.name}</td>
               <td className="p-3 border hidden md:table-cell">
                 {clinic.description}
@@ -160,16 +166,7 @@ const ClinicTable: React.FC<ClinicTableProps> = ({
               <td className="p-3 border hidden md:table-cell">
                 {clinic.address?.city}
               </td>
-              <td className="p-3 border hidden md:table-cell">
-                {clinic.create_at
-                  ? new Date(clinic.create_at).toLocaleDateString()
-                  : "—"}
-              </td>
-              <td className="p-3 border hidden xl:table-cell">
-                {clinic.update_at
-                  ? new Date(clinic.update_at).toLocaleDateString()
-                  : "—"}
-              </td>
+             
               <td className="p-3 border text-center">
                 <div className="flex flex-wrap justify-center gap-2">
                   <Button

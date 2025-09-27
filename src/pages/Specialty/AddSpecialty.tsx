@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Modal, Form, Input, Button, Upload } from "antd/lib";
+import { Modal, Form, Input, Button, Upload, notification } from "antd/lib";
 import { UploadOutlined } from "@ant-design/icons";
-import type { Specialty } from "./SpecialtyList";
+import { testPostSpecialtyApi } from "../../api/testSpecialty";
+import type { Specialty } from "./SpecialtyTable";
 
 interface AddSpecialtyProps {
   open: boolean;
@@ -14,19 +15,38 @@ const AddSpecialty: React.FC<AddSpecialtyProps> = ({ open, onCancel, onAdd }) =>
   const [file, setFile] = useState<File | null>(null);
 
   const handleSubmit = () => {
-    form.validateFields().then((values) => {
-      const newSpecialty: Specialty = {
-        id: Date.now(),
-        name: values.name,
-        description: values.description || "",
-        img: file || null,
-        createdAt: new Date().toISOString(),
-      };
-      onAdd(newSpecialty);
+  form.validateFields().then(async (values) => {
+    try {
+      const formData = new FormData();
+      formData.append("name", values.name);
+      formData.append("description", values.description || "");
+      if (file) {
+        formData.append("image", file); // ✅ gửi file đúng chuẩn
+      }
+
+      // Gọi API
+      const res = await testPostSpecialtyApi(formData);
+      const specialty = res.data;
+
+      // Cập nhật UI
+      onAdd(specialty);
+
+      notification.success({
+        message: "Thêm thành công",
+        description: `Chuyên khoa ${specialty.name} đã được thêm`,
+      });
+
       form.resetFields();
       setFile(null);
-    });
-  };
+      onCancel();
+    } catch (error: any) {
+      notification.error({
+        message: "Thêm thất bại",
+        description: error.response?.data?.message || "Có lỗi xảy ra",
+      });
+    }
+  });
+};
 
   const handleUploadChange = (info: any) => {
     if (info.fileList.length > 0) {
@@ -56,7 +76,7 @@ const AddSpecialty: React.FC<AddSpecialtyProps> = ({ open, onCancel, onAdd }) =>
           <Input.TextArea rows={3} placeholder="Nhập mô tả" />
         </Form.Item>
 
-        <Form.Item label="Ảnh">
+        <Form.Item label="Ảnh" name="image">
           <Upload
             beforeUpload={() => false}
             onChange={handleUploadChange}

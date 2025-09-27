@@ -48,9 +48,7 @@ const InformationClinic: React.FC<InformationClinicProps> = ({
           <p>
             <strong>Số điện thoại:</strong> {clinic.phoneNumber}
           </p>
-          {/* <p>
-            <strong>Email:</strong> {clinic.email}
-          </p> */}
+         
           <p>
             <strong>Ảnh:</strong>{" "}
             {clinic.image ? (
@@ -65,20 +63,9 @@ const InformationClinic: React.FC<InformationClinicProps> = ({
           </p>
           <p>
             <strong>Địa chỉ:</strong>{" "}
-            {clinic.address ? clinic.address.city : "Chưa có"}
+            {clinic.address.city }
           </p>
-          {clinic.create_at && (
-            <p>
-              <strong>Ngày tạo:</strong>{" "}
-              {new Date(clinic.create_at).toLocaleDateString()}
-            </p>
-          )}
-          {clinic.update_at && (
-            <p>
-              <strong>Cập nhật:</strong>{" "}
-              {new Date(clinic.update_at).toLocaleDateString()}
-            </p>
-          )}
+         
         </div>
       )}
     </Modal>

@@ -4,6 +4,7 @@ import React from "react";
 import Modal from "antd/es/modal";
 import Button from "antd/es/button";
 import type { User } from "./UserTable";
+import dayjs from "dayjs";
 // đảm bảo đường dẫn đúng
 
 interface InformationuserProps {
@@ -60,8 +61,10 @@ const Informationuser: React.FC<InformationuserProps> = ({
           </p>
           <p>
             <strong>CCCD:</strong> {user.cccd}
-          </p>
-          <p>
+          {/* </p>
+          <b>Ngày sinh:</b>{" "}
+          {birthday ? dayjs(birthday).format("DD/MM/YYYY") : "Chưa có"}
+          <p> */}
             <strong>Địa chỉ:</strong> {user.address}
           </p>
           <p>

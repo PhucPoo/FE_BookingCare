@@ -2,20 +2,12 @@ import React, { useEffect, useState } from "react";
 import Button from "antd/lib/button";
 import { DatePicker, Input } from "antd/lib";
 import api from "../../api/axios";
-import SpecialtyTable from "./SpecialtyTable";
+import SpecialtyTable, { type Specialty } from "./SpecialtyTable";
 import AddSpecialty from "./AddSpecialty";
 import EditSpecialty from "./EditSpecialty";
+import { testGetSpecialtyApi, testPostSpecialtyApi } from "../../api/testSpecialty";
 
-export interface Specialty {
-  img: any;
-  id: number;
-  name: string;
-  description: string;
-  image?: string | null;
-  isActive: boolean;
-  createAt?: string;
-  updateAt?: string;
-}
+
 
 const SpecialtyList: React.FC = () => {
   const [specialties, setSpecialties] = useState<Specialty[]>([]);
@@ -31,9 +23,9 @@ const SpecialtyList: React.FC = () => {
   // Lấy danh sách specialty
   const handleGetSpecialties = async () => {
     try {
-      const res = await api.get("/v1/specialties");
-      setSpecialties(res.data.data.result);
-      setFilteredSpecialties(res.data.data.result);
+      const res = await testGetSpecialtyApi();
+      setSpecialties(res.data.result);
+      setFilteredSpecialties(res.data.result);
     } catch (error) {
       console.error("Lỗi lấy danh sách specialties:", error);
     }
@@ -45,16 +37,21 @@ const SpecialtyList: React.FC = () => {
 
   // Thêm
   const handleAddSpecialty = async (newSpecialty: Specialty) => {
-    try {
-      const res = await api.post("/v1/specialties", newSpecialty);
-      const saved = res.data.data;
-      const updated = [...specialties, saved];
-      setSpecialties(updated);
-      setFilteredSpecialties(updated);
-      setIsAddModalOpen(false);
-    } catch (error) {
-      console.error("Lỗi thêm specialty:", error);
-    }
+
+    const updated = [...specialties, newSpecialty];
+    setSpecialties(updated);
+    setFilteredSpecialties(updated);
+    setIsAddModalOpen(false);
+    // try {
+    //   const res = await testPostSpecialtyApi(newSpecialty);
+    //   const saved = res.data.data;
+    //   const updated = [...specialties, saved];
+    //   setSpecialties(updated);
+    //   setFilteredSpecialties(updated);
+    //   setIsAddModalOpen(false);
+    // } catch (error) {
+    //   console.error("Lỗi thêm specialty:", error);
+    // }
   };
 
   // Cập nhật
@@ -88,7 +85,7 @@ const SpecialtyList: React.FC = () => {
         (s) =>
           s.createAt &&
           new Date(s.createAt).toLocaleDateString("vi-VN") ===
-            new Date(dateFilter).toLocaleDateString("vi-VN")
+          new Date(dateFilter).toLocaleDateString("vi-VN")
       );
     }
     setFilteredSpecialties(data);
@@ -127,10 +124,10 @@ const SpecialtyList: React.FC = () => {
       </div>
 
       {/* Bảng */}
-        <SpecialtyTable
+      <SpecialtyTable
         specialties={filteredSpecialties}
         setSpecialties={setSpecialties}
-        onUpdateSpecialtys={handleUpdateSpecialty}
+        onUpdateSpecialty={handleUpdateSpecialty}
         onDeleteSpecialty={handleDeleteSpecialty}
       />
 

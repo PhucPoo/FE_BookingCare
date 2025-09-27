@@ -3,6 +3,7 @@ import Button from "antd/lib/button";
 import Modal from "antd/lib/modal";
 import EditSpecialty from "./EditSpecialty";
 import InformationSpecialty from "./Detail.Specialty";
+import { Pagination } from "antd/lib";
 
 export interface Specialty {
   id: number;
@@ -44,6 +45,9 @@ const SpecialtyTable: React.FC<SpecialtyTableProps> = ({
   const [editingSpecialty, setEditingSpecialty] = useState<Specialty | null>(
     null
   );
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 8;
 
   const handleOk = () => {
     onDeleteSpecialty(deleteId);
@@ -92,6 +96,9 @@ const SpecialtyTable: React.FC<SpecialtyTableProps> = ({
       <span className="ml-1">{sortDirection === "asc" ? "▲" : "▼"}</span>
     ) : null;
 
+  const startIndex = (currentPage - 1) * pageSize;
+  const paginatedData = sortedSpecialties.slice(startIndex, startIndex + pageSize);
+
   return (
     <div className="w-full bg-white rounded shadow overflow-x-auto">
       <table className="min-w-full text-sm border-collapse">
@@ -113,11 +120,12 @@ const SpecialtyTable: React.FC<SpecialtyTableProps> = ({
               Ngày tạo {renderSortArrow("createAt")}
             </th>
             <th className="p-3 border hidden lg:table-cell">Ngày cập nhật</th>
+            <th className="p-3 border hidden lg:table-cell">Ảnh</th>
             <th className="p-3 border text-center">Thao tác</th>
           </tr>
         </thead>
         <tbody>
-          {sortedSpecialties.map((s) => (
+          {paginatedData.map((s) => (
             <tr key={s.id} className="hover:bg-gray-50">
               <td className="p-3 border text-center">{s.id}</td>
               <td className="p-3 border">{s.name}</td>
@@ -134,6 +142,17 @@ const SpecialtyTable: React.FC<SpecialtyTableProps> = ({
                 {s.updateAt
                   ? new Date(s.updateAt).toLocaleDateString()
                   : "—"}
+              </td>
+              <td className="p-3 border hidden lg:table-cell text-center">
+                {s.image ? (
+                  <img
+                    src={s.image}
+                    alt={s.name}
+                    className="w-12 h-12 object-cover rounded"
+                  />
+                ) : (
+                  "—"
+                )}
               </td>
               <td className="p-3 border text-center">
                 <div className="flex flex-wrap justify-center gap-2">
@@ -191,7 +210,7 @@ const SpecialtyTable: React.FC<SpecialtyTableProps> = ({
       {/* Modal edit */}
       <EditSpecialty
         open={isEditModalOpen}
-        specialtys={editingSpecialty}
+        specialty={editingSpecialty}
         onCancel={() => {
           setIsEditModalOpen(false);
           setEditingSpecialty(null);
@@ -208,7 +227,16 @@ const SpecialtyTable: React.FC<SpecialtyTableProps> = ({
       >
         <p>Bạn có chắc chắn muốn xóa chuyên khoa này không?</p>
       </Modal>
+      <div className="flex justify-center py-4">
+        <Pagination
+          current={currentPage}
+          pageSize={pageSize}
+          total={sortedSpecialties.length}
+          onChange={(page) => setCurrentPage(page)}
+        />
+      </div>
     </div>
+
   );
 };
 

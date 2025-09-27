@@ -4,7 +4,7 @@ import Input from "antd/es/input";
 import Button from "antd/es/button";
 import Form from "antd/es/form";
 import Select from "antd/es/select";
-import type { Clinic } from "./ClinicTable";
+import type { Clinic, CreateClinic } from "./ClinicTable";
 import { notification } from "antd";
 import { testGetClinicApi, testPostClinicApi } from "../../api/testClinic";
 import { testGetAddressApi } from "../../api/testAddress";
@@ -12,14 +12,14 @@ import { testGetAddressApi } from "../../api/testAddress";
 const { Option } = Select;
 
 interface AddClinicProps {
-  clinics: Clinic[];
-  setclinic: (clinic: Clinic[]) => void;
+  clinics: CreateClinic[];
+  setclinic: React.Dispatch<React.SetStateAction<CreateClinic[]>>;
   open: boolean;
   onCancel: () => void;
   onAdd: (clinic: Clinic) => void;
 }
 
-interface Address {
+export interface Address {
   id: number;
   city: string;
 }
@@ -31,23 +31,23 @@ const AddClinic: React.FC<AddClinicProps> = ({ open, onCancel, onAdd }) => {
   const handleSubmit = async (values: any) => {
   const { name, description, position, phoneNumber, addressId } = values;
 
-  const newClinic = {
+  const newClinic: CreateClinic =  {
     name,
     description,
     position,
     phoneNumber,
     image: null,
-    address: {
-      id: addressId, // 👈 backend cần object
-    },
+    addressId,
   };
 
   try {
     const res = await testPostClinicApi(newClinic);
-    onAdd(res);
+    const clinic=res.data
+    onAdd(clinic);
+
     notification.success({
       message: "Thêm thành công",
-      description: `Phòng khám ${res.name} đã được thêm`,
+      description: `Phòng khám ${res.data.name} đã được thêm`,
     });
     form.resetFields();
     onCancel();

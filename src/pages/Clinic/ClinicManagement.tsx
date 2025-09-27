@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import Button from "antd/lib/button";
 import { DatePicker, Input } from "antd/lib";
 
-import ClinicTable, { type Clinic } from "./ClinicTable";
+import ClinicTable, { type Clinic, type CreateClinic } from "./ClinicTable";
 import AddClinic from "./AddClinic";
 import api from "../../api/axios";
+import { testGetClinicApi } from "../../api/testClinic";
 
 const ClinicManagement: React.FC = () => {
   const [clinics, setClinics] = useState<Clinic[]>([]);
-  const [filteredClinics, setFilteredClinics] = useState<Clinic[]>([]);
+  const [filteredClinics, setFilteredClinics] = useState<ClinicTable[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   // filter state
@@ -19,9 +20,9 @@ const ClinicManagement: React.FC = () => {
   // Lấy danh sách phòng khám
   const handleGetClinics = async () => {
     try {
-      const res = await api.get("/v1/clinics");
-      setClinics(res.data.data.result);
-      setFilteredClinics(res.data.data.result);
+      const res = await testGetClinicApi();
+      setClinics(res.data.result);
+      setFilteredClinics(res.data.result);
     } catch (error) {
       console.error("Lỗi lấy danh sách clinic:", error);
     }
@@ -32,18 +33,20 @@ const ClinicManagement: React.FC = () => {
   }, []);
 
   // Thêm clinic
-  const handleAddClinic = async (newClinic: Clinic) => {
-    try {
-      const res = await api.post("/v1/clinics", newClinic);
-      const savedClinic = res.data.data;
+  const handleAddClinic = async (newClinic: CreateClinic) => {
+    // try {
+    //   console.log(newClinic);
+      
+    //   const res = await api.post("/v1/clinics", newClinic);
+    //   const savedClinic = res.data.data;
 
-      const updated = [...clinics, savedClinic];
-      setClinics(updated);
-      setFilteredClinics(updated);
-      setIsAddModalOpen(false);
-    } catch (error) {
-      console.error("Lỗi thêm clinic:", error);
-    }
+    //   const updated = [...filteredClinics, savedClinic];
+    //   setClinics(updated);
+    //   setFilteredClinics(updated);
+    //   setIsAddModalOpen(false);
+    // } catch (error) {
+    //   console.error("Lỗi thêm clinic:", error);
+    // }
   };
 
   // Cập nhật clinic
@@ -126,8 +129,7 @@ const ClinicManagement: React.FC = () => {
 
       {/* Bảng clinic */}
       <ClinicTable
-        clinics={filteredClinics}
-        setclinics={setClinics}
+        clinics={clinics}
         onUpdateClinic={handleUpdateClinic}
         onDeleteClinic={handleDeleteClinic}
       />
@@ -135,7 +137,7 @@ const ClinicManagement: React.FC = () => {
       {/* Modal thêm */}
       <AddClinic
         clinics={filteredClinics}
-        setclinics={setClinics}
+        setclinics={setFilteredClinics}
         open={isAddModalOpen}
         onCancel={() => setIsAddModalOpen(false)}
         onAdd={handleAddClinic}

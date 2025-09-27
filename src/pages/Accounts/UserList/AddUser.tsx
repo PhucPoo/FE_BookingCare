@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from "react";
 import Modal from "antd/es/modal";
 import Input from "antd/es/input";
 import Select from "antd/es/select";
 import Form from "antd/es/form";
 import type { CreateUser, User } from "./UserTable";
-import { testGetAccountsApi, testPostAccountsApi } from "../../../api/testApi";
+import {  testPostAccountsApi } from "../../../api/testApi";
 import { notification, message } from 'antd';
-import { Button } from "antd/lib";
+import { Button, DatePicker, Space } from "antd/lib";
 const { Option } = Select;
 
 interface UserTableProps {
@@ -20,14 +19,14 @@ interface UserTableProps {
 const AddUser: React.FC<UserTableProps> = ({ users, setusers, open, onCancel, onAdd }) => {
   const [form] = Form.useForm();
   const handleSubmit = async (values: any) => {
-    const { name, email, phoneNumber, password, cccd, address, gender, roleId } = values;
+    const { name, email, phoneNumber, password, cccd,birth, address, gender, roleId } = values;
 
     try {
 
 
       // 2️⃣ Nếu không trùng, tạo user mới
       const newUser: CreateUser = {
-        name, email, phoneNumber, password, cccd, address, gender, roleId,
+        name, email, phoneNumber, password, cccd,birth, address, gender, roleId,
 
       };
       const res = await testPostAccountsApi(newUser);
@@ -46,6 +45,16 @@ const AddUser: React.FC<UserTableProps> = ({ users, setusers, open, onCancel, on
         description: err.response.data.message
       })
       console.error("Lỗi xoá user:", err);
+    }
+  };
+  const handleChange = (date: dayjs.Dayjs | null) => {
+    if (date) {
+      // Convert sang string
+      const birthday = date.format("YYYY-MM-DD");
+      console.log("Birthday:", birthday);
+
+      // Sau đó gửi lên API
+      // axios.post("/api/users", { birthday });
     }
   };
 
@@ -101,18 +110,21 @@ const AddUser: React.FC<UserTableProps> = ({ users, setusers, open, onCancel, on
           rules={[
             { required: true, message: "Vui lòng nhập Căn cước công dân!" },
             { pattern: /^\d{10,}$/ },
-            // {
-            //   min: 6,
-            //   max: 20,
-            //   pattern:
-            //     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,20}$/,
-            //   message:
-            //     "Mật khẩu phải có 6–20 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt",
-            // },
+           
           ]}
         >
           <Input placeholder="Nhập số cccd" size="large" />
         </Form.Item>
+
+       <Space.Compact size="large">
+          <DatePicker
+            placeholder="Ngày sinh"
+            style={{ width: 180 }}
+            size="large"
+            onChange={handleChange}
+          />
+        </Space.Compact> 
+
         <Form.Item
           name="address"
           label="Địa chỉ"

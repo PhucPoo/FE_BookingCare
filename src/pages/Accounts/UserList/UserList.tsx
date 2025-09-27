@@ -84,7 +84,8 @@ const userManagement: React.FC = () => {
       data = data.filter(
         (u) =>
           new Date(u.createAt).toLocaleDateString("vi-VN") ===
-          new Date(dateFilter).toLocaleDateString("vi-VN")
+          new Date(dateFilter).toLocaleDateString("vi-VN") 
+          
       );
     }
     setFilteredUsers(data);

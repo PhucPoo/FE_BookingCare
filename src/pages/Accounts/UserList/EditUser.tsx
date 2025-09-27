@@ -7,6 +7,7 @@ import Form from "antd/es/form";
 import type { User } from "./UserTable";
 import { testPutAccountsApi } from "../../../api/testApi";
 import { notification, message } from 'antd';
+import { DatePicker, Space } from "antd/lib";
 
 const { Option } = Select;
 
@@ -28,6 +29,7 @@ const Edituser: React.FC<EdituserProps> = ({ open, onCancel, onUpdate, user }) =
         email: user.email,
         phoneNumber: user.phoneNumber,
         cccd: user.cccd,
+        birth: user.birth,
         gender: user.gender,
         address: user.address,
       });
@@ -52,7 +54,7 @@ const Edituser: React.FC<EdituserProps> = ({ open, onCancel, onUpdate, user }) =
     formData.append("cccd", values.cccd);
     formData.append("gender", values.gender);
     formData.append("address", values.address);
-
+    formData.append("birth", user.birth);
     formData.append("createAt", user.createAt);
     formData.append("updateAt", new Date().toISOString());
 
@@ -70,6 +72,7 @@ const Edituser: React.FC<EdituserProps> = ({ open, onCancel, onUpdate, user }) =
         email: values.email,
         phoneNumber: values.phoneNumber,
         cccd: values.cccd,
+        birth: new Date(),
         address: values.address,
         file: selectedFile ? selectedFile.name : user.avatar,
         updateAt: new Date(),
@@ -91,6 +94,17 @@ const Edituser: React.FC<EdituserProps> = ({ open, onCancel, onUpdate, user }) =
       console.error("Lỗi cập nhật user:", err);
     }
   };
+  const handleChange = (date: any | null) => {
+    if (date) {
+      // Convert sang string
+      const birthday = date.format("YYYY-MM-DD");
+      console.log("Birthday:", birthday);
+
+      // Sau đó gửi lên API
+      // axios.post("/api/users", { birthday });
+    }
+  };
+
 
   return (
     <Modal
@@ -150,6 +164,14 @@ const Edituser: React.FC<EdituserProps> = ({ open, onCancel, onUpdate, user }) =
             <Option value="OTHER">Khác</Option>
           </Select>
         </Form.Item>
+        <Space.Compact size="large">
+          <DatePicker
+            placeholder="Ngày sinh"
+            style={{ width: 180 }}
+            size="large"
+            onChange={handleChange}
+          />
+        </Space.Compact> 
         <Form.Item
           name="address"
           label="Địa chỉ"
