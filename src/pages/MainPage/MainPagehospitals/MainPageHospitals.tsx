@@ -1,11 +1,25 @@
+import { useEffect, useState } from "react";
 import hospital1 from "../../../public/img/hospital1.png";
 import hospital2 from "../../../public/img/hospital2.png";
 import hospital3 from "../../../public/img/hospital3.png";
 import hospital4 from "../../../public/img/hospital4.png";
+import type { MedicalFacilitiesModel } from "../../DanhSach/MedicalFacility/MedicalFacilitiesModel";
+import { getAllMedicalFacility } from "../../../api/Medical/MedicalFacilityApi";
 const MainPageHospitals = () => {
+  const [medicalFacilities, setMedicalFacilities] = useState<
+    MedicalFacilitiesModel[]
+  >([]);
+  const handleGetAllMedicalFacility = async () => {
+    const res = await getAllMedicalFacility();
+    if (!res.error) {
+      setMedicalFacilities(res.data.result);
+    }
+  };
+  useEffect(() => {
+    handleGetAllMedicalFacility();
+  }, []);
   return (
     <div>
-      {" "}
       <section className="hospitals">
         <h2>CƠ SỞ Y TẾ ĐẶT KHÁM ĐƯỢC YÊU THÍCH</h2>
 
@@ -13,7 +27,26 @@ const MainPageHospitals = () => {
           {/* <!-- <button className="arrow left">&#10094;</button> --> */}
 
           <div className="hospital-list">
-            <div className="hospital-card">
+            {medicalFacilities &&
+              medicalFacilities.length > 0 &&
+              medicalFacilities.map((medicalFacility) => {
+                return (
+                  <div className="hospital-card">
+                    <img src={hospital1} alt="Hospital 1" />
+                    <h3>{medicalFacility.name}</h3>
+                    <p>
+                      <span className="location">
+                        📍 {medicalFacility.address?.city}
+                      </span>
+                    </p>
+                    <div className="rating">
+                      ⭐⭐⭐⭐⭐ <span>(5.0)</span>
+                    </div>
+                    <button>Đặt khám ngay</button>
+                  </div>
+                );
+              })}
+            {/* <div className="hospital-card">
               <img src={hospital1} alt="Hospital 1" />
               <h3>Trung Tâm Nội Soi Tiêu Hoá Doctor Check</h3>
               <p>
@@ -59,7 +92,7 @@ const MainPageHospitals = () => {
                 ⭐⭐⭐⭐☆ <span>(4.7)</span>
               </div>
               <button>Đặt khám ngay</button>
-            </div>
+            </div> */}
           </div>
           {/* <!-- <button className="arrow right">&#10095;</button> --> */}
         </div>

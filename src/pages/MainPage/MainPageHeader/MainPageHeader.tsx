@@ -9,8 +9,20 @@ import {
 import { MdOutlinePhoneAndroid } from "react-icons/md";
 import { TfiHeadphoneAlt } from "react-icons/tfi";
 import { Link, useNavigate } from "react-router-dom";
+import useUserInfoStore from "../../../Zustand/configZustand";
+import { Popover } from "antd/lib";
 const MainPageHeader = () => {
   const navigate = useNavigate();
+  const content = (
+    <div className="flex flex-col gap-2">
+      <Link to="/thong-tin-ca-nhan">Thông tin cá nhân</Link>
+      <Link to="/danh-sach-lich-kham">Danh sách lịch khám</Link>
+      <Link to="/danh-sach-hoa-don">Danh sách hoá đơn</Link>
+      <Link to="/benh-an">bệnh án</Link>
+    </div>
+  );
+  const userInfor = useUserInfoStore((state) => state.userInfo);
+
   return (
     <div>
       <header className="header">
@@ -47,9 +59,21 @@ const MainPageHeader = () => {
                 <button className="btn-download flex items-center gap-1.5">
                   <MdOutlinePhoneAndroid /> Tải ứng dụng
                 </button>
-                <button className="btn-account flex items-center gap-1.5">
-                  <FaUser /> Tài khoản
-                </button>
+
+                {userInfor ? (
+                  <Popover content={content} title="Tài khoản" trigger="click">
+                    <button className="btn-account flex items-center gap-1.5">
+                      <FaUser /> {userInfor.name}
+                    </button>
+                  </Popover>
+                ) : (
+                  <button
+                    className="btn-account flex items-center gap-1.5"
+                    onClick={() => navigate("/auth/login")}
+                  >
+                    <FaUser /> Tài khoản
+                  </button>
+                )}
                 <div className="language">
                   <img src="https://flagcdn.com/w20/vn.png" alt="VN" />
                   <FaAngleDown />

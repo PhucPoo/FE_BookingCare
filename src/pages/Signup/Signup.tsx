@@ -1,6 +1,11 @@
 import React, { useState } from "react";
-import { Form, Input, Button, message } from "antd";
-import { UserOutlined, LockOutlined, MailOutlined, PhoneOutlined } from "@ant-design/icons";
+import { Form, Input, Button, message } from "antd/lib";
+import {
+  UserOutlined,
+  LockOutlined,
+  MailOutlined,
+  PhoneOutlined,
+} from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Signup.css";
@@ -29,35 +34,41 @@ const Signup: React.FC = () => {
       special: /[!@#$%^&*(),.?":{}|<>]/.test(val),
     });
   };
- 
-  const onFinish = async (values: any) => {
 
+  const onFinish = async (values: any) => {
     // setLoading(true);
-     console.log("Email:", values.email);
-     console.log("pw:", values.password);
+    console.log("Email:", values.email);
+    console.log("pw:", values.password);
     try {
-      const res = await axios.post("http://localhost:8080/api/v1/auth/register", {
-        name: values.name,
-        email: values.email,
-        phoneNumber: values.phoneNumber,
-        password: values.password,
-      });
-      console.log(res.data)
-     
+      const res = await axios.post(
+        "http://localhost:8080/api/v1/auth/register",
+        {
+          name: values.name,
+          email: values.email,
+          phoneNumber: values.phoneNumber,
+          password: values.password,
+        }
+      );
+      console.log(res.data);
+
       if (res.status === 201 || res.data?.statusCode === 201) {
         message.success("Đăng ký thành công!");
         navigate("/login");
       }
     } catch (error: any) {
       console.error(error);
-      const msg: string = error.response?.data?.message || "Có lỗi xảy ra, vui lòng thử lại!";
+      const msg: string =
+        error.response?.data?.message || "Có lỗi xảy ra, vui lòng thử lại!";
       const formErrors: any[] = [];
 
       // Phân tích message để gán lỗi từng field
       if (msg.toLowerCase().includes("email")) {
         formErrors.push({ name: "email", errors: [msg] });
       }
-      if (msg.toLowerCase().includes("số điện thoại") || msg.toLowerCase().includes("phone")) {
+      if (
+        msg.toLowerCase().includes("số điện thoại") ||
+        msg.toLowerCase().includes("phone")
+      ) {
         formErrors.push({ name: "phoneNumber", errors: [msg] });
       }
 
@@ -81,14 +92,29 @@ const Signup: React.FC = () => {
         <div className="signup-right">
           <h2 className="signup-title">Đăng ký</h2>
 
-          <Form form={form} layout="vertical" name="signup" onFinish={onFinish} size="large">
-            <Form.Item name="name" rules={[{ required: true, message: "Hãy nhập tên!" }]}>
+          <Form
+            form={form}
+            layout="vertical"
+            name="signup"
+            onFinish={onFinish}
+            size="large"
+          >
+            <Form.Item
+              name="name"
+              rules={[{ required: true, message: "Hãy nhập tên!" }]}
+            >
               <Input prefix={<UserOutlined />} placeholder="Username" />
             </Form.Item>
 
             <Form.Item
               name="email"
-              rules={[{ required: true, type: "email", message: "Email không hợp lệ!" }]}
+              rules={[
+                {
+                  required: true,
+                  type: "email",
+                  message: "Email không hợp lệ!",
+                },
+              ]}
             >
               <Input prefix={<MailOutlined />} placeholder="Email" />
             </Form.Item>
@@ -112,31 +138,51 @@ const Signup: React.FC = () => {
             </Form.Item>
 
             <div style={{ marginBottom: 16 }}>
-              <p style={{ color: passwordValid.length ? "green" : "red" }}>• Mật khẩu có ít nhất 8 ký tự</p>
-              <p style={{ color: passwordValid.uppercase ? "green" : "red" }}>• Mật khẩu có ít nhất 1 chữ hoa</p>
-              <p style={{ color: passwordValid.lowercase ? "green" : "red" }}>• Mật khẩu có ít nhất 1 chữ thường</p>
-              <p style={{ color: passwordValid.number ? "green" : "red" }}>• Mật khẩu có ít nhất 1 số</p>
-              <p style={{ color: passwordValid.special ? "green" : "red" }}>• Mật khẩu có ít nhất 1 ký tự đặc biệt</p>
+              <p style={{ color: passwordValid.length ? "green" : "red" }}>
+                • Mật khẩu có ít nhất 8 ký tự
+              </p>
+              <p style={{ color: passwordValid.uppercase ? "green" : "red" }}>
+                • Mật khẩu có ít nhất 1 chữ hoa
+              </p>
+              <p style={{ color: passwordValid.lowercase ? "green" : "red" }}>
+                • Mật khẩu có ít nhất 1 chữ thường
+              </p>
+              <p style={{ color: passwordValid.number ? "green" : "red" }}>
+                • Mật khẩu có ít nhất 1 số
+              </p>
+              <p style={{ color: passwordValid.special ? "green" : "red" }}>
+                • Mật khẩu có ít nhất 1 ký tự đặc biệt
+              </p>
             </div>
 
             <Form.Item
               name="confirm"
-              dependencies={['password']}
+              dependencies={["password"]}
               rules={[
-                { required: true, message: 'Hãy xác nhận mật khẩu!' },
+                { required: true, message: "Hãy xác nhận mật khẩu!" },
                 ({ getFieldValue }) => ({
                   validator(_, value) {
-                    if (!value || getFieldValue('password') === value) return Promise.resolve();
-                    return Promise.reject(new Error('Mật khẩu không khớp!'));
+                    if (!value || getFieldValue("password") === value)
+                      return Promise.resolve();
+                    return Promise.reject(new Error("Mật khẩu không khớp!"));
                   },
                 }),
               ]}
             >
-              <Input.Password prefix={<LockOutlined />} placeholder="Confirm Password" />
+              <Input.Password
+                prefix={<LockOutlined />}
+                placeholder="Confirm Password"
+              />
             </Form.Item>
 
             <Form.Item>
-              <Button type="primary" htmlType="submit" block className="signup-btn" loading={loading}>
+              <Button
+                type="primary"
+                htmlType="submit"
+                block
+                className="signup-btn"
+                loading={loading}
+              >
                 Đăng ký
               </Button>
             </Form.Item>
