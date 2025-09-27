@@ -15,7 +15,7 @@ import PatientList from "../pages/Accounts/PatientList/PatientList";
 import UserList from "../pages/Accounts/UserList/UserList";
 import SpecialtyGrid from "../pages/Specialty/SpecialtyGrid";
 import ListPatient_Doctor from "../pages/Doctors/ListPatient_Doctor";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 
 import Login from "../pages/Login/Login";
 import Signup from "../pages/Signup/Signup";
@@ -31,8 +31,18 @@ import MedicalFacilityDetail from "../pages/DanhSach/MedicalFacility/MedicalFaci
 import AdminBookingManage from "../pages/Admin/AdminBookingManage/AdminBookingManage";
 import DoctorDetail from "../pages/DanhSach/Doctor/DoctorDetail";
 import BookingDoctor from "../pages/BookingDoctor/BookingDoctor";
+import useUserInfoStore from "../Zustand/configZustand";
+import RouteCheckRole from "../utils/RouteCheckRole";
+import { permission } from "../utils/roleConfig";
 
 const AppRoutes = () => {
+  const ProtectRouter = () => {
+    const userInfo = useUserInfoStore((state) => state.userInfo);
+    if (!userInfo.email || !userInfo.role) {
+      return <Navigate to={"/auth/login"} replace={true} />;
+    }
+    <Outlet />;
+  };
   return (
     <Routes>
       <Route path="/auth">
@@ -59,47 +69,56 @@ const AppRoutes = () => {
         <Route path="chuyen-khoa" element={<SpecialtyList />} />
         <Route path="bai-viet" element={<ArticleList />} />
       </Route>
-      <Route path="dat-lich-kham/:id" element={<BookingDoctor />} />
-
+      <Route element={<ProtectRouter />}>
+        <Route path="dat-lich-kham/:id" element={<BookingDoctor />} />
+      </Route>
       {/* admin */}
-      <Route path="/admin-dashboard" element={<DashboardLayout />}>
-        <Route
-          path="/admin-dashboard"
-          element={<Navigate to={"statistics"} replace={true} />}
-        />
-        <Route path="statistics" element={<Statistics />} />
-        <Route path="service-list" element={<ServiceList />} />
-        <Route path="bill-manage" element={<BillPage />} />
-        <Route path="booking-manage" element={<AdminBookingManage />} />
+      <Route element={<RouteCheckRole requiredPermission={permission.admin} />}>
+        <Route path="/admin-dashboard" element={<DashboardLayout />}>
+          <Route
+            path="/admin-dashboard"
+            element={<Navigate to={"statistics"} replace={true} />}
+          />
+          <Route path="statistics" element={<Statistics />} />
+          <Route path="service-list" element={<ServiceList />} />
+          <Route path="bill-manage" element={<BillPage />} />
+          <Route path="booking-manage" element={<AdminBookingManage />} />
 
-        <Route path="user-list" element={<UserList />} />
+          <Route path="user-list" element={<UserList />} />
+          <Route path="doctor-list" element={<DoctorManagement />} />
+          <Route path="assistant-list" element={<SupportList />} />
+          <Route path="patient-list" element={<PatientList />} />
 
-        {/* Quản lí bác sĩ nhánh con của quản lý admin */}
-        <Route path="doctor-list" element={<DoctorManagement />} />
-        <Route path="assistant-list" element={<SupportList />} />
-        <Route path="patient-list" element={<PatientList />} />
+          <Route path="specialty" element={<SpecialtyGrid />} />
 
-        <Route path="specialty" element={<SpecialtyGrid />} />
-
-        <Route path="patient_list" element={<ListPatient_Doctor />} />
+          <Route path="patient_list" element={<ListPatient_Doctor />} />
+        </Route>
       </Route>
 
       {/* doctor */}
-      <Route path="/doctor-dashboard" element={<DoctorDashboard />}>
-        <Route
-          path="/doctor-dashboard"
-          element={<Navigate to={"booking-manage"} replace={true} />}
-        />
-        <Route path="booking-manage" element={<DoctorBookingPage />} />
+      <Route
+        element={<RouteCheckRole requiredPermission={permission.doctor} />}
+      >
+        <Route path="/doctor-dashboard" element={<DoctorDashboard />}>
+          <Route
+            path="/doctor-dashboard"
+            element={<Navigate to={"booking-manage"} replace={true} />}
+          />
+          <Route path="booking-manage" element={<DoctorBookingPage />} />
+        </Route>
       </Route>
 
       {/* support */}
-      <Route path="/support-dashboard" element={<SupportDashboard />}>
-        <Route
-          path="/support-dashboard"
-          element={<Navigate to={"booking-support-manage"} replace={true} />}
-        />
-        <Route path="booking-support-manage" element={<BookingPage />} />
+      <Route
+        element={<RouteCheckRole requiredPermission={permission.support} />}
+      >
+        <Route path="/support-dashboard" element={<SupportDashboard />}>
+          <Route
+            path="/support-dashboard"
+            element={<Navigate to={"booking-support-manage"} replace={true} />}
+          />
+          <Route path="booking-support-manage" element={<BookingPage />} />
+        </Route>
       </Route>
 
       {/* error page */}

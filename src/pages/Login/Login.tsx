@@ -6,32 +6,18 @@ import {
   EyeTwoTone,
 } from "@ant-design/icons";
 import "./login.css";
-import { loginApi } from "../../api/auth/LoginApi";
 import MainPageHeader from "../MainPage/MainPageHeader/MainPageHeader";
 import useUserInfoStore from "../../Zustand/configZustand";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 interface LoginFormData {
   userName: string; // Changed from 'email' to 'userName'
   password: string;
 }
 
-interface LoginResponse {
-  statusCode: number;
-  error: any;
-  message: string;
-  data: {
-    accessToken: string;
-    userLogin: {
-      id: number;
-      name: string;
-      email: string;
-      role: string;
-    };
-  };
-}
-
 const Login: React.FC = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<LoginFormData>({
     userName: "", // Changed from 'email' to 'userName'
     password: "",
@@ -59,7 +45,12 @@ const Login: React.FC = () => {
     setSuccess("");
 
     try {
-      await useUserInfoStore.getState().loginZustand(formData);
+      const res = await useUserInfoStore.getState().loginZustand(formData);
+
+      if (res) {
+        toast.success("Đăng nhập thành công");
+        navigate("/");
+      }
     } catch (error) {
       toast.error("Có lỗi xảy ra, vui lòng thử lại");
       console.error("Login error:", error);
