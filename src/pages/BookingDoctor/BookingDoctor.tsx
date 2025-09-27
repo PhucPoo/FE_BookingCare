@@ -8,15 +8,14 @@ import { FaHouseMedical } from "react-icons/fa6";
 import { getDegree } from "../../utils/constant";
 import { Button, Divider } from "antd/lib";
 import Footer from "../../components/Footer/Footer";
-import { BookingDoctorApi } from "../../api/Patient/PatientApi";
+import { BookingDoctorApi } from "../../api/Patient/PatientApi.ts";
 import { toast } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const BookingDoctor = () => {
   const id =
-    location.pathname.split("/")[location.pathname.split("/").length - 1];
+    location?.pathname?.split("/")[location?.pathname?.split("/").length - 1];
   const locationJS = useLocation();
-  console.log("🚀 ~ BookingDoctor ~ location:", locationJS);
 
   const params = new URL(document.location.toString()).searchParams;
   const timeStart = params.get("timeStart");
@@ -45,7 +44,7 @@ const BookingDoctor = () => {
         appointmentDate: locationJS.state.data.appointmentDate,
         description,
         doctorId: id,
-        patientId: "5",
+        patientId: locationJS.state.data.patientId,
         clinicId: `${detailDoctor.clinic?.id}`,
         timeId: locationJS.state.data.timeId,
       };

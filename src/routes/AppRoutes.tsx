@@ -34,14 +34,15 @@ import BookingDoctor from "../pages/BookingDoctor/BookingDoctor";
 import useUserInfoStore from "../Zustand/configZustand";
 import RouteCheckRole from "../utils/RouteCheckRole";
 import { permission } from "../utils/roleConfig";
+import PatientBookingList from "../pages/PatientBookingList/PatientBookingList";
 
 const AppRoutes = () => {
   const ProtectRouter = () => {
     const userInfo = useUserInfoStore((state) => state.userInfo);
     if (!userInfo.email || !userInfo.role) {
-      return <Navigate to={"/auth/login"} replace={true} />;
+      return <Navigate to={"/auth"} replace={true} />;
     }
-    <Outlet />;
+    return <Outlet />;
   };
   return (
     <Routes>
@@ -69,9 +70,12 @@ const AppRoutes = () => {
         <Route path="chuyen-khoa" element={<SpecialtyList />} />
         <Route path="bai-viet" element={<ArticleList />} />
       </Route>
+      {/* protected route */}
       <Route element={<ProtectRouter />}>
-        <Route path="dat-lich-kham/:id" element={<BookingDoctor />} />
+        <Route path="/dat-lich-kham/:id" element={<BookingDoctor />} />
+        <Route path="/danh-sach-lich-kham" element={<PatientBookingList />} />
       </Route>
+
       {/* admin */}
       <Route element={<RouteCheckRole requiredPermission={permission.admin} />}>
         <Route path="/admin-dashboard" element={<DashboardLayout />}>
