@@ -11,12 +11,13 @@ import Footer from "../../components/Footer/Footer";
 import { BookingDoctorApi } from "../../api/Patient/PatientApi.ts";
 import { toast } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom";
+import useUserInfoStore from "../../Zustand/configZustand.tsx";
 
 const BookingDoctor = () => {
   const id =
     location?.pathname?.split("/")[location?.pathname?.split("/").length - 1];
   const locationJS = useLocation();
-
+  const userInfor = useUserInfoStore((state) => state.userInfo);
   const params = new URL(document.location.toString()).searchParams;
   const timeStart = params.get("timeStart");
   const timeEnd = params.get("timeEnd");
@@ -38,13 +39,14 @@ const BookingDoctor = () => {
       description &&
       id &&
       detailDoctor.clinic?.id &&
-      locationJS.state.data.timeId
+      locationJS.state.data.timeId &&
+      userInfor?.patientId
     ) {
       const data = {
         appointmentDate: locationJS.state.data.appointmentDate,
         description,
         doctorId: id,
-        patientId: locationJS.state.data.patientId,
+        patientId: userInfor?.patientId,
         clinicId: `${detailDoctor.clinic?.id}`,
         timeId: locationJS.state.data.timeId,
       };

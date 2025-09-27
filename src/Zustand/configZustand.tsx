@@ -4,7 +4,13 @@ import { loginApi } from "../api/auth/LoginApi";
 import { toast } from "react-toastify";
 
 type UserInfoStoreState = {
-  userInfo: { name: string; email: string; role: string; id: number };
+  userInfo: {
+    name: string;
+    email: string;
+    role: string;
+    id: number;
+    patientId?: number;
+  };
 };
 type UserInfoStoreActions = {
   loginZustand: (formData: {
@@ -19,7 +25,7 @@ const useUserInfoStore = create<UserInfoStore>()(
   devtools(
     persist(
       (set) => ({
-        userInfo: { name: "", email: "", role: "", id: 0 },
+        userInfo: { name: "", email: "", role: "", id: 0, patientId: 0 },
         loginZustand: async (data) => {
           const res = await loginApi(data);
           if (res.statusCode !== 200) {

@@ -54,3 +54,40 @@ export const getNext7Days = () => {
 
   return result;
 };
+const statusBooking = {
+  PENDING: "Đang chờ",
+  CONFIRMED: "Đã xác nhận",
+  CANCELLED: "Đã hủy",
+  COMPLETED: "Đã hoàn thành",
+};
+export const getStatusBooking = (target: string | undefined) => {
+  return statusBooking[target];
+};
+export const getStatusColor = (status: string | undefined) => {
+  switch (status) {
+    case "PENDING":
+      return "orange";
+    case "CONFIRMED":
+      return "green";
+    case "CANCELLED":
+      return "red";
+    case "COMPLETED":
+      return "blue";
+    default:
+      return "default";
+  }
+};
+export const getStatusText = (status: string | undefined) => {
+  switch (status) {
+    case "PENDING":
+      return "Chờ xác nhận";
+    case "CONFIRMED":
+      return "Đã xác nhận";
+    case "CANCELLED":
+      return "Đã hủy";
+    case "COMPLETED":
+      return "Hoàn thành";
+    default:
+      return status;
+  }
+};
