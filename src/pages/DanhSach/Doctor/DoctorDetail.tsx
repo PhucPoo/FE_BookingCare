@@ -13,7 +13,6 @@ import { FaRegHandPointUp } from "react-icons/fa";
 import { Button, Select } from "antd/lib";
 import "./Doctor.css";
 import type { DoctorDetailModel } from "./DoctorDetailModel";
-import useUserInfoStore from "../../../Zustand/configZustand";
 
 type availableTime = {
   id?: number;
@@ -25,7 +24,7 @@ const DoctorDetail = () => {
   const location = useLocation();
   const id =
     location.pathname.split("/")[location.pathname.split("/").length - 1];
-  const userInfor = useUserInfoStore((state) => state.userInfo);
+
   const [detailDoctor, setDetailDoctor] = useState<DoctorDetailModel>({});
   const [DateSelected, SetDateSelected] = useState<string>("");
   const [availableTime, setAvailableTime] = useState<availableTime[]>([]);
@@ -39,7 +38,6 @@ const DoctorDetail = () => {
   };
 
   const handleGetAvailableOfDoctor = async (date: string) => {
-    console.log("🚀 ~ handleGetAvailableOfDoctor ~ date:", date);
     const res = await getAvailableTimeOfDoctor(id, date);
     if (!res.error) {
       setAvailableTime(res.data);
@@ -104,7 +102,6 @@ const DoctorDetail = () => {
                               data: {
                                 appointmentDate: DateSelected,
                                 doctorId: id,
-                                patientId: userInfor.id,
                                 clinicId: `${detailDoctor.clinic?.id}`,
                                 timeId: item.id,
                               },
