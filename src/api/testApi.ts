@@ -41,7 +41,6 @@ export const testGetAccountsApi = async (
       ...config,
     }
   );
-  console.log("🚀 ~ testGetAccountsApi ~ response:", response);
   return response.data;
 };
 
@@ -75,8 +74,7 @@ export const testPutAccountsApi = async (data: User) => {
 // 🟢 Delete User
 export const testDeleteAccountsApi = async (id: number) => {
   const response = await customAxiosInstance.delete(
-    `http://localhost:8080/api/v1/accounts/${id}`,
-    config
+    `http://localhost:8080/api/v1/accounts/${id}`
   );
   console.log("🚀 ~ testDeleteAccountsApi ~ response:", response);
   return response.data;

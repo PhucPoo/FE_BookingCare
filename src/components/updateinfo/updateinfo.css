@@ -1,0 +1,171 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #b2ebf2; /* màu xanh nhạt giống ảnh */
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* Card */
+.profile-card {
+  background: #ccf5f9;
+  border-radius: 20px;
+  border: 2px solid #4682b4;
+  padding: 30px 40px;
+  width: 100%;
+  max-width: 700px; /* rộng ra cho giống ảnh */
+  text-align: center;
+}
+
+/* Header */
+.profile-header {
+  margin-bottom: 20px;
+}
+
+.brand-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 4px;
+}
+
+.page-title {
+  font-size: 16px;
+  color: #000;
+  margin-bottom: 15px;
+}
+
+/* Form layout */
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 15px;
+}
+
+.form-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group.full-width {
+  flex: 100%;
+}
+
+.full-width {
+  width: 100%;
+  text-align: center;
+}
+
+/* Label */
+.form-label {
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 6px;
+  color: #000;
+}
+.avatar-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.avatar-group .form-label {
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Input, textarea, select */
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #333;
+  border-radius: 4px;
+  font-size: 14px;
+  background: #fff;
+  color: #000;
+}
+
+.form-input:disabled {
+  background: #f5f5f5;
+}
+
+/* File input */
+.file-upload-button {
+  background-color: #1890ff;
+  color: white;
+  padding: 6px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 14px;
+  white-space: nowrap;
+
+}
+
+/* Button */
+.form-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.update-button {
+  padding: 10px 20px;
+  font-size: 15px;
+  font-weight: bold;
+  border: 1px solid #333;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.update-button:hover {
+  background: #f0f0f0;
+}
+
+/* Messages */
+.error-message, .success-message {
+  text-align: center;
+  font-size: 13px;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.error-message {
+  background: #ffe6e6;
+  border: 1px solid #ff9999;
+  color: #d63031;
+}
+
+.success-message {
+  background: #e6f7e6;
+  border: 1px solid #99d699;
+  color: #27ae60;
+}

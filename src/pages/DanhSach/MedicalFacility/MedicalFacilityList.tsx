@@ -1,19 +1,19 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getAllMedicalFacility } from "../../../api/Medical/MedicalFacilityApi";
-import LoadingPage from "../../../components/LoadingPage/LoadingPage";
+const LoadingPage = React.lazy(
+  () => import("../../../components/LoadingPage/LoadingPage")
+);
 import "./MedicalFacility.css";
-type MedicalFacilityModel = {
-  id?: number;
-  address?: { city?: string; id?: number };
-  description?: string;
-  image?: string;
-  name?: string;
-  phoneNumber?: string;
-  position?: string;
-};
+import { useLocation, useNavigate } from "react-router-dom";
+import Breadcrumb from "../../../components/Breadcrumb/Breadcrumb";
+import type { MedicalFacilitiesModel } from "./MedicalFacilitiesModel";
+
 const MedicalFacilityList = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [medicalFacilities, setMedicalFacilities] = useState<
-    MedicalFacilityModel[]
+    MedicalFacilitiesModel[]
   >([]);
   const handleGetAllMedicalFacility = async () => {
     const res = await getAllMedicalFacility();
@@ -22,6 +22,7 @@ const MedicalFacilityList = () => {
     }
   };
   useEffect(() => {
+    window.scrollTo(0, 0);
     handleGetAllMedicalFacility();
   }, []);
   if (medicalFacilities.length === 0) {
@@ -33,6 +34,7 @@ const MedicalFacilityList = () => {
   }
   return (
     <div className="container">
+      <Breadcrumb location={location.pathname} />
       <p className="text-xl font-bold " style={{ marginTop: "20px" }}>
         Cơ sở y tế dành cho bạn
       </p>
@@ -40,7 +42,10 @@ const MedicalFacilityList = () => {
         {medicalFacilities &&
           medicalFacilities.length > 0 &&
           medicalFacilities.map((medicalFacility) => (
-            <div className="flex gap-5 medicalFacility_item_contain items-center">
+            <div
+              className="flex gap-5 medicalFacility_item_contain items-center cursor-pointer"
+              onClick={() => navigate(`${medicalFacility.id}`)}
+            >
               <img
                 src={medicalFacility?.image}
                 className="medicalFacility_item-img"

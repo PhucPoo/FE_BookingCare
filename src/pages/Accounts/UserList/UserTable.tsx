@@ -8,7 +8,6 @@ import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
 import { notification, Pagination } from "antd";
 
 export interface User {
-  id: number;
   name: string;
   email: string;
   phoneNumber: string;

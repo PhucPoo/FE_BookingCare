@@ -1,109 +1,113 @@
 .hospitals {
-    text-align: center;
-    padding: 40px 20px;
-    background: #f0f8ff;
+  text-align: center;
+  padding: 40px 20px;
+  background: #f0f8ff;
 }
 
 .hospitals h2 {
-    font-size: 22px;
-    font-weight: bold;
-    margin-bottom: 30px;
-    color: #1a3d7c;
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 30px;
+  color: #1a3d7c;
 }
 .hospital-wrapper {
-    position: relative;
+  position: relative;
 }
 
 .hospital-list {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
 .hospital-card {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    width: 250px;
-    transition: 0.3s;
-    text-align: left;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  width: 230px;
+  flex-shrink: 0;
+  text-align: left;
+  transition: 0.3s;
+  width: 300px !important;
+  height: 300px;
 }
 
 .hospital-card:hover {
-    transform: translateY(-5px);
+  transform: translateY(-5px);
 }
 
 .hospital-card img {
-    width: 80px;
-    height: 80px;
-    object-fit: contain;
-    margin-bottom: 15px;
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 15px;
 }
 
 .hospital-card h3 {
-    font-size: 16px;
-    color: #333;
-    margin-bottom: 10px;
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 10px;
+  height: 40px;
 }
 
 .hospital-card p {
-    font-size: 14px;
-    color: #666;
-    margin-bottom: 10px;
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 10px;
 }
 
 .hospital-card .rating {
-    font-size: 14px;
-    color: #f39c12;
-    margin-bottom: 15px;
+  font-size: 14px;
+  color: #f39c12;
+  margin-bottom: 15px;
 }
 
 .hospital-card button {
-    width: 100%;
-    background: #4daafc;
-    color: #fff;
-    border: none;
-    padding: 10px;
-    font-size: 14px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: 0.3s;
+  width: 100%;
+  background: #4daafc;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
 .hospital-card button:hover {
-    background: #1a8cff;
+  background: #1a8cff;
 }
 
 /* Mũi tên */
 .arrow {
-    background: #fff;
-    border: none;
-    border-radius: 50%;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    font-size: 20px;
-    padding: 10px;
-    transition: 0.3s;
+  background: #fff;
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  font-size: 20px;
+  padding: 10px;
+  transition: 0.3s;
 }
 
 .arrow:hover {
-    background: #e6f0ff;
+  background: #e6f0ff;
 }
 
 /* Xem tất cả */
 .see-all {
-    margin-top: 20px;
+  margin-top: 20px;
 }
 
 .see-all a {
-    color: #1a8cff;
-    font-size: 14px;
-    text-decoration: none;
-    font-weight: bold;
+  color: #1a8cff;
+  font-size: 14px;
+  text-decoration: none;
+  font-weight: bold;
 }
 
 .see-all a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }

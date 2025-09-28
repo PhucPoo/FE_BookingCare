@@ -6,24 +6,46 @@ import {
   Select,
   type MenuProps,
 } from "antd/lib";
+import { formatDate } from "../../../utils/constant";
+import type { SupportSortKey } from "./SupportSortKey";
+type BookingListModel = {
+  id?: number;
+  appointmentDate?: string;
+  description?: string;
+  status?: string;
+  createAt?: string;
+  doctor?: {
+    id?: number;
+    account?: {
+      id?: number;
+      name?: string;
+    };
+  };
 
+  patient?: {
+    id?: number;
+    account?: {
+      id?: number;
+      name?: string;
+    };
+  };
+  time?: {
+    id?: number;
+    start?: string;
+    end?: string;
+  };
+  clinic?: {
+    id?: number;
+    name?: string;
+  };
+};
 type Props = {
-  BookingList: {
-    id: number;
-    doctor_id: string;
-    patient_id: string;
-    time_id: number;
-    clinic_id: number;
-    description: string;
-    status: string;
-    createdAt: string;
-  }[];
-  columns: { value: number; label: string }[];
+  BookingList: BookingListModel[];
   pageSize: number;
   currentPage: number;
   totalBillList: number;
   onLog: (page: number, pageSize: number) => void;
-  handleSort: () => void;
+  handleSort: (value: SupportSortKey) => void;
   handleChange: (value: string) => void;
   handleFindByDate: () => void;
   handleSearchBooking: (value: string, key: string) => void;
@@ -32,11 +54,13 @@ type Props = {
   handleGetBookingList: () => void;
   confirm: () => void;
   cancel: () => void;
+  SupportBookingDetailDataData: (data: BookingListModel) => void;
+  setIsModalOpen: (value: boolean) => void;
+  handleSearchByClinic: (value: string) => void;
 };
 
 const BookingTablePage = ({
   BookingList,
-  columns,
   pageSize,
   currentPage,
   totalBillList,
@@ -50,6 +74,9 @@ const BookingTablePage = ({
   handleGetBookingList,
   confirm,
   cancel,
+  SupportBookingDetailDataData,
+  setIsModalOpen,
+  handleSearchByClinic,
 }: Props) => {
   const items: MenuProps["items"] = [
     {
@@ -112,7 +139,9 @@ const BookingTablePage = ({
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
             Danh sách lịch khám
           </h1>
-          <p className="text-gray-600">Thông tin lịch khám hiện có</p>
+          <p className="text-gray-600">
+            Thông tin lịch khám hiện được quản lí bởi người hỗ trợ
+          </p>
         </div>
 
         {/* table search feature */}
@@ -156,22 +185,21 @@ const BookingTablePage = ({
                 size="large"
                 placeholder="Trạng thái"
                 options={[
-                  { value: "Done", label: "Done" },
-                  { value: "Pending", label: "Pending" },
+                  { value: "CONFIRMED", label: "CONFIRMED" },
+                  { value: "PENDING", label: "PENDING" },
                 ]}
               />
             </div>
             <div className="w-full lg:w-auto">
-              <Select
-                className="w-full"
-                style={{ width: 120 }}
-                onChange={handleChange}
-                placeholder="Phòng khám"
-                size="large"
-                options={[
-                  { value: 1, label: "aaa" },
-                  { value: 2, label: "bbb" },
-                ]}
+              <input
+                type="text"
+                placeholder="Nơi khám..."
+                onChange={(e) => {
+                  setTimeout(() => {
+                    handleSearchByClinic(e.target.value);
+                  }, 500);
+                }}
+                className="w-full  lg:w-45  not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
             <div className="w-full lg:w-auto">
@@ -194,23 +222,63 @@ const BookingTablePage = ({
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  {columns &&
-                    columns.length > 0 &&
-                    columns.map((item) => {
-                      return (
-                        <th
-                          className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
-                          key={item.value}
-                          onClick={() => {
-                            if (item.value === 7) {
-                              handleSort();
-                            }
-                          }}
-                        >
-                          {item.label}
-                        </th>
-                      );
-                    })}
+                  <th
+                    className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
+                    onClick={() => {
+                      handleSort("appointmentDate");
+                    }}
+                  >
+                    Ngày khám
+                  </th>
+
+                  <th
+                    className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
+                    onClick={() => {
+                      handleSort("createdAt");
+                    }}
+                  >
+                    Ngày tạo
+                  </th>
+                  <th
+                    className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
+                    onClick={() => {
+                      handleSort("status");
+                    }}
+                  >
+                    Status
+                  </th>
+                  <th
+                    className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
+                    onClick={() => {
+                      handleSort("doctor");
+                    }}
+                  >
+                    Bác sĩ
+                  </th>
+                  <th
+                    className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
+                    onClick={() => {
+                      handleSort("patient");
+                    }}
+                  >
+                    Bệnh nhân
+                  </th>
+                  <th
+                    className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
+                    onClick={() => {
+                      handleSort("clinic");
+                    }}
+                  >
+                    Bệnh viện
+                  </th>
+                  <th
+                    className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
+                    onClick={() => {
+                      handleSort("time");
+                    }}
+                  >
+                    Time
+                  </th>
                   <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center hover:bg-gray-500 hover:text-white transition-all delay-100">
                     Hành động
                   </th>
@@ -227,47 +295,40 @@ const BookingTablePage = ({
                         key={item.id}
                       >
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                          {item.id}
-                        </td>
-
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                          {item.doctor_id}
-                        </td>
-
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                          {item.patient_id}
+                          {item.appointmentDate}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                          {item.time_id}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                          {item.clinic_id}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                          {item.description}
+                          {formatDate(item?.createAt)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
                           {item.status}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                          {item.createdAt}
+                          {item.doctor?.account?.name}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
+                          {item.patient?.account?.name}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
+                          {item?.clinic?.name && item?.clinic?.name?.length > 20
+                            ? item.clinic?.name?.slice(0, 20) + "..."
+                            : item.clinic?.name}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
+                          {`${item.time?.end}-${item.time?.start}`}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <div className="flex items-center justify-center space-x-5">
+                          <div className="flex items-center justify-center space-x-2">
                             <Button
                               type="primary"
                               onClick={() => {
-                                // handleUpdateService(item);
+                                SupportBookingDetailDataData(item);
+                                setIsModalOpen(true);
                               }}
                             >
-                              Xem chi tiết
+                              Chi tiết
                             </Button>
-                            <Button
-                              type="primary"
-                              onClick={() => {
-                                // handleUpdateService(item);
-                              }}
-                            >
+                            <Button type="primary">
                               <Popconfirm
                                 title={"Xác nhận đặt lịch từ bệnh nhân"}
                                 onConfirm={confirm}

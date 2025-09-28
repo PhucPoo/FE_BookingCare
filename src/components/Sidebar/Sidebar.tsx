@@ -4,13 +4,12 @@ import {
   FaChartPie,
   FaClipboardList,
   FaUsers,
-  FaMoneyBill,
   FaConciergeBell,
   FaChevronUp,
   FaChevronDown,
-  FaCalendar,
+  FaCalendarAlt,
 } from "react-icons/fa";
-import { FaFaceFlushed } from "react-icons/fa6";
+import { FaFaceFlushed, FaMoneyBill1 } from "react-icons/fa6";
 
 const Sidebar: React.FC = () => {
   const location = useLocation();
@@ -35,8 +34,10 @@ const Sidebar: React.FC = () => {
       <h1 className="text-2xl font-bold text-white mb-8">Admin</h1>
 
       <nav className="flex flex-col gap-6">
-        {/* Dashboard: exact match */}
-        <Link to="/" className={linkClass("/", true)}>
+        <Link
+          to="/admin-dashboard"
+          className="flex items-center gap-3 hover:text-indigo-600"
+        >
           <FaChartPie /> Dashboard
         </Link>
 
@@ -51,45 +52,71 @@ const Sidebar: React.FC = () => {
               <FaClipboardList />
               <span>Quản lý Người dùng</span>
             </div>
-            {userMenuOpen ? <FaChevronUp size={12} /> : <FaChevronDown size={12} />}
+            {userMenuOpen ? (
+              <FaChevronUp size={12} />
+            ) : (
+              <FaChevronDown size={12} />
+            )}
           </button>
 
           {userMenuOpen && (
             <div className="ml-6 mt-2 flex flex-col gap-2 text-sm text-gray-400">
-              <Link to="/admin-dashboard/user-list" className={linkClass("/admin-dashboard/user-list")}>
+              <Link
+                to="/admin-dashboard/user-list"
+                className="hover:text-indigo-500"
+              >
                 Quản lý tài khoản
               </Link>
-              <Link to="/admin-dashboard/doctor-list" className={linkClass("/admin-dashboard/doctor-list")}>
+              <Link
+                to="/admin-dashboard/doctor-list"
+                className="hover:text-indigo-500"
+              >
                 Quản lý bác sĩ
               </Link>
-              <Link to="/admin-dashboard/assistant-list" className={linkClass("/admin-dashboard/assistant-list")}>
+              <Link
+                to="/admin-dashboard/assistant-list"
+                className="hover:text-indigo-500"
+              >
                 Quản lý trợ lý
               </Link>
-              <Link to="/admin-dashboard/patient-list" className={linkClass("/admin-dashboard/patient-list")}>
+              <Link
+                to="/admin-dashboard/patient-list"
+                className="hover:text-indigo-500"
+              >
                 Quản lý bệnh nhân
               </Link>
             </div>
           )}
         </div>
 
-        <Link to="/admin-dashboard/specialty" className={linkClass("/admin-dashboard/specialty")}>
-          <FaCalendar /> Quản lý chuyên khoa
+        <Link
+          to="/admin-dashboard/specialty"
+          className="flex items-center gap-3 hover:text-indigo-600"
+        >
+          <FaCalendarAlt /> Quản lý chuyên khoa
         </Link>
-
-        <Link to="/admin-dashboard/booking-manage" className={linkClass("/admin-dashboard/booking-manage")}>
+        <Link
+          to="/admin-dashboard/booking-manage"
+          className="flex items-center gap-3 hover:text-indigo-600"
+        >
           <FaUsers /> Quản lý lịch khám
         </Link>
-
-        <Link to="/admin-dashboard/bill-manage" className={linkClass("/admin-dashboard/bill-manage")}>
-          <FaMoneyBill /> Quản lý hóa đơn
+        <Link
+          to="/admin-dashboard/bill-manage"
+          className="flex items-center gap-3 hover:text-indigo-600"
+        >
+          <FaMoneyBill1 /> Quản lý hóa đơn
         </Link>
-        
-        {/* 
-        <Link to="/admin-dashboard/patient_list" className={linkClass("/admin-dashboard/patient_list")}>
+        <Link
+          to="/admin-dashboard/patient_list"
+          className="flex items-center gap-3 hover:text-indigo-600"
+        >
           <FaFaceFlushed /> Quản lý bệnh nhân
-        </Link> */}
-
-        <Link to="/admin-dashboard/service-list" className={linkClass("/admin-dashboard/service-list")}>
+        </Link>
+        <Link
+          to="/admin-dashboard/service-list"
+          className="flex items-center gap-3 hover:text-indigo-600"
+        >
           <FaConciergeBell /> Quản lý dịch vụ
         </Link>
       </nav>

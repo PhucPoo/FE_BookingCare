@@ -1,4 +1,5 @@
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const customAxiosInstance = axios.create();
 
@@ -12,6 +13,13 @@ customAxiosInstance.defaults.withCredentials = true;
 customAxiosInstance.interceptors.request.use(
   function (config) {
     // Làm gì đó trước khi request dược gửi đi
+    const token = document.cookie.split("=")[1];
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      document.cookie = "";
+      delete config.headers.Authorization; // tránh gửi Authorization rỗng
+    }
     return config;
   },
   function (error) {
@@ -29,12 +37,14 @@ customAxiosInstance.interceptors.response.use(
     return response;
   },
   function (error) {
+    console.log("🚀 ~ error:", error);
     // Bất kì mã trạng thái nào lọt ra ngoài tầm 2xx đều khiến hàm này được trigger\
     // Làm gì đó với lỗi response
     if (error.response?.status === 401) {
-      // alert("error 401");
+      toast.error("Không thể xác thực, vui lòng đăng nhập lại!");
       //401 Unauthorized
       //   axiosReduxStore.dispatch(logoutUserAPI());
+      window.location.href = "auth/login";
     }
     if (error.response?.status === 410) {
       // alert("error 410");
