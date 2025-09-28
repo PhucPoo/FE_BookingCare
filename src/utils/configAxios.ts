@@ -38,13 +38,13 @@ customAxiosInstance.interceptors.response.use(
   },
   function (error) {
     console.log("🚀 ~ error:", error);
-    toast.error(error.response.data.message);
     // Bất kì mã trạng thái nào lọt ra ngoài tầm 2xx đều khiến hàm này được trigger\
     // Làm gì đó với lỗi response
     if (error.response?.status === 401) {
-      // alert("error 401");
+      toast.error("Không thể xác thực, vui lòng đăng nhập lại!");
       //401 Unauthorized
       //   axiosReduxStore.dispatch(logoutUserAPI());
+      window.location.href = "auth/login";
     }
     if (error.response?.status === 410) {
       // alert("error 410");

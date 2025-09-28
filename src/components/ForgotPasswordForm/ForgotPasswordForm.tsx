@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Steps, Alert, Typography, Card } from 'antd/lib';
-import { MailOutlined, LockOutlined, SafetyOutlined, CheckCircleTwoTone, EyeInvisibleOutlined, EyeTwoTone, ArrowLeftOutlined } from '@ant-design/icons';
+import { MailOutlined, 
+         LockOutlined, 
+         SafetyOutlined, 
+         CheckCircleTwoTone, 
+         EyeInvisibleOutlined, 
+         EyeTwoTone, 
+         ArrowLeftOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import './ForgotPasswordForm.css';
 
 const { Title, Text } = Typography;
 const { Step } = Steps;
 
 const ForgotPasswordForm: React.FC = () => {
+  const navigate = useNavigate();
   const [step, setStep] = useState<'email' | 'otp' | 'newPassword' | 'success'>('email');
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
@@ -193,6 +201,7 @@ const saveNewPasswordAPI = async (email: string, password: string) => {
     setConfirmPassword('');
     setError('');
     setOtpTimer(0);
+    navigate('/login');
   };
 
   return (

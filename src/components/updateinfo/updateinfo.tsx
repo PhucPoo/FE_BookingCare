@@ -271,149 +271,115 @@ const ProfileUpdate: React.FC = () => {
             </div>
           </div>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label className="form-label">Họ và tên *</label>
-              <div className="input-wrapper">
-                <span className="input-icon">
-                  <UserOutlined />
-                </span>
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Nhập họ và tên"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  required
-                  className="form-input"
-                />
-              </div>
-            </div>
+{/* Họ tên - Địa chỉ */}
+<div className="form-row">
+  <div className="form-group">
+    <label className="form-label">Họ và tên *</label>
+    <input
+      type="text"
+      name="name"
+      placeholder="Nhập họ và tên"
+      value={formData.name}
+      onChange={handleInputChange}
+      required
+      className="form-input"
+    />
+  </div>
 
-            <div className="form-group">
-              <label className="form-label">Số điện thoại</label>
-              <div className="input-wrapper">
-                <span className="input-icon">
-                  <PhoneOutlined />
-                </span>
-                <input
-                  type="tel"
-                  name="phone"
-                  placeholder="Nhập số điện thoại"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  className="form-input"
-                  pattern="^(0[0-9]{9})$"
-                  title="Số điện thoại phải có 10 chữ số và bắt đầu bằng 0"
-                />
-              </div>
-            </div>
-          </div>
+  <div className="form-group">
+    <label className="form-label">Địa chỉ</label>
+    <input
+      type="text"
+      name="address"
+      placeholder="Nhập địa chỉ"
+      value={formData.address}
+      onChange={handleInputChange}
+      className="form-input"
+    />
+  </div>
+</div>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label className="form-label">CCCD</label>
-              <div className="input-wrapper">
-                <input
-                  type="text"
-                  name="cccd"
-                  placeholder="Nhập số CCCD"
-                  value={formData.cccd}
-                  onChange={handleInputChange}
-                  className="form-input"
-                />
-              </div>
-            </div>
+{/* Số điện thoại - Giới tính */}
+<div className="form-row">
+  <div className="form-group">
+    <label className="form-label">Số điện thoại</label>
+    <input
+      type="tel"
+      name="phone"
+      placeholder="Nhập số điện thoại"
+      value={formData.phone}
+      onChange={handleInputChange}
+      className="form-input"
+      pattern="^(0[0-9]{9})$"
+      title="Số điện thoại phải có 10 chữ số và bắt đầu bằng 0"
+    />
+  </div>
 
-            <div className="form-group">
-              <label className="form-label">Ảnh đại diện</label>
-              <div className="input-wrapper">
-                <div className="file-upload-container">
-                  <input
-                    type="file"
-                    name="file"
-                    id="file-input"
-                    onChange={handleFileChange}
-                    className="file-input-hidden"
-                    accept="image/*"
-                    style={{ display: 'none' }}
-                  />
-                  <label htmlFor="file-input" className="file-upload-button">
-                    Choose File
-                  </label>
-                  
-                  {selectedFile ? (
-                    <div className="file-info-container">
-                      <div className="file-info">
-                        <small className="file-name">
-                          {selectedFile.name}
-                        </small>
-                        <button
-                          type="button"
-                          onClick={handleRemoveImage}
-                          className="remove-file-btn"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="file-placeholder">
-                      <span>Chưa chọn file</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
+  <div className="form-group">
+    <label className="form-label">Giới tính</label>
+    <select
+      name="gender"
+      value={formData.gender}
+      onChange={handleInputChange}
+      className="form-input form-select"
+    >
+      <option value="MALE">Nam</option>
+      <option value="FEMALE">Nữ</option>
+      <option value="OTHER">Khác</option>
+    </select>
+  </div>
+</div>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label className="form-label">Ngày sinh</label>
-              <div className="input-wrapper">
-                <input
-                  type="date"
-                  name="dateOfBirth"
-                  value={formData.dateOfBirth}
-                  onChange={handleInputChange}
-                  className="form-input date-input"
-                />
-              </div>
-            </div>
+{/* CCCD - Ngày sinh */}
+<div className="form-row">
+  <div className="form-group">
+    <label className="form-label">Căn cước công dân</label>
+    <input
+      type="text"
+      name="cccd"
+      placeholder="Nhập số CCCD"
+      value={formData.cccd}
+      onChange={handleInputChange}
+      className="form-input"
+    />
+  </div>
 
-            <div className="form-group">
-              <label className="form-label">Giới tính</label>
-              <div className="input-wrapper">
-                <select
-                  name="gender"
-                  value={formData.gender}
-                  onChange={handleInputChange}
-                  className="form-input form-select"
-                >
-                  <option value="MALE">Nam</option>
-                  <option value="FEMALE">Nữ</option>
-                  <option value="OTHER">Khác</option>
-                </select>
-              </div>
-            </div>
-          </div>
+  <div className="form-group">
+    <label className="form-label">Ngày sinh</label>
+    <input
+      type="date"
+      name="dateOfBirth"
+      value={formData.dateOfBirth}
+      onChange={handleInputChange}
+      className="form-input"
+    />
+  </div>
+</div>
 
-          <div className="form-group full-width">
-            <label className="form-label">Địa chỉ</label>
-            <div className="input-wrapper">
-              <span className="input-icon">
-                <HomeOutlined />
-              </span>
-              <textarea
-                name="address"
-                placeholder="Nhập địa chỉ"
-                value={formData.address}
-                onChange={handleInputChange}
-                className="form-textarea"
-                rows={3}
-              />
-            </div>
-          </div>
+<div className="form-row">
+  <div className="form-group avatar-group">
+    <label className="form-label">Ảnh đại diện</label>
+
+    <div className="file-upload-wrapper">
+      <input
+        type="file"
+        id="file-input"
+        name="file"
+        onChange={handleFileChange}
+        accept="image/*"
+        style={{ display: 'none' }}
+      />
+      <label htmlFor="file-input" className="file-upload-button">
+        Choose File
+      </label>
+
+      {/* Hiển thị tên file nếu đã chọn */}
+      {selectedFile && (
+        <span className="file-name">{selectedFile.name}</span>
+      )}
+    </div>
+  </div>
+</div>
           
           <div className="form-actions">
             <button

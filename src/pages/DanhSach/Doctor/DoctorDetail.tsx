@@ -24,6 +24,7 @@ const DoctorDetail = () => {
   const location = useLocation();
   const id =
     location.pathname.split("/")[location.pathname.split("/").length - 1];
+
   const [detailDoctor, setDetailDoctor] = useState<DoctorDetailModel>({});
   const [DateSelected, SetDateSelected] = useState<string>("");
   const [availableTime, setAvailableTime] = useState<availableTime[]>([]);
@@ -37,7 +38,6 @@ const DoctorDetail = () => {
   };
 
   const handleGetAvailableOfDoctor = async (date: string) => {
-    console.log("🚀 ~ handleGetAvailableOfDoctor ~ date:", date);
     const res = await getAvailableTimeOfDoctor(id, date);
     if (!res.error) {
       setAvailableTime(res.data);
@@ -102,7 +102,6 @@ const DoctorDetail = () => {
                               data: {
                                 appointmentDate: DateSelected,
                                 doctorId: id,
-                                patientId: "5",
                                 clinicId: `${detailDoctor.clinic?.id}`,
                                 timeId: item.id,
                               },

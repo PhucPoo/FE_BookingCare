@@ -2,7 +2,7 @@ import Slider from "react-slick";
 import { useEffect, useState } from "react";
 import { getAllDoctors } from "../../../api/Doctor/DoctorApi";
 import type { DoctorListModel } from "../../DanhSach/Doctor/DoctorListModel";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const MainPageDoctor = () => {
   const settings = {
@@ -75,7 +75,7 @@ const MainPageDoctor = () => {
 
         {/* <!-- Xem tất cả --> */}
         <div className="see-all">
-          <a href="#">Xem tất cả »</a>
+          <Link to="/danh-sach/bac-si">Xem tất cả »</Link>
         </div>
       </section>
     </div>

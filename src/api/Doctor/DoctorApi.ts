@@ -21,13 +21,10 @@ export const getBookingsByDoctorId = async (id: string) => {
 };
 
 export const handleDoctorUpdateBooking = async (id: string, status: string) => {
-  console.log(document.cookie.split("=")[1]);
-
   const data = {};
   const res = await customAxiosInstance.put(
     `${api}/bookings/${id}/status?status=${status}`,
     data
-    //
   );
   return res.data;
 };

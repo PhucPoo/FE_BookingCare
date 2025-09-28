@@ -19,12 +19,12 @@ const MedicalFacilityDetail = () => {
     useState<MedicalFacilityDetailModel>({});
   const handleGetMedicalFacilityDetail = async () => {
     const result = await getMedicalFacilityDetail(id);
-    console.log("🚀 ~ handleGetMedicalFacilityDetail ~ result:", result);
     if (!result.error) {
       setMedicalFacilityDetail(result.data);
     }
   };
   useEffect(() => {
+    window.scroll(0, 0);
     handleGetMedicalFacilityDetail();
   }, []);
   return (

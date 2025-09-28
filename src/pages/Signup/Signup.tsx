@@ -1,149 +1,238 @@
 import React, { useState } from "react";
-import { Form, Input, Button, message } from "antd/lib";
-import { UserOutlined, LockOutlined, MailOutlined, PhoneOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { UserOutlined, MailOutlined, LockOutlined, PhoneOutlined, EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import axios from "axios";
-import "./Signup.css";
+import "./signup.css";
+import { validateSignup } from "../../components/AuthForm/RealtimeSignupCheck";
+
 
 const Signup: React.FC = () => {
-  const navigate = useNavigate();
-  const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-
-  // Password validation state
-  const [passwordValid, setPasswordValid] = useState({
-    length: false,
-    uppercase: false,
-    lowercase: false,
-    number: false,
-    special: false,
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phoneNumber: "",
+    password: "",
+    confirmPassword: "",
   });
-
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    setPasswordValid({
-      length: val.length >= 8,
-      uppercase: /[A-Z]/.test(val),
-      lowercase: /[a-z]/.test(val),
-      number: /[0-9]/.test(val),
-      special: /[!@#$%^&*(),.?":{}|<>]/.test(val),
-    });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
- 
-  const onFinish = async (values: any) => {
+    const toggleComnfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showPassword);
+  };
+  const [errors, setErrors] = useState({
+  email: "",
+  phoneNumber: "",
+  password: "",
+});
 
-    // setLoading(true);
-     console.log("Email:", values.email);
-     console.log("pw:", values.password);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    const newFormData = { ...formData, [name]: value };
+    setFormData(newFormData);
+
+    let fieldError = "";
+      if (name === "email") {
+        if (!value) fieldError = "Email không được để trống.";
+        else if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(value)) fieldError = "Email không đúng định dạng.";
+        setErrors({ ...errors, email: fieldError });
+      }
+
+      if (name === "phoneNumber") {
+        if (!value) fieldError = "Số điện thoại không được để trống.";
+        else if (!/^[0-9]{10,11}$/.test(value)) fieldError = "Số điện thoại phải có 10-11 số.";
+        setErrors({ ...errors, phoneNumber: fieldError });
+      }
+
+      if (name === "password") {
+        if (!value) fieldError = "Mật khẩu không được để trống.";
+        else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/.test(value)) {
+          fieldError = "Mật khẩu phải từ 8 ký tự, có chữ hoa, chữ thường, số và ký tự đặc biệt.";
+        }
+        setErrors({ ...errors, password: fieldError });
+      }
+    
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  const validation = validateSignup(formData);
+  setErrors(validation);
+
+  if (validation.email || validation.phoneNumber || validation.password) {
+    alert("Vui lòng kiểm tra lại thông tin!");
+    return;
+  }
+
+    setLoading(true);
     try {
-      const res = await axios.post("http://localhost:8080/api/v1/auth/register", {
-        name: values.name,
-        email: values.email,
-        phoneNumber: values.phoneNumber,
-        password: values.password,
+      const response = await axios.post("http://localhost:8080/api/v1/auth/register", {
+        ...formData,
+        roleId: 2,
       });
-      console.log(res.data)
-     
-      if (res.status === 201 || res.data?.statusCode === 201) {
-        message.success("Đăng ký thành công!");
-        navigate("/login");
-      }
-    } catch (error: any) {
-      console.error(error);
-      const msg: string = error.response?.data?.message || "Có lỗi xảy ra, vui lòng thử lại!";
-      const formErrors: any[] = [];
 
-      // Phân tích message để gán lỗi từng field
-      if (msg.toLowerCase().includes("email")) {
-        formErrors.push({ name: "email", errors: [msg] });
-      }
-      if (msg.toLowerCase().includes("số điện thoại") || msg.toLowerCase().includes("phone")) {
-        formErrors.push({ name: "phoneNumber", errors: [msg] });
-      }
-
-      if (formErrors.length > 0) {
-        form.setFields(formErrors);
+      if (response.status === 200) {
+        alert("Đăng ký thành công! Vui lòng kiểm tra email để lấy OTP.");
+        navigate("/verify-otp", { 
+          state: { 
+            email: formData.email, 
+            password: formData.password
+          } 
+        });
       } else {
-        message.error(msg);
+        alert("Đăng ký thất bại!");
       }
+
+    } catch (error: any) {
+      alert(error.response?.data?.message || "Lỗi server");
     } finally {
       setLoading(false);
     }
   };
-
+  sessionStorage.setItem("reg_name", formData.name);
+  sessionStorage.setItem("reg_phone", formData.phoneNumber);
+  sessionStorage.setItem('reg_password', formData.password);
   return (
-    <div className="signup-wrapper">
-      <div className="signup-box">
+    <div className="signup-container">
+      <div className="signup-card">
+        {/* Left section with image */}
         <div className="signup-left">
-          <img src="/bg_signup.png" alt="Signup illustration" />
+          <div className="illustration">
+            <img 
+              src="/bg_1.png" 
+              alt="Signup Illustration" 
+              className="bg-image" 
+            />
+          </div>
         </div>
 
+        {/* Right section with form */}
         <div className="signup-right">
-          <h2 className="signup-title">Đăng ký</h2>
+          <div className="signup-header">
+            <h1 className="brand-title">BookingCare</h1>
+            <h2 className="form-title">Tạo tài khoản mới</h2>
+          </div>
 
-          <Form form={form} layout="vertical" name="signup" onFinish={onFinish} size="large">
-            <Form.Item name="name" rules={[{ required: true, message: "Hãy nhập tên!" }]}>
-              <Input prefix={<UserOutlined />} placeholder="Username" />
-            </Form.Item>
-
-            <Form.Item
-              name="email"
-              rules={[{ required: true, type: "email", message: "Email không hợp lệ!" }]}
-            >
-              <Input prefix={<MailOutlined />} placeholder="Email" />
-            </Form.Item>
-
-            <Form.Item
-              name="phoneNumber"
-              rules={[{ required: true, message: "Hãy nhập số điện thoại!" }]}
-            >
-              <Input prefix={<PhoneOutlined />} placeholder="PhoneNumber" />
-            </Form.Item>
-
-            <Form.Item
-              name="password"
-              rules={[{ required: true, message: "Hãy nhập mật khẩu!" }]}
-            >
-              <Input.Password
-                prefix={<LockOutlined />}
-                placeholder="password"
-                onChange={handlePasswordChange}
-              />
-            </Form.Item>
-
-            <div style={{ marginBottom: 16 }}>
-              <p style={{ color: passwordValid.length ? "green" : "red" }}>• Mật khẩu có ít nhất 8 ký tự</p>
-              <p style={{ color: passwordValid.uppercase ? "green" : "red" }}>• Mật khẩu có ít nhất 1 chữ hoa</p>
-              <p style={{ color: passwordValid.lowercase ? "green" : "red" }}>• Mật khẩu có ít nhất 1 chữ thường</p>
-              <p style={{ color: passwordValid.number ? "green" : "red" }}>• Mật khẩu có ít nhất 1 số</p>
-              <p style={{ color: passwordValid.special ? "green" : "red" }}>• Mật khẩu có ít nhất 1 ký tự đặc biệt</p>
+          <form className="signup-form" onSubmit={handleSubmit}>
+            {/* Name Field */}
+            <div className="form-group">
+              <div className="input-wrapper">
+                <UserOutlined className="input-icon" />
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Họ và tên"
+                  className="form-input"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
             </div>
 
-            <Form.Item
-              name="confirm"
-              dependencies={['password']}
-              rules={[
-                { required: true, message: 'Hãy xác nhận mật khẩu!' },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    if (!value || getFieldValue('password') === value) return Promise.resolve();
-                    return Promise.reject(new Error('Mật khẩu không khớp!'));
-                  },
-                }),
-              ]}
+            {/* Email Field */}
+            <div className="form-group">
+              <div className="input-wrapper">
+                <MailOutlined className="input-icon" />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Địa chỉ email"
+                  className="form-input"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              {errors.email && <span className="error-message">{errors.email}</span>}
+            </div>
+
+            {/* Phone Field */}
+            <div className="form-group">
+              <div className="input-wrapper">
+                <PhoneOutlined className="input-icon" />
+                <input
+                  type="tel"
+                  name="phoneNumber"
+                  placeholder="Số điện thoại"
+                  className="form-input"
+                  value={formData.phoneNumber}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              {errors.phoneNumber && <span className="error-message">{errors.phoneNumber}</span>}
+            </div>
+
+            {/* Password Field */}
+            <div className="form-group">
+              <div className="input-wrapper">
+                <LockOutlined className="input-icon" />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="Mật khẩu"
+                  className="form-input"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  minLength={6}
+                />
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="password-toggle"
+                >
+                  {showPassword ? <EyeInvisibleOutlined /> : <EyeTwoTone />}
+                </button>
+              </div>
+              {errors.password && <span className="error-message">{errors.password}</span>}
+            </div>
+
+            {/* Confirm Password Field */}
+            <div className="form-group">
+              <div className="input-wrapper">
+                <LockOutlined className="input-icon" />
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  placeholder="Xác nhận mật khẩu"
+                  className="form-input"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                  minLength={6}
+                />
+                <button
+                  type="button"
+                  onClick={toggleComnfirmPasswordVisibility}
+                  className="password-toggle"
+                >
+                  {showConfirmPassword ? <EyeInvisibleOutlined /> : <EyeTwoTone />}
+                </button>
+              </div>
+            </div>
+
+            <button 
+              type="submit" 
+              className={`signup-button ${loading ? "loading" : ""}`} 
+              disabled={loading}
             >
-              <Input.Password prefix={<LockOutlined />} placeholder="Confirm Password" />
-            </Form.Item>
+              {loading ? "Đang xử lý..." : "Đăng ký"}
+            </button>
+          </form>
 
-            <Form.Item>
-              <Button type="primary" htmlType="submit" block className="signup-btn" loading={loading}>
-                Đăng ký
-              </Button>
-            </Form.Item>
-          </Form>
-
-          <div className="signup-footer">
-            Đã có tài khoản? <a onClick={() => navigate("/login")}>Đăng nhập</a>
+          <div className="login-link">
+            Đã có tài khoản?{" "}
+            <a href="/login" className="login-text">
+              Đăng nhập ngay
+            </a>
           </div>
         </div>
       </div>

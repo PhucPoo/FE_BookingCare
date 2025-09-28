@@ -133,9 +133,6 @@ const BookingTableManage = ({
     },
   ];
   const handleUpdateBooking = async (id: string, status: string) => {
-    console.log("🚀 ~ handleUpdateBooking ~ status:", status);
-    console.log("🚀 ~ handleUpdateBooking ~ id:", typeof id);
-
     handleDoctorUpdateBooking(id, status);
     handleGetBookingList();
   };
