@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { UserOutlined, MailOutlined, LockOutlined, PhoneOutlined, EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import axios from "axios";
 import "./signup.css";
-import { validateSignup } from "../../components/AuthForm/RealtimeSignupCheck";
+// import { validateSignup } from "../../components/AuthForm/RealtimeSignupCheck";
 
 
 const Signup: React.FC = () => {

@@ -1,13 +1,13 @@
 /* Reset */
-* {
+/* * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
+} */
 
 body {
   font-family: Arial, sans-serif;
-  background-color: #b2ebf2; /* màu xanh nhạt giống ảnh */
+  background-color: #b2ebf2; 
   min-height: 100vh;
   display: flex;
   align-items: center;

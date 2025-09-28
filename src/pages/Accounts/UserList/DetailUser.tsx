@@ -61,10 +61,10 @@ const Informationuser: React.FC<InformationuserProps> = ({
           </p>
           <p>
             <strong>CCCD:</strong> {user.cccd}
-          {/* </p>
-          <b>Ngày sinh:</b>{" "}
-          {birthday ? dayjs(birthday).format("DD/MM/YYYY") : "Chưa có"}
-          <p> */}
+          </p>
+          {/* <b>Ngày sinh:</b>{" "}
+          {birthday ? dayjs(birth).format("DD/MM/YYYY") : "Chưa có"} */}
+          <p>
             <strong>Địa chỉ:</strong> {user.address}
           </p>
           <p>
