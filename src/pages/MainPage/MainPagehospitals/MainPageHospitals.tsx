@@ -4,7 +4,7 @@ import hospital1 from "../../../public/img/hospital1.png";
 import type { MedicalFacilitiesModel } from "../../DanhSach/MedicalFacility/MedicalFacilitiesModel";
 import { getAllMedicalFacility } from "../../../api/Medical/MedicalFacilityApi";
 import Slider from "react-slick";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 const MainPageHospitals = () => {
   const settings = {
     dots: false,
@@ -14,6 +14,7 @@ const MainPageHospitals = () => {
     slidesToShow: 4,
     slidesToScroll: 1,
   };
+  const navigate = useNavigate();
   const [medicalFacilities, setMedicalFacilities] = useState<
     MedicalFacilitiesModel[]
   >([]);
@@ -48,7 +49,13 @@ const MainPageHospitals = () => {
                     <div className="rating">
                       ⭐⭐⭐⭐⭐ <span>(5.0)</span>
                     </div>
-                    <button>Đặt khám ngay</button>
+                    <button
+                      onClick={() => {
+                        navigate("/danh-sach/co-so-y-te/" + medicalFacility.id);
+                      }}
+                    >
+                      Xem chi tiết
+                    </button>
                   </div>
                 );
               })}
