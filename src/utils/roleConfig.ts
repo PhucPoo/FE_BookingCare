@@ -1,16 +1,16 @@
 export const roles = {
-  ADMIN: "admin",
-  DOCTOR: "doctor",
-  SUPPORT: "support",
-  CLIENT: "client",
+  ADMIN: "ADMIN",
+  DOCTOR: "DOCTOR",
+  SUPPORT: "SUPPORT",
+  CLIENT: "CLIENT",
 };
 export const permission = {
-  admin: "admin-dashboard",
-  doctor: "doctor-dashboard",
-  support: "support-dashboard",
+  ADMIN: "admin-dashboard",
+  DOCTOR: "doctor-dashboard",
+  SUPPORT: "support-dashboard",
 };
 export const rolePermission = {
   [roles.ADMIN]: Object.values(permission),
-  [roles.DOCTOR]: [permission.doctor],
-  [roles.SUPPORT]: [permission.support],
+  [roles.DOCTOR]: [permission.DOCTOR],
+  [roles.SUPPORT]: [permission.SUPPORT],
 };
