@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from "react";
 
-import Button from "antd/lib/button";
 import type { User } from "./UserTable";
 
 import UserFilterBar from "./UserFilterBar";
 import UserTable from "./UserTable";
 import Adduser from "./AddUser";
-import { DatePicker, Select, Space } from "antd/lib";
 // import Input from "antd/es/input";
-import { testGetAccountsApi, testPutAccountsApi } from "../../../api/testApi";
-import api from "../../../api/axios";
+import { testGetAccountsApi } from "../../../api/testApi";
 import UserAdvancedFilter from "./UserAdvancedFilter";
 
 
@@ -107,53 +104,6 @@ const userManagement: React.FC = () => {
         </div>
       </div>
 
-      {/* <div className="mb-6 flex flex-wrap items-center gap-4">
-        <Select
-          defaultValue="role"
-          style={{ width: 200 }}
-          size="large"
-          onChange={handleChange}
-        >
-          <OptGroup label="Manager">
-            <Option value="doctor">Doctor</Option>
-            <Option value="patient">Patient</Option>
-            <Option value="support">Support</Option>
-          </OptGroup>
-        </Select>
-
-        <Select
-          defaultValue="gender"
-          style={{ width: 200 }}
-          size="large"
-          onChange={handleChange}
-        >
-          <OptGroup label="Manager">
-            <Option value="male">Nam</Option>
-            <Option value="female">Nữ</Option>
-            <Option value="other">Khác</Option>
-          </OptGroup>
-        </Select>
-
-        <Space.Compact size="large">
-          <DatePicker
-            placeholder="Ngày tạo"
-            style={{ width: 180 }}
-            size="large"
-          />
-        </Space.Compact>
-
-        <Button
-          type="primary"
-          size="large"
-          className="!bg-blue-600 hover:!bg-blue-700 rounded-lg font-medium shadow-sm"
-          onClick={() => setIsAddModalOpen(true)}
-          style={{ minWidth: 180 }}
-        >
-          + Thêm người dùng
-        </Button>
-      </div> */}
-      {/* <UserFilterBar users={users} onFilter={setFilteredUsers} /> */}
-
       <UserAdvancedFilter
         onChangeRole={setRoleFilter}
         onChangeGender={setGenderFilter}
@@ -173,7 +123,6 @@ const userManagement: React.FC = () => {
         setusers={setusers}
         open={isAddModalOpen}
         onCancel={() => setIsAddModalOpen(false)}
-        onAdd={() => { }}
       />
     </div>
 

@@ -1,6 +1,6 @@
 import React from "react";
-import { DatePicker, Select, Button } from "antd/lib";
-import dayjs from "dayjs";
+import { DatePicker, Select } from "antd/lib";
+
 
 const { Option, OptGroup } = Select;
 
@@ -20,75 +20,66 @@ const DoctorAdvancedFilter: React.FC<DoctorAdvancedFilterProps> = ({
   onOpenAdd,
 }) => {
   return (
-    <div className="mb-6 flex flex-wrap items-center gap-4">
-      {/* Học vị */}
-      <Select
-        placeholder="Chọn học vị"
-        style={{ width: 200 }}
-        size="large"
-        allowClear
-        onChange={(value) => onChangeDegree(value)}
-      >
-        <OptGroup label="Học vị">
-          <Option value="BACHELOR">Cử nhân</Option>
-          <Option value="MASTER">Thạc sĩ</Option>
-          <Option value="DOCTOR">Tiến sĩ</Option>
-        </OptGroup>
-      </Select>
+   <div className="mb-6">
+  <div className="flex flex-wrap justify-start items-center gap-4 p-4 border border-gray-300 rounded-lg bg-white shadow-md">
+    <Select
+      placeholder="Chọn học vị"
+      style={{ width: 200, height: 40 }}
+      size="large"
+      allowClear
+      className="rounded-md border-gray-300 focus:border-blue-400"
+      onChange={(value) => onChangeDegree(value)}
+    >
+      <OptGroup label="Học vị">
+        <Option value="BACHELOR">Cử nhân</Option>
+        <Option value="MASTER">Thạc sĩ</Option>
+        <Option value="DOCTOR">Tiến sĩ</Option>
+      </OptGroup>
+    </Select>
 
-      {/* Tháng/Năm tạo */}
-      <DatePicker
-        picker="month"
-        placeholder="Tháng/Năm tạo"
-        style={{ width: 180 }}
-        size="large"
-        onChange={(_, dateString) => onChangeCreatedAt(dateString || null)}
-      />
+    <DatePicker
+      picker="month"
+      placeholder="Tháng/Năm tạo"
+      style={{ width: 180, height: 40 }}
+      size="large"
+      className="rounded-md border-gray-300 focus:border-blue-400"
+      onChange={(_, dateString) => onChangeCreatedAt(dateString || null)}
+    />
 
-      {/* Chuyên khoa */}
-      <Select
-        placeholder="Chọn chuyên khoa"
-        style={{ width: 220 }}
-        size="large"
-        allowClear
-        onChange={(value) => onChangeSpecialty(value)}
-      >
-        <OptGroup label="Chuyên khoa">
-          <Option value="cardiology">Tim mạch</Option>
-          <Option value="neurology">Thần kinh</Option>
-          <Option value="dermatology">Da liễu</Option>
-          <Option value="pediatrics">Nhi khoa</Option>
-          {/* TODO: map từ API specialties */}
-        </OptGroup>
-      </Select>
+    <Select
+      placeholder="Chọn chuyên khoa"
+      style={{ width: 220, height: 40 }}
+      size="large"
+      allowClear
+      className="rounded-md border-gray-300 focus:border-blue-400"
+      onChange={(value) => onChangeSpecialty(value)}
+    >
+      <OptGroup label="Chuyên khoa">
+        <Option value="cardiology">Tim mạch</Option>
+        <Option value="neurology">Thần kinh</Option>
+        <Option value="dermatology">Da liễu</Option>
+        <Option value="pediatrics">Nhi khoa</Option>
+      </OptGroup>
+    </Select>
 
-      {/* Phòng khám */}
-      <Select
-        placeholder="Chọn phòng khám"
-        style={{ width: 220 }}
-        size="large"
-        allowClear
-        onChange={(value) => onChangeClinic(value)}
-      >
-        <OptGroup label="Phòng khám">
-          <Option value="clinic1">Phòng khám A</Option>
-          <Option value="clinic2">Phòng khám B</Option>
-          <Option value="clinic3">Phòng khám C</Option>
-          {/* TODO: map từ API clinics */}
-        </OptGroup>
-      </Select>
+    <Select
+      placeholder="Chọn phòng khám"
+      style={{ width: 220, height: 40 }}
+      size="large"
+      allowClear
+      className="rounded-md border-gray-300 focus:border-blue-400"
+      onChange={(value) => onChangeClinic(value)}
+    >
+      <OptGroup label="Phòng khám">
+        <Option value="clinic1">Phòng khám A</Option>
+        <Option value="clinic2">Phòng khám B</Option>
+        <Option value="clinic3">Phòng khám C</Option>
+      </OptGroup>
+    </Select>
+  </div>
+</div>
 
-      {/* Nút thêm bác sĩ */}
-      <Button
-        type="primary"
-        size="large"
-        className="!bg-blue-600 hover:!bg-blue-700 rounded-lg font-medium shadow-sm"
-        onClick={onOpenAdd}
-        style={{ minWidth: 180 }}
-      >
-        + Thêm bác sĩ
-      </Button>
-    </div>
+
   );
 };
 

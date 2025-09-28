@@ -6,22 +6,25 @@ import Button from "antd/es/button";
 import Form from "antd/es/form";
 import type { User } from "./UserTable";
 import { testPutAccountsApi } from "../../../api/testApi";
-import { notification, message } from 'antd';
-import { DatePicker, Space } from "antd/lib";
+import { notification } from "antd";
+import { DatePicker, Upload } from "antd/lib";
+import { UploadOutlined } from "@ant-design/icons";
+import dayjs, { Dayjs } from "dayjs";
 
 const { Option } = Select;
 
-interface EdituserProps {
+interface EditUserProps {
   open: boolean;
   onCancel: () => void;
   onUpdate: (user: User) => void;
   user: User | null;
 }
 
-const Edituser: React.FC<EdituserProps> = ({ open, onCancel, onUpdate, user }) => {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+const EditUser: React.FC<EditUserProps> = ({ open, onCancel, onUpdate, user }) => {
   const [form] = Form.useForm();
+  const [file, setFile] = useState<File | null>(null);
 
+  // Đổ dữ liệu vào form khi mở modal
   useEffect(() => {
     if (user) {
       form.setFieldsValue({
@@ -29,82 +32,78 @@ const Edituser: React.FC<EdituserProps> = ({ open, onCancel, onUpdate, user }) =
         email: user.email,
         phoneNumber: user.phoneNumber,
         cccd: user.cccd,
-        birth: user.birth,
+        birth: user.birth ? dayjs(user.birth) : null,
         gender: user.gender,
         address: user.address,
       });
-      setSelectedFile(null);
+      setFile(null);
     }
   }, [user, form]);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      setSelectedFile(event.target.files[0]);
+  // Upload file
+  const handleUploadChange = (info: any) => {
+    if (info.fileList.length > 0) {
+      setFile(info.fileList[0].originFileObj);
+    } else {
+      setFile(null);
     }
   };
 
+  // Submit form
   const handleSubmit = async (values: any) => {
     if (!user) return;
 
     const formData = new FormData();
-    formData.append('id', user.id)
+    formData.append("id", String(user.id)); // ✅ Bổ sung id
     formData.append("name", values.name);
     formData.append("email", values.email || "");
     formData.append("phoneNumber", values.phoneNumber);
     formData.append("cccd", values.cccd);
     formData.append("gender", values.gender);
     formData.append("address", values.address);
-    formData.append("birth", user.birth);
+
+   
+    if (values.birth) {
+      formData.append("birth", values.birth.format("YYYY-MM-DD"));
+    } else {
+      formData.append("birth", ""); // hoặc để null tùy backend
+    }
+
     formData.append("createAt", user.createAt);
     formData.append("updateAt", new Date().toISOString());
 
-    if (selectedFile) {
-      formData.append("file", selectedFile);
+    if (file) {
+      formData.append("file", file);
     }
 
     try {
       await testPutAccountsApi(formData);
 
-      const updatedUser: any = {
+      const updatedUser: User = {
         ...user,
-        id: user.id,
-        name: values.name,
-        email: values.email,
-        phoneNumber: values.phoneNumber,
-        cccd: values.cccd,
-        birth: new Date(),
-        address: values.address,
-        file: selectedFile ? selectedFile.name : user.avatar,
-        updateAt: new Date(),
-
+        ...values,
+        id: user.id, // ✅ giữ id
+        birth: values.birth ? values.birth.format("YYYY-MM-DD") : null,
+        avatar: file ? file.name : user.avatar,
+        updateAt: new Date().toISOString(),
       };
+
       notification.success({
-        message: `Cập nhật thành công`,
-        description: "Cập nhật thành công người dùng: " + user.name,
-      })
+        message: "Cập nhật thành công",
+        description: `Người dùng ${user.name} đã được cập nhật.`,
+      });
 
       onUpdate(updatedUser);
       form.resetFields();
+      onCancel();
     } catch (err: any) {
-      console.log(err.response.data.message)
       notification.error({
         message: "Cập nhật thất bại",
-        description: err.response.data.message
-      })
+        description: err?.response?.data?.message || "Đã xảy ra lỗi",
+      });
       console.error("Lỗi cập nhật user:", err);
     }
   };
-  const handleChange = (date: any | null) => {
-    if (date) {
-      // Convert sang string
-      const birthday = date.format("YYYY-MM-DD");
-      console.log("Birthday:", birthday);
-
-      // Sau đó gửi lên API
-      // axios.post("/api/users", { birthday });
-    }
-  };
-
 
   return (
     <Modal
@@ -119,72 +118,56 @@ const Edituser: React.FC<EdituserProps> = ({ open, onCancel, onUpdate, user }) =
       width={520}
     >
       <Form layout="vertical" form={form} onFinish={handleSubmit} className="space-y-4">
-        <Form.Item
-          name="name"
-          label="Tên người dùng"
-          rules={[{ required: true, message: "Vui lòng nhập tên người dùng!" }]}
-        >
-          <Input placeholder="Nhập tên người dùng" size="large" className="rounded-md px-3 py-2" />
+        <Form.Item name="name" label="Tên người dùng" rules={[{ required: true }]}>
+          <Input placeholder="Nhập tên người dùng" size="large" />
+        </Form.Item>
+        <Form.Item name="email" label="Email" rules={[{ required: true, type: "email" }]}>
+          <Input placeholder="Nhập email" size="large" />
         </Form.Item>
 
         <Form.Item
           name="phoneNumber"
           label="Số điện thoại"
           rules={[
-            { required: true, message: "Vui lòng nhập số điện thoại!" },
-            {
-              pattern: /^0\d{9,10}$/,
-              message: "Số điện thoại phải bắt đầu bằng 0 và có 10–11 chữ số",
-            },
+            { required: true },
+            { pattern: /^0\d{9,10}$/, message: "Số điện thoại phải bắt đầu bằng 0 và có 10–11 chữ số" },
           ]}
         >
-          <Input placeholder="Nhập số điện thoại" size="large" className="rounded-md px-3 py-2" />
+          <Input placeholder="Nhập số điện thoại" size="large" />
         </Form.Item>
-        <Form.Item
-          name="cccd"
-          label="Căn cước công dân"
-          rules={[
-            { required: true, message: "Vui lòng nhập Căn cước công dân!" },
-            // {
-            //   pattern: /^0\d{9,10}$/,
-            //   message: "Số điện thoại phải bắt đầu bằng 0 và có 10–11 chữ số",
-            // },
-          ]}
-        >
-          <Input placeholder="Nhập số điện thoại" size="large" className="rounded-md px-3 py-2" />
+
+        <Form.Item name="cccd" label="Căn cước công dân" rules={[{ required: true }]}>
+          <Input placeholder="Nhập CCCD" size="large" />
         </Form.Item>
-        <Form.Item
-          name="gender"
-          label="Giới tính"
-          rules={[{ required: true, message: "Vui lòng chọn giới tính!" }]}
-        >
-          <Select placeholder="Chọn vai trò" size="large">
+
+        <Form.Item name="gender" label="Giới tính" rules={[{ required: true }]}>
+          <Select placeholder="Chọn giới tính" size="large">
             <Option value="MALE">Nam</Option>
             <Option value="FEMALE">Nữ</Option>
             <Option value="OTHER">Khác</Option>
           </Select>
         </Form.Item>
-        <Space.Compact size="large">
-          <DatePicker
-            placeholder="Ngày sinh"
-            style={{ width: 180 }}
-            size="large"
-            onChange={handleChange}
-          />
-        </Space.Compact> 
-        <Form.Item
-          name="address"
-          label="Địa chỉ"
-          rules={[
-            { required: true, message: "Vui lòng nhập Địa chỉ!" },
 
-          ]}
+        <Form.Item
+          name="birth"
+          label="Ngày sinh"
+          rules={[{ required: true, message: "Vui lòng chọn ngày sinh!" }]}
         >
-          <Input placeholder="Nhập địa chỉ" size="large" className="rounded-md px-3 py-2" />
+          <DatePicker
+            style={{ width: "100%" }}
+            format="YYYY-MM-DD"
+            size="large"
+          />
+        </Form.Item>
+        <Form.Item name="address" label="Địa chỉ" rules={[{ required: true }]}>
+          <Input placeholder="Nhập địa chỉ" size="large" />
         </Form.Item>
 
-        <Form.Item name="avatar" label="Ảnh" rules={[{ required: true, message: "Vui lòng tải ảnh!" }]}>
-          <input type="file" onChange={handleFileChange} />
+        <Form.Item label="Ảnh">
+          <Upload beforeUpload={() => false} onChange={handleUploadChange} maxCount={1} listType="picture">
+            <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
+          </Upload>
+          {file && <p className="mt-2 text-sm text-gray-500">Ảnh: {file.name}</p>}
         </Form.Item>
 
         <Form.Item>
@@ -202,4 +185,4 @@ const Edituser: React.FC<EdituserProps> = ({ open, onCancel, onUpdate, user }) =
   );
 };
 
-export default Edituser;
+export default EditUser;

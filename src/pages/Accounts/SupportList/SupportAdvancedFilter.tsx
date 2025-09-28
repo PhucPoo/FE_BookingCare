@@ -77,16 +77,7 @@ const SupportAdvancedFilter: React.FC<SupportAdvancedFilterProps> = ({
         </OptGroup>
       </Select>
 
-      {/* Nút thêm */}
-      <Button
-        type="primary"
-        size="large"
-        className="!bg-blue-600 hover:!bg-blue-700 rounded-lg font-medium shadow-sm"
-        onClick={onOpenAdd}
-        style={{ minWidth: 180 }}
-      >
-        + Thêm trợ lý
-      </Button>
+     
     </div>
   );
 };

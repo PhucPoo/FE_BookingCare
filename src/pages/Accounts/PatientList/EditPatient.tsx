@@ -11,14 +11,14 @@ import { testPutPatientApi } from "../../../api/testPatient";
 interface EditPatientProps {
   open: boolean;
   onCancel: () => void;
-  onUpdate: (patient: Patient) => void;
+  onUpdatepatient: (patient: Patient) => void; // đổi tên prop
   patient: Patient | null;
 }
 
 const EditPatient: React.FC<EditPatientProps> = ({
   open,
   onCancel,
-  onUpdate,
+  onUpdatepatient, // đổi tên destructuring
   patient,
 }) => {
   const [form] = Form.useForm();
@@ -37,18 +37,17 @@ const EditPatient: React.FC<EditPatientProps> = ({
     const payload: Patient = {
       ...patient,
       bhyt: values.bhyt,
-    //   updateAt: new Date(),
     };
 
     try {
-      const res = await testPutPatientApi(payload);
+      const res = await testPutPatientApi(patient.id, payload);
       const updated = res.data.data;
 
-      onUpdate(updated);
+      onUpdatepatient(updated); // gọi đúng prop
 
       notification.success({
         message: "Cập nhật thành công",
-        description:``,
+        description:""
       });
 
       form.resetFields();
@@ -75,7 +74,6 @@ const EditPatient: React.FC<EditPatientProps> = ({
       width={500}
     >
       <Form form={form} layout="vertical" onFinish={handleSubmit}>
-        {/* Account readonly */}
         <Form.Item label="Account">
           <Input
             value={`${patient?.account?.name || ""} (${patient?.account?.email || ""})`}
@@ -84,7 +82,6 @@ const EditPatient: React.FC<EditPatientProps> = ({
           />
         </Form.Item>
 
-        {/* BHYT */}
         <Form.Item name="bhyt" label="Mã BHYT">
           <Input placeholder="Nhập mã BHYT" size="large" />
         </Form.Item>
@@ -111,3 +108,4 @@ const EditPatient: React.FC<EditPatientProps> = ({
 };
 
 export default EditPatient;
+

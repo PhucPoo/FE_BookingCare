@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Button, DatePicker, Space } from "antd/lib";
 
 import type { Support } from "./SupportTable";
 import SupportTable from "./SupportTable";
-import AddSupport from "./AddSupport";
 import SupportFilterBar from "./SupportFilterBar";
 // import SupportAdvancedFilter from "./SupportAdvancedFilter"; 
 
@@ -130,13 +128,7 @@ const SupportManagement: React.FC = () => {
         onDeleteSupport={handleDeleteSupport}
       />
 
-      <AddSupport
-        supports={supports}
-        setsupport={setSupports}
-        open={isAddModalOpen}
-        onCancel={() => setIsAddModalOpen(false)}
-        onAdd={(newSupport) => setSupports([...supports, newSupport])}
-      />
+     
     </div>
   );
 };

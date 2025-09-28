@@ -4,7 +4,9 @@ import Modal from "antd/lib/modal";
 import DetailDoctor from "./DetailDoctor";
 import EditDoctor from "./EditDoctor";
 import type { Clinic } from "../../Clinic/ClinicTable";
-import type { Specialty } from "../../Specialty/SpecialtyList";
+import type { Specialty } from "../../Specialty/SpecialtyTable";
+import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
+import { Pagination } from "antd/lib";
 
 export interface Doctor {
   id: number;
@@ -17,7 +19,7 @@ export interface Doctor {
     email: string;
     phoneNumber: string;
     cccd?: string;
-    address:string;
+    address: string;
   };
   clinic: Clinic;
   specialty: Specialty;
@@ -42,11 +44,15 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
   onUpdateDoctor,
   onDeleteDoctor,
 }) => {
-  // State sort
+  // Sort
   const [sortColumn, setSortColumn] = useState<SortColumn>("");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
-  // Modal confirm delete
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 8;
+
+  // Modal delete
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteDoctorId, setDeleteDoctorId] = useState<number>(0);
 
@@ -59,16 +65,11 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
     }
   };
 
-  // Modal chi tiết
+  // Modal detail
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
 
-  const openDetailModal = (doctor: Doctor) => {
-    setSelectedDoctor(doctor);
-    setIsDetailModalOpen(true);
-  };
-
-  // Modal chỉnh sửa
+  // Modal edit
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingDoctor, setEditingDoctor] = useState<Doctor | null>(null);
 
@@ -78,7 +79,7 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
     setIsEditModalOpen(false);
   };
 
-  // Sort danh sách
+  // Sort logic
   const sortedDoctors = useMemo(() => {
     if (!sortColumn) return doctors;
 
@@ -104,7 +105,6 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
     });
   }, [doctors, sortColumn, sortDirection]);
 
-  // Toggle sort
   const handleSort = (column: SortColumn) => {
     if (sortColumn === column) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -119,92 +119,95 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
     return <span className="ml-1">{sortDirection === "asc" ? "▲" : "▼"}</span>;
   };
 
+  // Pagination slice
+  const startIndex = (currentPage - 1) * pageSize;
+  const paginatedDoctors = sortedDoctors.slice(startIndex, startIndex + pageSize);
+
   return (
     <div className="w-full bg-white rounded shadow overflow-x-auto">
-      <table className="min-w-full text-sm border-collapse">
+      <table className="min-w-full text-base border-separate border-spacing-0">
         <thead className="bg-gray-100">
           <tr>
-            <th className="p-3 border">STT</th>
+            <th className="p-3 border border-gray-200 text-center font-medium">STT</th>
             <th
-              className="p-3 border cursor-pointer select-none md:table-cell"
+              className="p-3 border border-gray-200 cursor-pointer select-none md:table-cell font-medium"
               onClick={() => handleSort("name")}
             >
               Tên bác sĩ {renderSortArrow("name")}
             </th>
-            <th className="p-3 border hidden md:table-cell">SĐT</th>
-            <th className="p-3 border hidden xl:table-cell">Chi phí</th>
-            <th className="p-3 border hidden xl:table-cell">Bằng cấp</th>
-            <th className="p-3 border hidden xl:table-cell">Chuyên khoa</th>
-            <th className="p-3 border hidden xl:table-cell">Phòng khám</th>
+            <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">SĐT</th>
+            <th className="p-3 border border-gray-200 hidden xl:table-cell text-center font-medium">Chi phí</th>
+            <th className="p-3 border border-gray-200 hidden xl:table-cell text-center font-medium">Bằng cấp</th>
+            <th className="p-3 border border-gray-200 hidden xl:table-cell font-medium">Chuyên khoa</th>
+            <th className="p-3 border border-gray-200 hidden xl:table-cell font-medium">Phòng khám</th>
             <th
-              className="p-3 border hidden md:table-cell cursor-pointer select-none"
+              className="p-3 border border-gray-200 hidden md:table-cell cursor-pointer select-none text-center font-medium"
               onClick={() => handleSort("createAt")}
             >
               Ngày tạo {renderSortArrow("createAt")}
             </th>
-            <th className="p-3 border text-center">Thao tác</th>
+            <th className="p-3 border border-gray-200 text-center font-medium">Thao tác</th>
           </tr>
         </thead>
         <tbody>
-          {sortedDoctors.map((doc, idx) => (
+          {paginatedDoctors.map((doc, idx) => (
             <tr key={doc.id} className="hover:bg-gray-50">
-              <td className="p-3 border text-center">{idx + 1}</td>
-              <td className="p-3 border">{doc.account.name}</td>
-              <td className="p-3 border hidden md:table-cell">
-                {doc.account.phoneNumber}
+              <td className="p-3 border border-gray-200 text-center">{startIndex + idx + 1}</td>
+              <td className="p-3 border border-gray-200">{doc.account.name}</td>
+              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">{doc.account.phoneNumber}</td>
+              <td className="p-3 border border-gray-200 hidden xl:table-cell text-center">{doc.cost}</td>
+              <td className="p-3 border border-gray-200 hidden xl:table-cell text-center">{doc.degree}</td>
+              <td className="p-3 border border-gray-200 hidden xl:table-cell">{doc.specialtyName || "—"}</td>
+              <td className="p-3 border border-gray-200 hidden xl:table-cell">{doc.clinic?.name || "—"}</td>
+              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">
+                {doc.createAt ? new Date(doc.createAt).toLocaleDateString() : "—"}
               </td>
-              <td className="p-3 border hidden xl:table-cell">{doc.cost}</td>
-              <td className="p-3 border hidden xl:table-cell">{doc.degree}</td>
-              <td className="p-3 border hidden xl:table-cell">
-                {doc.specialtyName}
-              </td>
-              <td className="p-3 border hidden xl:table-cell">
-                {doc.clinic?.name}
-              </td>
-              <td className="p-3 border hidden md:table-cell">
-                {doc.createAt
-                  ? new Date(doc.createAt).toLocaleDateString()
-                  : "—"}
-              </td>
-              <td className="p-3 border text-center">
+              <td className="p-3 border border-gray-200 text-center">
                 <div className="flex flex-wrap justify-center gap-2">
                   <Button
-                    size="small"
-                    style={{
-                      backgroundColor: "#facc15",
-                      borderColor: "#facc15",
-                      color: "#000",
-                    }}
+                    size="large"
+                    icon={<FaEdit />}
+                    style={{ backgroundColor: "#facc15", borderColor: "#facc15", color: "#000" }}
                     onClick={() => {
                       setEditingDoctor(doc);
                       setIsEditModalOpen(true);
                     }}
-                  >
-                    Sửa
-                  </Button>
+                  />
                   <Button
-                    size="small"
-                    style={{
-                      backgroundColor: "#b91c1c",
-                      borderColor: "#b91c1c",
-                      color: "#fff",
-                    }}
+                    size="large"
+                    icon={<FaTrash />}
+                    style={{ backgroundColor: "#b91c1c", borderColor: "#b91c1c", color: "#fff" }}
                     onClick={() => {
                       setDeleteDoctorId(doc.id);
                       setIsDeleteModalOpen(true);
                     }}
-                  >
-                    Xóa
-                  </Button>
-                  <Button size="small" onClick={() => openDetailModal(doc)}>
-                    Xem
-                  </Button>
+                  />
+                  <Button
+                    size="large"
+                    icon={<FaEye />}
+                    style={{ backgroundColor: "#3b82f6", borderColor: "#3b82f6", color: "#fff" }}
+                    onClick={() => {
+                      setSelectedDoctor(doc);
+                      setIsDetailModalOpen(true);
+                    }}
+                  />
                 </div>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+
+      {/* Pagination */}
+      <div className="flex justify-center py-4">
+        <Pagination
+          current={currentPage}
+          pageSize={pageSize}
+          total={sortedDoctors.length}
+          onChange={(page) => setCurrentPage(page)}
+        />
+      </div>
 
       {/* Modal chi tiết */}
       <DetailDoctor

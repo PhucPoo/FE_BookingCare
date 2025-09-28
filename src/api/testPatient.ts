@@ -1,3 +1,4 @@
+import type { CreatePatientDto } from "../pages/Accounts/PatientList/PatientTable";
 import type { Patient } from "../pages/Doctors/PatientTable_Doctor";
 import customAxiosInstance from "../utils/configAxios";
 
@@ -6,7 +7,9 @@ const config = {
     Authorization: `Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJob2FuZ3BodWMxMjNAZ21haWwuY29tIiwiZXhwIjoxNzY3MzY3NjI1LCJpYXQiOjE3NTg3Mjc2MjUsInVzZXIiOnsiaWQiOjE4LCJuYW1lIjoiUCIsImVtYWlsIjoiaG9hbmdwaHVjMTIzQGdtYWlsLmNvbSIsInJvbGUiOiJET0NUT1IifX0.b4FAUa66CDN4TjIvk_3Bjn5fbDolTLvknRm8pO4AswdHOAMjxjTA49pPO_LH21AR_vw1u_jLlfc2pInKtKzheA`,
   },
 };
-export const testPostPatientApi =async(data: any) => {
+export const testPostPatientApi =async(data: CreatePatientDto)=> {
+  console.log("@@@@@@@@@@@@@@@@@@@@");
+  
     const response = await customAxiosInstance.post(
     `http://localhost:8080/api/v1/patients`,
     data,
@@ -16,9 +19,9 @@ export const testPostPatientApi =async(data: any) => {
   return response.data;
   
 };
-export const testPutPatientApi =async(data: Patient) => {
+export const testPutPatientApi =async(id:number,data: Patient) => {
     const response = await customAxiosInstance.put(
-    `http://localhost:8080/api/v1/patients`,
+    `http://localhost:8080/api/v1/patients/${id}`,
     data,
     config
   );

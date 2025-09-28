@@ -1,5 +1,5 @@
 import React from "react";
-import { DatePicker, Select, Space, Button } from "antd/lib";
+import { DatePicker, Select, Space } from "antd/lib";
 
 const { Option, OptGroup } = Select;
 
@@ -15,8 +15,6 @@ const PatientAdvancedFilter: React.FC<PatientAdvancedFilterProps> = ({
   onChangeGender,
   onChangeDate,
   onChangeAddress,
-  onChangeClinic,
-  onOpenAdd,
 }) => {
   return (
     <div className="mb-6 flex flex-wrap items-center gap-4">
@@ -41,7 +39,7 @@ const PatientAdvancedFilter: React.FC<PatientAdvancedFilterProps> = ({
           placeholder="Ngày tạo"
           style={{ width: 180 }}
           size="large"
-          onChange={(_, dateString) => onChangeDate(dateString || null)}
+          onChange={(_, dateString) => onChangeDate(dateString as string )}
         />
       </Space.Compact>
 
@@ -63,15 +61,7 @@ const PatientAdvancedFilter: React.FC<PatientAdvancedFilterProps> = ({
 
 
       {/* Nút thêm bệnh nhân */}
-      <Button
-        type="primary"
-        size="large"
-        className="!bg-green-600 hover:!bg-green-700 rounded-lg font-medium shadow-sm"
-        onClick={onOpenAdd}
-        style={{ minWidth: 180 }}
-      >
-        + Thêm bệnh nhân
-      </Button>
+     
     </div>
   );
 };

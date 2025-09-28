@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Button from "antd/lib/button";
 import { DatePicker, Input } from "antd/lib";
-import api from "../../api/axios";
 import SpecialtyTable, { type Specialty } from "./SpecialtyTable";
 import AddSpecialty from "./AddSpecialty";
 import EditSpecialty from "./EditSpecialty";
-import { testGetSpecialtyApi, testPostSpecialtyApi } from "../../api/testSpecialty";
+import { testGetSpecialtyApi } from "../../api/testSpecialty";
 
 
 

@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from "react";
 import DoctorFilterBar from "./DoctorFilterBar";
 import DoctorTable, { type Doctor } from "./DoctorTable";
-import AddDoctor from "./AddDoctor";
-import Button from "antd/lib/button";
-import { DatePicker } from "antd/lib";
-import Input from "antd/es/input";
-import api from "../../../api/axios";
 import { testDeleteDoctorApi, testGetDoctorApi } from "../../../api/testDoctor";
 import DoctorAdvancedFilter from "./DoctorAdvancedFilter";
 
@@ -138,12 +133,7 @@ const DoctorManagement: React.FC = () => {
         onDeleteDoctor={handleDeleteDoctor}
       />
 
-      {/* Modal thêm bác sĩ */}
-      <AddDoctor
-        open={isAddModalOpen}
-        onCancel={() => setIsAddModalOpen(false)}
-        onAdd={() => []}
-      />
+      
 
     </div>
   );

@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import Button from "antd/lib/button";
 import Modal from "antd/lib/modal";
-import { notification } from "antd";
+import { notification, Pagination } from "antd";
 import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
 
 import DetailSupport from "./DetailSupport";
@@ -32,7 +32,6 @@ interface SupportTableProps {
 type SortColumn = "name" | "createAt";
 type SortDirection = "asc" | "desc";
 
-// Badge trạng thái
 const getStatusBadge = (isActive: boolean) =>
   isActive ? (
     <span className="bg-green-500 text-white px-2 py-1 rounded text-sm">
@@ -56,6 +55,10 @@ const SupportTable: React.FC<SupportTableProps> = ({
   const [sortColumn, setSortColumn] = useState<SortColumn>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 8;
+
   // Modal xoá
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteSupportId, setDeleteSupportId] = useState<number>(0);
@@ -68,11 +71,10 @@ const SupportTable: React.FC<SupportTableProps> = ({
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingSupport, setEditingSupport] = useState<Support | null>(null);
 
-  // --- Sort client-side (có thể thay bằng API sort nếu backend support)
-  const sorted = useMemo(() => {
+  // --- Filter + Sort
+  const filteredAndSorted = useMemo(() => {
     let data = [...supports];
 
-    // filter
     if (genderFilter) {
       data = data.filter(
         (s) => s.account.gender?.toLowerCase() === genderFilter
@@ -91,7 +93,6 @@ const SupportTable: React.FC<SupportTableProps> = ({
       );
     }
 
-    // sort
     return data.sort((a, b) => {
       let aVal: any;
       let bVal: any;
@@ -115,6 +116,13 @@ const SupportTable: React.FC<SupportTableProps> = ({
     });
   }, [supports, sortColumn, sortDirection, genderFilter, dateFilter, clinicFilter]);
 
+  // --- Pagination slice
+  const startIndex = (currentPage - 1) * pageSize;
+  const paginatedSupports = filteredAndSorted.slice(
+    startIndex,
+    startIndex + pageSize
+  );
+
   const toggleSort = (col: SortColumn) => {
     if (sortColumn === col) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -130,12 +138,10 @@ const SupportTable: React.FC<SupportTableProps> = ({
       await testDeleteSupportApi(deleteSupportId);
       onDeleteSupport(deleteSupportId);
     } catch (err: any) {
-      console.log(err.response.data.message)
       notification.error({
         message: "Có lỗi xảy ra",
-        description: err.response.data.message
-      })
-      console.error("Lỗi xoá user:", err);
+        description: err?.response?.data?.message ?? "Không thể xoá trợ lý",
+      });
     } finally {
       setIsModalOpen(false);
     }
@@ -150,79 +156,67 @@ const SupportTable: React.FC<SupportTableProps> = ({
 
   return (
     <div className="w-full bg-white rounded shadow overflow-x-auto">
-      <table className="min-w-full text-sm border-collapse">
+      <table className="min-w-full text-base border-separate border-spacing-0">
         <thead className="bg-gray-100">
           <tr>
-            <th className="p-3 border">STT</th>
+            <th className="p-3 border border-gray-200 text-center font-medium">STT</th>
             <th
-              className="p-3 border cursor-pointer select-none"
+              className="p-3 border border-gray-200 cursor-pointer text-left font-medium select-none"
               onClick={() => toggleSort("name")}
             >
               Tên {sortColumn === "name" && (sortDirection === "asc" ? "🔼" : "🔽")}
             </th>
-            <th className="p-3 border hidden md:table-cell">Giới tính</th>
-            <th className="p-3 border hidden md:table-cell">SĐT</th>
-            <th className="p-3 border hidden md:table-cell">Phòng khám</th>
+            <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">Giới tính</th>
+            <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">SĐT</th>
+            <th className="p-3 border border-gray-200 hidden md:table-cell font-medium">Phòng khám</th>
             <th
-              className="p-3 border hidden md:table-cell cursor-pointer select-none"
+              className="p-3 border border-gray-200 hidden md:table-cell cursor-pointer text-center font-medium select-none"
               onClick={() => toggleSort("createAt")}
             >
-              Ngày tạo{" "}
-              {sortColumn === "createAt" && (sortDirection === "asc" ? "🔼" : "🔽")}
+              Ngày tạo {sortColumn === "createAt" && (sortDirection === "asc" ? "🔼" : "🔽")}
             </th>
-            <th className="p-3 border">Trạng thái</th>
-            <th className="p-3 border text-center">Thao tác</th>
+            <th className="p-3 border border-gray-200 text-center font-medium">Trạng thái</th>
+            <th className="p-3 border border-gray-200 text-center font-medium">Thao tác</th>
           </tr>
         </thead>
         <tbody>
-          {sorted.map((sp) => (
+          {paginatedSupports.map((sp, index) => (
             <tr key={sp.id} className="hover:bg-gray-50">
-              <td className="p-3 border text-center">{sp.account.id}</td>
-              {/* {JSON.stringify(sp)} */}
-              <td className="p-3 border">{sp.account?.name ?? "Unknown"}</td>
-              <td className="p-3 border">{sp.account?.gender ?? "Unknown"}</td>
-              <td className="p-3 border">{sp.account?.phoneNumber ?? "Unknown"}</td>
-              <td className="p-3 border">{sp.clinic?.name ?? "Unknown"}</td>
-              <td className="p-3 border">
-                {sp.account.createAt ? new Date(sp.account.createAt).toLocaleString() : ""}
+              <td className="p-3 border border-gray-200 text-center">{startIndex + index + 1}</td>
+              <td className="p-3 border border-gray-200">{sp.account?.name ?? "—"}</td>
+              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">{sp.account?.gender ?? "—"}</td>
+              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">{sp.account?.phoneNumber ?? "—"}</td>
+              <td className="p-3 border border-gray-200 hidden md:table-cell">{sp.clinic?.name ?? "—"}</td>
+              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">
+                {sp.account.createAt
+                  ? new Date(sp.account.createAt).toLocaleString("vi-VN")
+                  : "—"}
               </td>
-              <td className="p-3 border">{getStatusBadge(sp.isActive)}</td>
-              <td className="p-3 border text-center">
+              <td className="p-3 border border-gray-200 text-center">{getStatusBadge(sp.isActive)}</td>
+              <td className="p-3 border border-gray-200 text-center">
                 <div className="flex flex-wrap justify-center gap-2">
                   <Button
-                    size="small"
+                    size="large"
                     icon={<FaEdit />}
-                    style={{
-                      backgroundColor: "#facc15",
-                      borderColor: "#facc15",
-                      color: "#000",
-                    }}
+                    style={{ backgroundColor: "#facc15", borderColor: "#facc15", color: "#000" }}
                     onClick={() => {
                       setEditingSupport(sp);
                       setIsEditModalOpen(true);
                     }}
                   />
                   <Button
-                    size="small"
+                    size="large"
                     icon={<FaTrash />}
-                    style={{
-                      backgroundColor: "#b91c1c",
-                      borderColor: "#b91c1c",
-                      color: "#fff",
-                    }}
+                    style={{ backgroundColor: "#b91c1c", borderColor: "#b91c1c", color: "#fff" }}
                     onClick={() => {
                       setIsModalOpen(true);
                       setDeleteSupportId(sp.id);
                     }}
                   />
                   <Button
-                    size="small"
+                    size="large"
                     icon={<FaEye />}
-                    style={{
-                      backgroundColor: "#3b82f6",
-                      borderColor: "#3b82f6",
-                      color: "#fff",
-                    }}
+                    style={{ backgroundColor: "#3b82f6", borderColor: "#3b82f6", color: "#fff" }}
                     onClick={() => {
                       setSelectedSupport(sp);
                       setIsDetailModalOpen(true);
@@ -234,6 +228,17 @@ const SupportTable: React.FC<SupportTableProps> = ({
           ))}
         </tbody>
       </table>
+
+
+      {/* Pagination */}
+      <div className="flex justify-center py-4">
+        <Pagination
+          current={currentPage}
+          pageSize={pageSize}
+          total={filteredAndSorted.length}
+          onChange={(page) => setCurrentPage(page)}
+        />
+      </div>
 
       {/* Modal chi tiết */}
       <DetailSupport

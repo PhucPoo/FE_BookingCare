@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "antd/lib";
 
 import type { Patient } from "./PatientTable";
 import PatientTable from "./PatientTable";
-import AddPatient from "./AddPatient";
 import PatientFilterBar from "./PatientFilterBar";
 
 import { testGetPatientApi, testDeletePatientApi } from "../../../api/testPatient";
@@ -121,16 +119,8 @@ const PatientManagement: React.FC = () => {
       <PatientTable
         patients={filteredPatients}
         setpatient={setPatients}
-        onUpdatepatient={handleUpdatePatient}
-        onDeletepatient={handleDeletePatient}
-      />
-
-      <AddPatient
-        patients={patients}
-        setpatients={setPatients}
-        open={isAddModalOpen}
-        onCancel={() => setIsAddModalOpen(false)}
-        onAdd={(newPatient) => setPatients([...patients, newPatient])}
+        onUpdatePatient={handleUpdatePatient}   // ✅ sửa tên đúng
+        onDeletePatient={handleDeletePatient}   // ✅ sửa tên đúng
       />
     </div>
   );

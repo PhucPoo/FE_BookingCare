@@ -4,6 +4,7 @@ import Modal from "antd/lib/modal";
 import EditSpecialty from "./EditSpecialty";
 import InformationSpecialty from "./Detail.Specialty";
 import { Pagination } from "antd/lib";
+import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
 
 export interface Specialty {
   id: number;
@@ -101,101 +102,92 @@ const SpecialtyTable: React.FC<SpecialtyTableProps> = ({
 
   return (
     <div className="w-full bg-white rounded shadow overflow-x-auto">
-      <table className="min-w-full text-sm border-collapse">
+      <table className="min-w-full text-base border-separate border-spacing-0">
         <thead className="bg-gray-100">
           <tr>
-            <th className="p-3 border">STT</th>
+            <th className="p-3 border border-gray-200 text-center font-medium">STT</th>
             <th
-              className="p-3 border cursor-pointer"
+              className="p-3 border border-gray-200 cursor-pointer text-left font-medium"
               onClick={() => handleSort("name")}
             >
               Tên chuyên khoa {renderSortArrow("name")}
             </th>
-            <th className="p-3 border hidden md:table-cell">Mô tả</th>
-            <th className="p-3 border hidden md:table-cell">Trạng thái</th>
+            <th className="p-3 border border-gray-200 hidden md:table-cell font-medium">Mô tả</th>
+            <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">Trạng thái</th>
             <th
-              className="p-3 border hidden md:table-cell cursor-pointer"
+              className="p-3 border border-gray-200 hidden md:table-cell cursor-pointer text-center font-medium"
               onClick={() => handleSort("createAt")}
             >
               Ngày tạo {renderSortArrow("createAt")}
             </th>
-            <th className="p-3 border hidden lg:table-cell">Ngày cập nhật</th>
-            <th className="p-3 border hidden lg:table-cell">Ảnh</th>
-            <th className="p-3 border text-center">Thao tác</th>
+            <th className="p-3 border border-gray-200 hidden lg:table-cell text-center font-medium">Ngày cập nhật</th>
+            <th className="p-3 border border-gray-200 hidden lg:table-cell text-center font-medium">Ảnh</th>
+            <th className="p-3 border border-gray-200 text-center font-medium">Thao tác</th>
           </tr>
         </thead>
         <tbody>
-          {paginatedData.map((s) => (
+          {paginatedData.map((s, idx) => (
             <tr key={s.id} className="hover:bg-gray-50">
-              <td className="p-3 border text-center">{s.id}</td>
-              <td className="p-3 border">{s.name}</td>
-              <td className="p-3 border hidden md:table-cell">{s.description}</td>
-              <td className="p-3 border hidden md:table-cell">
+              <td className="p-3 border border-gray-200 text-center">{idx + 1}</td>
+              <td className="p-3 border border-gray-200">{s.name}</td>
+              <td className="p-3 border border-gray-200 hidden md:table-cell">{s.description}</td>
+              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">
                 {s.isActive ? "Hoạt động" : "Không hoạt động"}
               </td>
-              <td className="p-3 border hidden md:table-cell">
-                {s.createAt
-                  ? new Date(s.createAt).toLocaleDateString()
-                  : "—"}
+              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">
+                {s.createAt ? new Date(s.createAt).toLocaleDateString() : "—"}
               </td>
-              <td className="p-3 border hidden lg:table-cell">
-                {s.updateAt
-                  ? new Date(s.updateAt).toLocaleDateString()
-                  : "—"}
+              <td className="p-3 border border-gray-200 hidden lg:table-cell text-center">
+                {s.updateAt ? new Date(s.updateAt).toLocaleDateString() : "—"}
               </td>
-              <td className="p-3 border hidden lg:table-cell text-center">
+              <td className="p-3 border border-gray-200 hidden lg:table-cell text-center">
                 {s.image ? (
                   <img
                     src={s.image}
                     alt={s.name}
-                    className="w-12 h-12 object-cover rounded"
+                    className="w-16 h-16 object-cover rounded mx-auto" // ảnh lớn hơn và căn giữa
                   />
                 ) : (
                   "—"
                 )}
               </td>
-              <td className="p-3 border text-center">
-                <div className="flex flex-wrap justify-center gap-2">
+              <td className="p-3 border border-gray-200 text-center">
+                <div className="flex justify-center gap-2">
                   <Button
-                    size="small"
-                    style={{
-                      backgroundColor: "#facc15",
-                      borderColor: "#facc15",
-                      color: "#000",
-                    }}
+                    size="large"
+                    icon={<FaEdit />}
+                    style={{ backgroundColor: "#facc15", borderColor: "#facc15", color: "#000" }}
                     onClick={() => {
                       setEditingSpecialty(s);
                       setIsEditModalOpen(true);
                     }}
-                  >
-                    Sửa
-                  </Button>
+                  />
                   <Button
-                    size="small"
-                    style={{
-                      backgroundColor: "#b91c1c",
-                      borderColor: "#b91c1c",
-                      color: "#fff",
-                    }}
+                    size="large"
+                    icon={<FaTrash />}
+                    style={{ backgroundColor: "#b91c1c", borderColor: "#b91c1c", color: "#fff" }}
                     onClick={() => {
                       setIsModalOpen(true);
                       setDeleteId(s.id);
                     }}
-                  >
-                    Xóa
-                  </Button>
-                  <Button size="small" onClick={() => {
-                    setSelectedSpecialty(s);
-                    setIsDetailModalOpen(true);
-                  }}>
-                    Xem
-                  </Button>
+                  />
+                  <Button
+                    size="large"
+                    icon={<FaEye />}
+                    style={{ backgroundColor: "#3b82f6", borderColor: "#3b82f6", color: "#fff" }}
+                    onClick={() => {
+                      setSelectedSpecialty(s);
+                      setIsDetailModalOpen(true);
+                    }}
+                  />
                 </div>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+
 
       {/* Modal detail */}
       <InformationSpecialty

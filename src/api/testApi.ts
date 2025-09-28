@@ -1,4 +1,4 @@
-import type { CreateUser, User } from "../pages/Accounts/UserList/UserTable";
+import type {  User } from "../pages/Accounts/UserList/UserTable";
 import customAxiosInstance from "../utils/configAxios";
 
 const config = {
@@ -46,8 +46,7 @@ export const testGetAccountsApi = async (
 };
 
 // 🟢 Create User
-export const testPostAccountsApi = async (data: CreateUser): Promise<User> => {
-  console.log("Body gửi đi:", data);
+export const testPostAccountsApi = async (data: User): Promise<User> => {
   const response = await customAxiosInstance.post(
     `http://localhost:8080/api/v1/accounts`,
     data,

@@ -1,47 +1,67 @@
-import React, { useEffect } from "react";
-import { Modal, Form, Input, Button, Upload } from "antd/lib";
+import React, { useEffect, useState } from "react";
+import { Modal, Form, Input, Button, Upload, message } from "antd/lib";
 import { UploadOutlined } from "@ant-design/icons";
-import type { Specialty } from "./SpecialtyList";
+import type { Specialty } from "./SpecialtyTable";
+import { testPutSpecialtyApi } from "../../api/testSpecialty";
 
 interface EditSpecialtyProps {
   open: boolean;
   specialty: Specialty | null;
   onCancel: () => void;
-  onUpdate: (updated: Specialty) => void;
+  onSuccess?: () => void; // callback khi cập nhật thành công
 }
 
 const EditSpecialty: React.FC<EditSpecialtyProps> = ({
   open,
   specialty,
   onCancel,
-  onUpdate,
+  onSuccess,
 }) => {
   const [form] = Form.useForm();
+  const [file, setFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (specialty) {
       form.setFieldsValue({
         name: specialty.name,
         description: specialty.description,
-        img: specialty.img,
       });
+      setFile(null);
     } else {
       form.resetFields();
+      setFile(null);
     }
   }, [specialty, form]);
 
-  const handleSubmit = () => {
-    form.validateFields().then((values) => {
-      if (specialty) {
-        const updated: Specialty = {
-          ...specialty,
-          name: values.name,
-          description: values.description,
-          img: values.img || specialty.img,
-        };
-        onUpdate(updated);
-      }
-    });
+  const handleUploadChange = (info: any) => {
+    if (info.fileList.length > 0) {
+      setFile(info.fileList[0].originFileObj);
+    } else {
+      setFile(null);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!specialty) return;
+    try {
+      const values = await form.validateFields();
+      const formData = new FormData();
+      formData.append("name", values.name);
+      formData.append("description", values.description || "");
+      if (file) formData.append("file", file);
+
+      setLoading(true);
+      await testPutSpecialtyApi(specialty.id, formData); // gọi API backend
+      message.success("Cập nhật thành công!");
+      onSuccess?.(); // gọi callback nếu có
+      onCancel(); // đóng modal
+    } catch (error) {
+      console.error(error);
+      message.error("Cập nhật thất bại!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -50,6 +70,7 @@ const EditSpecialty: React.FC<EditSpecialtyProps> = ({
       open={open}
       onCancel={onCancel}
       footer={null}
+      destroyOnClose
     >
       <Form form={form} layout="vertical">
         <Form.Item
@@ -64,19 +85,21 @@ const EditSpecialty: React.FC<EditSpecialtyProps> = ({
           <Input.TextArea rows={3} placeholder="Nhập mô tả" />
         </Form.Item>
 
-        <Form.Item label="Ảnh" name="img">
+        <Form.Item label="Ảnh" name="image">
           <Upload
-            beforeUpload={() => false} // chặn upload tự động
-            listType="picture"
+            beforeUpload={() => false}
+            onChange={handleUploadChange}
             maxCount={1}
+            listType="picture"
           >
             <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
           </Upload>
+          {file && <p className="mt-2 text-sm text-gray-500">Ảnh: {file.name}</p>}
         </Form.Item>
 
         <div className="flex justify-end gap-2">
           <Button onClick={onCancel}>Hủy</Button>
-          <Button type="primary" onClick={handleSubmit}>
+          <Button type="primary" loading={loading} onClick={handleSubmit}>
             Lưu
           </Button>
         </div>

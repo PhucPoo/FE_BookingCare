@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import Button from "antd/lib/button";
 import Modal from "antd/lib/modal";
-import { notification } from "antd";
+import { notification, Pagination } from "antd"; // ✅ thêm Pagination
 import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
 
 import DetailPatient from "./DetailPatient";
@@ -18,10 +18,15 @@ export interface Patient {
     avatar?: string | null;
     gender?: string | null;
     createAt?: string;
+    updateAt?: string;
     address?: string | null;
   };
   createAt: string;
   updateAt: string;
+}
+export interface CreatePatientDto {
+  accountId: number;
+  bhyt: string;
 }
 
 interface PatientTableProps {
@@ -49,6 +54,10 @@ const PatientTable: React.FC<PatientTableProps> = ({
   const [sortColumn, setSortColumn] = useState<SortColumn>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 8;
+
   // Modal xoá
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deletePatientId, setDeletePatientId] = useState<number>(0);
@@ -62,7 +71,7 @@ const PatientTable: React.FC<PatientTableProps> = ({
   const [editingPatient, setEditingPatient] = useState<Patient | null>(null);
 
   // --- Filter + Sort
-  const sortedPatients = useMemo(() => {
+  const filteredAndSorted = useMemo(() => {
     let data = [...patients];
 
     if (genderFilter) {
@@ -107,6 +116,13 @@ const PatientTable: React.FC<PatientTableProps> = ({
     });
   }, [patients, sortColumn, sortDirection, genderFilter, dateFilter, addressFilter]);
 
+  // --- Pagination slice
+  const startIndex = (currentPage - 1) * pageSize;
+  const paginatedPatients = filteredAndSorted.slice(
+    startIndex,
+    startIndex + pageSize
+  );
+
   const toggleSort = (col: SortColumn) => {
     if (sortColumn === col) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -140,88 +156,65 @@ const PatientTable: React.FC<PatientTableProps> = ({
 
   return (
     <div className="w-full bg-white rounded shadow overflow-x-auto">
-      <table className="min-w-full text-sm border-collapse">
+      <table className="min-w-full text-base border-separate border-spacing-0">
         <thead className="bg-gray-100">
           <tr>
-            <th className="p-3 border">STT</th>
+            <th className="p-3 border border-gray-200 text-center font-medium">STT</th>
             <th
-              className="p-3 border cursor-pointer select-none"
+              className="p-3 border border-gray-200 cursor-pointer select-none font-medium"
               onClick={() => toggleSort("name")}
             >
-              Tên bệnh nhân{" "}
-              {sortColumn === "name" && (sortDirection === "asc" ? "🔼" : "🔽")}
+              Tên bệnh nhân {sortColumn === "name" && (sortDirection === "asc" ? "🔼" : "🔽")}
             </th>
-            <th className="p-3 border hidden md:table-cell">Email</th>
-            <th className="p-3 border hidden md:table-cell">SĐT</th>
+            <th className="p-3 border border-gray-200 hidden md:table-cell font-medium">Email</th>
+            <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">SĐT</th>
             <th
-              className="p-3 border hidden md:table-cell cursor-pointer select-none"
+              className="p-3 border border-gray-200 hidden md:table-cell cursor-pointer select-none text-center font-medium"
               onClick={() => toggleSort("createAt")}
             >
-              Ngày tạo{" "}
-              {sortColumn === "createAt" &&
-                (sortDirection === "asc" ? "🔼" : "🔽")}
+              Ngày tạo {sortColumn === "createAt" && (sortDirection === "asc" ? "🔼" : "🔽")}
             </th>
-            <th className="p-3 border hidden md:table-cell">Cập nhật</th>
-            <th className="p-3 border text-center">Thao tác</th>
+            <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">Cập nhật</th>
+            <th className="p-3 border border-gray-200 text-center font-medium">Thao tác</th>
           </tr>
         </thead>
         <tbody>
-          {sortedPatients.map((bn, index) => (
+          {paginatedPatients.map((bn, index) => (
             <tr key={bn.id} className="hover:bg-gray-50">
-              <td className="p-3 border text-center">{index + 1}</td>
-              <td className="p-3 border">{bn.account?.name ?? "—"}</td>
-              <td className="p-3 border hidden md:table-cell">
-                {bn.account?.email ?? "—"}
+              <td className="p-3 border border-gray-200 text-center">{startIndex + index + 1}</td>
+              <td className="p-3 border border-gray-200">{bn.account?.name ?? "—"}</td>
+              <td className="p-3 border border-gray-200 hidden md:table-cell">{bn.account?.email ?? "—"}</td>
+              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">{bn.account?.phoneNumber ?? "—"}</td>
+              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">
+                {bn.account?.createAt ? new Date(bn.account.createAt).toLocaleString("vi-VN") : "—"}
               </td>
-              <td className="p-3 border hidden md:table-cell">
-                {bn.account?.phoneNumber ?? "—"}
+              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">
+                {bn.account?.updateAt ? new Date(bn.account.updateAt).toLocaleString("vi-VN") : "—"}
               </td>
-              <td className="p-3 border hidden md:table-cell">
-                {bn.createAt
-                  ? new Date(bn.createAt).toLocaleDateString("vi-VN")
-                  : "—"}
-              </td>
-              <td className="p-3 border hidden md:table-cell">
-                {bn.updateAt
-                  ? new Date(bn.updateAt).toLocaleDateString("vi-VN")
-                  : "—"}
-              </td>
-              <td className="p-3 border text-center">
+              <td className="p-3 border border-gray-200 text-center">
                 <div className="flex flex-wrap justify-center gap-2">
                   <Button
-                    size="small"
+                    size="large"
                     icon={<FaEdit />}
-                    style={{
-                      backgroundColor: "#facc15",
-                      borderColor: "#facc15",
-                      color: "#000",
-                    }}
+                    style={{ backgroundColor: "#facc15", borderColor: "#facc15", color: "#000" }}
                     onClick={() => {
                       setEditingPatient(bn);
                       setIsEditModalOpen(true);
                     }}
                   />
                   <Button
-                    size="small"
+                    size="large"
                     icon={<FaTrash />}
-                    style={{
-                      backgroundColor: "#b91c1c",
-                      borderColor: "#b91c1c",
-                      color: "#fff",
-                    }}
+                    style={{ backgroundColor: "#b91c1c", borderColor: "#b91c1c", color: "#fff" }}
                     onClick={() => {
                       setIsModalOpen(true);
                       setDeletePatientId(bn.id);
                     }}
                   />
                   <Button
-                    size="small"
+                    size="large"
                     icon={<FaEye />}
-                    style={{
-                      backgroundColor: "#3b82f6",
-                      borderColor: "#3b82f6",
-                      color: "#fff",
-                    }}
+                    style={{ backgroundColor: "#3b82f6", borderColor: "#3b82f6", color: "#fff" }}
                     onClick={() => {
                       setSelectedPatient(bn);
                       setIsDetailModalOpen(true);
@@ -233,6 +226,17 @@ const PatientTable: React.FC<PatientTableProps> = ({
           ))}
         </tbody>
       </table>
+
+
+      {/* Pagination */}
+      <div className="flex justify-center py-4">
+        <Pagination
+          current={currentPage}
+          pageSize={pageSize}
+          total={filteredAndSorted.length}
+          onChange={(page) => setCurrentPage(page)}
+        />
+      </div>
 
       {/* Modal chi tiết */}
       <DetailPatient
@@ -249,7 +253,7 @@ const PatientTable: React.FC<PatientTableProps> = ({
           setIsEditModalOpen(false);
           setEditingPatient(null);
         }}
-        onUpdate={handleUpdatePatient}
+        onUpdatepatient={handleUpdatePatient}
       />
 
       {/* Modal xoá */}

@@ -15,38 +15,42 @@ const AddSpecialty: React.FC<AddSpecialtyProps> = ({ open, onCancel, onAdd }) =>
   const [file, setFile] = useState<File | null>(null);
 
   const handleSubmit = () => {
-  form.validateFields().then(async (values) => {
-    try {
-      const formData = new FormData();
-      formData.append("name", values.name);
-      formData.append("description", values.description || "");
-      if (file) {
-        formData.append("image", file); // ✅ gửi file đúng chuẩn
+    form.validateFields().then(async (values) => {
+      try {
+        const formData = new FormData();
+        formData.append("name", values.name);
+        formData.append("description", values.description || "");
+        if (file) {
+          formData.append("file", file); 
+        }
+
+        // Gọi API
+        const res = await testPostSpecialtyApi(formData);
+        console.log(">>>>>>", res);
+
+        const specialty = res.data;
+
+
+
+        // Cập nhật UI
+        onAdd(specialty);
+
+        notification.success({
+          message: "Thêm thành công",
+          description: `Chuyên khoa ${specialty.name} đã được thêm`,
+        });
+
+        form.resetFields();
+        setFile(null);
+        onCancel();
+      } catch (error: any) {
+        notification.error({
+          message: "Thêm thất bại",
+          description: error.response?.data?.message || "Có lỗi xảy ra",
+        });
       }
-
-      // Gọi API
-      const res = await testPostSpecialtyApi(formData);
-      const specialty = res.data;
-
-      // Cập nhật UI
-      onAdd(specialty);
-
-      notification.success({
-        message: "Thêm thành công",
-        description: `Chuyên khoa ${specialty.name} đã được thêm`,
-      });
-
-      form.resetFields();
-      setFile(null);
-      onCancel();
-    } catch (error: any) {
-      notification.error({
-        message: "Thêm thất bại",
-        description: error.response?.data?.message || "Có lỗi xảy ra",
-      });
-    }
-  });
-};
+    });
+  };
 
   const handleUploadChange = (info: any) => {
     if (info.fileList.length > 0) {
