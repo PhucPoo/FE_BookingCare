@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { getPatientBookingByPatientId } from "../../api/Patient/PatientApi";
+import {
+  getPatientBookingByPatientId,
+  handlePatientUpdateBooking,
+} from "../../api/Patient/PatientApi";
 import useUserInfoStore from "../../Zustand/configZustand";
 import MainPageHeader from "../MainPage/MainPageHeader/MainPageHeader";
 import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
-import { Card, Tag, Avatar, Button } from "antd/lib";
+import { Card, Tag, Avatar, Button, Pagination } from "antd/lib";
 import {
   CalendarOutlined,
   ClockCircleOutlined,
@@ -18,19 +21,44 @@ import {
   getStatusText,
 } from "../../utils/constant";
 import type { PatientBookingModel } from "./PatientBookingModel";
+import { toast } from "react-toastify";
 
 const PatientBookingList = () => {
   const [PatientBookings, setPatientBookings] = useState<PatientBookingModel[]>(
     []
   );
+  const [pageSize, setPageSize] = useState<number>(10);
+  const [totalBookings, setTotalBookings] = useState<number>(500);
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   const userInfor = useUserInfoStore((state) => state.userInfo);
   const handlePatientBookings = async () => {
     if (userInfor.patientId) {
       const res = await getPatientBookingByPatientId(userInfor?.patientId);
-      console.log("🚀 ~ handlePatientBookings ~ res:", res);
       setPatientBookings(res.data.result);
+      setPageSize(res.data.meta.pageSize);
+      setTotalBookings(res.data.meta.totals);
+      setCurrentPage(res.data.meta.page);
     }
+  };
+  const onLog = async (page: number, pageSize: number) => {
+    console.log("Đang ở trang:", page, pageSize);
+    if (userInfor.patientId) {
+      const res = await getPatientBookingByPatientId(
+        userInfor?.patientId,
+        page,
+        pageSize
+      );
+      setPatientBookings(res.data.result);
+      setPageSize(res.data.meta.pageSize);
+      setTotalBookings(res.data.meta.totals);
+      setCurrentPage(res.data.meta.page);
+    }
+  };
+  const handleUpdateBookingStatus = async (id: number, status: string) => {
+    await handlePatientUpdateBooking(id, status);
+    toast.success("Cập nhật trạng thái lịch khám thành công");
+    await handlePatientBookings();
   };
   useEffect(() => {
     handlePatientBookings();
@@ -138,14 +166,14 @@ const PatientBookingList = () => {
                           <ClockCircleOutlined className="mr-2" />
                           Thời gian khám
                         </h4>
-                        <div className="space-y-2">
-                          <div className="bg-white rounded-lg p-3 border border-green-200">
+                        <div className="flex justify-between space-x-4">
+                          <div className="bg-white rounded-lg p-3 border border-green-200 w-full">
                             <p className="text-sm text-gray-600">Ngày khám</p>
                             <p className="font-semibold text-gray-800">
                               {formatDate(booking.appointmentDate)}
                             </p>
                           </div>
-                          <div className="bg-white rounded-lg p-3 border border-green-200">
+                          <div className="bg-white rounded-lg p-3 border border-green-200 w-full">
                             <p className="text-sm text-gray-600">Giờ khám</p>
                             <p className="font-semibold text-gray-800">
                               {booking?.time?.start} - {booking?.time?.end}
@@ -194,7 +222,18 @@ const PatientBookingList = () => {
                           Xem chi tiết
                         </Button>
                         {booking.status === "PENDING" && (
-                          <Button danger className="flex-1">
+                          <Button
+                            danger
+                            className="flex-1"
+                            onClick={() => {
+                              if (booking.id) {
+                                handleUpdateBookingStatus(
+                                  booking.id,
+                                  "CANCELLED"
+                                );
+                              }
+                            }}
+                          >
                             Hủy lịch
                           </Button>
                         )}
@@ -224,6 +263,13 @@ const PatientBookingList = () => {
                 </div>
               </Card>
             ))}
+          <Pagination
+            defaultCurrent={currentPage}
+            pageSize={pageSize}
+            total={totalBookings}
+            onChange={onLog}
+            responsive
+          />
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
-import type { BookingDoctorModel } from "../../pages/BookingDoctor/BookingDoctorModel";
 import customAxiosInstance from "../../utils/configAxios";
+import type { BookingDoctorModel } from "../../pages/BookingDoctor/BookingDoctorModel";
 import { api } from "../../utils/constant";
 
 export const BookingDoctorApi = async (data: BookingDoctorModel) => {
@@ -8,10 +8,22 @@ export const BookingDoctorApi = async (data: BookingDoctorModel) => {
 };
 export const getPatientBookingByPatientId = async (
   id: number,
+  page: number = 1,
   pageSize: number = 5
 ) => {
   const res = await customAxiosInstance.get(
-    `${api}/bookings/patient/${id}?size=${pageSize}`
+    `${api}/bookings/patient/${id}?page=${page}&size=${pageSize}`
+  );
+  return res.data;
+};
+export const handlePatientUpdateBooking = async (
+  id: number,
+  status: string
+) => {
+  const data = {};
+  const res = await customAxiosInstance.put(
+    `${api}/bookings/${id}/status?status=${status}`,
+    data
   );
   return res.data;
 };

@@ -36,8 +36,11 @@ const useUserInfoStore = create<UserInfoStore>()(
           document.cookie = `access_token=${res.data.accessToken}; path=/`;
           return res.data;
         },
-        logout: () =>
-          set({ userInfo: { name: "", email: "", role: "", id: 0 } }),
+        logout: () => {
+          set({ userInfo: { name: "", email: "", role: "", id: 0 } });
+          document.cookie = `access_token=; path=/`;
+          window.location.href = "/"; // Redirect to home page after logout
+        },
       }),
       {
         name: "userInfo-storage", // key trong localStorage
