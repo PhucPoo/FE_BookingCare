@@ -30,11 +30,14 @@ const BookingDoctor = () => {
       setDetailDoctor(res.data);
     }
   };
+
   const handleBookingDoctor = async () => {
+    
     if (!description) {
       toast.error("Điền lí do khám");
     }
-    if (
+  console.log( "XXXXXXX",  userInfor);
+    if  (
       locationJS.state.data.appointmentDate &&
       description &&
       id &&
@@ -50,7 +53,9 @@ const BookingDoctor = () => {
         clinicId: `${detailDoctor.clinic?.id}`,
         timeId: locationJS.state.data.timeId,
       };
+     
       await BookingDoctorApi(data);
+      
       toast.success("Đặt lịch thành công");
       navigate("/");
     }

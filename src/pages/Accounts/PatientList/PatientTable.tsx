@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import Button from "antd/lib/button";
 import Modal from "antd/lib/modal";
-import { notification, Pagination } from "antd"; // ✅ thêm Pagination
+import { notification, Pagination } from "antd";
 import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
 
 import DetailPatient from "./DetailPatient";
@@ -24,6 +24,7 @@ export interface Patient {
   createAt: string;
   updateAt: string;
 }
+
 export interface CreatePatientDto {
   accountId: number;
   bhyt: string;
@@ -39,7 +40,7 @@ interface PatientTableProps {
   onDeletePatient: (id: number) => void;
 }
 
-type SortColumn = "name" | "createAt";
+type SortColumn = "id" | "name" | "createAt";
 type SortDirection = "asc" | "desc";
 
 const PatientTable: React.FC<PatientTableProps> = ({
@@ -51,7 +52,7 @@ const PatientTable: React.FC<PatientTableProps> = ({
   onUpdatePatient,
   onDeletePatient,
 }) => {
-  const [sortColumn, setSortColumn] = useState<SortColumn>("name");
+  const [sortColumn, setSortColumn] = useState<SortColumn>("id");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
   // Pagination
@@ -92,12 +93,16 @@ const PatientTable: React.FC<PatientTableProps> = ({
       );
     }
 
-    // Sort
+    // 🚀 Sort theo column được chọn
     return data.sort((a, b) => {
       let aVal: any;
       let bVal: any;
 
       switch (sortColumn) {
+        case "id":
+          aVal = a.id;
+          bVal = b.id;
+          break;
         case "name":
           aVal = a.account?.name?.toLowerCase() ?? "";
           bVal = b.account?.name?.toLowerCase() ?? "";
@@ -159,7 +164,12 @@ const PatientTable: React.FC<PatientTableProps> = ({
       <table className="min-w-full text-base border-separate border-spacing-0">
         <thead className="bg-gray-100">
           <tr>
-            <th className="p-3 border border-gray-200 text-center font-medium">STT</th>
+            <th
+              className="p-3 border border-gray-200 text-center cursor-pointer select-none font-medium"
+              onClick={() => toggleSort("id")}
+            >
+              ID bệnh nhân {sortColumn === "id" && (sortDirection === "asc" ? "🔼" : "🔽")}
+            </th>
             <th
               className="p-3 border border-gray-200 cursor-pointer select-none font-medium"
               onClick={() => toggleSort("name")}
@@ -179,14 +189,14 @@ const PatientTable: React.FC<PatientTableProps> = ({
           </tr>
         </thead>
         <tbody>
-          {paginatedPatients.map((bn, index) => (
+          {paginatedPatients.map((bn) => (
             <tr key={bn.id} className="hover:bg-gray-50">
-              <td className="p-3 border border-gray-200 text-center">{startIndex + index + 1}</td>
+              <td className="p-3 border border-gray-200 text-center">{bn.id}</td>
               <td className="p-3 border border-gray-200">{bn.account?.name ?? "—"}</td>
               <td className="p-3 border border-gray-200 hidden md:table-cell">{bn.account?.email ?? "—"}</td>
               <td className="p-3 border border-gray-200 hidden md:table-cell text-center">{bn.account?.phoneNumber ?? "—"}</td>
               <td className="p-3 border border-gray-200 hidden md:table-cell text-center">
-                {bn.account?.createAt ? new Date(bn.account.createAt).toLocaleString("vi-VN") : "—"}
+                {bn.account.createAt ? new Date(bn.account.createAt).toLocaleString("vi-VN") : "—"}
               </td>
               <td className="p-3 border border-gray-200 hidden md:table-cell text-center">
                 {bn.account?.updateAt ? new Date(bn.account.updateAt).toLocaleString("vi-VN") : "—"}
@@ -226,7 +236,6 @@ const PatientTable: React.FC<PatientTableProps> = ({
           ))}
         </tbody>
       </table>
-
 
       {/* Pagination */}
       <div className="flex justify-center py-4">

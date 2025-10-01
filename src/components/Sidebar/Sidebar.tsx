@@ -8,6 +8,7 @@ import {
   FaChevronUp,
   FaChevronDown,
   FaCalendarAlt,
+  FaHospital,
 } from "react-icons/fa";
 import { FaFaceFlushed, FaMoneyBill1 } from "react-icons/fa6";
 
@@ -74,6 +75,9 @@ const Sidebar: React.FC = () => {
 
         <Link to="/admin-dashboard/specialty" className={linkClass("/admin-dashboard/specialty", true)}>
           <FaCalendarAlt /> Quản lý chuyên khoa
+        </Link>
+        <Link to="/admin-dashboard/clinic-page" className={linkClass("/admin-dashboard/clinic-page", true)}>
+          <FaHospital /> Quản lý phòng khám
         </Link>
 
         <Link to="/admin-dashboard/booking-manage" className={linkClass("/admin-dashboard/booking-manage", true)}>

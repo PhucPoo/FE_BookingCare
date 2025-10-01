@@ -51,14 +51,15 @@ const Informationpatient: React.FC<InformationpatientProps> = ({
 
           <p>
             <strong>Ngày tạo:</strong>{" "}
-            {patient.createAt
-              ? new Date(patient.createAt).toLocaleDateString("vi-VN")
+            {patient.account?.createAt
+              ? new Date(patient.account.createAt).toLocaleDateString("vi-VN")
               : "—"}
           </p>
+
           <p>
             <strong>Cập nhật:</strong>{" "}
-            {patient.updateAt
-              ? new Date(patient.updateAt).toLocaleDateString("vi-VN")
+            {patient.account?.updateAt
+              ? new Date(patient.account.updateAt).toLocaleDateString("vi-VN")
               : "—"}
           </p>
         </div>

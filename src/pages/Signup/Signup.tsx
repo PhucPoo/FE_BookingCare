@@ -231,7 +231,7 @@ const Signup: React.FC = () => {
 
             <div className="login-link">
               Đã có tài khoản?{" "}
-              <a href="/login" className="login-text">
+              <a href="login" className="login-text">
                 Đăng nhập ngay
               </a>
             </div>

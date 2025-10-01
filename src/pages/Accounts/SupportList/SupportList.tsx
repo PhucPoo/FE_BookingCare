@@ -41,7 +41,7 @@ const SupportManagement: React.FC = () => {
     try {
       // Gọi lại API để lấy danh sách mới
       const res = await testGetSupportApi();
-      const updatedData = res.data.data.result;
+      const updatedData = res.data.result;
       console.log(">>>", updatedData);
 
 

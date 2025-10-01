@@ -63,10 +63,10 @@ const AppRoutes = () => {
 
       <Route path="/danh-sach" element={<List />}>
        
-        <Route
+        {/* <Route
           path="/danh-sach"
           element={<Navigate to={"clinic-page"} replace={true} />}
-        />
+        /> */}
          <Route path="clinic-page" element={<MedicalFacilityList  />}>
        
         {/* <Route path="bac-si" element={<DoctorList />} />
@@ -109,8 +109,9 @@ const AppRoutes = () => {
           <Route path="patient-list" element={<PatientList />} />
 
           <Route path="specialty" element={<SpecialtyGrid />} />
+          <Route path="clinic-page" element={<ClinicManagement/>} />
 
-          <Route path="patient_list" element={<ListPatient_Doctor />} />
+          <Route path="patient_list" element={<MedicalFacilityList  />} />
         </Route>
       </Route>
 

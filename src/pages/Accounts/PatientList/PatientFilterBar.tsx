@@ -14,10 +14,10 @@ const patientFilterBar: React.FC<patientFilterBarProps> = ({ patients, onFilter,
 
   const handleSearch = () => {
     const filtered = patients.filter((patient) => {
-      const matchName = name === '' || patient.name.toLowerCase().includes(name.toLowerCase());
-      const matchPrice = email === '' || patient.email.toString().includes(email);
-      const matchPhone = phone === '' || patient.phone.includes(phone);
-      const matchStatus = status === '' || patient.status === status;
+      const matchName = name === '' || patient.account.name.toLowerCase().includes(name.toLowerCase());
+      const matchPrice = email === '' || patient.account.email.toString().includes(email);
+      const matchPhone = phone === '' || patient.account.phoneNumber.includes(phone);
+      const matchStatus = status === '' || patient.account.status === status;
       return matchName && matchPrice && matchPhone && matchStatus;
     });
 

@@ -131,7 +131,7 @@ const Login: React.FC = () => {
               </div>
 
               <div className="form-actions">
-                <a href="#" className="forgot-password">
+                <a href="forgot-password" className="forgot-password">
                   Quên mật khẩu?
                 </a>
               </div>
@@ -146,7 +146,7 @@ const Login: React.FC = () => {
 
               <div className="signup-link">
                 <span>Bạn chưa có tài khoản? </span>
-                <a href="#" className="signup-text">
+                <a href="signup" className="signup-text">
                   Đăng ký
                 </a>
               </div>

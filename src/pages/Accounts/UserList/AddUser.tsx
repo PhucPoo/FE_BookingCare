@@ -124,7 +124,7 @@ const AddUser: React.FC<AddUserProps> = ({ users, setusers, open, onCancel }) =>
         } catch (err: any) {
           api.open({
             message: "Lỗi thêm Trợ lý",
-            // description: err?.response?.data?.message || err?.message || "Có lỗi xảy ra",
+            description: err?.response?.data?.message || err?.message || "Có lỗi xảy ra",
           });
         }
       }
