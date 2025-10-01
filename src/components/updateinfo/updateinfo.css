@@ -1,11 +1,9 @@
 /* Reset */
 * {
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
 }
 
-body {
+.body {
   font-family: Arial, sans-serif;
   background-color: #b2ebf2; /* màu xanh nhạt giống ảnh */
   min-height: 100vh;

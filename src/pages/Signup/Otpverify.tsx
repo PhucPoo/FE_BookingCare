@@ -53,7 +53,7 @@ export default function OtpVerify() {
         //   content: "Bạn đã xác thực OTP thành công. Ấn OK để quay về trang đăng nhập.",
         //   okText: "OK",
         //   onOk: () => navigate("/login"),
-        navigate("/login");
+        navigate("/login"); 
         // });
       } else {
         message.error(data.message || "Xác thực OTP thất bại");
