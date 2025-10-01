@@ -6,7 +6,7 @@ import {
   Select,
   type MenuProps,
 } from "antd/lib";
-import { formatDate } from "../../utils/constant";
+import { formatDate, getStatusBooking } from "../../utils/constant";
 import { handleDoctorUpdateBooking } from "../../api/Doctor/DoctorApi";
 import type { DoctorBookingSortKeyModel } from "./DoctorBookingSortKeyModel";
 type BookingListModel = {
@@ -311,7 +311,7 @@ const BookingTableManage = ({
                         {formatDate(item?.createAt)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                        {item.status}
+                        {getStatusBooking(item.status)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
                         {item.doctor?.account?.name}
