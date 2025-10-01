@@ -18,7 +18,7 @@ const MainPageHeader = () => {
   const userInfor = useUserInfoStore((state) => state.userInfo);
   const content = (
     <div className="flex flex-col gap-2">
-      <Link to="/thong-tin-ca-nhan">Thông tin cá nhân</Link>
+      <Link to="/update">Thông tin cá nhân</Link>
       <Link to="/danh-sach-lich-kham">Danh sách lịch khám</Link>
       <Link to="/danh-sach-hoa-don">Danh sách hoá đơn</Link>
       <Link to="/benh-an">bệnh án</Link>
