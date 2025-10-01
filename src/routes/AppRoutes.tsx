@@ -20,6 +20,8 @@ import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import Login from "../pages/Login/Login";
 import Signup from "../pages/Signup/Signup";
 import ForgotPasswordForm from "../components/ForgotPasswordForm/ForgotPasswordForm";
+import OtpVerify from "../pages/Signup/Otpverify";
+import UpdateInfo from "../../src/components/updateinfo/updateinfo";
 
 import MainPage from "../pages/MainPage/MainPage";
 import MedicalFacilityList from "../pages/DanhSach/MedicalFacility/MedicalFacilityList";
@@ -53,10 +55,13 @@ const AppRoutes = () => {
         />
         <Route path="login" element={<Login />} />
         <Route path="signup" element={<Signup />} />
+        <Route path="verify-otp" element={<OtpVerify />} />
         <Route path="forgot-password" element={<ForgotPasswordForm />} />
       </Route>
 
       <Route path="/" element={<MainPage />} />
+
+      <Route path="/update" element={<UpdateInfo />} />
 
       <Route path="/danh-sach" element={<List />}>
         <Route

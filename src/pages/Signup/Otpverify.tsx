@@ -25,7 +25,7 @@ export default function OtpVerify() {
   const handleVerify = async (values: { otp: string }) => {
     if (!email) {
       message.error("Không tìm thấy email, vui lòng đăng ký lại!");
-      navigate("/signup");
+      navigate("signup");
       return;
     }
     try {
@@ -36,7 +36,7 @@ export default function OtpVerify() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            // Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify({ email, code: values.otp, password, name, phoneNumber }),
         }
@@ -53,7 +53,7 @@ export default function OtpVerify() {
         //   content: "Bạn đã xác thực OTP thành công. Ấn OK để quay về trang đăng nhập.",
         //   okText: "OK",
         //   onOk: () => navigate("/login"),
-        navigate("/login"); 
+        navigate("/"); 
         // });
       } else {
         message.error(data.message || "Xác thực OTP thất bại");

@@ -79,7 +79,7 @@ const Signup: React.FC = () => {
 
       if (response.status === 200) {
         alert("Đăng ký thành công! Vui lòng kiểm tra email để lấy OTP.");
-        navigate("/verify-otp", { 
+        navigate("/auth/verify-otp", { 
           state: { 
             email: formData.email, 
             password: formData.password
@@ -231,7 +231,7 @@ const Signup: React.FC = () => {
 
             <div className="login-link">
               Đã có tài khoản?{" "}
-              <a href="/login" className="login-text">
+              <a href="login" className="login-text">
                 Đăng nhập ngay
               </a>
             </div>
