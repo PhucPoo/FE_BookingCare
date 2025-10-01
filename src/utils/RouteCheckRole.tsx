@@ -4,7 +4,7 @@ import { usePermission } from "./usePermission";
 import { Navigate, Outlet } from "react-router-dom";
 
 const RouteCheckRole = ({ requiredPermission, redirectTo = "/error" }) => {
-  // console.log("🚀 ~ requiredPermission:", requiredPermission);
+  console.log("🚀 ~ requiredPermission:", requiredPermission);
 
   const user = useUserInfoStore((state) => state.userInfo);
   const userRole = user?.role || roles.CLIENT; //neu ko co user thi gan role la customer

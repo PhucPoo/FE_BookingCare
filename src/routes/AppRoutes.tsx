@@ -77,7 +77,7 @@ const AppRoutes = () => {
       </Route>
 
       {/* admin */}
-      <Route element={<RouteCheckRole requiredPermission={permission.admin} />}>
+      <Route element={<RouteCheckRole requiredPermission={permission.ADMIN} />}>
         <Route path="/admin-dashboard" element={<DashboardLayout />}>
           <Route
             path="/admin-dashboard"
@@ -101,7 +101,7 @@ const AppRoutes = () => {
 
       {/* doctor */}
       <Route
-        element={<RouteCheckRole requiredPermission={permission.doctor} />}
+        element={<RouteCheckRole requiredPermission={permission.DOCTOR} />}
       >
         <Route path="/doctor-dashboard" element={<DoctorDashboard />}>
           <Route
@@ -114,7 +114,7 @@ const AppRoutes = () => {
 
       {/* support */}
       <Route
-        element={<RouteCheckRole requiredPermission={permission.support} />}
+        element={<RouteCheckRole requiredPermission={permission.SUPPORT} />}
       >
         <Route path="/support-dashboard" element={<SupportDashboard />}>
           <Route
