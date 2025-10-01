@@ -95,6 +95,30 @@ const Sidebar: React.FC = () => {
         <Link to="/admin-dashboard/service-list" className={linkClass("/admin-dashboard/service-list", true)}>
           <FaConciergeBell /> Quản lý dịch vụ
         </Link>
+        <Link
+          to="/doctor-dashboard/booking-manage"
+          className="flex items-center gap-3 hover:text-indigo-600"
+        >
+          <FaConciergeBell /> Quản lý lịch khám (của bác sĩ)
+        </Link>
+        <Link
+          to="/doctor-dashboard/patient-manage"
+          className="flex items-center gap-3 hover:text-indigo-600"
+        >
+          <FaConciergeBell /> Quản lý bệnh nhân (của bác sĩ)
+        </Link>
+        <Link
+          to="/support-dashboard/booking-support-manage"
+          className="flex items-center gap-3 hover:text-indigo-600"
+        >
+          <FaConciergeBell /> Quản lý lịch khám (của support)
+        </Link>
+        <Link
+          to="/support-dashboard/bill-support-manage"
+          className="flex items-center gap-3 hover:text-indigo-600"
+        >
+          <FaConciergeBell /> Quản lý hoá đơn (của support)
+        </Link>
       </nav>
     </div>
   );

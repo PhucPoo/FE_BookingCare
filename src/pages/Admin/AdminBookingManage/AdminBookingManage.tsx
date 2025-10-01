@@ -42,7 +42,7 @@ type AdminBookingTableModel = {
 const AdminBookingManage = () => {
   const [bookings, setBookings] = useState<AdminBookingTableModel[]>([]);
   const [pageSize, setPageSize] = useState<number>(10);
-  const [totalBookingList, setTotalBookingList] = useState<number>(500);
+  const [totalBookingList, setTotalBookingList] = useState<number>(10);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [checkRender, setCheckRender] = useState<
     Record<CheckRenderKey, boolean>
@@ -68,7 +68,7 @@ const AdminBookingManage = () => {
     {}
   );
   const handleAdminGetAllBookings = async () => {
-    const result = await adminGetAllBooking();
+    const result = await adminGetAllBooking(currentPage, pageSize);
     if (!result.error) {
       const {
         meta: { page, pageSize, totals },
@@ -88,8 +88,17 @@ const AdminBookingManage = () => {
     setBookings(BookingListClone);
   };
   //onLog
-  const onLog = (page: number, pageSize: number) => {
-    console.log("Đang ở trang:", page, pageSize);
+  const onLog = async (page: number, pageSize: number) => {
+    const result = await adminGetAllBooking(page, pageSize);
+    if (!result.error) {
+      const {
+        meta: { page, pageSize, totals },
+      } = result.data;
+      setBookings(result.data.result);
+      setPageSize(pageSize);
+      setTotalBookingList(totals);
+      setCurrentPage(page);
+    }
   };
   //handle sort
   const handleSort = async (key: CheckRenderKey) => {

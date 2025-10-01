@@ -37,6 +37,7 @@ import useUserInfoStore from "../Zustand/configZustand";
 import RouteCheckRole from "../utils/RouteCheckRole";
 import { permission } from "../utils/roleConfig";
 import PatientBookingList from "../pages/PatientBookingList/PatientBookingList";
+import PatientBillList from "../pages/PatientBillList/PatientBillList";
 
 const AppRoutes = () => {
   const ProtectRouter = () => {
@@ -89,6 +90,7 @@ const AppRoutes = () => {
       <Route element={<ProtectRouter />}>
         <Route path="/dat-lich-kham/:id" element={<BookingDoctor />} />
         <Route path="/danh-sach-lich-kham" element={<PatientBookingList />} />
+        <Route path="/danh-sach-hoa-don" element={<PatientBillList />} />
       </Route>
 
       {/* admin */}
@@ -147,6 +149,7 @@ const AppRoutes = () => {
             element={<Navigate to={"booking-support-manage"} replace={true} />}
           />
           <Route path="booking-support-manage" element={<BookingPage />} />
+          {/* <Route path="bill-support-manage" element={<BookingPage />} /> */}
         </Route>
       </Route>
 
