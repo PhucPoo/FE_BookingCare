@@ -99,140 +99,142 @@ const Signup: React.FC = () => {
   sessionStorage.setItem("reg_phone", formData.phoneNumber);
   sessionStorage.setItem('reg_password', formData.password);
   return (
-    <div className="signup-container">
-      <div className="signup-card">
-        {/* Left section with image */}
-        <div className="signup-left">
-          <div className="illustration">
-            <img 
-              src="/bg_1.png" 
-              alt="Signup Illustration" 
-              className="bg-image" 
-            />
-          </div>
-        </div>
-
-        {/* Right section with form */}
-        <div className="signup-right">
-          <div className="signup-header">
-            <h1 className="brand-title">BookingCare</h1>
-            <h2 className="form-title">Tạo tài khoản mới</h2>
+    <div className="body">
+      <div className="signup-container">
+        <div className="signup-card">
+          {/* Left section with image */}
+          <div className="signup-left">
+            <div className="illustration">
+              <img 
+                src="/bg_1.png" 
+                alt="Signup Illustration" 
+                className="bg-image" 
+              />
+            </div>
           </div>
 
-          <form className="signup-form" onSubmit={handleSubmit}>
-            {/* Name Field */}
-            <div className="form-group">
-              <div className="input-wrapper">
-                <UserOutlined className="input-icon" />
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Họ và tên"
-                  className="form-input"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+          {/* Right section with form */}
+          <div className="signup-right">
+            <div className="signup-header">
+              <h1 className="brand-title">BookingCare</h1>
+              <h2 className="form-title">Tạo tài khoản mới</h2>
             </div>
 
-            {/* Email Field */}
-            <div className="form-group">
-              <div className="input-wrapper">
-                <MailOutlined className="input-icon" />
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Địa chỉ email"
-                  className="form-input"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                />
+            <form className="signup-form" onSubmit={handleSubmit}>
+              {/* Name Field */}
+              <div className="form-group">
+                <div className="input-wrapper">
+                  <UserOutlined className="input-icon" />
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Họ và tên"
+                    className="form-input"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
               </div>
-              {errors.email && <span className="error-message">{errors.email}</span>}
-            </div>
 
-            {/* Phone Field */}
-            <div className="form-group">
-              <div className="input-wrapper">
-                <PhoneOutlined className="input-icon" />
-                <input
-                  type="tel"
-                  name="phoneNumber"
-                  placeholder="Số điện thoại"
-                  className="form-input"
-                  value={formData.phoneNumber}
-                  onChange={handleChange}
-                  required
-                />
+              {/* Email Field */}
+              <div className="form-group">
+                <div className="input-wrapper">
+                  <MailOutlined className="input-icon" />
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Địa chỉ email"
+                    className="form-input"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                {errors.email && <span className="error-message">{errors.email}</span>}
               </div>
-              {errors.phoneNumber && <span className="error-message">{errors.phoneNumber}</span>}
-            </div>
 
-            {/* Password Field */}
-            <div className="form-group">
-              <div className="input-wrapper">
-                <LockOutlined className="input-icon" />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  placeholder="Mật khẩu"
-                  className="form-input"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  minLength={6}
-                />
-                <button
-                  type="button"
-                  onClick={togglePasswordVisibility}
-                  className="password-toggle"
-                >
-                  {showPassword ? <EyeInvisibleOutlined /> : <EyeTwoTone />}
-                </button>
+              {/* Phone Field */}
+              <div className="form-group">
+                <div className="input-wrapper">
+                  <PhoneOutlined className="input-icon" />
+                  <input
+                    type="tel"
+                    name="phoneNumber"
+                    placeholder="Số điện thoại"
+                    className="form-input"
+                    value={formData.phoneNumber}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                {errors.phoneNumber && <span className="error-message">{errors.phoneNumber}</span>}
               </div>
-              {errors.password && <span className="error-message">{errors.password}</span>}
-            </div>
 
-            {/* Confirm Password Field */}
-            <div className="form-group">
-              <div className="input-wrapper">
-                <LockOutlined className="input-icon" />
-                <input
-                  type={showConfirmPassword ? "text" : "password"}
-                  name="confirmPassword"
-                  placeholder="Xác nhận mật khẩu"
-                  className="form-input"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  required
-                  minLength={6}
-                />
-                <button
-                  type="button"
-                  onClick={toggleComnfirmPasswordVisibility}
-                  className="password-toggle"
-                >
-                  {showConfirmPassword ? <EyeInvisibleOutlined /> : <EyeTwoTone />}
-                </button>
+              {/* Password Field */}
+              <div className="form-group">
+                <div className="input-wrapper">
+                  <LockOutlined className="input-icon" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    placeholder="Mật khẩu"
+                    className="form-input"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    minLength={6}
+                  />
+                  <button
+                    type="button"
+                    onClick={togglePasswordVisibility}
+                    className="password-toggle"
+                  >
+                    {showPassword ? <EyeInvisibleOutlined /> : <EyeTwoTone />}
+                  </button>
+                </div>
+                {errors.password && <span className="error-message">{errors.password}</span>}
               </div>
+
+              {/* Confirm Password Field */}
+              <div className="form-group">
+                <div className="input-wrapper">
+                  <LockOutlined className="input-icon" />
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    name="confirmPassword"
+                    placeholder="Xác nhận mật khẩu"
+                    className="form-input"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    required
+                    minLength={6}
+                  />
+                  <button
+                    type="button"
+                    onClick={toggleComnfirmPasswordVisibility}
+                    className="password-toggle"
+                  >
+                    {showConfirmPassword ? <EyeInvisibleOutlined /> : <EyeTwoTone />}
+                  </button>
+                </div>
+              </div>
+
+              <button 
+                type="submit" 
+                className={`signup-button ${loading ? "loading" : ""}`} 
+                disabled={loading}
+              >
+                {loading ? "Đang xử lý..." : "Đăng ký"}
+              </button>
+            </form>
+
+            <div className="login-link">
+              Đã có tài khoản?{" "}
+              <a href="/login" className="login-text">
+                Đăng nhập ngay
+              </a>
             </div>
-
-            <button 
-              type="submit" 
-              className={`signup-button ${loading ? "loading" : ""}`} 
-              disabled={loading}
-            >
-              {loading ? "Đang xử lý..." : "Đăng ký"}
-            </button>
-          </form>
-
-          <div className="login-link">
-            Đã có tài khoản?{" "}
-            <a href="/login" className="login-text">
-              Đăng nhập ngay
-            </a>
           </div>
         </div>
       </div>

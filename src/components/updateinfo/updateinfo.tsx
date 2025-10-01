@@ -237,162 +237,164 @@ const ProfileUpdate: React.FC = () => {
   };
 
   return (
-    <div className="profile-container">
-      <div className="profile-card">
-        <div className="profile-header">
-          <h1 className="brand-title">BOOKING CARE</h1>
-          <h2 className="page-title">Cập nhật thông tin cá nhân</h2>
-        </div>
-        
-        <form onSubmit={handleSubmit} className="profile-form">
-          {error && <div className="error-message">{error}</div>}
-          {successMessage && <div className="success-message">{successMessage}</div>}
-          
-          <div className="form-row">
-            <div className="form-group full-width" style={{ textAlign: 'center' }}>
-              <label className="form-label">ID người dùng</label>
-              <div className="input-wrapper" style={{ maxWidth: '200px', margin: '0 auto' }}>
-                <input
-                  type="text"
-                  name="id"
-                  value={formData.id}
-                  readOnly
-                  disabled
-                  className="form-input readonly"
-                  style={{
-                    backgroundColor: '#f5f5f5',
-                    color: '#666',
-                    cursor: 'not-allowed',
-                    textAlign: 'center',
-                    fontWeight: 'bold'
-                  }}
-                />
-              </div>
+    <div className='body'>
+        <div className="profile-container">
+          <div className="profile-card">
+            <div className="profile-header">
+              <h1 className="brand-title">BOOKING CARE</h1>
+              <h2 className="page-title">Cập nhật thông tin cá nhân</h2>
             </div>
-          </div>
+            
+            <form onSubmit={handleSubmit} className="profile-form">
+              {error && <div className="error-message">{error}</div>}
+              {successMessage && <div className="success-message">{successMessage}</div>}
+              
+              <div className="form-row">
+                <div className="form-group full-width" style={{ textAlign: 'center' }}>
+                  <label className="form-label">ID người dùng</label>
+                  <div className="input-wrapper" style={{ maxWidth: '200px', margin: '0 auto' }}>
+                    <input
+                      type="text"
+                      name="id"
+                      value={formData.id}
+                      readOnly
+                      disabled
+                      className="form-input readonly"
+                      style={{
+                        backgroundColor: '#f5f5f5',
+                        color: '#666',
+                        cursor: 'not-allowed',
+                        textAlign: 'center',
+                        fontWeight: 'bold'
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
 
-{/* Họ tên - Địa chỉ */}
-<div className="form-row">
-  <div className="form-group">
-    <label className="form-label">Họ và tên *</label>
-    <input
-      type="text"
-      name="name"
-      placeholder="Nhập họ và tên"
-      value={formData.name}
-      onChange={handleInputChange}
-      required
-      className="form-input"
-    />
-  </div>
-
-  <div className="form-group">
-    <label className="form-label">Địa chỉ</label>
-    <input
-      type="text"
-      name="address"
-      placeholder="Nhập địa chỉ"
-      value={formData.address}
-      onChange={handleInputChange}
-      className="form-input"
-    />
-  </div>
-</div>
-
-{/* Số điện thoại - Giới tính */}
-<div className="form-row">
-  <div className="form-group">
-    <label className="form-label">Số điện thoại</label>
-    <input
-      type="tel"
-      name="phone"
-      placeholder="Nhập số điện thoại"
-      value={formData.phone}
-      onChange={handleInputChange}
-      className="form-input"
-      pattern="^(0[0-9]{9})$"
-      title="Số điện thoại phải có 10 chữ số và bắt đầu bằng 0"
-    />
-  </div>
-
-  <div className="form-group">
-    <label className="form-label">Giới tính</label>
-    <select
-      name="gender"
-      value={formData.gender}
-      onChange={handleInputChange}
-      className="form-input form-select"
-    >
-      <option value="MALE">Nam</option>
-      <option value="FEMALE">Nữ</option>
-      <option value="OTHER">Khác</option>
-    </select>
-  </div>
-</div>
-
-{/* CCCD - Ngày sinh */}
-<div className="form-row">
-  <div className="form-group">
-    <label className="form-label">Căn cước công dân</label>
-    <input
-      type="text"
-      name="cccd"
-      placeholder="Nhập số CCCD"
-      value={formData.cccd}
-      onChange={handleInputChange}
-      className="form-input"
-    />
-  </div>
-
-  <div className="form-group">
-    <label className="form-label">Ngày sinh</label>
-    <input
-      type="date"
-      name="dateOfBirth"
-      value={formData.dateOfBirth}
-      onChange={handleInputChange}
-      className="form-input"
-    />
-  </div>
-</div>
-
-<div className="form-row">
-  <div className="form-group avatar-group">
-    <label className="form-label">Ảnh đại diện</label>
-
-    <div className="file-upload-wrapper">
-      <input
-        type="file"
-        id="file-input"
-        name="file"
-        onChange={handleFileChange}
-        accept="image/*"
-        style={{ display: 'none' }}
-      />
-      <label htmlFor="file-input" className="file-upload-button">
-        Choose File
-      </label>
-
-      {/* Hiển thị tên file nếu đã chọn */}
-      {selectedFile && (
-        <span className="file-name">{selectedFile.name}</span>
-      )}
-    </div>
-  </div>
-</div>
-          
-          <div className="form-actions">
-            <button
-              type="submit"
-              disabled={isLoading}
-              className={`update-button ${isLoading ? 'loading' : ''}`}
-            >
-              <SaveOutlined />
-              {isLoading ? 'ĐANG CẬP NHẬT...' : 'CẬP NHẬT THÔNG TIN'}
-            </button>
-          </div>
-        </form>
+    {/* Họ tên - Địa chỉ */}
+    <div className="form-row">
+      <div className="form-group">
+        <label className="form-label">Họ và tên *</label>
+        <input
+          type="text"
+          name="name"
+          placeholder="Nhập họ và tên"
+          value={formData.name}
+          onChange={handleInputChange}
+          required
+          className="form-input"
+        />
       </div>
+
+      <div className="form-group">
+        <label className="form-label">Địa chỉ</label>
+        <input
+          type="text"
+          name="address"
+          placeholder="Nhập địa chỉ"
+          value={formData.address}
+          onChange={handleInputChange}
+          className="form-input"
+        />
+      </div>
+    </div>
+
+    {/* Số điện thoại - Giới tính */}
+    <div className="form-row">
+      <div className="form-group">
+        <label className="form-label">Số điện thoại</label>
+        <input
+          type="tel"
+          name="phone"
+          placeholder="Nhập số điện thoại"
+          value={formData.phone}
+          onChange={handleInputChange}
+          className="form-input"
+          pattern="^(0[0-9]{9})$"
+          title="Số điện thoại phải có 10 chữ số và bắt đầu bằng 0"
+        />
+      </div>
+
+      <div className="form-group">
+        <label className="form-label">Giới tính</label>
+        <select
+          name="gender"
+          value={formData.gender}
+          onChange={handleInputChange}
+          className="form-input form-select"
+        >
+          <option value="MALE">Nam</option>
+          <option value="FEMALE">Nữ</option>
+          <option value="OTHER">Khác</option>
+        </select>
+      </div>
+    </div>
+
+    {/* CCCD - Ngày sinh */}
+    <div className="form-row">
+      <div className="form-group">
+        <label className="form-label">Căn cước công dân</label>
+        <input
+          type="text"
+          name="cccd"
+          placeholder="Nhập số CCCD"
+          value={formData.cccd}
+          onChange={handleInputChange}
+          className="form-input"
+        />
+      </div>
+
+      <div className="form-group">
+        <label className="form-label">Ngày sinh</label>
+        <input
+          type="date"
+          name="dateOfBirth"
+          value={formData.dateOfBirth}
+          onChange={handleInputChange}
+          className="form-input"
+        />
+      </div>
+    </div>
+
+    <div className="form-row">
+      <div className="form-group avatar-group">
+        <label className="form-label">Ảnh đại diện</label>
+
+        <div className="file-upload-wrapper">
+          <input
+            type="file"
+            id="file-input"
+            name="file"
+            onChange={handleFileChange}
+            accept="image/*"
+            style={{ display: 'none' }}
+          />
+          <label htmlFor="file-input" className="file-upload-button">
+            Choose File
+          </label>
+
+          {/* Hiển thị tên file nếu đã chọn */}
+          {selectedFile && (
+            <span className="file-name">{selectedFile.name}</span>
+          )}
+        </div>
+      </div>
+    </div>
+              
+              <div className="form-actions">
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className={`update-button ${isLoading ? 'loading' : ''}`}
+                >
+                  <SaveOutlined />
+                  {isLoading ? 'ĐANG CẬP NHẬT...' : 'CẬP NHẬT THÔNG TIN'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
     </div>
   );
 };

@@ -205,122 +205,126 @@ const saveNewPasswordAPI = async (email: string, password: string) => {
   };
 
   return (
-    <div className="forgot-bg">
-      <Card className="forgot-container" bordered={false}>
-        {step !== 'success' && (
-          <Steps current={['email', 'otp', 'newPassword'].indexOf(step)} className="forgot-steps" size="small">
-            <Step icon={<MailOutlined />} />
-            <Step icon={<SafetyOutlined />} />
-            <Step icon={<LockOutlined />} />
-          </Steps>
-        )}
+    <div className='html'>
+      <div className='body'>
+        <div className="forgot-bg">
+          <Card className="forgot-container" bordered={false}>
+            {step !== 'success' && (
+              <Steps current={['email', 'otp', 'newPassword'].indexOf(step)} className="forgot-steps" size="small">
+                <Step icon={<MailOutlined />} />
+                <Step icon={<SafetyOutlined />} />
+                <Step icon={<LockOutlined />} />
+              </Steps>
+            )}
 
-        {step === 'email' && (
-          <Form layout="vertical" onFinish={handleEmailSubmit} autoComplete="off">
-            <div className="forgot-icon"><MailOutlined /></div>
-            <Title level={3} className="forgot-title">Quên mật khẩu?</Title>
-            <Text className="forgot-desc">Nhập email để nhận mã xác thực</Text>
-            <Form.Item label="Email" className="forgot-label" required>
-              <Input
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                placeholder="Nhập email của bạn"
-                disabled={loading}
-                size="large"
-              />
-            </Form.Item>
-            {error && <Alert type="error" message={error} showIcon className="forgot-error" />}
-            <Form.Item>
-              <Button type="primary" htmlType="submit" block loading={loading} size="large">
-                Gửi mã OTP
-              </Button>
-            </Form.Item>
-          </Form>
-        )}
+            {step === 'email' && (
+              <Form layout="vertical" onFinish={handleEmailSubmit} autoComplete="off">
+                <div className="forgot-icon"><MailOutlined /></div>
+                <Title level={3} className="forgot-title">Quên mật khẩu?</Title>
+                <Text className="forgot-desc">Nhập email để nhận mã xác thực</Text>
+                <Form.Item label="Email" className="forgot-label" required>
+                  <Input
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    placeholder="Nhập email của bạn"
+                    disabled={loading}
+                    size="large"
+                  />
+                </Form.Item>
+                {error && <Alert type="error" message={error} showIcon className="forgot-error" />}
+                <Form.Item>
+                  <Button type="primary" htmlType="submit" block loading={loading} size="large">
+                    Gửi mã OTP
+                  </Button>
+                </Form.Item>
+              </Form>
+            )}
 
-        {step === 'otp' && (
-          <Form layout="vertical" onFinish={handleOtpSubmit} autoComplete="off">
-            <div className="forgot-icon"><SafetyOutlined /></div>
-            <Title level={3} className="forgot-title">Xác thực OTP</Title>
-            <Text className="forgot-desc">Mã xác thực đã được gửi đến <b>{email}</b></Text>
-            <Form.Item label="Mã OTP" className="forgot-label" required>
-              <Input
-                value={otp}
-                onChange={e => setOtp(e.target.value)}
-                placeholder="Nhập mã OTP"
-                maxLength={6}
-                disabled={loading}
-                size="large"
-              />
-            </Form.Item>
-            {error && <Alert type="error" message={error} showIcon className="forgot-error" />}
-            <div className="forgot-otp-actions">
-              <Button type="link" onClick={handleResendOtp} disabled={otpTimer > 0 || loading}>
-                {otpTimer > 0 ? `Gửi lại sau ${otpTimer}s` : 'Gửi lại mã OTP'}
-              </Button>
-            </div>
-            <div className="forgot-btn-group">
-              <Button icon={<ArrowLeftOutlined />} onClick={goBack} disabled={loading}>
-                Quay lại
-              </Button>
-              <Button type="primary" htmlType="submit" loading={loading}>
-                Xác thực
-              </Button>
-            </div>
-          </Form>
-        )}
+            {step === 'otp' && (
+              <Form layout="vertical" onFinish={handleOtpSubmit} autoComplete="off">
+                <div className="forgot-icon"><SafetyOutlined /></div>
+                <Title level={3} className="forgot-title">Xác thực OTP</Title>
+                <Text className="forgot-desc">Mã xác thực đã được gửi đến <b>{email}</b></Text>
+                <Form.Item label="Mã OTP" className="forgot-label" required>
+                  <Input
+                    value={otp}
+                    onChange={e => setOtp(e.target.value)}
+                    placeholder="Nhập mã OTP"
+                    maxLength={6}
+                    disabled={loading}
+                    size="large"
+                  />
+                </Form.Item>
+                {error && <Alert type="error" message={error} showIcon className="forgot-error" />}
+                <div className="forgot-otp-actions">
+                  <Button type="link" onClick={handleResendOtp} disabled={otpTimer > 0 || loading}>
+                    {otpTimer > 0 ? `Gửi lại sau ${otpTimer}s` : 'Gửi lại mã OTP'}
+                  </Button>
+                </div>
+                <div className="forgot-btn-group">
+                  <Button icon={<ArrowLeftOutlined />} onClick={goBack} disabled={loading}>
+                    Quay lại
+                  </Button>
+                  <Button type="primary" htmlType="submit" loading={loading}>
+                    Xác thực
+                  </Button>
+                </div>
+              </Form>
+            )}
 
-        {step === 'newPassword' && (
-          <Form layout="vertical" onFinish={handlePasswordSubmit} autoComplete="off">
-            <div className="forgot-icon"><LockOutlined /></div>
-            <Title level={3} className="forgot-title">Đặt mật khẩu mới</Title>
-            <Text className="forgot-desc">Tạo mật khẩu mới cho tài khoản của bạn</Text>
-            <Form.Item label="Mật khẩu mới" className="forgot-label" required>
-              <Input.Password
-                value={newPassword}
-                onChange={e => setNewPassword(e.target.value)}
-                placeholder="Nhập mật khẩu mới"
-                iconRender={visible => visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />}
-                size="large"
-                disabled={loading}
-              />
-            </Form.Item>
-            <Form.Item label="Xác nhận mật khẩu" className="forgot-label" required>
-              <Input.Password
-                value={confirmPassword}
-                onChange={e => setConfirmPassword(e.target.value)}
-                placeholder="Xác nhận mật khẩu mới"
-                iconRender={visible => visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />}
-                size="large"
-                disabled={loading}
-              />
-            </Form.Item>
-            {error && <Alert type="error" message={error} showIcon className="forgot-error" />}
-            <div className="forgot-btn-group">
-              <Button icon={<ArrowLeftOutlined />} onClick={goBack} disabled={loading}>
-                Quay lại
-              </Button>
-              <Button type="primary" htmlType="submit" loading={loading}>
-                Cập nhật mật khẩu
-              </Button>
-            </div>
-          </Form>
-        )}
+            {step === 'newPassword' && (
+              <Form layout="vertical" onFinish={handlePasswordSubmit} autoComplete="off">
+                <div className="forgot-icon"><LockOutlined /></div>
+                <Title level={3} className="forgot-title">Đặt mật khẩu mới</Title>
+                <Text className="forgot-desc">Tạo mật khẩu mới cho tài khoản của bạn</Text>
+                <Form.Item label="Mật khẩu mới" className="forgot-label" required>
+                  <Input.Password
+                    value={newPassword}
+                    onChange={e => setNewPassword(e.target.value)}
+                    placeholder="Nhập mật khẩu mới"
+                    iconRender={visible => visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />}
+                    size="large"
+                    disabled={loading}
+                  />
+                </Form.Item>
+                <Form.Item label="Xác nhận mật khẩu" className="forgot-label" required>
+                  <Input.Password
+                    value={confirmPassword}
+                    onChange={e => setConfirmPassword(e.target.value)}
+                    placeholder="Xác nhận mật khẩu mới"
+                    iconRender={visible => visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />}
+                    size="large"
+                    disabled={loading}
+                  />
+                </Form.Item>
+                {error && <Alert type="error" message={error} showIcon className="forgot-error" />}
+                <div className="forgot-btn-group">
+                  <Button icon={<ArrowLeftOutlined />} onClick={goBack} disabled={loading}>
+                    Quay lại
+                  </Button>
+                  <Button type="primary" htmlType="submit" loading={loading}>
+                    Cập nhật mật khẩu
+                  </Button>
+                </div>
+              </Form>
+            )}
 
-        {step === 'success' && (
-          <div className="forgot-success">
-            <CheckCircleTwoTone twoToneColor="#52c41a" style={{ fontSize: 48 }} />
-            <Title level={3} className="forgot-title">Thành công!</Title>
-            <Text className="forgot-desc">
-              Mật khẩu của bạn đã được cập nhật thành công.<br />
-              Bạn có thể đăng nhập với mật khẩu mới.
-            </Text>
-            <Button type="primary" block style={{ marginTop: 24 }} onClick={resetForm}>
-              Quay lại đăng nhập
-            </Button>
-          </div>
-        )}
-      </Card>
+            {step === 'success' && (
+              <div className="forgot-success">
+                <CheckCircleTwoTone twoToneColor="#52c41a" style={{ fontSize: 48 }} />
+                <Title level={3} className="forgot-title">Thành công!</Title>
+                <Text className="forgot-desc">
+                  Mật khẩu của bạn đã được cập nhật thành công.<br />
+                  Bạn có thể đăng nhập với mật khẩu mới.
+                </Text>
+                <Button type="primary" block style={{ marginTop: 24 }} onClick={resetForm}>
+                  Quay lại đăng nhập
+                </Button>
+              </div>
+            )}
+          </Card>
+        </div>
+      </div>
     </div>
   );
 };
