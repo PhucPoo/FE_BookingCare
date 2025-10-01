@@ -43,6 +43,7 @@ const PatientBookingList = () => {
   };
   const onLog = async (page: number, pageSize: number) => {
     console.log("Đang ở trang:", page, pageSize);
+    window.scroll(0, 0);
     if (userInfor.patientId) {
       const res = await getPatientBookingByPatientId(
         userInfor?.patientId,

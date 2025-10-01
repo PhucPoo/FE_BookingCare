@@ -1,8 +1,10 @@
 import React from "react";
 import { FaChevronDown } from "react-icons/fa";
 import SearchBar from "../UI/SearchBar";
+import useUserInfoStore from "../../Zustand/configZustand";
 
 const Header = () => {
+  const userInfo = useUserInfoStore((state) => state.userInfo);
   return (
     <header className="w-full h-20 bg-white shadow-sm flex items-center justify-between px-10 ">
       <div className="w-1/3">
@@ -15,7 +17,7 @@ const Header = () => {
             alt="User avatar"
             className="w-9 h-9 rounded-full object-cover border-2 border-indigo-500"
           />
-          <span className="font-medium text-gray-700">PhucPoo</span>
+          <span className="font-medium text-gray-700">{userInfo.name}</span>
           <FaChevronDown className="text-gray-500 text-sm mt-0.5" />
         </div>
       </div>
