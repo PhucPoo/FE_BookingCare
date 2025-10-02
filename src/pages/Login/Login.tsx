@@ -14,6 +14,7 @@ interface LoginFormData {
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState<LoginFormData>({
     userName: "", // Changed from 'email' to 'userName'
     password: "",
@@ -45,7 +46,10 @@ const Login: React.FC = () => {
 
       if (res) {
         toast.success("Đăng nhập thành công");
-        navigate("/");
+        if (res.userLogin.role === "CLIENT") {
+          navigate("/");
+        }
+        navigate(`/${res.userLogin.role.toLowerCase()}-dashboard`);
       }
     } catch (error) {
       toast.error("Có lỗi xảy ra, vui lòng thử lại");

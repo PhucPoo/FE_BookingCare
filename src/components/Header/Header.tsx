@@ -2,9 +2,25 @@ import React from "react";
 import { FaChevronDown } from "react-icons/fa";
 import SearchBar from "../UI/SearchBar";
 import useUserInfoStore from "../../Zustand/configZustand";
+import { Popover } from "antd/lib";
 
 const Header = () => {
   const userInfo = useUserInfoStore((state) => state.userInfo);
+  const content = (
+    <div className="flex flex-col gap-2.5 cursor-pointer">
+      <p className="hover:bg-cyan-300 hover:text-amber-50 p-2">
+        Cập nhật thông tin
+      </p>
+      <p
+        className="hover:bg-cyan-300 hover:text-amber-50 p-2"
+        onClick={() => {
+          useUserInfoStore.getState().logout();
+        }}
+      >
+        Đăng xuất
+      </p>
+    </div>
+  );
   return (
     <header className="w-full h-20 bg-white shadow-sm flex items-center justify-between px-10 ">
       <div className="w-1/3">
@@ -17,7 +33,9 @@ const Header = () => {
             alt="User avatar"
             className="w-9 h-9 rounded-full object-cover border-2 border-indigo-500"
           />
-          <span className="font-medium text-gray-700">{userInfo.name}</span>
+          <Popover content={content} trigger="click">
+            <span className="font-medium text-gray-700">{userInfo.name}</span>
+          </Popover>
           <FaChevronDown className="text-gray-500 text-sm mt-0.5" />
         </div>
       </div>

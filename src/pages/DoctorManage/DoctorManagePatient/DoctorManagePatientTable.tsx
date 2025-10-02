@@ -8,6 +8,7 @@ import {
 import type { DoctorManagePatientModel } from "./DoctorManagePatientModel";
 import type { DoctorManagePatientSortKeyModel } from "./DoctorManagePatientSortKey";
 import { formatDate } from "../../../utils/constant";
+import useUserInfoStore from "../../../Zustand/configZustand";
 
 type Props = {
   ListPatient: DoctorManagePatientModel[];
@@ -92,16 +93,18 @@ const DoctorManagePatientTable = ({
       key: "3",
     },
   ];
-
+  const userInfo = useUserInfoStore((state) => state.userInfo);
   return (
     <div>
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center">
           <div className="mb-6">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-              Danh sách lịch khám
+              Danh sách bệnh nhân
             </h1>
-            <p className="text-gray-600">Danh sách lịch khám bởi bác sĩ</p>
+            <p className="text-gray-600">
+              Danh sách bệnh nhân của bác sĩ {userInfo.name}
+            </p>
           </div>
         </div>
 
