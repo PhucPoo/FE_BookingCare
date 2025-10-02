@@ -155,7 +155,7 @@ const MainPageHeader = () => {
             </div>
 
             {/* Mobile Menu Button */}
-            <button
+            <div
               className="lg:hidden p-2 "
               // onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
@@ -181,7 +181,7 @@ const MainPageHeader = () => {
                   {userInfo.name ? userInfo.name : "Tài khoản"}
                 </Button>
               </Popover>
-            </button>
+            </div>
           </div>
         </div>
 
