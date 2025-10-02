@@ -6,8 +6,8 @@ import {
   Select,
   type MenuProps,
 } from "antd/lib";
-import { formatDate, getStatusBooking } from "../../utils/constant";
-import { handleDoctorUpdateBooking } from "../../api/Doctor/DoctorApi";
+import { formatDate, getStatusBooking } from "../../../utils/constant";
+import { handleDoctorUpdateBooking } from "../../../api/Doctor/DoctorApi";
 import type { DoctorBookingSortKeyModel } from "./DoctorBookingSortKeyModel";
 type BookingListModel = {
   id?: number;

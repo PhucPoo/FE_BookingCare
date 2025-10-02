@@ -38,3 +38,23 @@ export const doctorSortBooking = async (
   );
   return res.data;
 };
+export const getPatientByDoctorId = async (
+  id: number,
+  page: string,
+  size: string
+) => {
+  const res = await customAxiosInstance.get(
+    `${api}/medicalRecord/doctor/${id}?page=${page},size=${size}`
+  );
+  return res.data;
+};
+export const sortPatientByDoctorId = async (
+  id: string,
+  sortValue: string,
+  order: string
+) => {
+  const res = await customAxiosInstance.get(
+    `${api}/medicalRecord/doctor/${id}?sort=${sortValue},${order}`
+  );
+  return res.data;
+};

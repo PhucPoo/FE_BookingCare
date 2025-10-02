@@ -11,11 +11,12 @@ import {
   FaHospital,
 } from "react-icons/fa";
 import { FaMoneyBill1 } from "react-icons/fa6";
+import useUserInfoStore from "../../Zustand/configZustand";
 
 const Sidebar: React.FC = () => {
   const location = useLocation();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-
+  const userInfo = useUserInfoStore((state) => state.userInfo);
   const activeBase = "bg-[#3a3d46] text-indigo-400 font-semibold";
   const normalBase = "hover:bg-[#3a3d46] hover:text-indigo-300 text-gray-300";
 
@@ -136,30 +137,38 @@ const Sidebar: React.FC = () => {
         >
           <FaConciergeBell /> Quản lý dịch vụ
         </Link>
-        <Link
-          to="/doctor-dashboard/booking-manage"
-          className="flex items-center gap-3 hover:text-indigo-600"
-        >
-          <FaConciergeBell /> Quản lý lịch khám (của bác sĩ)
-        </Link>
-        <Link
-          to="/doctor-dashboard/patient-manage"
-          className="flex items-center gap-3 hover:text-indigo-600"
-        >
-          <FaConciergeBell /> Quản lý bệnh nhân (của bác sĩ)
-        </Link>
-        <Link
-          to="/support-dashboard/booking-support-manage"
-          className="flex items-center gap-3 hover:text-indigo-600"
-        >
-          <FaConciergeBell /> Quản lý lịch khám (của support)
-        </Link>
-        <Link
-          to="/support-dashboard/bill-support-manage"
-          className="flex items-center gap-3 hover:text-indigo-600"
-        >
-          <FaConciergeBell /> Quản lý hoá đơn (của support)
-        </Link>
+        {(userInfo.role === "ADMIN" || userInfo.role === "DOCTOR") && (
+          <Link
+            to="/doctor-dashboard/booking-manage"
+            className="flex items-center gap-3 hover:text-indigo-600"
+          >
+            <FaConciergeBell /> Quản lý lịch khám (của bác sĩ)
+          </Link>
+        )}
+        {(userInfo.role === "ADMIN" || userInfo.role === "DOCTOR") && (
+          <Link
+            to="/doctor-dashboard/patient-manage"
+            className="flex items-center gap-3 hover:text-indigo-600"
+          >
+            <FaConciergeBell /> Quản lý bệnh nhân (của bác sĩ)
+          </Link>
+        )}
+        {(userInfo.role === "ADMIN" || userInfo.role === "SUPPORT") && (
+          <Link
+            to="/support-dashboard/booking-support-manage"
+            className="flex items-center gap-3 hover:text-indigo-600"
+          >
+            <FaConciergeBell /> Quản lý lịch khám (của support)
+          </Link>
+        )}
+        {(userInfo.role === "ADMIN" || userInfo.role === "SUPPORT") && (
+          <Link
+            to="/support-dashboard/bill-support-manage"
+            className="flex items-center gap-3 hover:text-indigo-600"
+          >
+            <FaConciergeBell /> Quản lý hoá đơn (của support)
+          </Link>
+        )}
       </nav>
     </div>
   );
