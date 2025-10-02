@@ -26,7 +26,8 @@ const AddUser: React.FC<AddUserProps> = ({ users, setusers, open, onCancel }) =>
   const [selectedRole, setSelectedRole] = useState<number | null>(null);
   const [clinics, setClinics] = useState<Clinic[]>([]);
   const [specialties, setSpecialties] = useState<Specialty[]>([]);
-  
+  const [step, setStep] = useState(1);
+  const [userData, setUserData] = useState<any>(null);
   const [api, contextHolder] = notification.useNotification();
 
   // Load dropdown cho bác sĩ
@@ -59,11 +60,28 @@ const AddUser: React.FC<AddUserProps> = ({ users, setusers, open, onCancel }) =>
       fallback
     );
   };
-
+  const handleNext = async () => {
+    try {
+      const values = await form.validateFields();
+      setUserData(values);
+      setSelectedRole(values.roleId);
+      setStep(2);
+    } catch (err) {
+      console.log("Validation failed:", err);
+    }
+  };
+  
+  
   const handleSubmit = async (values: any) => {
+    const payload = {  ...userData };
+    console.log(">>>>>",payload);
+    
     try {
       // 1️⃣ Tạo account trước
-      const accountRes = await testPostAccountsApi(values);
+      const accountRes = await testPostAccountsApi(payload);
+      console.log(">>>>>",accountRes);
+     
+      
       const account = accountRes.data?.data || accountRes;
 
       // 2️⃣ Nếu role = Bác sĩ
@@ -85,7 +103,7 @@ const AddUser: React.FC<AddUserProps> = ({ users, setusers, open, onCancel }) =>
             specialty: { id: Number(values.specialtyId) },
           };
           await testPostDoctorApi(payloaddoc);
-
+         
           notification.success({
             message: "Thêm Bác sĩ thành công",
             description: `Bác sĩ: ${account.name}`,
@@ -114,11 +132,12 @@ const AddUser: React.FC<AddUserProps> = ({ users, setusers, open, onCancel }) =>
             account: { id: account.id },
             clinic: { id: Number(values.clinicId) },
           };
-          const res = await testPostSupportApi(payloadsp);
-
+        const res =  await testPostSupportApi(payloadsp);
+         
           notification.success({
+            
             message: "Thêm Trợ lý thành công",
-            description: `Trợ lý: ${res.account.name}`,
+            description: `Trợ lý: ${account.name}`,
           });
 
         } catch (err: any) {
@@ -186,51 +205,51 @@ const AddUser: React.FC<AddUserProps> = ({ users, setusers, open, onCancel }) =>
 
   return (
     <>
-    {contextHolder}
+      {contextHolder}
       <Modal
         title={<div className="text-center text-lg font-semibold">Thêm người dùng mới</div>}
-        open={open}
+        open={open && step === 1}
         onCancel={onCancel}
         footer={null}
         centered
         width={600}
       >
-        <Form form={form} layout="vertical" onFinish={handleSubmit} className="space-y-4">
-          {/* Thông tin chung */}
+        <Form form={form} layout="vertical" className="space-y-4">
           <Form.Item name="name" label="Tên người dùng" rules={[{ required: true }]}>
             <Input placeholder="Nhập tên" size="large" />
           </Form.Item>
-  
-          <Form.Item name="email" label="Email" rules={[{ required: true, type: "email" }]}>
+          <Form.Item
+            name="email"
+            label="Email"
+            rules={[
+              { required: true, type: "email" },
+              { pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Chưa nhập đúng định dạng email" },
+            ]}
+          >
             <Input placeholder="Nhập email" size="large" />
           </Form.Item>
-  
-          <Form.Item name="phoneNumber" label="Số điện thoại" rules={[
-            { required: true },
-            {
-              pattern: /^0\d{9,10}$/,
-              message: "Số điện thoại phải bắt đầu bằng 0 và có 10–11 chữ số",
-            },
-          ]}>
+          <Form.Item
+            name="phoneNumber"
+            label="Số điện thoại"
+            rules={[
+              { required: true },
+              { pattern: /^0\d{9,10}$/, message: "Số điện thoại phải bắt đầu bằng 0 và có 10–11 chữ số" },
+            ]}
+          >
             <Input placeholder="Nhập số điện thoại" size="large" />
           </Form.Item>
-  
           <Form.Item name="cccd" label="CCCD" rules={[{ required: true }]}>
             <Input placeholder="Nhập số CCCD" size="large" />
           </Form.Item>
-  
           <Form.Item name="birth" label="Ngày sinh">
             <DatePicker style={{ width: "100%" }} size="large" />
           </Form.Item>
-  
           <Form.Item name="address" label="Địa chỉ" rules={[{ required: true }]}>
             <Input placeholder="Nhập địa chỉ" size="large" />
           </Form.Item>
-  
           <Form.Item name="password" label="Mật khẩu" rules={[{ required: true }]}>
             <Input.Password placeholder="Nhập mật khẩu" size="large" />
           </Form.Item>
-  
           <Form.Item name="roleId" label="Vai trò" rules={[{ required: true }]}>
             <Select placeholder="Chọn vai trò" size="large" onChange={(val) => setSelectedRole(val)}>
               <Option value={1}>Admin</Option>
@@ -239,7 +258,6 @@ const AddUser: React.FC<AddUserProps> = ({ users, setusers, open, onCancel }) =>
               <Option value={4}>Người dùng</Option>
             </Select>
           </Form.Item>
-  
           <Form.Item name="gender" label="Giới tính" rules={[{ required: true }]}>
             <Select placeholder="Chọn giới tính" size="large">
               <Option value="MALE">Nam</Option>
@@ -247,8 +265,28 @@ const AddUser: React.FC<AddUserProps> = ({ users, setusers, open, onCancel }) =>
               <Option value="OTHER">Khác</Option>
             </Select>
           </Form.Item>
-  
-          {/* Nếu chọn role = bác sĩ thì hiển thị thêm */}
+
+          <Form.Item>
+            <div className="flex justify-end space-x-3 pt-2">
+              <Button onClick={onCancel}>Hủy</Button>
+              <Button type="primary" onClick={handleNext}>
+                Tiếp theo
+              </Button>
+            </div>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* Modal bước 2 */}
+      <Modal
+        title={<div className="text-center text-lg font-semibold">Thêm chức năng</div>}
+        open={open && step === 2}
+        onCancel={onCancel}
+        footer={null}
+        centered
+        width={600}
+      >
+        <Form form={form} layout="vertical" className="space-y-4">
           {selectedRole === 2 && (
             <>
               <Form.Item name="clinicId" label="Phòng khám" rules={[{ required: true }]}>
@@ -260,7 +298,6 @@ const AddUser: React.FC<AddUserProps> = ({ users, setusers, open, onCancel }) =>
                   ))}
                 </Select>
               </Form.Item>
-  
               <Form.Item name="specialtyId" label="Chuyên khoa" rules={[{ required: true }]}>
                 <Select placeholder="Chọn specialty" size="large">
                   {specialties.map((s) => (
@@ -270,11 +307,9 @@ const AddUser: React.FC<AddUserProps> = ({ users, setusers, open, onCancel }) =>
                   ))}
                 </Select>
               </Form.Item>
-  
               <Form.Item name="cost" label="Giá khám" rules={[{ required: true }]}>
                 <Input type="number" placeholder="Nhập giá khám" size="large" />
               </Form.Item>
-  
               <Form.Item name="degree" label="Bằng cấp" rules={[{ required: true }]}>
                 <Select placeholder="Chọn bằng cấp" size="large">
                   <Option value="BACHELOR">Cử nhân</Option>
@@ -285,39 +320,33 @@ const AddUser: React.FC<AddUserProps> = ({ users, setusers, open, onCancel }) =>
             </>
           )}
           {selectedRole === 3 && (
-            <>
-              <Form.Item name="clinicId" label="Phòng khám" rules={[{ required: true }]}>
-                <Select placeholder="Chọn clinic" size="large">
-                  {clinics.map((c) => (
-                    <Option key={c.id} value={c.id}>
-                      {c.id} - {c.name}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-  
-            </>
+            <Form.Item name="clinicId" label="Phòng khám" rules={[{ required: true }]}>
+              <Select placeholder="Chọn clinic" size="large">
+                {clinics.map((c) => (
+                  <Option key={c.id} value={c.id}>
+                    {c.id} - {c.name}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
           )}
           {selectedRole === 4 && (
-            <>
-              <Form.Item name="bhyt" label="Bảo hiểm y tế" rules={[{ required: true }]}>
-                <Input placeholder="Nhập mã BHYT (nếu có)" size="large" />
-              </Form.Item>
-  
-            </>
+            <Form.Item name="bhyt" label="Bảo hiểm y tế" rules={[{ required: true }]}>
+              <Input placeholder="Nhập mã BHYT (nếu có)" size="large" />
+            </Form.Item>
           )}
-  
-  
+
           <Form.Item>
             <div className="flex justify-end space-x-3 pt-2">
-              <Button onClick={onCancel}>Hủy</Button>
-              <Button type="primary" htmlType="submit">
+              <Button onClick={() => setStep(1)}>Quay lại</Button>
+              <Button type="primary" onClick={handleSubmit}>
                 Thêm
               </Button>
             </div>
           </Form.Item>
         </Form>
       </Modal>
+
     </>
   );
 };

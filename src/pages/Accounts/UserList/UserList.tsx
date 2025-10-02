@@ -59,7 +59,7 @@ const userManagement: React.FC = () => {
   const handleGetAccounts = async () => {
     const result = await testGetAccountsApi();
     setusers(result.data.result);
-    setusers(result.data.result);
+    
   };
 
 
