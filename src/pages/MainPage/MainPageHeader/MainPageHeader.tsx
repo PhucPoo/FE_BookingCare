@@ -1,21 +1,12 @@
-import {
-  FaTiktok,
-  FaFacebook,
-  FaFacebookMessenger,
-  FaYoutube,
-  FaAngleDown,
-  FaUser,
-} from "react-icons/fa";
 import { IoIosLogOut } from "react-icons/io";
-import { MdOutlinePhoneAndroid } from "react-icons/md";
-import { TfiHeadphoneAlt } from "react-icons/tfi";
 import { Link, useNavigate } from "react-router-dom";
 import useUserInfoStore from "../../../Zustand/configZustand";
-import { Popover } from "antd/lib";
+import { Button, Popover } from "antd/lib";
 import { Divider } from "antd/lib";
+import { useState } from "react";
 const MainPageHeader = () => {
   const navigate = useNavigate();
-  const userInfor = useUserInfoStore((state) => state.userInfo);
+  const userInfo = useUserInfoStore((state) => state.userInfo);
   const content = (
     <div className="flex flex-col gap-2">
       <Link to="/update">Thông tin cá nhân</Link>
@@ -35,116 +26,199 @@ const MainPageHeader = () => {
       </Link>
     </div>
   );
+  const contentModal = (
+    <div className="flex flex-col gap-2">
+      <Link to="/auth/login">Đăng nhập</Link>
+      <Link to="/auth/signup">Đăng kí</Link>
+    </div>
+  );
+  const [isAccountOpen, setIsAccountOpen] = useState(false);
 
   return (
     <div>
-      <header className="header">
-        <div className="container flex">
-          <div className="header-left">
+      <header className="bg-[#eee] text-[#333] shadow-lg">
+        {/* Top Section */}
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between py-4">
+            {/* Logo */}
             <div
-              className="logo"
+              className="text-2xl font-bold cursor-pointer hover:text-blue-400 transition-colors"
               onClick={() => {
                 navigate("/");
               }}
             >
               Bookingcare
             </div>
-          </div>
 
-          <div className="header-right">
-            {/* <!-- Hàng trên --> */}
-            <div className="header-top">
-              <div className="flex gap-3">
-                <Link to="#">
-                  <FaTiktok />
-                </Link>
-                <Link to="#">
-                  <FaFacebook />
-                </Link>
-                <Link to="#">
-                  <FaFacebookMessenger />
-                </Link>
-                <Link to="#">
-                  <FaYoutube />
-                </Link>
-              </div>
-              <div className="top-actions">
-                <button className="btn-download flex items-center gap-1.5">
-                  <MdOutlinePhoneAndroid /> Tải ứng dụng
-                </button>
-
-                {userInfor.email && userInfor.id ? (
-                  <Popover content={content} title="Tài khoản" trigger="click">
-                    <button className="btn-account flex items-center gap-1.5">
-                      <FaUser /> {userInfor.name}
-                    </button>
-                  </Popover>
-                ) : (
-                  <button
-                    className="btn-account flex items-center gap-1.5"
-                    onClick={() => navigate("/auth/login")}
+            {/* Desktop Menu */}
+            <div className="hidden lg:flex items-center gap-6">
+              {/* Social Links */}
+              <div className="flex items-center gap-4">
+                <a href="#" className="hover:text-blue-400 transition-colors">
+                  <svg
+                    className="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
                   >
-                    <FaUser /> Tài khoản
-                  </button>
-                )}
-                <div className="language">
-                  <img src="https://flagcdn.com/w20/vn.png" alt="VN" />
-                  <FaAngleDown />
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                  </svg>
+                </a>
+                <a href="#" className="hover:text-blue-400 transition-colors">
+                  <svg
+                    className="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                  </svg>
+                </a>
+              </div>
+
+              {/* Download Button */}
+              <Button
+                size="middle"
+                className="flex items-center gap-2 bg-[#fbc02d] px-4 py-2 rounded-lg transition-colors cursor-pointer"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
+                  />
+                </svg>
+                Tải ứng dụng
+              </Button>
+
+              {/* Account Section */}
+              {userInfo.email && userInfo.id ? (
+                <div className="relative">
+                  <Popover content={content} title="Tài khoản" trigger="click">
+                    <Button
+                      className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg transition-colors cursor-pointer"
+                      size="middle"
+                    >
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                        />
+                      </svg>
+                      {userInfo.name}
+                    </Button>
+                  </Popover>
                 </div>
+              ) : (
+                <Popover content={contentModal}>
+                  <Button
+                    className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg transition-colors cursor-pointer"
+                    size="middle"
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      />
+                    </svg>
+                    Tài khoản
+                  </Button>
+                </Popover>
+              )}
+
+              {/* Language Selector */}
+              <div className="flex items-center gap-2">
+                <img
+                  src="https://flagcdn.com/w20/vn.png"
+                  alt="VN"
+                  className="w-5 h-5"
+                />
               </div>
             </div>
 
-            {/* <!-- Hàng dưới --> */}
-            <div className="header-bottom">
-              <div className="hotline">
-                <TfiHeadphoneAlt />
-                <span>Hỗ trợ đặt khám</span>
-                <strong>1900 2115</strong>
-              </div>
-              <nav className="nav-menu">
-                <ul>
-                  <li>
-                    <a href="#">Cơ sở y tế</a>
-                  </li>
-                  <li>
-                    <a href="#">Dịch vụ y tế</a>
-                  </li>
-                  <li>
-                    <a href="#">Khám sức khỏe doanh nghiệp</a>
-                  </li>
-                  <li>
-                    <a href="#">Tin tức</a>
-                  </li>
-                  <li>
-                    <a href="#">Hướng dẫn</a>
-                  </li>
-                  <li>
-                    <a href="#">Liên hệ hợp tác</a>
-                  </li>
-                </ul>
-              </nav>
-            </div>
-            <nav className="nav-menu">
-              <ul>
+            {/* Mobile Menu Button */}
+            <button
+              className="lg:hidden p-2 "
+              // onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              <Popover content={content} title="Tài khoản" trigger="click">
+                <Button
+                  onClick={() => setIsAccountOpen(!isAccountOpen)}
+                  className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg transition-colors cursor-pointer lg:hidden"
+                  size="middle"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                  {userInfo.name ? userInfo.name : "Tài khoản"}
+                </Button>
+              </Popover>
+            </button>
+          </div>
+        </div>
+
+        {/* Bottom Navigation */}
+        <div className="bg-[#67a6dc] ">
+          <div className="container mx-auto px-4">
+            <nav className="hidden lg:block">
+              <ul className="flex items-center justify-between gap-8 py-3 text-[#eee]">
                 <li>
-                  <Link to="/danh-sach/clinic-page" >
+                  <a href="#" className="hover:underline transition-colors">
                     Cơ sở y tế
-                  </Link>
+                  </a>
                 </li>
                 <li>
-                  <a href="#">Dịch vụ y tế</a>
+                  <a href="#" className="hover:underline transition-colors">
+                    Dịch vụ y tế
+                  </a>
                 </li>
                 <li>
-                  <a href="#">Khám sức khỏe doanh nghiệp</a>
+                  <a href="#" className="hover:underline transition-colors">
+                    Khám sức khỏe doanh nghiệp
+                  </a>
                 </li>
                 <li>
-                  <a href="#">Tin tức</a>
+                  <a href="#" className="hover:underline transition-colors">
+                    Tin tức
+                  </a>
                 </li>
                 <li>
-                  <a href="#">Hướng dẫn</a>
+                  <a href="#" className="hover:underline transition-colors">
+                    Hướng dẫn
+                  </a>
                 </li>
                 <li>
-                  <a href="#">Liên hệ hợp tác</a>
+                  <a href="#" className="hover:underline transition-colors">
+                    Liên hệ hợp tác
+                  </a>
                 </li>
               </ul>
             </nav>

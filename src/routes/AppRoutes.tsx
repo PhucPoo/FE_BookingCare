@@ -14,7 +14,6 @@ import SupportList from "../pages/Accounts/SupportList/SupportList";
 import PatientList from "../pages/Accounts/PatientList/PatientList";
 import UserList from "../pages/Accounts/UserList/UserList";
 import SpecialtyGrid from "../pages/Specialty/SpecialtyList";
-import ListPatient_Doctor from "../pages/Doctors/ListPatient_Doctor";
 import ClinicDashboard from "../pages/Dashboard/ClinicDashboard/ClinicDashboard";
 import ClinicManagement from "../pages/Clinic/ClinicManagement";
 import { Navigate, Outlet, Route, Routes } from "react-router-dom";
@@ -63,23 +62,20 @@ const AppRoutes = () => {
       </Route>
 
       <Route path="/" element={<MainPage />} />
-      
 
       <Route path="/update" element={<UpdateInfo />} />
 
       <Route path="/danh-sach" element={<List />}>
-       
         {/* <Route
           path="/danh-sach"
           element={<Navigate to={"clinic-page"} replace={true} />}
         /> */}
-         <Route path="clinic-page" element={<MedicalFacilityList  />}>
-       
-        {/* <Route path="bac-si" element={<DoctorList />} />
+        <Route path="clinic-page" element={<MedicalFacilityList />}>
+          {/* <Route path="bac-si" element={<DoctorList />} />
         <Route path="chuyen-khoa" element={<SpecialtyList />} />
         <Route path="bai-viet" element={<ArticleList />} /> */}
         </Route>
-      
+
         <Route
           path="/danh-sach"
           element={<Navigate to={"error-page"} replace={true} />}
@@ -116,14 +112,12 @@ const AppRoutes = () => {
           <Route path="patient-list" element={<PatientList />} />
 
           <Route path="specialty" element={<SpecialtyGrid />} />
-          <Route path="clinic-page" element={<ClinicManagement/>} />
-
-          <Route path="patient_list" element={<MedicalFacilityList  />} />
+          <Route path="clinic-page" element={<ClinicManagement />} />
         </Route>
       </Route>
 
       {/* Phòng khám */}
-       <Route path="/clinic-dashboard" element={<ClinicDashboard />}>
+      <Route path="/clinic-dashboard" element={<ClinicDashboard />}>
         <Route
           path="/clinic-dashboard"
           element={<Navigate to={"clinic-list"} replace={true} />}

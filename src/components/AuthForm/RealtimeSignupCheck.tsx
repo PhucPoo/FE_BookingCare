@@ -8,14 +8,15 @@ interface ValidationResult {
 
 const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
 const phoneRegex = /^[0-9]{10,11}$/;
-const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
+const passwordRegex =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
 
 export function validateSignup(formData: {
   email: string;
   phoneNumber: string;
   password: string;
 }): ValidationResult {
-  let result: ValidationResult = { email: "", phoneNumber: "", password: "" };
+  const result: ValidationResult = { email: "", phoneNumber: "", password: "" };
 
   // Email validation
   if (!formData.email) {
@@ -35,7 +36,8 @@ export function validateSignup(formData: {
   if (!formData.password) {
     result.password = "Mật khẩu không được để trống.";
   } else if (!passwordRegex.test(formData.password)) {
-    result.password = "Mật khẩu phải từ 8 ký tự, có chữ hoa, chữ thường, số và ký tự đặc biệt.";
+    result.password =
+      "Mật khẩu phải từ 8 ký tự, có chữ hoa, chữ thường, số và ký tự đặc biệt.";
   }
 
   return result;
@@ -47,7 +49,11 @@ export const RealtimeSignupCheck: React.FC = () => {
     phoneNumber: "",
     password: "",
   });
-  const [errors, setErrors] = useState<ValidationResult>({ email: "", phoneNumber: "", password: "" });
+  const [errors, setErrors] = useState<ValidationResult>({
+    email: "",
+    phoneNumber: "",
+    password: "",
+  });
   const [backendError, setBackendError] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,7 +66,8 @@ export const RealtimeSignupCheck: React.FC = () => {
     e.preventDefault();
     const validation = validateSignup(formData);
     setErrors(validation);
-    if (validation.email || validation.phoneNumber || validation.password) return;
+    if (validation.email || validation.phoneNumber || validation.password)
+      return;
     try {
       // Replace with your backend API call
       // const response = await axios.post("/api/register", formData);
@@ -92,7 +99,9 @@ export const RealtimeSignupCheck: React.FC = () => {
           value={formData.phoneNumber}
           onChange={handleChange}
         />
-        {errors.phoneNumber && <span className="error">{errors.phoneNumber}</span>}
+        {errors.phoneNumber && (
+          <span className="error">{errors.phoneNumber}</span>
+        )}
       </div>
       <div>
         <input
