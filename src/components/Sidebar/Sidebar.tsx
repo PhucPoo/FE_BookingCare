@@ -161,8 +161,23 @@ const Sidebar: React.FC = () => {
             <FaConciergeBell /> Quản lý dịch vụ
           </Link>
         )}
-
-        {(userInfo.role === "ADMIN" || userInfo.role === "DOCTOR") && (
+        {userInfo.role === "ADMIN" && (
+          <Link
+            to="/doctor-dashboard"
+            className={linkClass("/doctor-dashboard", true)}
+          >
+            <FaConciergeBell /> Đến router doctor
+          </Link>
+        )}
+        {userInfo.role === "ADMIN" && (
+          <Link
+            to="/support-dashboard"
+            className={linkClass("/support-dashboard", true)}
+          >
+            <FaConciergeBell /> Đến router support
+          </Link>
+        )}
+        {userInfo.role === "DOCTOR" && (
           <Link
             to="/doctor-dashboard/booking-manage"
             className="flex items-center gap-3 hover:text-indigo-600"
@@ -170,7 +185,7 @@ const Sidebar: React.FC = () => {
             <FaConciergeBell /> Quản lý lịch khám
           </Link>
         )}
-        {(userInfo.role === "ADMIN" || userInfo.role === "DOCTOR") && (
+        {userInfo.role === "DOCTOR" && (
           <Link
             to="/doctor-dashboard/patient-manage"
             className="flex items-center gap-3 hover:text-indigo-600"
@@ -178,7 +193,7 @@ const Sidebar: React.FC = () => {
             <FaConciergeBell /> Quản lý bệnh nhân
           </Link>
         )}
-        {(userInfo.role === "ADMIN" || userInfo.role === "SUPPORT") && (
+        {userInfo.role === "SUPPORT" && (
           <Link
             to="/support-dashboard/booking-support-manage"
             className="flex items-center gap-3 hover:text-indigo-600"
@@ -186,7 +201,7 @@ const Sidebar: React.FC = () => {
             <FaConciergeBell /> Quản lý lịch khám
           </Link>
         )}
-        {(userInfo.role === "ADMIN" || userInfo.role === "SUPPORT") && (
+        {userInfo.role === "SUPPORT" && (
           <Link
             to="/support-dashboard/bill-support-manage"
             className="flex items-center gap-3 hover:text-indigo-600"
