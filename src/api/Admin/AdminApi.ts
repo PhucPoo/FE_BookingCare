@@ -3,7 +3,7 @@ import { api } from "../../utils/constant";
 
 export const adminGetAllBooking = async (
   page: number = 1,
-  size: number = 10
+  size: number = 5
 ) => {
   const res = await customAxiosInstance.get(
     `${api}/bookings?page=${page}&size=${size}`
@@ -13,6 +13,17 @@ export const adminGetAllBooking = async (
 export const adminSortBooking = async (sortValue: string, order: string) => {
   const res = await customAxiosInstance.get(
     `${api}/bookings?sort=${sortValue},${order}`
+  );
+  return res.data;
+};
+export const adminSearchBooking = async (
+  searchValue: string,
+  searchKey: string,
+  page: number = 1,
+  size: number = 5
+) => {
+  const res = await customAxiosInstance.get(
+    `${api}/bookings/search?${searchKey}=${searchValue}&size=${size}`
   );
   return res.data;
 };

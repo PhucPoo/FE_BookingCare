@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   adminGetAllBooking,
+  adminSearchBooking,
   adminSortBooking,
 } from "../../../api/Admin/AdminApi";
 import AdminBookingTable from "./AdminBookingTable";
@@ -41,7 +42,7 @@ type AdminBookingTableModel = {
 
 const AdminBookingManage = () => {
   const [bookings, setBookings] = useState<AdminBookingTableModel[]>([]);
-  const [pageSize, setPageSize] = useState<number>(10);
+  const [pageSize, setPageSize] = useState<number>(5);
   const [totalBookingList, setTotalBookingList] = useState<number>(10);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [checkRender, setCheckRender] = useState<
@@ -80,12 +81,20 @@ const AdminBookingManage = () => {
     }
   };
   //handle search
-  const handleSearchBooking = (value: string) => {
-    let BookingListClone = bookings;
-    BookingListClone = BookingListClone.filter((item) => {
-      return item.patient?.account?.name?.includes(value);
-    });
-    setBookings(BookingListClone);
+  const handleSearchBooking = async (
+    searchValue: string,
+    searchKey: string
+  ) => {
+    const result = await adminSearchBooking(searchValue, searchKey);
+    if (!result.error) {
+      const {
+        meta: { page, pageSize, totals },
+      } = result.data;
+      setBookings(result.data.result);
+      setPageSize(pageSize);
+      setTotalBookingList(totals);
+      setCurrentPage(page);
+    }
   };
   //onLog
   const onLog = async (page: number, pageSize: number) => {
@@ -136,13 +145,13 @@ const AdminBookingManage = () => {
     setBookings(BookingListClone);
   };
 
-  const handleSearchByClinic = (value: string) => {
-    let cloneBookings = bookings;
-    cloneBookings = cloneBookings.filter((item) => {
-      return item.clinic?.name?.includes(value);
-    });
-    setBookings(cloneBookings);
-  };
+  // const handleSearchByClinic = (value: string) => {
+  //   let cloneBookings = bookings;
+  //   cloneBookings = cloneBookings.filter((item) => {
+  //     return item.clinic?.name?.includes(value);
+  //   });
+  //   setBookings(cloneBookings);
+  // };
   useEffect(() => {
     handleAdminGetAllBookings();
   }, []);
@@ -161,7 +170,7 @@ const AdminBookingManage = () => {
         handleSearchBooking={handleSearchBooking}
         setFilterCreatedAt={setFilterCreatedAt}
         filterCreatedAt={filterCreatedAt}
-        handleSearchByClinic={handleSearchByClinic}
+        // handleSearchByClinic={handleSearchByClinic}
         setBookingDetail={setBookingDetail}
         setIsModalOpen={setIsModalOpen}
       />
