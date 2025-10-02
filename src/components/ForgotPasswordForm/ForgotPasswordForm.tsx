@@ -201,7 +201,7 @@ const saveNewPasswordAPI = async (email: string, password: string) => {
     setConfirmPassword('');
     setError('');
     setOtpTimer(0);
-    navigate('/login');
+    navigate('/auth/login');
   };
 
   return (

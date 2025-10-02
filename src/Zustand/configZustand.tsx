@@ -3,11 +3,13 @@ import { devtools, persist } from "zustand/middleware";
 import { loginApi } from "../api/auth/LoginApi";
 import { toast } from "react-toastify";
 
+type UserRole = "ADMIN" | "DOCTOR" | "PATIENT" | "SUPPORT" | "NONE";
+
 type UserInfoStoreState = {
   userInfo: {
     name: string;
     email: string;
-    role: string;
+    role: UserRole;
     id: number;
     patientId?: number;
   };
@@ -16,7 +18,7 @@ type UserInfoStoreActions = {
   loginZustand: (formData: {
     userName: string;
     password: string;
-  }) => Promise<boolean>;
+  }) => Promise<any>;
   logout: () => void;
 };
 type UserInfoStore = UserInfoStoreState & UserInfoStoreActions;
@@ -25,7 +27,7 @@ const useUserInfoStore = create<UserInfoStore>()(
   devtools(
     persist(
       (set) => ({
-        userInfo: { name: "", email: "", role: "", id: 0, patientId: 0 },
+        userInfo: { name: "", email: "", role: "NONE", id: 0, patientId: 0 },
         loginZustand: async (data) => {
           const res = await loginApi(data);
           if (res.statusCode !== 200) {
@@ -37,7 +39,7 @@ const useUserInfoStore = create<UserInfoStore>()(
           return res.data;
         },
         logout: () => {
-          set({ userInfo: { name: "", email: "", role: "", id: 0 } });
+          set({ userInfo: { name: "", email: "", role: "NONE", id: 0 } });
           document.cookie = `access_token=; path=/`;
           window.location.href = "/"; // Redirect to home page after logout
         },

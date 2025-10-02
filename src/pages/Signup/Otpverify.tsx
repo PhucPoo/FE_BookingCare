@@ -43,7 +43,7 @@ export default function OtpVerify() {
       );
 
       const data = await response.json();
-      if (response.ok && data.statusCode === 200) {
+      if (response.ok && (data.statusCode === 200 || data.statusCode === 201)) {
         message.success("Xác thực OTP thành công!");
         sessionStorage.removeItem("reg_password");
         sessionStorage.removeItem("reg_name");
@@ -53,7 +53,8 @@ export default function OtpVerify() {
         //   content: "Bạn đã xác thực OTP thành công. Ấn OK để quay về trang đăng nhập.",
         //   okText: "OK",
         //   onOk: () => navigate("/login"),
-        navigate("/"); 
+        alert("Bạn đã xác thực OTP thành công. Vui lòng đăng nhập.");
+        navigate("/auth/login"); 
         // });
       } else {
         message.error(data.message || "Xác thực OTP thất bại");
