@@ -13,6 +13,15 @@ const MainPageHeader = () => {
       <Link to="/danh-sach-lich-kham">Danh sách lịch khám</Link>
       <Link to="/danh-sach-hoa-don">Danh sách hoá đơn</Link>
       <Link to="/benh-an">bệnh án</Link>
+      {userInfo.role === "ADMIN" && (
+        <Link to="/admin-dashboard">Dành cho admin</Link>
+      )}
+      {userInfo.role === "DOCTOR" && (
+        <Link to="/doctor-dashboard">Dành cho bác sĩ</Link>
+      )}
+      {userInfo.role === "SUPPORT" && (
+        <Link to="/support-dashboard">Dành cho support</Link>
+      )}
       <Divider style={{ margin: "5px 0" }}></Divider>
       <Link
         to="/#!"
@@ -155,7 +164,7 @@ const MainPageHeader = () => {
             </div>
 
             {/* Mobile Menu Button */}
-            <button
+            <div
               className="lg:hidden p-2 "
               // onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
@@ -181,7 +190,7 @@ const MainPageHeader = () => {
                   {userInfo.name ? userInfo.name : "Tài khoản"}
                 </Button>
               </Popover>
-            </button>
+            </div>
           </div>
         </div>
 

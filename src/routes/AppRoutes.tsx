@@ -3,7 +3,7 @@ import ServiceList from "../pages/Services/ServicesList/ServiceList";
 import ErrorPage from "../components/ErrorPage/ErrorPage";
 import BillPage from "../pages/Admin/Bill/AdminBillManagePage";
 import BookingPage from "../pages/Support/SupportBookingPage/SupportBookingPage";
-import DoctorBookingPage from "../pages/DoctorManage/DoctorBookingManage";
+import DoctorBookingPage from "../pages/DoctorManage/DoctorManageBooking/DoctorBookingManage";
 import DoctorDashboard from "../pages/Dashboard/DoctorDashboard/DoctorDashboard";
 import SupportDashboard from "../pages/Dashboard/SupportDashboard/SupportDashboard";
 import DoctorManagement from "../pages/Accounts/DoctorList/DoctorManagement";
@@ -39,6 +39,7 @@ import RouteCheckRole from "../utils/RouteCheckRole";
 import { permission } from "../utils/roleConfig";
 import PatientBookingList from "../pages/PatientBookingList/PatientBookingList";
 import PatientBillList from "../pages/PatientBillList/PatientBillList";
+import DoctorManagePatient from "../pages/DoctorManage/DoctorManagePatient/DoctorManagePatient";
 
 const AppRoutes = () => {
   const ProtectRouter = () => {
@@ -135,6 +136,7 @@ const AppRoutes = () => {
             element={<Navigate to={"booking-manage"} replace={true} />}
           />
           <Route path="booking-manage" element={<DoctorBookingPage />} />
+          <Route path="patient-manage" element={<DoctorManagePatient />} />
         </Route>
       </Route>
 
