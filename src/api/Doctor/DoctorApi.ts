@@ -46,6 +46,7 @@ export const getPatientByDoctorId = async (
   const res = await customAxiosInstance.get(
     `${api}/medicalRecord/doctor/${id}?page=${page},size=${size}`
   );
+  console.log("🚀 ~ getPatientByDoctorId ~ res.data:", res.data.data.meta);
   return res.data;
 };
 export const sortPatientByDoctorId = async (

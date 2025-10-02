@@ -1,7 +1,7 @@
 export type DoctorManagePatientSortKeyModel =
   | "clinic"
-  // | "createAt"
-  | "doctor"
+  | "createAt"
+  // | "doctor"
   | "id"
   | "patient"
   | "specialty";
