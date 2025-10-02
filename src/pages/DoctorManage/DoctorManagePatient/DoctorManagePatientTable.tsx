@@ -1,43 +1,42 @@
-import { Button, Dropdown, Pagination, Select, type MenuProps } from "antd/lib";
+import {
+  Button,
+  Dropdown,
+  Pagination,
+  Popconfirm,
+  type MenuProps,
+} from "antd/lib";
 import type { DoctorManagePatientModel } from "./DoctorManagePatientModel";
 import type { DoctorManagePatientSortKeyModel } from "./DoctorManagePatientSortKey";
+import { formatDate } from "../../../utils/constant";
 
 type Props = {
   ListPatient: DoctorManagePatientModel[];
   pageSize: number;
   currentPage: number;
   totalListPatient: number;
+  filterCreatedAt: { from: string; to: string };
+  searchData: { patient: string; clinic: string };
   onLog: (page: number, pageSize: number) => void;
   handleSort: (value: DoctorManagePatientSortKeyModel) => void;
-  handleChange: (value: string) => void;
   handleFindByDate: () => void;
-  handleSearchBooking: (value: string, key: string) => void;
+  handleSearch: (value: string, key: string) => void;
   setFilterCreatedAt: (value: { from: string; to: string }) => void;
-  filterCreatedAt: { from: string; to: string };
   handleGetPatientByDoctorId: () => void;
-  showModal: () => void;
-  setDetailDoctorBooking: (data: DoctorManagePatientModel) => void;
-  setIsDoctorDetailModalOpen: (value: boolean) => void;
-  handleSearchByClinic: (value: string) => void;
 };
 
 const DoctorManagePatientTable = ({
   ListPatient,
   currentPage,
   filterCreatedAt,
-  handleChange,
+  pageSize,
+  totalListPatient,
+  searchData,
   handleFindByDate,
   handleGetPatientByDoctorId,
-  handleSearchBooking,
-  handleSearchByClinic,
+  handleSearch,
   handleSort,
   onLog,
-  pageSize,
-  setDetailDoctorBooking,
   setFilterCreatedAt,
-  setIsDoctorDetailModalOpen,
-  showModal,
-  totalListPatient,
 }: Props) => {
   const items: MenuProps["items"] = [
     {
@@ -93,6 +92,7 @@ const DoctorManagePatientTable = ({
       key: "3",
     },
   ];
+
   return (
     <div>
       <div className="max-w-7xl mx-auto">
@@ -102,17 +102,6 @@ const DoctorManagePatientTable = ({
               Danh sách lịch khám
             </h1>
             <p className="text-gray-600">Danh sách lịch khám bởi bác sĩ</p>
-          </div>
-
-          <div className="mb-6">
-            <Button
-              size="large"
-              onClick={() => {
-                showModal();
-              }}
-            >
-              Đăng kí lịch khám
-            </Button>
           </div>
         </div>
 
@@ -124,9 +113,10 @@ const DoctorManagePatientTable = ({
               <input
                 type="text"
                 placeholder="Tìm kiếm bệnh nhân..."
+                defaultValue={searchData?.patient}
                 onChange={(e) => {
                   setTimeout(() => {
-                    handleSearchBooking(e.target.value, "patient");
+                    handleSearch(e.target.value, "patient");
                   }, 500);
                 }}
                 className="w-full lg:w-45 not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -148,9 +138,10 @@ const DoctorManagePatientTable = ({
               <input
                 type="text"
                 placeholder="Tìm kiếm theo nơi khám..."
+                defaultValue={searchData?.clinic}
                 onChange={(e) => {
                   setTimeout(() => {
-                    handleSearchByClinic(e.target.value);
+                    handleSearch(e.target.value, "clinic");
                   }, 500);
                 }}
                 className="w-full lg:w-45 not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -185,6 +176,14 @@ const DoctorManagePatientTable = ({
                     }}
                   >
                     ID
+                  </th>
+                  <th
+                    className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
+                    onClick={() => {
+                      handleSort("createAt");
+                    }}
+                  >
+                    Ngày khám
                   </th>
                   <th className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
                     Ghi chú
@@ -232,6 +231,9 @@ const DoctorManagePatientTable = ({
                           {item.id}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
+                          {formatDate(item.createAt)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
                           {item.description}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
@@ -248,39 +250,31 @@ const DoctorManagePatientTable = ({
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <div className="flex items-center justify-center space-x-2">
-                            <Button
-                              onClick={() => {
-                                setDetailDoctorBooking(item);
-                                setIsDoctorDetailModalOpen(true);
-                              }}
-                            >
-                              Chi tiết
-                            </Button>
-                            {/* <Button type="primary">
+                            <Button type="primary">
                               <Popconfirm
-                                title={"Xác nhận khám"}
+                                title={"Xoá bệnh nhân"}
                                 onConfirm={() => {
                                   if (item && item.id) {
-                                    handleUpdateBooking(
-                                      `${item.id}`,
-                                      "CONFIRMED"
-                                    );
+                                    // handleUpdateBooking(
+                                    //   `${item.id}`,
+                                    //   "CONFIRMED"
+                                    // );
                                   }
                                 }}
                                 onCancel={() => {
                                   if (item && item.id) {
-                                    handleUpdateBooking(
-                                      `${item.id}`,
-                                      "CANCELLED"
-                                    );
+                                    // handleUpdateBooking(
+                                    //   `${item.id}`,
+                                    //   "CANCELLED"
+                                    // );
                                   }
                                 }}
                                 okText="Xác nhận"
-                                cancelText="Từ chối"
+                                cancelText="Dừng"
                               >
-                                Thao tác
+                                Xoá
                               </Popconfirm>
-                            </Button> */}
+                            </Button>
                           </div>
                         </td>
                       </tr>
@@ -294,7 +288,7 @@ const DoctorManagePatientTable = ({
         {/* pagination */}
         <div className="mt-6 flex flex-col sm:flex-row items-center justify-between bg-white px-6 py-3 rounded-lg shadow-sm border border-gray-200">
           <div className="text-sm text-gray-700 mb-4 sm:mb-0">
-            Hiển thị <span className="font-semibold">{currentPage}</span> đến{" "}
+            Hiển thị <span className="font-semibold">{currentPage}</span> đến
             <span className="font-semibold">{pageSize}</span>
             của <span className="font-semibold">{totalListPatient}</span> kết
             quả
