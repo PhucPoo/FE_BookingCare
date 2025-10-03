@@ -40,6 +40,7 @@ import { permission } from "../utils/roleConfig";
 import PatientBookingList from "../pages/PatientBookingList/PatientBookingList";
 import PatientBillList from "../pages/PatientBillList/PatientBillList";
 import DoctorManagePatient from "../pages/DoctorManage/DoctorManagePatient/DoctorManagePatient";
+import SupportBillManagePage from "../pages/Support/SupportBillManagePage/SupportBillManagePage";
 
 const AppRoutes = () => {
   const ProtectRouter = () => {
@@ -67,16 +68,6 @@ const AppRoutes = () => {
       <Route path="/update" element={<UpdateInfo />} />
 
       <Route path="/danh-sach" element={<List />}>
-        {/* <Route
-          path="/danh-sach"
-          element={<Navigate to={"clinic-page"} replace={true} />}
-        /> */}
-        <Route path="clinic-page" element={<MedicalFacilityList />}>
-          {/* <Route path="bac-si" element={<DoctorList />} />
-        <Route path="chuyen-khoa" element={<SpecialtyList />} />
-        <Route path="bai-viet" element={<ArticleList />} /> */}
-        </Route>
-
         <Route
           path="/danh-sach"
           element={<Navigate to={"error-page"} replace={true} />}
@@ -150,7 +141,10 @@ const AppRoutes = () => {
             element={<Navigate to={"booking-support-manage"} replace={true} />}
           />
           <Route path="booking-support-manage" element={<BookingPage />} />
-          {/* <Route path="bill-support-manage" element={<BookingPage />} /> */}
+          <Route
+            path="bill-support-manage"
+            element={<SupportBillManagePage />}
+          />
         </Route>
       </Route>
 
