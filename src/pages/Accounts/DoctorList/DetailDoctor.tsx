@@ -65,7 +65,7 @@ const InformationDoctor: React.FC<InformationDoctorProps> = ({
             <strong>CCCD:</strong> {doctor.account?.cccd ?? "—"}
           </p>
            <p>
-            <strong>CCCD:</strong> {doctor.account?.address ?? "—"}
+            <strong>Địa chỉ:</strong> {doctor.account?.address ?? "—"}
           </p>
           <p>
             <strong>SĐT:</strong> {doctor.account?.phoneNumber ?? "—"}

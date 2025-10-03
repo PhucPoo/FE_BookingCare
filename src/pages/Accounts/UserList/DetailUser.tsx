@@ -32,6 +32,17 @@ const Informationuser: React.FC<InformationuserProps> = ({
     });
     return VNTime;
   };
+  const handleFormatDayOnly = (time: string | number | Date) => {
+    const date = new Date(time);
+    const VNTime = date.toLocaleString("vi-VN", {
+      timeZone: "Asia/Ho_Chi_Minh",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+    return VNTime;
+  };
+  
   return (
     <Modal
       title={
@@ -57,13 +68,18 @@ const Informationuser: React.FC<InformationuserProps> = ({
             <strong>Tên:</strong> {user.name}
           </p>
           <p>
+            <strong>Giới tính:</strong> {user.gender}
+          </p>
+          <p>
             <strong>Email:</strong> {user.email}
           </p>
           <p>
             <strong>CCCD:</strong> {user.cccd}
           </p>
-          {/* <b>Ngày sinh:</b>{" "}
-          {birthday ? dayjs(birth).format("DD/MM/YYYY") : "Chưa có"} */}
+          <p>
+            <strong>Ngày sinh:</strong>
+            {handleFormatDayOnly(user.birth)}
+          </p>
           <p>
             <strong>Địa chỉ:</strong> {user.address}
           </p>

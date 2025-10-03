@@ -85,6 +85,7 @@ const EditPatient: React.FC<EditPatientProps> = ({
         <Form.Item name="bhyt" label="Mã BHYT">
           <Input placeholder="Nhập mã BHYT" size="large" />
         </Form.Item>
+        
 
         <Form.Item>
           <div className="flex justify-end space-x-3 pt-2">

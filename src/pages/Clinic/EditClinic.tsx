@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Input, Button, Form, Select, notification } from "antd/lib";
+import { Modal, Input, Button, Form, Select, notification, Upload } from "antd/lib";
 import type { Clinic } from "./ClinicTable";
 import { testPutClinicApi } from "../../api/testClinic";
 import { testGetAddressApi } from "../../api/testAddress";
+import { UploadOutlined } from "@ant-design/icons";
 
 const { Option } = Select;
 
@@ -22,6 +23,7 @@ const EditClinic: React.FC<EditClinicProps> = ({ open, onCancel, onUpdate, clini
   const [form] = Form.useForm();
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchAddresses = async () => {
@@ -43,10 +45,19 @@ const EditClinic: React.FC<EditClinicProps> = ({ open, onCancel, onUpdate, clini
         position: clinic.position,
         phoneNumber: clinic.phoneNumber,
         addressId: clinic.address,
+        image: null,
       });
       setSelectedFile(null);
     }
   }, [clinic, form]);
+
+  const handleUploadChange = (info: any) => {
+    if (info.fileList.length > 0) {
+      setSelectedFile(info.fileList[0].originFileObj);
+    } else {
+      setSelectedFile(null);
+    }
+  };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -57,35 +68,43 @@ const EditClinic: React.FC<EditClinicProps> = ({ open, onCancel, onUpdate, clini
   const handleSubmit = async (values: any) => {
     if (!clinic) return;
 
+    console.log("Form values:", values); // kiểm tra form values
+
     const formData = new FormData();
-    formData.append("id", clinic.id.toString());
-    formData.append("name", values.name);
-    formData.append("description", values.description);
-    formData.append("position", values.position);
-    formData.append("phoneNumber", values.phoneNumber);
-    formData.append("addressId", values.address.toString());
+    formData.append("id", String(clinic.id));
+    formData.append("name", values.name || "");
+    formData.append("description", values.description || "");
+    formData.append("position", values.position || "");
+    formData.append("phoneNumber", values.phoneNumber || "");
+    formData.append("addressId", String(values.addressId) || "");
+
     if (selectedFile) {
       formData.append("file", selectedFile);
+      setLoading(true);
     }
 
     try {
-      const res = await testPutClinicApi(clinic.id,formData); // backend nhận FormData
-      onUpdate(res);
+      const res = await testPutClinicApi(clinic.id, formData);
+      const updatedClinic: Clinic = res.data.result;
+
+      onCancel();
+
+      onUpdate(updatedClinic);
       notification.success({
         message: "Cập nhật thành công",
-        description: `Phòng khám ${res.name} đã được cập nhật`,
+        description: `Phòng khám ${updatedClinic.name} đã được cập nhật`,
       });
+
       form.resetFields();
       setSelectedFile(null);
-      onCancel();
     } catch (error: any) {
       notification.error({
         message: "Cập nhật thất bại",
         description: error.response?.data?.message || "Có lỗi xảy ra",
       });
+    } finally {
+      setLoading(false);
     }
-
-    console.log("Payload gửi lên:", formData);
   };
 
   return (
@@ -114,12 +133,20 @@ const EditClinic: React.FC<EditClinicProps> = ({ open, onCancel, onUpdate, clini
           <Input placeholder="Nhập số điện thoại" size="large" />
         </Form.Item>
 
-        <Form.Item label="Ảnh">
-          <input type="file" onChange={handleFileChange} />
-          {selectedFile && <div className="mt-1 text-sm">{selectedFile.name}</div>}
+        <Form.Item label="Ảnh" name="image">
+          <Upload
+            beforeUpload={() => false}
+            onChange={handleUploadChange}
+            maxCount={1}
+            listType="picture"
+          >
+            <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
+          </Upload>
+          {selectedFile && <p className="mt-2 text-sm text-gray-500">Ảnh: {selectedFile.name}</p>}
         </Form.Item>
 
-        <Form.Item name="address " label="Địa chỉ" rules={[{ required: true, message: "Vui lòng chọn địa chỉ!" }]}>
+        {/* Đổi name từ "address " -> "addressId" */}
+        <Form.Item name="addressId" label="Địa chỉ" rules={[{ required: true, message: "Vui lòng chọn địa chỉ!" }]}>
           <Select placeholder="Chọn địa chỉ" size="large" allowClear>
             {addresses.map((addr) => (
               <Option key={addr.id} value={addr.id}>
@@ -134,7 +161,7 @@ const EditClinic: React.FC<EditClinicProps> = ({ open, onCancel, onUpdate, clini
             <Button onClick={() => { form.resetFields(); setSelectedFile(null); onCancel(); }} size="large">
               Hủy
             </Button>
-            <Button type="primary" htmlType="submit" size="large">
+            <Button type="primary" size="large" loading={loading} htmlType="submit">
               Cập nhật
             </Button>
           </div>

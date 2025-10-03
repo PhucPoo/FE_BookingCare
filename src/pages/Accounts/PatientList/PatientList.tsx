@@ -17,6 +17,13 @@ const PatientManagement: React.FC = () => {
   const [dateFilter, setDateFilter] = useState<string | null>(null);
   const [addressFilter, setAddressFilter] = useState<string | null>(null);
 
+  const [keywords, setKeywords] = useState({
+      name: "",
+      phone: "",
+      bhyt: "",
+      cccd: "",
+      address: "",
+    });
   // Lấy danh sách bệnh nhân
   const handleGetPatients = async () => {
     try {
@@ -102,25 +109,31 @@ const PatientManagement: React.FC = () => {
         Quản lý bệnh nhân
       </h1>
 
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex-1">
-          <PatientFilterBar patients={patients} onFilter={setFilteredPatients} />
-        </div>
-      </div>
-
-      {/* Bộ lọc nâng cao giống Support */}
-      <PatientAdvancedFilter
-        onChangeGender={setGenderFilter}
-        onChangeDate={setDateFilter}
-        onChangeAddress={setAddressFilter}
-        onOpenAdd={() => setIsAddModalOpen(true)}
+      <PatientFilterBar
+        onFilter={(filtered, kw) => {
+          setFilteredPatients(filtered);
+          setKeywords({
+            name: kw.name ?? "",
+            phone: kw.phone ?? "",
+            bhyt: kw.bhyt ?? "",
+            cccd: kw.cccd ?? "",
+            address: kw.address?? "",
+          });
+        }}
       />
+
+    
 
       <PatientTable
         patients={filteredPatients}
         setpatient={setPatients}
-        onUpdatePatient={handleUpdatePatient}   // ✅ sửa tên đúng
-        onDeletePatient={handleDeletePatient}   // ✅ sửa tên đúng
+        onUpdatePatient={handleUpdatePatient}   
+        onDeletePatient={handleDeletePatient}  
+        searchName={keywords.name}
+        searchPhone={keywords.phone}
+        searchBHYT={keywords.bhyt}
+        searchCccd={keywords.cccd}
+        searchAddress={keywords.address}
       />
     </div>
   );

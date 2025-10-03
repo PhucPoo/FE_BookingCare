@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from "react";
-import { Button, Modal, Pagination,  } from "antd/lib";
+import { Button, Modal, Pagination, } from "antd/lib";
 import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
 import InformationClinic from "./DetailClinic";
 import EditClinic from "./EditClinic";
 import type { Address } from "./AddClinic";
-import {notification} from "antd";
+import { notification } from "antd";
 export interface Clinic {
   id: number;
   name: string;
@@ -105,48 +105,88 @@ const ClinicTable: React.FC<ClinicTableProps> = ({
 
   return (
     <div className="w-full bg-white rounded shadow overflow-x-auto">
-      <table className="min-w-full text-sm border-collapse">
-        <thead className="bg-gray-100">
+      <table className="min-w-full text-base border-separate border-spacing-0">
+        <thead className="bg-gray-50 text-gray-700">
           <tr>
-            <th className="p-3 border">STT</th>
-            <th className="p-3 border cursor-pointer" onClick={() => handleSort("name")}>
+            <th className="p-3 border border-gray-200 text-center text-base font-medium">
+              STT
+            </th>
+            <th
+              className="p-3 border border-gray-200 cursor-pointer text-base font-medium"
+              onClick={() => handleSort("name")}
+            >
               Tên phòng khám {renderSortArrow("name")}
             </th>
-            <th className="p-3 border hidden md:table-cell">Mô tả</th>
-            <th className="p-3 border hidden lg:table-cell">Vị trí</th>
-            <th className="p-3 border hidden md:table-cell">SĐT</th>
-            <th className="p-3 border hidden md:table-cell">Thành phố</th>
-            <th className="p-3 border text-center">Thao tác</th>
+            <th className="p-3 border border-gray-200 hidden md:table-cell text-base font-medium">
+              Mô tả
+            </th>
+            <th className="p-3 border border-gray-200 hidden lg:table-cell text-base font-medium">
+              Vị trí
+            </th>
+            <th className="p-3 border border-gray-200 hidden md:table-cell text-base font-medium">
+              SĐT
+            </th>
+            <th className="p-3 border border-gray-200 hidden md:table-cell text-base font-medium">
+              Thành phố
+            </th>
+            <th className="p-3 border border-gray-200 text-center text-base font-medium">
+              Thao tác
+            </th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="text-sm md:text-base">
           {paginatedClinics.map((clinic, idx) => (
-            <tr key={clinic.id} className="hover:bg-gray-50">
-              <td className="p-3 border text-center">{idx + 1 + (currentPage - 1) * pageSize}</td>
-              <td className="p-3 border">{clinic.name}</td>
-              <td className="p-3 border hidden md:table-cell">{clinic.description}</td>
-              <td className="p-3 border hidden lg:table-cell">{clinic.position}</td>
-              <td className="p-3 border hidden md:table-cell">{clinic.phoneNumber}</td>
-              <td className="p-3 border hidden md:table-cell">{clinic.address?.city}</td>
-              <td className="p-3 border text-center">
+            <tr
+              key={clinic.id}
+              className="hover:bg-gray-100 transition"
+            >
+              <td className="p-3 border border-gray-200 text-center">
+                {idx + 1 + (currentPage - 1) * pageSize}
+              </td>
+              <td className="p-3 border border-gray-200">{clinic.name}</td>
+              <td className="p-3 border border-gray-200 hidden md:table-cell">
+                {clinic.description}
+              </td>
+              <td className="p-3 border border-gray-200 hidden lg:table-cell">
+                {clinic.position}
+              </td>
+              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">
+                {clinic.phoneNumber}
+              </td>
+              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">
+                {clinic.address?.city}
+              </td>
+              <td className="p-3 border border-gray-200 text-center">
                 <div className="flex flex-wrap justify-center gap-2">
+                  {/* Edit */}
                   <Button
-                    size="small"
+                    size="large"
                     icon={<FaEdit />}
-                    style={{ backgroundColor: "#facc15", borderColor: "#facc15", color: "#000" }}
-                    onClick={() => { setEditingClinic(clinic); setIsEditModalOpen(true); }}
+                    className="!bg-yellow-400 !border-yellow-400 !text-black hover:!bg-yellow-500 rounded-lg"
+                    onClick={() => {
+                      setEditingClinic(clinic);
+                      setIsEditModalOpen(true);
+                    }}
                   />
+                  {/* Delete */}
                   <Button
-                    size="small"
+                    size="large"
                     icon={<FaTrash />}
-                    style={{ backgroundColor: "#b91c1c", borderColor: "#b91c1c", color: "#fff" }}
-                    onClick={() => { setDeleteClinicId(clinic.id); setIsDeleteModalOpen(true); }}
+                    className="!bg-red-600 !border-red-600 !text-white hover:!bg-red-700 rounded-lg"
+                    onClick={() => {
+                      setDeleteClinicId(clinic.id);
+                      setIsDeleteModalOpen(true);
+                    }}
                   />
+                  {/* Detail */}
                   <Button
-                    size="small"
+                    size="large"
                     icon={<FaEye />}
-                    style={{ backgroundColor: "#3b82f6", borderColor: "#3b82f6", color: "#fff" }}
-                    onClick={() => { setSelectedClinic(clinic); setIsDetailModalOpen(true); }}
+                    className="!bg-blue-500 !border-blue-500 !text-white hover:!bg-blue-600 rounded-lg"
+                    onClick={() => {
+                      setSelectedClinic(clinic);
+                      setIsDetailModalOpen(true);
+                    }}
                   />
                 </div>
               </td>
