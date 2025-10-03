@@ -14,6 +14,7 @@ export interface Patient {
     id: number;
     name: string;
     email: string;
+    cccd: string;
     phoneNumber: string;
     avatar?: string | null;
     gender?: string | null;
@@ -33,6 +34,10 @@ export interface CreatePatientDto {
 interface PatientTableProps {
   patients: Patient[];
   setpatient: (patients: Patient[]) => void;
+  searchName?: string;
+  searchPhone?: string;
+  searchBHYT?: string;
+  searchCccd?: string;
   genderFilter?: string | null;
   dateFilter?: string | null;
   addressFilter?: string | null;
@@ -51,6 +56,10 @@ const PatientTable: React.FC<PatientTableProps> = ({
   addressFilter,
   onUpdatePatient,
   onDeletePatient,
+  searchName = "",
+  searchPhone = "",
+  searchBHYT = "",
+  searchCccd = "",
 }) => {
   const [sortColumn, setSortColumn] = useState<SortColumn>("id");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
@@ -159,6 +168,12 @@ const PatientTable: React.FC<PatientTableProps> = ({
     setIsEditModalOpen(false);
   };
 
+  const highlightText = (text: string | number, keyword: string) => {
+    if (!keyword) return text;
+    const regex = new RegExp(`(${keyword})`, "gi");
+    return String(text).replace(regex, `<mark style="background: yellow;">$1</mark>`);
+  };
+
   return (
     <div className="w-full bg-white rounded shadow overflow-x-auto">
       <table className="min-w-full text-base border-separate border-spacing-0">
@@ -168,7 +183,7 @@ const PatientTable: React.FC<PatientTableProps> = ({
               className="p-3 border border-gray-200 text-center cursor-pointer select-none font-medium"
               onClick={() => toggleSort("id")}
             >
-              ID bệnh nhân {sortColumn === "id" && (sortDirection === "asc" ? "🔼" : "🔽")}
+              ID  {sortColumn === "id" && (sortDirection === "asc" ? "🔼" : "🔽")}
             </th>
             <th
               className="p-3 border border-gray-200 cursor-pointer select-none font-medium"
@@ -176,8 +191,9 @@ const PatientTable: React.FC<PatientTableProps> = ({
             >
               Tên bệnh nhân {sortColumn === "name" && (sortDirection === "asc" ? "🔼" : "🔽")}
             </th>
-            <th className="p-3 border border-gray-200 hidden md:table-cell font-medium">Email</th>
+            <th className="p-3 border border-gray-200 hidden md:table-cell font-medium">CCCD</th>
             <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">SĐT</th>
+            <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">Mã BHYT</th>
             <th
               className="p-3 border border-gray-200 hidden md:table-cell cursor-pointer select-none text-center font-medium"
               onClick={() => toggleSort("createAt")}
@@ -192,9 +208,38 @@ const PatientTable: React.FC<PatientTableProps> = ({
           {paginatedPatients.map((bn) => (
             <tr key={bn.id} className="hover:bg-gray-50">
               <td className="p-3 border border-gray-200 text-center">{bn.id}</td>
-              <td className="p-3 border border-gray-200">{bn.account?.name ?? "—"}</td>
-              <td className="p-3 border border-gray-200 hidden md:table-cell">{bn.account?.email ?? "—"}</td>
-              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">{bn.account?.phoneNumber ?? "—"}</td>
+              <td className="p-3 border border-gray-200">
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: highlightText(bn.account.name ?? "", searchName || ""),
+                  }}
+                />
+              </td>
+
+              <td className="p-3 border border-gray-200 hidden md:table-cell">
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: highlightText(bn.account.cccd ?? "", searchCccd || ""),
+                  }}
+                />
+              </td>
+
+              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: highlightText(bn.account.phoneNumber ?? "", searchPhone || ""),
+                  }}
+                />
+              </td>
+
+              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: highlightText(bn.bhyt ?? "", searchBHYT || ""),
+                  }}
+                />
+              </td>
+
               <td className="p-3 border border-gray-200 hidden md:table-cell text-center">
                 {bn.account.createAt ? new Date(bn.account.createAt).toLocaleString("vi-VN") : "—"}
               </td>

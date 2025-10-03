@@ -2,34 +2,33 @@ import React, { useEffect, useState } from "react";
 import DoctorFilterBar from "./DoctorFilterBar";
 import DoctorTable, { type Doctor } from "./DoctorTable";
 import { testDeleteDoctorApi, testGetDoctorApi } from "../../../api/testDoctor";
-import DoctorAdvancedFilter from "./DoctorAdvancedFilter";
-
 
 const DoctorManagement: React.FC = () => {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [filteredDoctors, setFilteredDoctors] = useState<Doctor[]>([]);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-
-  const [DegreeFilter, setDegreeFilter] = useState<string | null>(null);
-  const [CreateAtFilter, setCreatedAtFilter] = useState<string | null>(null);
-  const [SpecialtyFilter, setSpecialtyFilter] = useState<string | null>(null);
-  const [ClinicFilter, setClinicFilter] = useState<string | null>(null);
-
+  const [keywords, setKeywords] = useState({
+    name: "",
+    phone: "",
+    cost: "",
+    degree: null as string | null,
+    specialtyId: null as string | null,
+    clinicId: null as string | null,
+    monthYear: null as string | null,
+  });
 
   // Lấy danh sách bác sĩ từ API
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await testGetDoctorApi();
-        setDoctors(res.data.result);
-        setFilteredDoctors(res.data.result);
+        setDoctors(res.data.result ?? []);
+        setFilteredDoctors(res.data.result ?? []);
       } catch (error) {
-        console.error(error);
+        console.error("Lỗi load danh sách bác sĩ:", error);
       }
     };
     fetchData();
   }, []);
-
 
   // Cập nhật bác sĩ
   const handleUpdateDoctor = (updatedDoctor: Doctor) => {
@@ -46,60 +45,15 @@ const DoctorManagement: React.FC = () => {
   const handleDeleteDoctor = async (id: number) => {
     try {
       await testDeleteDoctorApi(id); // gọi API xóa DB
-      setDoctors(prev => {
-        const newDoctors = prev.filter(doc => Number(doc.id) !== Number(id));
-        console.log("Danh sách bác sĩ sau khi xóa:", newDoctors);
+      setDoctors((prev) => {
+        const newDoctors = prev.filter((doc) => Number(doc.id) !== Number(id));
+        setFilteredDoctors(newDoctors);
         return newDoctors;
       });
     } catch (err) {
       console.error("Lỗi xóa bác sĩ:", err);
     }
   };
-  const handleFilter = () => {
-    let data = [...doctors];
-
-    // Lọc theo học vị
-    if (DegreeFilter) {
-      data = data.filter(
-        (s) => s.degree?.toLowerCase() === DegreeFilter.toLowerCase()
-      );
-    }
-
-    // Lọc theo tháng/năm tạo
-    if (CreateAtFilter) {
-      const selectedMonth = new Date(CreateAtFilter).getMonth();
-      const selectedYear = new Date(CreateAtFilter).getFullYear();
-
-      data = data.filter((s) => {
-        const createDate = new Date(s.createAt);
-        return (
-          createDate.getMonth() === selectedMonth &&
-          createDate.getFullYear() === selectedYear
-        );
-      });
-    }
-
-    // Lọc theo chuyên khoa
-    if (SpecialtyFilter) {
-      data = data.filter(
-        (s) => s.specialtyName?.toLowerCase() === SpecialtyFilter.toLowerCase()
-      );
-    }
-
-    // Lọc theo phòng khám
-    if (ClinicFilter) {
-      data = data.filter(
-        (s) => s.clinic?.name?.toLowerCase() === ClinicFilter.toLowerCase()
-      );
-    }
-
-    setFilteredDoctors(data);
-  };
-   useEffect(() => {
-      handleFilter();
-    }, [DegreeFilter,CreateAtFilter,ClinicFilter,SpecialtyFilter]);
-
-
 
   return (
     <div className="p-4 sm:p-6">
@@ -108,22 +62,21 @@ const DoctorManagement: React.FC = () => {
       </h1>
 
       {/* Bộ lọc bác sĩ */}
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex-1">
-          <DoctorFilterBar doctors={doctors} onFilter={setFilteredDoctors} />
-        </div>
-      </div>
-
-      {/* Thanh lọc + nút Thêm bác sĩ */}
-
-
-      <DoctorAdvancedFilter
-        onChangeDegree={setDegreeFilter}
-        onChangeCreatedAt={setCreatedAtFilter}
-        onChangeSpecialty={setSpecialtyFilter}
-        onChangeClinic={setClinicFilter}
-        onOpenAdd={() => setIsAddModalOpen(true)}
-      ></DoctorAdvancedFilter>
+      <DoctorFilterBar
+        setFilteredDoctors={setFilteredDoctors}
+        onFilter={(filtered, kw) => {
+          setFilteredDoctors(filtered);
+          setKeywords({
+            name: kw.name ?? "",
+            phone: kw.phone ?? "",
+            cost: kw.cost ?? "",
+            degree: kw.degree ?? null,
+            specialtyId: kw.specialtyId ?? null,
+            clinicId: kw.clinicId ?? null,
+            monthYear: kw.monthYear ?? null,
+          });
+        }}
+      />
 
       {/* Bảng bác sĩ */}
       <DoctorTable
@@ -131,10 +84,10 @@ const DoctorManagement: React.FC = () => {
         setdoctor={setDoctors}
         onUpdateDoctor={handleUpdateDoctor}
         onDeleteDoctor={handleDeleteDoctor}
+        searchName={keywords.name}
+        searchPhone={keywords.phone}
+        searchCost={keywords.cost}
       />
-
-      
-
     </div>
   );
 };

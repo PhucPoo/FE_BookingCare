@@ -17,6 +17,12 @@ const PatientManagement: React.FC = () => {
   const [dateFilter, setDateFilter] = useState<string | null>(null);
   const [addressFilter, setAddressFilter] = useState<string | null>(null);
 
+  const [keywords, setKeywords] = useState({
+      name: "",
+      phone: "",
+      bhyt: "",
+      cccd: ""
+    });
   // Lấy danh sách bệnh nhân
   const handleGetPatients = async () => {
     try {
@@ -102,11 +108,13 @@ const PatientManagement: React.FC = () => {
         Quản lý bệnh nhân
       </h1>
 
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex-1">
-          <PatientFilterBar patients={patients} onFilter={setFilteredPatients} />
-        </div>
-      </div>
+      <PatientFilterBar
+        patients={patients}
+        onFilter={(filtered, kw) => {
+          setFilteredPatients(filtered);
+          setKeywords(kw);
+        }}
+      />
 
       {/* Bộ lọc nâng cao giống Support */}
       <PatientAdvancedFilter
@@ -119,8 +127,12 @@ const PatientManagement: React.FC = () => {
       <PatientTable
         patients={filteredPatients}
         setpatient={setPatients}
-        onUpdatePatient={handleUpdatePatient}   // ✅ sửa tên đúng
-        onDeletePatient={handleDeletePatient}   // ✅ sửa tên đúng
+        onUpdatePatient={handleUpdatePatient}   
+        onDeletePatient={handleDeletePatient}  
+        searchName={keywords.name}
+        searchPhone={keywords.phone}
+        searchBHYT={keywords.bhyt}
+        searchCccd={keywords.cccd}
       />
     </div>
   );

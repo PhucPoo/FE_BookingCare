@@ -43,6 +43,9 @@ const Informationpatient: React.FC<InformationpatientProps> = ({
             <strong>Email:</strong> {patient.account?.email ?? "—"}
           </p>
           <p>
+            <strong>CCCD:</strong> {patient.account?.cccd ?? "—"}
+          </p>
+          <p>
             <strong>SĐT:</strong> {patient.account?.phoneNumber ?? "—"}
           </p>
           <p>
