@@ -1,28 +1,32 @@
-import React, { useState } from 'react';
-import type { User } from './UserTable';
-import { Button, Input } from 'antd/lib';
+import React, { useState } from "react";
+import { Input, Button } from "antd/lib";
+import type { User } from "./UserTable";
 
 interface UserFilterBarProps {
   users: User[];
-  onFilter: (filtered: User[]) => void;
+  onFilter: (filtered: User[], keywords: { cccd: string; phone: string; email: string }) => void;
 }
 
 const UserFilterBar: React.FC<UserFilterBarProps> = ({ users, onFilter }) => {
-  const [cccd, setCccd] = useState('');
-  const [phoneNumber, setPhone] = useState('');
-  const [email, setEmail] = useState('');
+  const [cccd, setCccd] = useState("");
+  const [phoneNumber, setPhone] = useState("");
+  const [email, setEmail] = useState("");
 
   const handleSearch = () => {
-    const filtered = users.filter((user) => {
-      const matchCccd = cccd === '' || String(user.cccd ?? '').includes(cccd);
-      const matchPhone = phoneNumber === '' || user.phoneNumber.includes(phoneNumber);
-      const matchEmail = email === '' || user.email.toLowerCase().includes(email.toLowerCase());
+    // Nếu không nhập gì thì trả về toàn bộ dữ liệu
+    if (!cccd && !phoneNumber && !email) {
+      onFilter(users, { cccd: "", phone: "", email: "" });
+      return;
+    }
 
+    const filtered = users.filter((user) => {
+      const matchCccd = cccd === "" || String(user.cccd ?? "").includes(cccd);
+      const matchPhone = phoneNumber === "" || (user.phoneNumber ?? "").includes(phoneNumber);
+      const matchEmail = email === "" || (user.email ?? "").toLowerCase().includes(email.toLowerCase());
       return matchCccd && matchPhone && matchEmail;
     });
-    console.log(">>",filtered);
-    
-    onFilter(filtered);
+
+    onFilter(filtered, { cccd, phone: phoneNumber, email });
   };
 
   return (
@@ -34,7 +38,6 @@ const UserFilterBar: React.FC<UserFilterBarProps> = ({ users, onFilter }) => {
         className="flex-1 min-w-[150px]"
         size="large"
       />
-
       <Input
         placeholder="Số điện thoại"
         value={phoneNumber}
@@ -42,7 +45,6 @@ const UserFilterBar: React.FC<UserFilterBarProps> = ({ users, onFilter }) => {
         className="flex-1 min-w-[150px]"
         size="large"
       />
-
       <Input
         placeholder="Email"
         value={email}
@@ -50,13 +52,7 @@ const UserFilterBar: React.FC<UserFilterBarProps> = ({ users, onFilter }) => {
         className="flex-1 min-w-[150px]"
         size="large"
       />
-
-      <Button
-        type="primary"
-        onClick={handleSearch}
-        className="flex-1 min-w-[150px]"
-        size="large"
-      >
+      <Button type="primary" onClick={handleSearch} className="min-w-[150px]" size="large">
         Tìm kiếm
       </Button>
     </div>

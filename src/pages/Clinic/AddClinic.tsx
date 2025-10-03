@@ -6,7 +6,7 @@ import Form from "antd/es/form";
 import Select from "antd/es/select";
 import type { Clinic, CreateClinic } from "./ClinicTable";
 import { notification } from "antd";
-import { testGetClinicApi, testPostClinicApi } from "../../api/testClinic";
+import { testPostClinicApi } from "../../api/testClinic";
 import { testGetAddressApi } from "../../api/testAddress";
 
 const { Option } = Select;

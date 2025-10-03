@@ -1,4 +1,4 @@
-import type { CreateSupportDto, Support } from "../pages/Accounts/SupportList/SupportTable";
+import type {  Support } from "../pages/Accounts/SupportList/SupportTable";
 import customAxiosInstance from "../utils/configAxios";
 
 const config = {
@@ -6,7 +6,7 @@ const config = {
     Authorization: `Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJob2FuZ3BodWMxMjNAZ21haWwuY29tIiwiZXhwIjoxNzY3MzY3NjI1LCJpYXQiOjE3NTg3Mjc2MjUsInVzZXIiOnsiaWQiOjE4LCJuYW1lIjoiUCIsImVtYWlsIjoiaG9hbmdwaHVjMTIzQGdtYWlsLmNvbSIsInJvbGUiOiJET0NUT1IifX0.b4FAUa66CDN4TjIvk_3Bjn5fbDolTLvknRm8pO4AswdHOAMjxjTA49pPO_LH21AR_vw1u_jLlfc2pInKtKzheA`,
   },
 };
-export const testPostSupportApi =async(data:CreateSupportDto) => {
+export const testPostSupportApi =async(data:Support) => {
     const response = await customAxiosInstance.post(
     `http://localhost:8080/api/v1/supports`,
     data,
@@ -50,5 +50,30 @@ export const testDeleteSupportApi =async(id:number) => {
   console.log("🚀 ~ testDeleteSupportsApi ~ response:", response);
   return response.data;
   
+};
+
+interface SearchSupportParams {
+  name?: string;
+  phoneNumber?: string;
+  address?: string;
+  clinicId?: number;
+ 
+}
+export const testSearchSupportApi = async (params: SearchSupportParams) => {
+  const response = await customAxiosInstance.get(
+    `http://localhost:8080/api/v1/supports/search`,
+    {
+      params: {
+        address: params.address,
+        clinicId: params.clinicId,
+        name: params.name,
+        phoneNumber: params.phoneNumber,
+      },
+      ...config,
+    }
+  );
+  console.log("🚀 ~ testSearchDoctorsApi ~ response:", response);
+  return response.data;
+
 };
 

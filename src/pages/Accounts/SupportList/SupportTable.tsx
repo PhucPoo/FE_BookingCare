@@ -22,6 +22,8 @@ export interface Support {
 interface SupportTableProps {
   supports: Support[];
   setsupport: (supports: Support[]) => void;
+  searchName?: string;
+  searchPhone?: string;
   genderFilter?: string | null;
   dateFilter?: string | null;
   clinicFilter?: string | null;
@@ -51,6 +53,8 @@ const SupportTable: React.FC<SupportTableProps> = ({
   clinicFilter,
   onUpdateSupport,
   onDeleteSupport,
+  searchName = "",
+  searchPhone = "",
 }) => {
   const [sortColumn, setSortColumn] = useState<SortColumn>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
@@ -154,12 +158,18 @@ const SupportTable: React.FC<SupportTableProps> = ({
     setIsEditModalOpen(false);
   };
 
+  const highlightText = (text: string | number, keyword: string) => {
+    if (!keyword) return text;
+    const regex = new RegExp(`(${keyword})`, "gi");
+    return String(text).replace(regex, `<mark style="background: yellow;">$1</mark>`);
+  };
+
   return (
     <div className="w-full bg-white rounded shadow overflow-x-auto">
       <table className="min-w-full text-base border-separate border-spacing-0">
         <thead className="bg-gray-100">
           <tr>
-            <th className="p-3 border border-gray-200 text-center font-medium">STT</th>
+            <th className="p-3 border border-gray-200 text-center font-medium">ID</th>
             <th
               className="p-3 border border-gray-200 cursor-pointer text-left font-medium select-none"
               onClick={() => toggleSort("name")}
@@ -169,6 +179,8 @@ const SupportTable: React.FC<SupportTableProps> = ({
             <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">Giới tính</th>
             <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">SĐT</th>
             <th className="p-3 border border-gray-200 hidden md:table-cell font-medium">Phòng khám</th>
+            <th className="p-3 border border-gray-200 hidden md:table-cell font-medium">Địa chỉ phòng khám</th>
+
             <th
               className="p-3 border border-gray-200 hidden md:table-cell cursor-pointer text-center font-medium select-none"
               onClick={() => toggleSort("createAt")}
@@ -180,13 +192,26 @@ const SupportTable: React.FC<SupportTableProps> = ({
           </tr>
         </thead>
         <tbody>
-          {paginatedSupports.map((sp, index) => (
+          {paginatedSupports.map((sp) => (
             <tr key={sp.id} className="hover:bg-gray-50">
-              <td className="p-3 border border-gray-200 text-center">{startIndex + index + 1}</td>
-              <td className="p-3 border border-gray-200">{sp.account?.name ?? "—"}</td>
+              <td className="p-3 border border-gray-200 text-center">{sp.id}</td>
+              <td className="p-3 border border-gray-200">
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: highlightText(sp.account?.name ?? "", searchName || ""),
+                  }}
+                />
+              </td>
               <td className="p-3 border border-gray-200 hidden md:table-cell text-center">{sp.account?.gender ?? "—"}</td>
-              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">{sp.account?.phoneNumber ?? "—"}</td>
+              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: highlightText(sp.account?.phoneNumber ?? "", searchPhone || ""),
+                  }}
+                />
+              </td>
               <td className="p-3 border border-gray-200 hidden md:table-cell">{sp.clinic?.name ?? "—"}</td>
+                <td className="p-3 border border-gray-200 hidden md:table-cell">{sp.account?.address ?? "—"}</td>
               <td className="p-3 border border-gray-200 hidden md:table-cell text-center">
                 {sp.account.createAt
                   ? new Date(sp.account.createAt).toLocaleString("vi-VN")

@@ -6,7 +6,6 @@ import SupportFilterBar from "./SupportFilterBar";
 // import SupportAdvancedFilter from "./SupportAdvancedFilter"; 
 
 import { testDeleteSupportApi, testGetSupportApi } from "../../../api/testSupport";
-import SupportAdvancedFilter from "./SupportAdvancedFilter";
 
 const SupportManagement: React.FC = () => {
   const [supports, setSupports] = useState<Support[]>([]);
@@ -18,6 +17,12 @@ const SupportManagement: React.FC = () => {
   const [dateFilter, setDateFilter] = useState<string | null>(null);
   const [clinicFilter, setClinicFilter] = useState<string | null>(null);
 
+  const [keywords, setKeywords] = useState({
+      name: "",
+      phone: "",
+      addressId: null as string | null,
+      clinicId: null as string | null,
+    });
   // Lấy danh sách trợ lý
   const handleGetSupports = async () => {
     try {
@@ -107,18 +112,17 @@ const SupportManagement: React.FC = () => {
         Quản lý trợ lý
       </h1>
 
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex-1">
-          <SupportFilterBar supports={supports} onFilter={setFilteredSupports} />
-        </div>
-      </div>
-
-      {/* Bộ lọc nâng cao giống User */}
-      <SupportAdvancedFilter
-        onChangeGender={setGenderFilter}
-        onChangeDate={setDateFilter}
-        onChangeClinic={setClinicFilter}
-        onOpenAdd={() => setIsAddModalOpen(true)}
+     <SupportFilterBar
+        setFilteredSupports={setFilteredSupports}
+        onFilter={(filtered, kw) => {
+          setFilteredSupports(filtered);
+          setKeywords({
+            name: kw.name ?? "",
+            phone: kw.phone ?? "",
+            addressId: kw.address ?? "",
+            clinicId: kw.clinicId ?? null,
+          });
+        }}
       />
 
       <SupportTable
@@ -126,6 +130,8 @@ const SupportManagement: React.FC = () => {
         setsupport={setSupports}
         onUpdateSupport={handleUpdateSupport}
         onDeleteSupport={handleDeleteSupport}
+        searchName={keywords.name}
+        searchPhone={keywords.phone}
       />
 
      

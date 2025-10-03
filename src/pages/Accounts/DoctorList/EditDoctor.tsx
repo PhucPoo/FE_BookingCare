@@ -6,11 +6,10 @@ import Button from "antd/es/button";
 import Form from "antd/es/form";
 import type { Doctor } from "./DoctorTable";
 import type { Clinic } from "../../Clinic/ClinicTable";
-import type { Specialty } from "../../Specialty/SpecialtyList";
-import api from "../../../api/axios";
 import { testGetClinicApi } from "../../../api/testClinic";
 import { testGetSpecialtyApi } from "../../../api/testSpecialty";
 import { testPutDoctorApi } from "../../../api/testDoctor";
+import type { Specialty } from "../../Specialty/SpecialtyTable";
 
 const { Option } = Select;
 

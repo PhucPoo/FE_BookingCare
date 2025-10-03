@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Modal, Form, Input, Button, Upload, notification } from "antd/lib";
+import { Modal, Form, Input, Button, Upload, } from "antd/lib";
 import { UploadOutlined } from "@ant-design/icons";
 import { testPostSpecialtyApi } from "../../api/testSpecialty";
 import type { Specialty } from "./SpecialtyTable";
+import { notification  } from "antd";
 
 interface AddSpecialtyProps {
   open: boolean;
@@ -26,10 +27,7 @@ const AddSpecialty: React.FC<AddSpecialtyProps> = ({ open, onCancel, onAdd }) =>
 
         // Gọi API
         const res = await testPostSpecialtyApi(formData);
-        console.log(">>>>>>", res);
-
         const specialty = res.data;
-
 
 
         // Cập nhật UI

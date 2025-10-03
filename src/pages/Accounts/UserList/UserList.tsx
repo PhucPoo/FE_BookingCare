@@ -11,7 +11,7 @@ import UserAdvancedFilter from "./UserAdvancedFilter";
 
 const userManagement: React.FC = () => {
   const [users, setusers] = useState<User[]>([]);
-   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   // const { Option, OptGroup } = Select;
 
@@ -19,6 +19,12 @@ const userManagement: React.FC = () => {
   const [roleFilter, setRoleFilter] = useState<string | null>(null);
   const [genderFilter, setGenderFilter] = useState<string | null>(null);
   const [dateFilter, setDateFilter] = useState<string | null>(null);
+
+  const [keywords, setKeywords] = useState({
+    cccd: "",
+    phone: "",
+    email: ""
+  });
 
   // Cập nhật người dùng
   const handleUpdateUser = async (updatedUser: User) => {
@@ -59,7 +65,7 @@ const userManagement: React.FC = () => {
   const handleGetAccounts = async () => {
     const result = await testGetAccountsApi();
     setusers(result.data.result);
-    setusers(result.data.result);
+
   };
 
 
@@ -67,7 +73,7 @@ const userManagement: React.FC = () => {
     handleGetAccounts();
   }, []);
 
-   const handleFilter = () => {
+  const handleFilter = () => {
     let data = [...users];
     if (roleFilter) {
       data = data.filter((u) => u.role.name?.toLowerCase() === roleFilter);
@@ -79,8 +85,8 @@ const userManagement: React.FC = () => {
       data = data.filter(
         (u) =>
           new Date(u.createAt).toLocaleDateString("vi-VN") ===
-          new Date(dateFilter).toLocaleDateString("vi-VN") 
-          
+          new Date(dateFilter).toLocaleDateString("vi-VN")
+
       );
     }
     setFilteredUsers(data);
@@ -96,11 +102,13 @@ const userManagement: React.FC = () => {
         Quản lý người dùng
       </h1>
 
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex-1">
-          <UserFilterBar users={users} onFilter={setusers} />
-        </div>
-      </div>
+      <UserFilterBar
+        users={users}
+        onFilter={(filtered, kw) => {
+          setFilteredUsers(filtered);
+          setKeywords(kw);
+        }}
+      />
 
       <UserAdvancedFilter
         onChangeRole={setRoleFilter}
@@ -109,11 +117,16 @@ const userManagement: React.FC = () => {
         onOpenAdd={() => setIsAddModalOpen(true)}
       />
 
+      
+
       <UserTable
         users={filteredUsers}
         setusers={setusers}
         onUpdateUser={handleUpdateUser}
         onDeleteUser={handleDeleteUser}
+        searchCccd={keywords.cccd}
+        searchPhone={keywords.phone}
+        searchEmail={keywords.email}
       />
 
       <Adduser
