@@ -5,7 +5,11 @@
 
 .body {
   font-family: Arial, sans-serif;
-  background-color: #b2ebf2; 
+  /* background-color: #b2ebf2;  */
+  background-image: url(https://bookingcare.vn/assets/anh/bookingcare-cover-4.jpg);
+  background-size: cover;
+  /* opacity: 0.5; */
+  z-index: -1;
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -28,7 +32,7 @@
   padding: 30px 40px;
   width: 100%;
   max-width: 700px; /* rộng ra cho giống ảnh */
-  text-align: center;
+  /* text-align: center; */
 }
 
 /* Header */
@@ -145,7 +149,7 @@
 }
 
 .update-button:hover {
-  background: #f0f0f0;
+  background: #a9e9f6;
 }
 
 /* Messages */

@@ -30,6 +30,7 @@ const Login: React.FC = () => {
       ...prev,
       [name]: value,
     }));
+    // Clear error and success when user starts typing
     if (error) setError("");
     if (success) setSuccess("");
   };
@@ -43,15 +44,15 @@ const Login: React.FC = () => {
     try {
       const res = await useUserInfoStore.getState().loginZustand(formData);
 
-      if (res) {
+      if (res && res.userLogin) {
         toast.success("Đăng nhập thành công");
         if (res.userLogin.role === "CLIENT") {
           navigate("/");
+          return;
         }
         navigate(`/${res.userLogin.role.toLowerCase()}-dashboard`);
       }
-    }
-     catch (error) {
+    } catch (error) {
       toast.error("Có lỗi xảy ra, vui lòng thử lại");
       console.error("Login error:", error);
     } finally {

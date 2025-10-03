@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { UserOutlined, MailOutlined, PhoneOutlined, HomeOutlined, SaveOutlined } from '@ant-design/icons';
+import { useNavigate } from "react-router-dom";
+import { SaveOutlined } from '@ant-design/icons';
 import './updateinfo.css';
+import useUserInfoStore from '../../Zustand/configZustand';
 
 interface UserProfile {
   id: number;
@@ -8,7 +10,7 @@ interface UserProfile {
   email?: string;
   phoneNumber?: string;
   address?: string;
-  dateOfBirth?: string;
+  birth?: string; // Backend sử dụng "birth" thay vì "dateOfBirth"
   gender?: string;
   cccd?: string;
   roleId?: number;
@@ -33,6 +35,10 @@ interface UpdateResponse {
 }
 
 const ProfileUpdate: React.FC = () => {
+  const navigate = useNavigate();
+  const userInfo = useUserInfoStore(state => state.userInfo);
+  const updateUserInfo = useUserInfoStore(state => state.updateUserInfo);
+
   const [formData, setFormData] = useState<FormData>({
     id: 0,
     name: '',
@@ -48,34 +54,28 @@ const ProfileUpdate: React.FC = () => {
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
-  // Load user data from localStorage on component mount
+  // Load user data from Zustand store
   useEffect(() => {
-    const userData = localStorage.getItem('user');
-    console.log('Raw userData from localStorage:', userData);
+    console.log('User info from Zustand:', userInfo);
     
-    if (userData) {
-      const user: UserProfile = JSON.parse(userData);
-      console.log('Parsed user:', user);
-      console.log('User dateOfBirth:', user.dateOfBirth);
-      
+    if (userInfo && userInfo.id) {
       setFormData(prev => ({
         ...prev,
-        id: user.id || 0,
-        name: user.name || '',
-        email: user.email || '',
-        phone: user.phoneNumber || '',
-        address: user.address || '',
-        dateOfBirth: user.dateOfBirth || '',
-        gender: user.gender || 'OTHER',
-        cccd: user.cccd || ''
+        id: userInfo.id || 0,
+        name: userInfo.name || '',
+        email: userInfo.email || '',
+        phone: userInfo.phoneNumber || '',
+        address: userInfo.address || '',
+        dateOfBirth: userInfo.dateOfBirth || '',
+        gender: userInfo.gender || 'OTHER',
+        cccd: userInfo.cccd || ''
       }));
     }
-  }, []);
+  }, [userInfo]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     
-    // Debug log cho dateOfBirth
     if (name === 'dateOfBirth') {
       console.log('DateOfBirth changed:', value);
     }
@@ -84,7 +84,6 @@ const ProfileUpdate: React.FC = () => {
       ...prev,
       [name]: value
     }));
-    // Clear messages when user starts typing
     if (error) setError('');
     if (successMessage) setSuccessMessage('');
   };
@@ -92,13 +91,11 @@ const ProfileUpdate: React.FC = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Validate file type
       if (!file.type.startsWith('image/')) {
         setError('Vui lòng chọn file ảnh hợp lệ');
         return;
       }
       
-      // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         setError('Kích thước ảnh không được vượt quá 5MB');
         return;
@@ -110,7 +107,6 @@ const ProfileUpdate: React.FC = () => {
 
   const handleRemoveImage = () => {
     setSelectedFile(null);
-    // Reset file input
     const fileInput = document.querySelector('input[name="file"]') as HTMLInputElement;
     if (fileInput) {
       fileInput.value = '';
@@ -128,7 +124,25 @@ const ProfileUpdate: React.FC = () => {
       return false;
     }
 
+    // Validate dateOfBirth
+    if (formData.dateOfBirth) {
+      const birthDate = new Date(formData.dateOfBirth);
+      const today = new Date();
+      
+      if (birthDate > today) {
+        setError('Ngày sinh không được lớn hơn ngày hiện tại');
+        return false;
+      }
+    }
+
     return true;
+  };
+
+  const getCookie = (name: string): string | null => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
+    return null;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -143,14 +157,14 @@ const ProfileUpdate: React.FC = () => {
     }
 
     try {
-      const token = localStorage.getItem('token');
+      const token = getCookie('access_token');
+        
       if (!token) {
         setError('Vui lòng đăng nhập lại');
         setIsLoading(false);
         return;
       }
 
-      // Create FormData to match API requirements
       const formDataToSend = new FormData();
       formDataToSend.append('id', formData.id.toString());
       formDataToSend.append('name', formData.name.trim());
@@ -171,28 +185,20 @@ const ProfileUpdate: React.FC = () => {
         formDataToSend.append('cccd', formData.cccd.trim());
       }
       
-      if (formData.dateOfBirth) {
-        console.log('Appending dateOfBirth:', formData.dateOfBirth);
-        formDataToSend.append('dateOfBirth', formData.dateOfBirth);
-      } else {
-        console.log('dateOfBirth is empty, not appending');
+      // CRITICAL FIX: Backend sử dụng "birth" thay vì "dateOfBirth"
+      if (formData.dateOfBirth && formData.dateOfBirth.trim()) {
+        console.log('Sending birth field:', formData.dateOfBirth);
+        formDataToSend.append('birth', formData.dateOfBirth.trim());
       }
       
-      // Add file if selected
       if (selectedFile) {
         formDataToSend.append('file', selectedFile);
       }
       
-      console.log('Current formData before submit:', formData);
-      console.log('Sending data:', {
-        id: formData.id,
-        name: formData.name.trim(),
-        phoneNumber: formData.phone.trim(),
-        gender: formData.gender,
-        address: formData.address.trim(),
-        cccd: formData.cccd.trim(),
-        dateOfBirth: formData.dateOfBirth,
-        hasFile: !!selectedFile
+      // Debug: Log FormData contents
+      console.log('FormData being sent:');
+      formDataToSend.forEach((value, key) => {
+        console.log(`${key}: ${value}`);
       });
       
       const response = await fetch('http://localhost:8080/api/v1/accounts', {
@@ -204,27 +210,50 @@ const ProfileUpdate: React.FC = () => {
       });
 
       const data: UpdateResponse = await response.json();
-      console.log('Response:', data);
+      console.log('Full Response:', data);
+      console.log('Response birth field:', data.data?.birth);
 
       if (response.ok && data.statusCode === 200) {
-        // Update successful
-        localStorage.setItem('user', JSON.stringify(data.data));
+        const updatedUserInfo = {
+          id: data.data.id,
+          name: data.data.name,
+          email: data.data.email || '',
+          phoneNumber: data.data.phoneNumber || '',
+          address: data.data.address || '',
+          dateOfBirth: data.data.birth || '', 
+          gender: data.data.gender || 'OTHER',
+          cccd: data.data.cccd || ''
+        };
+        if (response.ok && data.statusCode === 200) {
+          alert('Cập nhật thông tin thành công!');
+          navigate('/');
+        }
+        
+        console.log('Updating Zustand with:', updatedUserInfo);
+        updateUserInfo(updatedUserInfo);
+        
         setSuccessMessage('Cập nhật thông tin thành công!');
         
-        // Update form data with response data
+        // Update form data với dữ liệu từ response
         setFormData({
           id: data.data.id,
           name: data.data.name,
           email: data.data.email || '',
           phone: data.data.phoneNumber || '',
           address: data.data.address || '',
-          dateOfBirth: data.data.dateOfBirth || '',
+          dateOfBirth: data.data.birth || '', // Map birth -> dateOfBirth
           gender: data.data.gender || 'OTHER',
           cccd: data.data.cccd || ''
         });
         
-        // Clear selected file
         setSelectedFile(null);
+        
+        // Verify Zustand update after a brief delay
+        setTimeout(() => {
+          const currentUserInfo = useUserInfoStore.getState().userInfo;
+          console.log('Zustand after update:', currentUserInfo);
+          console.log('dateOfBirth in Zustand:', currentUserInfo.dateOfBirth);
+        }, 100);
       } else {
         setError(data.message || 'Cập nhật thông tin thất bại');
       }
@@ -241,8 +270,8 @@ const ProfileUpdate: React.FC = () => {
         <div className="profile-container">
           <div className="profile-card">
             <div className="profile-header">
-              <h1 className="brand-title">BOOKING CARE</h1>
-              <h2 className="page-title">Cập nhật thông tin cá nhân</h2>
+              <h1 className="brand-title" style={{textAlign: 'center'}}>BOOKING CARE</h1>
+              <h2 className="page-title" style={{textAlign: 'center'}}>Cập nhật thông tin cá nhân</h2>
             </div>
             
             <form onSubmit={handleSubmit} className="profile-form">
@@ -272,115 +301,111 @@ const ProfileUpdate: React.FC = () => {
                 </div>
               </div>
 
-    {/* Họ tên - Địa chỉ */}
-    <div className="form-row">
-      <div className="form-group">
-        <label className="form-label">Họ và tên *</label>
-        <input
-          type="text"
-          name="name"
-          placeholder="Nhập họ và tên"
-          value={formData.name}
-          onChange={handleInputChange}
-          required
-          className="form-input"
-        />
-      </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">Họ và tên *</label>
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Nhập họ và tên"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    required
+                    className="form-input"
+                  />
+                </div>
 
-      <div className="form-group">
-        <label className="form-label">Địa chỉ</label>
-        <input
-          type="text"
-          name="address"
-          placeholder="Nhập địa chỉ"
-          value={formData.address}
-          onChange={handleInputChange}
-          className="form-input"
-        />
-      </div>
-    </div>
+                <div className="form-group">
+                  <label className="form-label">Địa chỉ</label>
+                  <input
+                    type="text"
+                    name="address"
+                    placeholder="Nhập địa chỉ"
+                    value={formData.address}
+                    onChange={handleInputChange}
+                    className="form-input"
+                  />
+                </div>
+              </div>
 
-    {/* Số điện thoại - Giới tính */}
-    <div className="form-row">
-      <div className="form-group">
-        <label className="form-label">Số điện thoại</label>
-        <input
-          type="tel"
-          name="phone"
-          placeholder="Nhập số điện thoại"
-          value={formData.phone}
-          onChange={handleInputChange}
-          className="form-input"
-          pattern="^(0[0-9]{9})$"
-          title="Số điện thoại phải có 10 chữ số và bắt đầu bằng 0"
-        />
-      </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">Số điện thoại</label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    placeholder="Nhập số điện thoại"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    className="form-input"
+                    pattern="^(0[0-9]{9})$"
+                    title="Số điện thoại phải có 10 chữ số và bắt đầu bằng 0"
+                  />
+                </div>
 
-      <div className="form-group">
-        <label className="form-label">Giới tính</label>
-        <select
-          name="gender"
-          value={formData.gender}
-          onChange={handleInputChange}
-          className="form-input form-select"
-        >
-          <option value="MALE">Nam</option>
-          <option value="FEMALE">Nữ</option>
-          <option value="OTHER">Khác</option>
-        </select>
-      </div>
-    </div>
+                <div className="form-group">
+                  <label className="form-label">Giới tính</label>
+                  <select
+                    name="gender"
+                    value={formData.gender}
+                    onChange={handleInputChange}
+                    className="form-input form-select"
+                  >
+                    <option value="MALE">Nam</option>
+                    <option value="FEMALE">Nữ</option>
+                    <option value="OTHER">Khác</option>
+                  </select>
+                </div>
+              </div>
 
-    {/* CCCD - Ngày sinh */}
-    <div className="form-row">
-      <div className="form-group">
-        <label className="form-label">Căn cước công dân</label>
-        <input
-          type="text"
-          name="cccd"
-          placeholder="Nhập số CCCD"
-          value={formData.cccd}
-          onChange={handleInputChange}
-          className="form-input"
-        />
-      </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">Căn cước công dân</label>
+                  <input
+                    type="text"
+                    name="cccd"
+                    placeholder="Nhập số CCCD"
+                    value={formData.cccd}
+                    onChange={handleInputChange}
+                    className="form-input"
+                  />
+                </div>
 
-      <div className="form-group">
-        <label className="form-label">Ngày sinh</label>
-        <input
-          type="date"
-          name="dateOfBirth"
-          value={formData.dateOfBirth}
-          onChange={handleInputChange}
-          className="form-input"
-        />
-      </div>
-    </div>
+                <div className="form-group">
+                  <label className="form-label">Ngày sinh</label>
+                  <input
+                    type="date"
+                    name="dateOfBirth"
+                    value={formData.dateOfBirth}
+                    onChange={handleInputChange}
+                    className="form-input"
+                  />
+                </div>
+              </div>
 
-    <div className="form-row">
-      <div className="form-group avatar-group">
-        <label className="form-label">Ảnh đại diện</label>
+              <div className="form-row">
+                <div className="form-group avatar-group">
+                  <label className="form-label">Ảnh đại diện</label>
 
-        <div className="file-upload-wrapper">
-          <input
-            type="file"
-            id="file-input"
-            name="file"
-            onChange={handleFileChange}
-            accept="image/*"
-            style={{ display: 'none' }}
-          />
-          <label htmlFor="file-input" className="file-upload-button">
-            Choose File
-          </label>
+                  <div className="file-upload-wrapper">
+                    <input
+                      type="file"
+                      id="file-input"
+                      name="file"
+                      onChange={handleFileChange}
+                      accept="image/*"
+                      style={{ display: 'none' }}
+                    />
+                    <label htmlFor="file-input" className="file-upload-button">
+                      Choose File
+                    </label>
 
-          {/* Hiển thị tên file nếu đã chọn */}
-          {selectedFile && (
-            <span className="file-name">{selectedFile.name}</span>
-          )}
-        </div>
-      </div>
-    </div>
+                    {selectedFile && (
+                      <span className="file-name">{selectedFile.name}</span>
+                    )}
+                  </div>
+                </div>
+              </div>
               
               <div className="form-actions">
                 <button
