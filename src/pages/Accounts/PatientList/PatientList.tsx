@@ -21,7 +21,8 @@ const PatientManagement: React.FC = () => {
       name: "",
       phone: "",
       bhyt: "",
-      cccd: ""
+      cccd: "",
+      address: "",
     });
   // Lấy danh sách bệnh nhân
   const handleGetPatients = async () => {
@@ -109,20 +110,19 @@ const PatientManagement: React.FC = () => {
       </h1>
 
       <PatientFilterBar
-        patients={patients}
         onFilter={(filtered, kw) => {
           setFilteredPatients(filtered);
-          setKeywords(kw);
+          setKeywords({
+            name: kw.name ?? "",
+            phone: kw.phone ?? "",
+            bhyt: kw.bhyt ?? "",
+            cccd: kw.cccd ?? "",
+            address: kw.address?? "",
+          });
         }}
       />
 
-      {/* Bộ lọc nâng cao giống Support */}
-      <PatientAdvancedFilter
-        onChangeGender={setGenderFilter}
-        onChangeDate={setDateFilter}
-        onChangeAddress={setAddressFilter}
-        onOpenAdd={() => setIsAddModalOpen(true)}
-      />
+    
 
       <PatientTable
         patients={filteredPatients}
@@ -133,6 +133,7 @@ const PatientManagement: React.FC = () => {
         searchPhone={keywords.phone}
         searchBHYT={keywords.bhyt}
         searchCccd={keywords.cccd}
+        searchAddress={keywords.address}
       />
     </div>
   );

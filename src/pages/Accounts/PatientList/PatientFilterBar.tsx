@@ -1,34 +1,45 @@
 import React, { useState } from 'react';
-import type { Patient } from './PatientTable'; // hoặc import từ patientTypes.ts nếu tách riêng
+import type { Patient } from './PatientTable';
 import { Button, Input } from 'antd/lib';
+import { testSearchPatientApi } from '../../../api/testPatient';
 
-interface patientFilterBarProps {
-  patients: Patient[];
-  onFilter: (filtered: Patient[],keywords: { name: string; phone: string; bhyt: string,cccd:string }) => void;
+interface PatientFilterKeywords {
+  name?: string;
+  phone?: string;
+  bhyt?: string;
+  cccd?: string;
+  address?: string;
 }
 
-const patientFilterBar: React.FC<patientFilterBarProps> = ({ patients, onFilter,   }) => {
+interface PatientFilterBarProps {
+  onFilter: (filtered: Patient[], keywords: PatientFilterKeywords) => void;
+}
+
+const PatientFilterBar: React.FC<PatientFilterBarProps> = ({ onFilter }) => {
   const [name, setName] = useState('');
-  const [bhyt, setBHYT] = useState('');
   const [phone, setPhone] = useState('');
+  const [bhyt, setBHYT] = useState('');
   const [cccd, setCccd] = useState('');
+  const [address, setAddress] = useState('');
 
-  const handleSearch = () => {
-    // Nếu không nhập gì thì trả về toàn bộ dữ liệu
-    if (!name && !bhyt && !phone && !cccd) {
-      onFilter(patients,{ name: "", phone: "", bhyt: "", cccd: "" });
-      return;
+  const handleSearch = async () => {
+    const keywords: PatientFilterKeywords = { name, phone, bhyt, cccd, address };
+
+    try {
+      const result = await testSearchPatientApi({
+        name: name || undefined,
+        phoneNumber: phone || undefined,
+        address: address || undefined,
+        bhyt: bhyt || undefined,
+        cccd: cccd || undefined,
+      });
+
+      const patients: Patient[] = result.data?.result ?? [];
+      onFilter(patients, keywords);
+    } catch (error) {
+      console.error("Lỗi khi tìm kiếm bệnh nhân:", error);
+      onFilter([], keywords);
     }
-
-    const filtered = patients.filter((patient) => {
-      const matchName = name === '' || patient.account.name.toLowerCase().includes(name.toLowerCase());
-      const matchBHYT = bhyt === '' || patient.bhyt.toString().includes(bhyt);
-      const matchPhone = phone === '' || patient.account.phoneNumber.includes(phone);
-      const matchCCCD = cccd === '' || patient.account.cccd.includes(cccd);
-      return matchName && matchBHYT && matchPhone && matchCCCD;
-    });
-
-    onFilter(filtered,{ name, phone, bhyt, cccd });
   };
 
   return (
@@ -61,14 +72,18 @@ const patientFilterBar: React.FC<patientFilterBarProps> = ({ patients, onFilter,
         className="border rounded px-3 py-2 flex-1 min-w-[150px]"
         size="large"
       />
-      <Button type="primary" onClick={handleSearch} className="min-w-[150px]" size="large">
+      <Input
+        value={address}
+        onChange={(e) => setAddress(e.target.value)}
+        placeholder="Địa chỉ"
+        className="border rounded px-3 py-2 flex-1 min-w-[200px]"
+        size="large"
+      />
+      <Button type="primary" size="large" className="min-w-[150px]" onClick={handleSearch}>
         Tìm kiếm
       </Button>
-
     </div>
-
-
   );
 };
 
-export default patientFilterBar;
+export default PatientFilterBar;

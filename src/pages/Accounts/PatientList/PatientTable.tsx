@@ -38,6 +38,7 @@ interface PatientTableProps {
   searchPhone?: string;
   searchBHYT?: string;
   searchCccd?: string;
+  searchAddress?: string;
   genderFilter?: string | null;
   dateFilter?: string | null;
   addressFilter?: string | null;
@@ -60,6 +61,7 @@ const PatientTable: React.FC<PatientTableProps> = ({
   searchPhone = "",
   searchBHYT = "",
   searchCccd = "",
+  searchAddress = "",
 }) => {
   const [sortColumn, setSortColumn] = useState<SortColumn>("id");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
@@ -194,6 +196,7 @@ const PatientTable: React.FC<PatientTableProps> = ({
             <th className="p-3 border border-gray-200 hidden md:table-cell font-medium">CCCD</th>
             <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">SĐT</th>
             <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">Mã BHYT</th>
+            <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">Địa chỉ</th>
             <th
               className="p-3 border border-gray-200 hidden md:table-cell cursor-pointer select-none text-center font-medium"
               onClick={() => toggleSort("createAt")}
@@ -236,6 +239,13 @@ const PatientTable: React.FC<PatientTableProps> = ({
                 <span
                   dangerouslySetInnerHTML={{
                     __html: highlightText(bn.bhyt ?? "", searchBHYT || ""),
+                  }}
+                />
+              </td>
+              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: highlightText(bn.account.address ?? "", searchAddress || ""),
                   }}
                 />
               </td>

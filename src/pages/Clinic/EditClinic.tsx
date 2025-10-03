@@ -23,7 +23,6 @@ const EditClinic: React.FC<EditClinicProps> = ({ open, onCancel, onUpdate, clini
   const [form] = Form.useForm();
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -45,7 +44,7 @@ const EditClinic: React.FC<EditClinicProps> = ({ open, onCancel, onUpdate, clini
         description: clinic.description,
         position: clinic.position,
         phoneNumber: clinic.phoneNumber,
-        addressId: clinic.address, 
+        addressId: clinic.address,
         image: null,
       });
       setSelectedFile(null);
@@ -54,9 +53,9 @@ const EditClinic: React.FC<EditClinicProps> = ({ open, onCancel, onUpdate, clini
 
   const handleUploadChange = (info: any) => {
     if (info.fileList.length > 0) {
-      setFile(info.fileList[0].originFileObj);
+      setSelectedFile(info.fileList[0].originFileObj);
     } else {
-      setFile(null);
+      setSelectedFile(null);
     }
   };
 
@@ -88,6 +87,8 @@ const EditClinic: React.FC<EditClinicProps> = ({ open, onCancel, onUpdate, clini
       const res = await testPutClinicApi(clinic.id, formData);
       const updatedClinic: Clinic = res.data.result;
 
+      onCancel();
+
       onUpdate(updatedClinic);
       notification.success({
         message: "Cập nhật thành công",
@@ -96,7 +97,6 @@ const EditClinic: React.FC<EditClinicProps> = ({ open, onCancel, onUpdate, clini
 
       form.resetFields();
       setSelectedFile(null);
-      onCancel();
     } catch (error: any) {
       notification.error({
         message: "Cập nhật thất bại",
@@ -142,7 +142,7 @@ const EditClinic: React.FC<EditClinicProps> = ({ open, onCancel, onUpdate, clini
           >
             <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
           </Upload>
-          {file && <p className="mt-2 text-sm text-gray-500">Ảnh: {file.name}</p>}
+          {selectedFile && <p className="mt-2 text-sm text-gray-500">Ảnh: {selectedFile.name}</p>}
         </Form.Item>
 
         {/* Đổi name từ "address " -> "addressId" */}
