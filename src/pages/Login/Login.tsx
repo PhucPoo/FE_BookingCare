@@ -1,15 +1,11 @@
 import React, { useState } from "react";
-import {
-  UserOutlined,
-  LockOutlined,
-  EyeInvisibleOutlined,
-  EyeTwoTone,
-} from "@ant-design/icons";
+import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import "./login.css";
 import MainPageHeader from "../MainPage/MainPageHeader/MainPageHeader";
 import useUserInfoStore from "../../Zustand/configZustand";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import Footer from "../../components/Footer/Footer";
 
 interface LoginFormData {
   userName: string; // Changed from 'email' to 'userName'
@@ -18,6 +14,7 @@ interface LoginFormData {
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState<LoginFormData>({
     userName: "", // Changed from 'email' to 'userName'
     password: "",
@@ -46,26 +43,15 @@ const Login: React.FC = () => {
     try {
       const res = await useUserInfoStore.getState().loginZustand(formData);
 
-    if (res) {
-      toast.success("Đăng nhập thành công");
-
-      const role = res.userLogin.role; // backend trả về role
-      switch (role) {
-        case "ADMIN":
-          navigate("/admin-dashboard");
-          break;
-        case "DOCTOR":
-          navigate("/doctor-dashboard");
-          break;
-        case "SUPPORT":
-          navigate("/support-dashboard");
-          break;
-        default:
-          navigate("/"); 
-          break;
+      if (res) {
+        toast.success("Đăng nhập thành công");
+        if (res.userLogin.role === "CLIENT") {
+          navigate("/");
+        }
+        navigate(`/${res.userLogin.role.toLowerCase()}-dashboard`);
       }
     }
-    } catch (error) {
+     catch (error) {
       toast.error("Có lỗi xảy ra, vui lòng thử lại");
       console.error("Login error:", error);
     } finally {
@@ -82,22 +68,8 @@ const Login: React.FC = () => {
       <MainPageHeader />
       <div className="login-container">
         <div className="login-card">
-          <div className="login-left">
-            <div className="illustration">
-              <img
-                src="/bg_1.png"
-                alt="Login illustration"
-                className="bg-image"
-              />
-            </div>
-          </div>
-
           <div className="login-right">
-            <div className="login-header">
-              <h1 className="brand-title">BOOKING CARE</h1>
-            </div>
-
-            <form onSubmit={handleSubmit} className="login-form">
+            <form onSubmit={handleSubmit} className="login-form ">
               <h2 className="form-title">Đăng nhập</h2>
 
               {error && <div className="error-message">{error}</div>}
@@ -105,9 +77,6 @@ const Login: React.FC = () => {
 
               <div className="form-group">
                 <div className="input-wrapper">
-                  <span className="input-icon">
-                    <UserOutlined />
-                  </span>
                   <input
                     type="email"
                     name="userName" // Changed from 'email' to 'userName'
@@ -122,9 +91,6 @@ const Login: React.FC = () => {
 
               <div className="form-group">
                 <div className="input-wrapper">
-                  <span className="input-icon">
-                    <LockOutlined />
-                  </span>
                   <input
                     type={showPassword ? "text" : "password"}
                     name="password"
@@ -168,6 +134,7 @@ const Login: React.FC = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

@@ -43,17 +43,17 @@ export default function OtpVerify() {
       );
 
       const data = await response.json();
-      if (response.ok && (data.statusCode === 200 || data.statusCode === 201)) {
+      if (response.ok && data.statusCode === 201) {
         message.success("Xác thực OTP thành công!");
         sessionStorage.removeItem("reg_password");
         sessionStorage.removeItem("reg_name");
         sessionStorage.removeItem("reg_phone");
+        alert("Đăng ký thành công! Vui lòng đăng nhập.");
         // Modal.success({
         //   title: "Đăng ký thành công!",
         //   content: "Bạn đã xác thực OTP thành công. Ấn OK để quay về trang đăng nhập.",
         //   okText: "OK",
         //   onOk: () => navigate("/login"),
-        alert("Bạn đã xác thực OTP thành công. Vui lòng đăng nhập.");
         navigate("/auth/login"); 
         // });
       } else {

@@ -1,86 +1,99 @@
 import React, { useState, useMemo } from "react";
 import Button from "antd/lib/button";
+import Modal from "antd/lib/modal";
 import DetailDoctor from "./DetailDoctor";
 import EditDoctor from "./EditDoctor";
-import Modal from "antd/lib/modal";
+import type { Clinic } from "../../Clinic/ClinicTable";
+import type { Specialty } from "../../Specialty/SpecialtyTable";
+import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
+import { Pagination } from "antd/lib";
 
 export interface Doctor {
   id: number;
-  name: string;
-  email: string;
-  cccd: number;
-  password: number;
-  phoneNumber: string;
-  price?: number;
-  create_at: Date;
-  update_at: Date;
+  cost: number;
+  degree: "BACHELOR" | "MASTER" | "DOCTOR";
+  accountId: number;
+  account: {
+    id: number;
+    name: string;
+    email: string;
+    phoneNumber: string;
+    cccd?: string;
+    address: string;
+  };
+  clinic: Clinic;
+  specialty: Specialty;
+  createAt: Date;
+  updateAt: Date;
   status: "active" | "inactive";
 }
 
 interface DoctorTableProps {
   doctors: Doctor[];
+  setdoctor: (doctors: Doctor[]) => void;
   onUpdateDoctor: (updatedDoctor: Doctor) => void;
   onDeleteDoctor: (id: number) => void;
 }
 
-// Hiển thị trạng thái bác sĩ
-const getStatusBadge = (status: Doctor["status"]) => {
-  if (status === "active") {
-    return (
-      <span className="bg-green-500 text-white px-2 py-1 rounded text-sm">
-        Hoạt động
-      </span>
-    );
-  }
-  if (status === "inactive") {
-    return (
-      <span className="bg-red-500 text-white px-2 py-1 rounded text-sm">
-        Nghỉ
-      </span>
-    );
-  }
-  return null;
-};
-
-type SortColumn = "name" | "create_at" | "";
+type SortColumn = "name" | "createAt" | "";
 type SortDirection = "asc" | "desc";
 
-const DoctorTable: React.FC<DoctorTableProps> = ({ doctors, onUpdateDoctor, onDeleteDoctor }) => {
-  // State sắp xếp
+const DoctorTable: React.FC<DoctorTableProps> = ({
+  doctors,
+  setdoctor,
+  onUpdateDoctor,
+  onDeleteDoctor,
+}) => {
+  // Sort
   const [sortColumn, setSortColumn] = useState<SortColumn>("");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
-   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const showModal = () => {
-    setIsModalOpen(true);
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 8;
+
+  // Modal delete
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteDoctorId, setDeleteDoctorId] = useState<number>(0);
+
+  const handleConfirmDelete = async () => {
+    try {
+      await onDeleteDoctor(deleteDoctorId);
+      setIsDeleteModalOpen(false);
+    } catch (err) {
+      console.error("Lỗi khi xóa bác sĩ:", err);
+    }
   };
-  const handleOk = () => {
-    // console.log('OK clicked', editingDoctor?.id);
-    onDeleteDoctor(Number(deleteDoctorid)); 
-    setIsModalOpen(false);
+
+  // Modal detail
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
+
+  // Modal edit
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingDoctor, setEditingDoctor] = useState<Doctor | null>(null);
+
+  const handleUpdateDoctor = (doctor: Doctor) => {
+    onUpdateDoctor(doctor);
+    setEditingDoctor(null);
+    setIsEditModalOpen(false);
   };
 
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-
-
-  // Sắp xếp dữ liệu theo cột và chiều
+  // Sort logic
   const sortedDoctors = useMemo(() => {
     if (!sortColumn) return doctors;
 
     return [...doctors].sort((a, b) => {
-      let aVal: any;
-      let bVal: any;
+      let aVal: any, bVal: any;
 
       switch (sortColumn) {
         case "name":
-          aVal = a.name.toLowerCase();
-          bVal = b.name.toLowerCase();
+          aVal = a.account.name.toLowerCase();
+          bVal = b.account.name.toLowerCase();
           break;
-        case "create_at":
-          aVal = a.create_at.getTime();
-          bVal = b.create_at.getTime();
+        case "createAt":
+          aVal = new Date(a.createAt).getTime();
+          bVal = new Date(b.createAt).getTime();
           break;
         default:
           return 0;
@@ -92,7 +105,6 @@ const DoctorTable: React.FC<DoctorTableProps> = ({ doctors, onUpdateDoctor, onDe
     });
   }, [doctors, sortColumn, sortDirection]);
 
-  // Xử lý click sort cột
   const handleSort = (column: SortColumn) => {
     if (sortColumn === column) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -102,116 +114,83 @@ const DoctorTable: React.FC<DoctorTableProps> = ({ doctors, onUpdateDoctor, onDe
     }
   };
 
-  // Render mũi tên sắp xếp
   const renderSortArrow = (column: SortColumn) => {
     if (sortColumn !== column) return null;
     return <span className="ml-1">{sortDirection === "asc" ? "▲" : "▼"}</span>;
   };
 
-  // Modal xem chi tiết
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
-
-  const showDetailModal = (doctor: Doctor) => {
-    setSelectedDoctor(doctor);
-    setIsDetailModalOpen(true);
-  };
-
-  const closeDetailModal = () => {
-    setIsDetailModalOpen(false);
-    setSelectedDoctor(null);
-  };
-
-  // Modal sửa bác sĩ
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editingDoctor, setEditingDoctor] = useState<Doctor | null>(null);
-  const [deleteDoctorid, setDeleteDoctorid] = useState<number>(0);
-
-  // Cập nhật bác sĩ
-  const handleUpdateDoctor = (doctor: Doctor) => {
-    onUpdateDoctor(doctor); // Gọi về component cha
-    setEditingDoctor(null);
-    setIsEditModalOpen(false);
-  };
+  // Pagination slice
+  const startIndex = (currentPage - 1) * pageSize;
+  const paginatedDoctors = sortedDoctors.slice(startIndex, startIndex + pageSize);
 
   return (
     <div className="w-full bg-white rounded shadow overflow-x-auto">
-      <table className="min-w-full text-sm border-collapse">
+      <table className="min-w-full text-base border-separate border-spacing-0">
         <thead className="bg-gray-100">
           <tr>
-            <th className="p-3 border">STT</th>
+            <th className="p-3 border border-gray-200 text-center font-medium">STT</th>
             <th
-              className="p-3 border cursor-pointer select-none"
+              className="p-3 border border-gray-200 cursor-pointer select-none md:table-cell font-medium"
               onClick={() => handleSort("name")}
             >
               Tên bác sĩ {renderSortArrow("name")}
             </th>
-            <th className="p-3 border hidden md:table-cell">Email</th>
-            <th className="p-3 border hidden lg:table-cell">CCCD</th>
-            <th className="p-3 border hidden md:table-cell">SĐT</th>
-            <th className="p-3 border hidden xl:table-cell">Giá</th>
+            <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">SĐT</th>
+            <th className="p-3 border border-gray-200 hidden xl:table-cell text-center font-medium">Chi phí</th>
+            <th className="p-3 border border-gray-200 hidden xl:table-cell text-center font-medium">Bằng cấp</th>
+            <th className="p-3 border border-gray-200 hidden xl:table-cell font-medium">Chuyên khoa</th>
+            <th className="p-3 border border-gray-200 hidden xl:table-cell font-medium">Phòng khám</th>
             <th
-              className="p-3 border hidden md:table-cell cursor-pointer select-none"
-              onClick={() => handleSort("create_at")}
+              className="p-3 border border-gray-200 hidden md:table-cell cursor-pointer select-none text-center font-medium"
+              onClick={() => handleSort("createAt")}
             >
-              Ngày tạo {renderSortArrow("create_at")}
+              Ngày tạo {renderSortArrow("createAt")}
             </th>
-            <th className="p-3 border hidden xl:table-cell">Ngày cập nhật</th>
-            <th className="p-3 border">Trạng thái</th>
-            <th className="p-3 border text-center">Thao tác</th>
+            <th className="p-3 border border-gray-200 text-center font-medium">Thao tác</th>
           </tr>
         </thead>
         <tbody>
-          {sortedDoctors.map((doc, index) => (
+          {paginatedDoctors.map((doc, idx) => (
             <tr key={doc.id} className="hover:bg-gray-50">
-              <td className="p-3 border text-center">{index + 1}</td>
-              <td className="p-3 border">{doc.name}</td>
-              <td className="p-3 border hidden md:table-cell">{doc.email}</td>
-              <td className="p-3 border hidden lg:table-cell">{doc.cccd}</td>
-              <td className="p-3 border hidden md:table-cell">{doc.phoneNumber}</td>
-              <td className="p-3 border hidden xl:table-cell">{doc.price}</td>
-              <td className="p-3 border hidden md:table-cell">
-                {doc.create_at.toLocaleDateString()}
+              <td className="p-3 border border-gray-200 text-center">{startIndex + idx + 1}</td>
+              <td className="p-3 border border-gray-200">{doc.account.name}</td>
+              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">{doc.account.phoneNumber}</td>
+              <td className="p-3 border border-gray-200 hidden xl:table-cell text-center">{doc.cost}</td>
+              <td className="p-3 border border-gray-200 hidden xl:table-cell text-center">{doc.degree}</td>
+              <td className="p-3 border border-gray-200 hidden xl:table-cell">{doc.specialtyName || "—"}</td>
+              <td className="p-3 border border-gray-200 hidden xl:table-cell">{doc.clinic?.name || "—"}</td>
+              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">
+                {doc.createAt ? new Date(doc.createAt).toLocaleDateString() : "—"}
               </td>
-              <td className="p-3 border hidden xl:table-cell">
-                {doc.update_at.toLocaleDateString()}
-              </td>
-              <td className="p-3 border">{getStatusBadge(doc.status)}</td>
-              <td className="p-3 border text-center">
+              <td className="p-3 border border-gray-200 text-center">
                 <div className="flex flex-wrap justify-center gap-2">
                   <Button
-                    size="small"
-                    style={{
-                      backgroundColor: "#facc15",
-                      borderColor: "#facc15",
-                      color: "#000",
-                    }}
+                    size="large"
+                    icon={<FaEdit />}
+                    style={{ backgroundColor: "#facc15", borderColor: "#facc15", color: "#000" }}
                     onClick={() => {
-                      
                       setEditingDoctor(doc);
-                     
                       setIsEditModalOpen(true);
                     }}
-                  >
-                    Sửa
-                  </Button>
+                  />
                   <Button
-                    size="small"
-                    style={{
-                      backgroundColor: "#b91c1c",
-                      borderColor: "#b91c1c",
-                      color: "#fff",
-                    }}
+                    size="large"
+                    icon={<FaTrash />}
+                    style={{ backgroundColor: "#b91c1c", borderColor: "#b91c1c", color: "#fff" }}
                     onClick={() => {
-                      setIsModalOpen(true);
-                      setDeleteDoctorid(doc.id);
+                      setDeleteDoctorId(doc.id);
+                      setIsDeleteModalOpen(true);
                     }}
-                  >
-                    Xóa
-                  </Button>
-                  <Button size="small" onClick={() => showDetailModal(doc)}>
-                    Xem
-                  </Button>
+                  />
+                  <Button
+                    size="large"
+                    icon={<FaEye />}
+                    style={{ backgroundColor: "#3b82f6", borderColor: "#3b82f6", color: "#fff" }}
+                    onClick={() => {
+                      setSelectedDoctor(doc);
+                      setIsDetailModalOpen(true);
+                    }}
+                  />
                 </div>
               </td>
             </tr>
@@ -219,14 +198,25 @@ const DoctorTable: React.FC<DoctorTableProps> = ({ doctors, onUpdateDoctor, onDe
         </tbody>
       </table>
 
-      {/* Modal thông tin chi tiết */}
+
+      {/* Pagination */}
+      <div className="flex justify-center py-4">
+        <Pagination
+          current={currentPage}
+          pageSize={pageSize}
+          total={sortedDoctors.length}
+          onChange={(page) => setCurrentPage(page)}
+        />
+      </div>
+
+      {/* Modal chi tiết */}
       <DetailDoctor
         open={isDetailModalOpen}
         doctor={selectedDoctor}
-        onClose={closeDetailModal}
+        onClose={() => setIsDetailModalOpen(false)}
       />
 
-      {/* Modal sửa bác sĩ */}
+      {/* Modal sửa */}
       <EditDoctor
         open={isEditModalOpen}
         doctor={editingDoctor}
@@ -236,12 +226,13 @@ const DoctorTable: React.FC<DoctorTableProps> = ({ doctors, onUpdateDoctor, onDe
         }}
         onUpdate={handleUpdateDoctor}
       />
+
+      {/* Modal xác nhận xóa */}
       <Modal
-        title="Basic Modal"
-        closable={{ 'aria-label': 'Custom Close Button' }}
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
+        title="Xác nhận xóa"
+        open={isDeleteModalOpen}
+        onOk={handleConfirmDelete}
+        onCancel={() => setIsDeleteModalOpen(false)}
       >
         <p>Bạn có chắc chắn muốn xóa bác sĩ này không?</p>
       </Modal>

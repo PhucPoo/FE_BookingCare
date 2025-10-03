@@ -4,7 +4,7 @@ import ModalRegisterTime from "./DoctorModalRegisterTime";
 import {
   doctorSortBooking,
   getBookingsByDoctorId,
-} from "../../api/Doctor/DoctorApi";
+} from "../../../api/Doctor/DoctorApi";
 import DoctorBookingDetail from "./DoctorBookingDetail";
 import type { DoctorBookingSortKeyModel } from "./DoctorBookingSortKeyModel";
 

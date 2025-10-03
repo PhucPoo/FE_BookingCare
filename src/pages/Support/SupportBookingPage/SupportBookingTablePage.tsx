@@ -6,7 +6,7 @@ import {
   Select,
   type MenuProps,
 } from "antd/lib";
-import { formatDate } from "../../../utils/constant";
+import { formatDate, getStatusBooking } from "../../../utils/constant";
 import type { SupportSortKey } from "./SupportSortKey";
 type BookingListModel = {
   id?: number;
@@ -301,7 +301,7 @@ const BookingTablePage = ({
                           {formatDate(item?.createAt)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                          {item.status}
+                          {getStatusBooking(item.status)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
                           {item.doctor?.account?.name}
@@ -310,8 +310,8 @@ const BookingTablePage = ({
                           {item.patient?.account?.name}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                          {item?.clinic?.name && item?.clinic?.name?.length > 20
-                            ? item.clinic?.name?.slice(0, 20) + "..."
+                          {item?.clinic?.name && item?.clinic?.name?.length > 15
+                            ? item.clinic?.name?.slice(0, 15) + "..."
                             : item.clinic?.name}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">

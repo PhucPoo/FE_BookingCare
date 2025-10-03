@@ -1,9 +1,8 @@
-import React from "react";
-import Modal from "antd/es/modal";
-import Input from "antd/es/input";
-import Button from "antd/es/button";
-import Form from "antd/es/form";
-import type { Specialty } from "./SpecialtyGrid";
+import React, { useState } from "react";
+import { Modal, Form, Input, Button, Upload, notification } from "antd/lib";
+import { UploadOutlined } from "@ant-design/icons";
+import { testPostSpecialtyApi } from "../../api/testSpecialty";
+import type { Specialty } from "./SpecialtyTable";
 
 interface AddSpecialtyProps {
   open: boolean;
@@ -13,79 +12,92 @@ interface AddSpecialtyProps {
 
 const AddSpecialty: React.FC<AddSpecialtyProps> = ({ open, onCancel, onAdd }) => {
   const [form] = Form.useForm();
+  const [file, setFile] = useState<File | null>(null);
 
-  const handleSubmit = (values: any) => {
-    const { name,img,doctorCount,createdAt } = values;
+  const handleSubmit = () => {
+    form.validateFields().then(async (values) => {
+      try {
+        const formData = new FormData();
+        formData.append("name", values.name);
+        formData.append("description", values.description || "");
+        if (file) {
+          formData.append("file", file); 
+        }
 
-    const newSpecialty: Specialty = {
-      id: Date.now(),
-      name,
-      img,
-      createdAt,
-    };
+        // Gọi API
+        const res = await testPostSpecialtyApi(formData);
+        console.log(">>>>>>", res);
 
-    onAdd(newSpecialty);
-    form.resetFields();
+        const specialty = res.data;
+
+
+
+        // Cập nhật UI
+        onAdd(specialty);
+
+        notification.success({
+          message: "Thêm thành công",
+          description: `Chuyên khoa ${specialty.name} đã được thêm`,
+        });
+
+        form.resetFields();
+        setFile(null);
+        onCancel();
+      } catch (error: any) {
+        notification.error({
+          message: "Thêm thất bại",
+          description: error.response?.data?.message || "Có lỗi xảy ra",
+        });
+      }
+    });
+  };
+
+  const handleUploadChange = (info: any) => {
+    if (info.fileList.length > 0) {
+      setFile(info.fileList[0].originFileObj);
+    } else {
+      setFile(null);
+    }
   };
 
   return (
     <Modal
-      title={<div className="text-center text-lg font-semibold">Thêm chuyên khoa mới</div>}
+      title="Thêm chuyên khoa mới"
       open={open}
       onCancel={onCancel}
       footer={null}
-      centered
-      width={520}
     >
-      <Form
-        layout="vertical"
-        onFinish={handleSubmit}
-        form={form}
-        className="space-y-4"
-      >
+      <Form form={form} layout="vertical">
         <Form.Item
-          name="name"
           label="Tên chuyên khoa"
-          rules={[{ required: true, message: "Vui lòng nhập tên chuyên khoa!" }]}
+          name="name"
+          rules={[{ required: true, message: "Vui lòng nhập tên chuyên khoa" }]}
         >
-          <Input
-            placeholder="Nhập tên chuyên khoa"
-            size="large"
-            className="rounded-md px-3 py-2"
-          />
+          <Input placeholder="Nhập tên chuyên khoa" />
         </Form.Item>
 
-       
-
-        <Form.Item name="image" label="Ảnh">
-          <Input
-            placeholder="URL ảnh"
-            size="large"
-            className="rounded-md px-3 py-2"
-          />
-        </Form.Item>
-          <Form.Item
-          name="doctorCount"
-          label="Số lượng bác sĩ"
-          rules={[{ required: true, message: "Vui lòng nhập số lượng!" }]}
-        >
-          <Input
-            placeholder="Nhập số lượng"
-            size="large"
-            className="rounded-md px-3 py-2"
-          />
+        <Form.Item label="Mô tả" name="description">
+          <Input.TextArea rows={3} placeholder="Nhập mô tả" />
         </Form.Item>
 
-        <Form.Item>
-          <div className="flex justify-end space-x-3 pt-2">
-            <Button onClick={onCancel} size="large">
-              Hủy
-            </Button>
-            <Button type="primary" htmlType="submit" size="large">
-              Thêm
-            </Button>
-          </div>
+        <Form.Item label="Ảnh" name="image">
+          <Upload
+            beforeUpload={() => false}
+            onChange={handleUploadChange}
+            maxCount={1}
+            listType="picture"
+          >
+            <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
+          </Upload>
+          {file && <p className="mt-2 text-sm text-gray-500">Ảnh: {file.name}</p>}
         </Form.Item>
+
+        <div className="flex justify-end gap-2 mt-4">
+          <Button onClick={onCancel}>Hủy</Button>
+          <Button type="primary" onClick={handleSubmit}>
+            Thêm
+          </Button>
+        </div>
       </Form>
     </Modal>
   );

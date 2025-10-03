@@ -1,15 +1,14 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
-import { loginApi } from "../api/auth/LoginApi";
+import { loginApi, logoutApi } from "../api/auth/LoginApi";
 import { toast } from "react-toastify";
 
-type UserRole = "ADMIN" | "DOCTOR" | "PATIENT" | "SUPPORT" | "NONE";
 
 type UserInfoStoreState = {
   userInfo: {
     name: string;
     email: string;
-    role: UserRole;
+    role: string;
     id: number;
     patientId?: number;
   };
@@ -27,7 +26,7 @@ const useUserInfoStore = create<UserInfoStore>()(
   devtools(
     persist(
       (set) => ({
-        userInfo: { name: "", email: "", role: "NONE", id: 0, patientId: 0 },
+        userInfo: { name: "", email: "", role: "", id: 0, patientId: 0 },
         loginZustand: async (data) => {
           const res = await loginApi(data);
           if (res.statusCode !== 200) {
@@ -38,10 +37,16 @@ const useUserInfoStore = create<UserInfoStore>()(
           document.cookie = `access_token=${res.data.accessToken}; path=/`;
           return res.data;
         },
-        logout: () => {
-          set({ userInfo: { name: "", email: "", role: "NONE", id: 0 } });
+        logout: async () => {
+          set({ userInfo: { name: "", email: "", role: "", id: 0 } });
           document.cookie = `access_token=; path=/`;
           window.location.href = "/"; // Redirect to home page after logout
+          toast.success("Logout successful");
+          const res = await logoutApi({});
+          if (res.statusCode !== 200) {
+            toast.error(res.message || "Logout failed");
+            return;
+          }
         },
       }),
       {

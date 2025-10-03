@@ -1,10 +1,5 @@
-* {
-  box-sizing: border-box;
-}
-
 .body {
-
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .signup-container {
@@ -13,7 +8,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  position: fixed;
+  /* position: fixed; */
   width: 100vw;
   height: 100vh;
 }
@@ -207,31 +202,31 @@
   .signup-container {
     padding: 15px;
   }
-  
+
   .signup-card {
     flex-direction: column;
     max-width: 400px;
     min-height: auto;
   }
-  
+
   .signup-left {
     min-height: 200px;
     padding: 30px;
   }
-  
+
   .bg-image {
     width: 180px;
     height: 180px;
   }
-  
+
   .signup-right {
     padding: 40px 30px;
   }
-  
+
   .brand-title {
     font-size: 2rem;
   }
-  
+
   .form-title {
     font-size: 1.1rem;
   }
@@ -241,19 +236,19 @@
   .signup-right {
     padding: 30px 25px;
   }
-  
+
   .brand-title {
     font-size: 1.8rem;
   }
-  
+
   .form-input {
     padding: 12px 16px 12px 40px;
   }
-  
+
   .input-icon {
     left: 12px;
   }
-  
+
   .bg-image {
     width: 150px;
     height: 150px;

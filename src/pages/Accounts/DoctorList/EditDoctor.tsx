@@ -1,140 +1,176 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "antd/es/modal";
 import Input from "antd/es/input";
 import Select from "antd/es/select";
 import Button from "antd/es/button";
 import Form from "antd/es/form";
 import type { Doctor } from "./DoctorTable";
+import type { Clinic } from "../../Clinic/ClinicTable";
+import type { Specialty } from "../../Specialty/SpecialtyList";
+import api from "../../../api/axios";
+import { testGetClinicApi } from "../../../api/testClinic";
+import { testGetSpecialtyApi } from "../../../api/testSpecialty";
+import { testPutDoctorApi } from "../../../api/testDoctor";
 
 const { Option } = Select;
 
 interface EditDoctorProps {
-    open: boolean;
-    onCancel: () => void;
-    onUpdate: (doctor: Doctor) => void;
-    doctor: Doctor | null;
+  open: boolean;
+  onCancel: () => void;
+  onUpdate: (doctor: Doctor) => void;
+  doctor: Doctor | null;
 }
 
-const EditDoctor: React.FC<EditDoctorProps> = ({ open, onCancel, onUpdate, doctor }) => {
-    const [form] = Form.useForm();
+const EditDoctor: React.FC<EditDoctorProps> = ({
+  open,
+  onCancel,
+  onUpdate,
+  doctor,
+}) => {
+  const [form] = Form.useForm();
+  const [clinics, setClinics] = useState<Clinic[]>([]);
+  const [specialties, setSpecialties] = useState<Specialty[]>([]);
 
-    // Đổ dữ liệu vào form khi modal mở
-    useEffect(() => {
-        if (doctor) {
-            form.setFieldsValue({
-                name: doctor.name,
-                email: doctor.email,
-                cccd: doctor.cccd.toString(),
-                phoneNumber: doctor.phoneNumber,
-                price: doctor.price?.toString(),
-                status: doctor.status,
-            });
-        }
-    }, [doctor, form]);
+  // Fetch dropdown data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [clinicRes, specialtyRes] = await Promise.all([
+          testGetClinicApi(),
+          testGetSpecialtyApi(),
+        ]);
 
-    const handleSubmit = (values: any) => {
-        if (!doctor) return;
+        setClinics(clinicRes.data.result || []);
+        setSpecialties(specialtyRes.data.result || []);
+      } catch (err) {
+        console.error("Fetch dropdown failed:", err);
+      }
+    };
+    fetchData();
+  }, []);
 
-        const updatedDoctor: Doctor = {
-            ...doctor,
-            name: values.name,
-            email: values.email,
-            cccd: Number(values.cccd),
-            phoneNumber: values.phoneNumber,
-            price: Number(values.price),
-            status: values.status,
-            update_at: new Date(),
-        };
+  // Đổ dữ liệu khi mở modal
 
-        onUpdate(updatedDoctor); 
-        form.resetFields();
+  if (doctor) {
+    form.setFieldsValue({
+      cost: doctor.cost,
+      degree: doctor.degree,
+      clinicId: doctor.clinic?.id,
+      specialtyId: doctor.specialty?.id,
+    });
+  }
+
+
+  const handleSubmit = async (values: any) => {
+    if (!doctor) return;
+
+    const payload = {
+      id: doctor.id,
+      cost: values.cost,
+      degree: values.degree,
+      account: { id: doctor.account?.id }, // chỉ cần id
+      clinic: { id: values.clinicId },
+      specialty: { id: values.specialtyId },
     };
 
-    return (
-        <Modal
-            title={<div className="text-center text-lg font-semibold">Chỉnh sửa thông tin bác sĩ</div>}
-            open={open}
-            onCancel={() => {
-                form.resetFields();
-                onCancel();
-            }}
-            footer={null}
-            centered
-            width={520}
+    try {
+      const res = await  testPutDoctorApi(payload); // ✅ truyền payload + await
+      onUpdate(res.data);                          // ✅ lấy dữ liệu backend trả về
+      form.resetFields();
+      
+    } catch (err: any) {
+      console.error("Update doctor failed:", err);
+      // Nếu backend trả về lỗi xác thực (400/422), in chi tiết
+      if (err.response) {
+        console.error("Error response:", err.response.data);
+      }
+    }
+  };
+
+  return (
+    <Modal
+      title={<div className="text-center text-lg font-semibold">Chỉnh sửa thông tin bác sĩ</div>}
+      open={open}
+      onCancel={() => {
+        form.resetFields();
+        onCancel();
+      }}
+      footer={null}
+      centered
+      width={520}
+    >
+      <Form
+        layout="vertical"
+        onFinish={handleSubmit}
+        className="space-y-4"
+        form={form}
+      >
+        <Form.Item
+          name="cost"
+          label="Chi phí khám (VNĐ)"
+          rules={[{ required: true, message: "Vui lòng nhập chi phí khám!" }]}
         >
-            <Form
-                layout="vertical"
-                onFinish={handleSubmit}
-                className="space-y-4"
-                form={form}
-            >
-                <Form.Item
-                    name="name"
-                    label="Tên bác sĩ"
-                    rules={[{ required: true, message: "Vui lòng nhập tên bác sĩ!" }]}
-                >
-                    <Input placeholder="Nhập tên bác sĩ" size="large" className="rounded-md px-3 py-2" />
-                </Form.Item>
+          <Input
+            type="number"
+            placeholder="Nhập chi phí khám"
+            size="large"
+            className="rounded-md px-3 py-2"
+          />
+        </Form.Item>
 
-                <Form.Item
-                    name="email"
-                    label="Email"
-                    rules={[
-                        { required: true, message: "Vui lòng nhập email!" },
-                        { type: "email", message: "Email không hợp lệ!" },
-                    ]}
-                >
-                    <Input placeholder="Nhập email" size="large" className="rounded-md px-3 py-2" />
-                </Form.Item>
+        <Form.Item
+          name="degree"
+          label="Bằng cấp"
+          rules={[{ required: true, message: "Vui lòng nhập bằng cấp!" }]}
+        >
+          <Select placeholder="Chọn bằng cấp" size="large">
+            <Option value="BACHELOR">Cử nhân</Option>
+            <Option value="MASTER">Thạc sĩ</Option>
+            <Option value="DOCTOR">Tiến sĩ</Option>
+          </Select>
+        </Form.Item>
 
-                <Form.Item
-                    name="cccd"
-                    label="CCCD"
-                    rules={[{ required: true, message: "Vui lòng nhập CCCD!" }]}
-                >
-                    <Input placeholder="Nhập số CCCD" size="large" className="rounded-md px-3 py-2" />
-                </Form.Item>
+        <Form.Item
+          name="clinicId"
+          label="Phòng khám"
+          rules={[{ required: true, message: "Vui lòng chọn phòng khám!" }]}
+        >
+          <Select placeholder="Chọn phòng khám" size="large" className="rounded-md">
+            {clinics.map((clinic) => (
+              <Option key={clinic.id} value={clinic.id}>
+                {clinic.id} - {clinic.name}
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
 
-                <Form.Item
-                    name="phone"
-                    label="Số điện thoại"
-                    rules={[{ required: true, message: "Vui lòng nhập số điện thoại!" }]}
-                >
-                    <Input placeholder="Nhập số điện thoại" size="large" className="rounded-md px-3 py-2" />
-                </Form.Item>
+        <Form.Item
+          name="specialtyId"
+          label="Chuyên khoa"
+          rules={[{ required: true, message: "Vui lòng chọn chuyên khoa!" }]}
+        >
+          <Select placeholder="Chọn chuyên khoa" size="large" className="rounded-md">
+            {specialties.map((sp) => (
+              <Option key={sp.id} value={sp.id}>
+                {sp.id} - {sp.name}
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
 
-                <Form.Item
-                    name="price"
-                    label="Giá khám (VNĐ)"
-                    rules={[{ required: true, message: "Vui lòng nhập giá khám!" }]}
-                >
-                    <Input type="number" placeholder="Nhập giá khám" size="large" className="rounded-md px-3 py-2" />
-                </Form.Item>
-
-                <Form.Item
-                    name="status"
-                    label="Trạng thái"
-                    rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
-                >
-                    <Select placeholder="Chọn trạng thái" size="large" className="rounded-md">
-                        <Option value="active">Hoạt động</Option>
-                        <Option value="inactive">Nghỉ</Option>
-                    </Select>
-                </Form.Item>
-
-                <Form.Item>
-                    <div className="flex justify-end space-x-3 pt-2">
-                        <Button onClick={onCancel} size="large">
-                            Hủy
-                        </Button>
-                        <Button type="primary" htmlType="submit" size="large">
-                            Cập nhật
-                        </Button>
-                    </div>
-                </Form.Item>
-            </Form>
-        </Modal>
-    );
+        <Form.Item>
+          <div className="flex justify-end space-x-3 pt-2">
+            <Button onClick={onCancel} size="large">
+              Hủy
+            </Button>
+            <Button type="primary" htmlType="submit" size="large">
+              Cập nhật
+            </Button>
+          </div>
+        </Form.Item>
+      </Form>
+    </Modal>
+  );
 };
 
 export default EditDoctor;

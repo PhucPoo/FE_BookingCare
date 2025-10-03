@@ -8,17 +8,16 @@ interface SupportFilterBarProps {
 
 const supportFilterBar: React.FC<SupportFilterBarProps> = ({ supports, onFilter,   }) => {
   const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  // const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [status, setStatus] = useState('');
+  // const [status, setStatus] = useState('');
 
   const handleSearch = () => {
     const filtered = supports.filter((support) => {
-      const matchName = name === '' || support.name.toLowerCase().includes(name.toLowerCase());
-      const matchPrice = email === '' || support.email.toString().includes(email);
-      const matchPhone = phone === '' || support.phone.includes(phone);
-      const matchStatus = status === '' || support.status === status;
-      return matchName && matchPrice && matchPhone && matchStatus;
+      const matchName = name === '' || support.account.name.toLowerCase().includes(name.toLowerCase());
+      // const matchPrice = email === '' || support.account.email.toString().includes(email);
+      const matchPhone = phone === '' || support.account.phoneNumber.includes(phone);
+      return matchName && matchPhone ;
     });
 
     onFilter(filtered);
@@ -33,13 +32,13 @@ const supportFilterBar: React.FC<SupportFilterBarProps> = ({ supports, onFilter,
         placeholder="Tên trợ lý"
         className="border rounded px-3 py-2 flex-1 min-w-[150px]"
       />
-      <input
+      {/* <input
         type="text"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="Email"
         className="border rounded px-3 py-2 flex-1 min-w-[150px]"
-      />
+      /> */}
       <input
         type="text"
         value={phone}
@@ -47,7 +46,7 @@ const supportFilterBar: React.FC<SupportFilterBarProps> = ({ supports, onFilter,
         placeholder="Số điện thoại"
         className="border rounded px-3 py-2 flex-1 min-w-[150px]"
       />
-      <select
+      {/* <select
         value={status}
         onChange={(e) => setStatus(e.target.value)}
         className="border rounded px-3 py-2 flex-1 min-w-[150px]"
@@ -55,7 +54,7 @@ const supportFilterBar: React.FC<SupportFilterBarProps> = ({ supports, onFilter,
         <option value="">Trạng thái</option>
         <option value="active">Hoạt động</option>
         <option value="inactive">Nghỉ</option>
-      </select>
+      </select> */}
       <button
         onClick={handleSearch}
         className="bg-blue-600 text-white px-4 py-2 rounded flex-1 min-w-[150px]"

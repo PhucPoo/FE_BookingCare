@@ -1,5 +1,5 @@
 import { Button, Divider, Modal } from "antd/lib";
-import TimeData from "../../MockData/TimaData";
+import TimeData from "../../../MockData/TimaData";
 import { useEffect, useState } from "react";
 type Props = {
   isModalOpen: boolean;

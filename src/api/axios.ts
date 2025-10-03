@@ -2,6 +2,9 @@ import axios from "axios";
 
 const api = axios.create({
     baseURL: 'http://localhost:8080/api/',
+    headers: {
+    "Content-Type": "application/json",   // ép luôn JSON
+  },
 });
 
 api.interceptors.request.use((config) => {
@@ -16,3 +19,4 @@ api.interceptors.request.use((config) => {
     });
 
 export default api;
+

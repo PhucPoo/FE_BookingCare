@@ -4,6 +4,7 @@ import React from "react";
 import Modal from "antd/es/modal";
 import Button from "antd/es/button";
 import type { User } from "./UserTable";
+import dayjs from "dayjs";
 // đảm bảo đường dẫn đúng
 
 interface InformationuserProps {
@@ -12,22 +13,6 @@ interface InformationuserProps {
   onClose: () => void;
 }
 
-// const getcreate_atBadge = (create_at: User["create_at"]) => {
-//   if (create_at === "active") {
-//     return (
-//       <span className="bg-green-500 text-white px-2 py-1 rounded text-sm">
-//         Hoạt động
-//       </span>
-//     );
-//   } else if (create_at === "inactive") {
-//     return (
-//       <span className="bg-red-500 text-white px-2 py-1 rounded text-sm">
-//         Nghỉ
-//       </span>
-//     );
-//   }
-//   return null;
-// };
 
 const Informationuser: React.FC<InformationuserProps> = ({
   open,
@@ -74,12 +59,22 @@ const Informationuser: React.FC<InformationuserProps> = ({
           <p>
             <strong>Email:</strong> {user.email}
           </p>
-          {/* <p>
+          <p>
             <strong>CCCD:</strong> {user.cccd}
-          </p> */}
+          </p>
+          {/* <b>Ngày sinh:</b>{" "}
+          {birthday ? dayjs(birth).format("DD/MM/YYYY") : "Chưa có"} */}
+          <p>
+            <strong>Địa chỉ:</strong> {user.address}
+          </p>
           <p>
             <strong>SĐT:</strong> {user.phoneNumber}
           </p>
+          {user.avatar instanceof File ? (
+            <img src={URL.createObjectURL(user.avatar)} alt={user.name} />
+          ) : (
+            <img src={user.avatar} alt={user.name} />
+          )}
           <p>
             <strong>Ngày tạo:</strong>
             {handleFormatDay(user.createAt)}
@@ -88,9 +83,6 @@ const Informationuser: React.FC<InformationuserProps> = ({
             <strong>Cập nhật:</strong>
             {handleFormatDay(user.updateAt)}
           </p>
-          {/* <p>
-            <strong>Trạng thái:</strong> {getcreate_atBadge(user.create_at)}
-          </p> */}
         </div>
       )}
     </Modal>
