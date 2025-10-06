@@ -41,6 +41,7 @@ import PatientBookingList from "../pages/PatientBookingList/PatientBookingList";
 import PatientBillList from "../pages/PatientBillList/PatientBillList";
 import DoctorManagePatient from "../pages/DoctorManage/DoctorManagePatient/DoctorManagePatient";
 import SupportBillManagePage from "../pages/Support/SupportBillManagePage/SupportBillManagePage";
+import SpecialtyDetail from "../pages/DanhSach/Specialty/SpecialtyDetail";
 
 const AppRoutes = () => {
   const ProtectRouter = () => {
@@ -77,6 +78,7 @@ const AppRoutes = () => {
         <Route path="bac-si" element={<DoctorList />} />
         <Route path="bac-si/:id" element={<DoctorDetail />} />
         <Route path="chuyen-khoa" element={<SpecialtyList />} />
+        <Route path="chuyen-khoa/:id" element={<SpecialtyDetail />} />
         <Route path="bai-viet" element={<ArticleList />} />
       </Route>
       {/* protected route */}

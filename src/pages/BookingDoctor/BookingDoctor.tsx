@@ -62,19 +62,25 @@ const BookingDoctor = () => {
       timeId: locationJS.state.data.timeId,
     };
     if (handleCheckMissingInfo(data)) {
-      const res = await BookingDoctorApi(data);
-      if (res.error) {
-        toast.error(res.message);
-        return;
-      }
-      toast.success("Đặt lịch thành công");
-      navigate("/");
+      toast
+        .promise(BookingDoctorApi(data), {
+          pending: "Xin hãy đợi chút",
+        })
+        .then(() => {
+          toast.success("Đặt lịch thành công");
+          navigate("/");
+        });
+      // .catch((error) => {
+      //   console.log("🚀 ~ handleBookingDoctor ~ error:", error);
+      //       toast.error(error.response.data.message);
+      // });
     }
   };
   useEffect(() => {
     window.scroll(0, 0);
     handleGetDetailDoctor();
   }, []);
+
   return (
     <div>
       <MainPageHeader />

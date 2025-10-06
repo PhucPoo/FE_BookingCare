@@ -109,7 +109,7 @@ const DoctorDetail = () => {
                           }
                         );
                       }}
-                    >{`${item.start} - ${item.start}`}</Button>
+                    >{`${item.start} - ${item.end}`}</Button>
                   ))}
               </div>
               <p className="flex mt-2 text-sm gap-1">

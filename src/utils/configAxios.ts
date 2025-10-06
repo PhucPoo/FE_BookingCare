@@ -20,6 +20,7 @@ customAxiosInstance.interceptors.request.use(
       document.cookie = "";
       delete config.headers.Authorization; // tránh gửi Authorization rỗng
     }
+
     return config;
   },
   function (error) {
@@ -40,7 +41,7 @@ customAxiosInstance.interceptors.response.use(
     console.log("🚀 ~ error:", error);
     // Bất kì mã trạng thái nào lọt ra ngoài tầm 2xx đều khiến hàm này được trigger\
     // Làm gì đó với lỗi response
-    toast.error(error.response.data.data.message);
+    toast.error(error.response.data.message);
     if (error.response?.status === 401) {
       toast.error("Không thể xác thực, vui lòng đăng nhập lại!");
       //401 Unauthorized

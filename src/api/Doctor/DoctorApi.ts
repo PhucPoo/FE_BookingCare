@@ -61,10 +61,11 @@ export const sortPatientByDoctorId = async (
 export const searchDoctor = async (
   searchValue: string,
   searchData: string,
-  size: number = 3
+  size: number = 3,
+  page: number = 1
 ) => {
   const res = await customAxiosInstance.get(
-    `${api}/doctors/search?${searchValue}=${searchData}&size=${size}`
+    `${api}/doctors/search?${searchValue}=${searchData}&size=${size}&page=${page}`
   );
   return res.data;
 };
