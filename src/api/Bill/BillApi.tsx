@@ -11,3 +11,7 @@ export const getBillByPatient = async (
   );
   return res.data;
 };
+export const createBill = async (data) => {
+  const res = await customAxiosInstance.post(`${api}/bill`, data);
+  return res.data;
+};

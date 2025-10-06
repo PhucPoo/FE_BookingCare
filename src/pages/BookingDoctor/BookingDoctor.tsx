@@ -30,28 +30,38 @@ const BookingDoctor = () => {
       setDetailDoctor(res.data);
     }
   };
-
+  const handleCheckMissingInfo = (data) => {
+    let check = true;
+    const listInfo = [
+      "appointmentDate",
+      "description",
+      "doctorId",
+      "patientId",
+      "clinicId",
+      "timeId",
+    ];
+    for (let index = 0; index < listInfo.length; index++) {
+      if (!data[listInfo[index]]) {
+        toast.info(`Thiếu ${listInfo[index]}`);
+        check = false;
+        break;
+      }
+    }
+    return check;
+  };
   const handleBookingDoctor = async () => {
     if (!description) {
       toast.error("Điền lí do khám");
     }
-    if (
-      locationJS.state.data.appointmentDate &&
-      description &&
-      id &&
-      detailDoctor.clinic?.id &&
-      locationJS.state.data.timeId &&
-      userInfor?.patientId
-    ) {
-      const data = {
-        appointmentDate: locationJS.state.data.appointmentDate,
-        description,
-        doctorId: id,
-        patientId: userInfor?.patientId,
-        clinicId: `${detailDoctor.clinic?.id}`,
-        timeId: locationJS.state.data.timeId,
-      };
-
+    const data = {
+      appointmentDate: locationJS.state.data.appointmentDate,
+      description,
+      doctorId: id,
+      patientId: userInfor?.patientId,
+      clinicId: `${detailDoctor.clinic?.id}`,
+      timeId: locationJS.state.data.timeId,
+    };
+    if (handleCheckMissingInfo(data)) {
       const res = await BookingDoctorApi(data);
       if (res.error) {
         toast.error(res.message);

@@ -27,3 +27,7 @@ export const handlePatientUpdateBooking = async (
   );
   return res.data;
 };
+export const searchPatient = async (query: string) => {
+  const res = await customAxiosInstance.get(`${api}/patients/search?${query}`);
+  return res.data;
+};

@@ -9,12 +9,14 @@ import {
 import SupportBillManageTable from "./SupportBillManageTable";
 import type { CheckBillSortKeyModel } from "../../Admin/Bill/CheckBillSortKeyModel";
 import SupportBIllManageDetail from "./SupportBIllManageDetail";
+import SupportBillCreateNew from "./SupportBillCreateNew";
 
 const SupportBillManagePage = () => {
   // const userInfo = useUserInfoStore((state) => state.userInfo);
   const [BillList, setBillList] = useState<AdminBillManageModel[]>([]);
   const [BillDetail, setBillDetail] = useState<AdminBillManageModel>({});
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isModalCreateOpen, setIsModalCreateOpen] = useState<boolean>(false);
   const [pageSize, setPageSize] = useState<number>(5);
   const [totalBillList, setTotalBillList] = useState<number>(50);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -78,11 +80,17 @@ const SupportBillManagePage = () => {
         onLog={onLog}
         setBillDetail={setBillDetail}
         setIsModalOpen={setIsModalOpen}
+        setIsModalCreateOpen={setIsModalCreateOpen}
       />
       <SupportBIllManageDetail
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
         BillDetail={BillDetail}
+      />
+      <SupportBillCreateNew
+        isModalCreateOpen={isModalCreateOpen}
+        setIsModalCreateOpen={setIsModalCreateOpen}
+        handleGetBillList={handleGetBillList}
       />
     </div>
   );

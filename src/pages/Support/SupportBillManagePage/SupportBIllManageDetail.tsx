@@ -14,7 +14,7 @@ const SupportBIllManageDetail = ({
   setIsModalOpen,
   BillDetail,
 }: Props) => {
-  console.log("🚀 ~ SupportBIllManageDetail ~ BillDetail:", BillDetail);
+
   return (
     <Modal
       title="Thông tin lịch khám chi tiết"

@@ -15,6 +15,7 @@ type Props = {
   handleGetBillList: () => void;
   setBillDetail: (value: AdminBillManageModel) => void;
   setIsModalOpen: (value: boolean) => void;
+  setIsModalCreateOpen: (value: boolean) => void;
 };
 
 const SupportBillManageTable = ({
@@ -28,15 +29,23 @@ const SupportBillManageTable = ({
   onLog,
   setBillDetail,
   setIsModalOpen,
+  setIsModalCreateOpen,
 }: Props) => {
   return (
     <div>
       <div className="max-w-7xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-            Danh sách hoá đơn
-          </h1>
-          <p className="text-gray-600">Quản lý thông tin hoá đơn hiện có</p>
+        <div className="mb-6 flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+              Danh sách hoá đơn
+            </h1>
+            <p className="text-gray-600">Quản lý thông tin hoá đơn hiện có</p>
+          </div>
+          <div>
+            <Button size="large" onClick={() => setIsModalCreateOpen(true)}>
+              Tạo hoá đơn mới
+            </Button>
+          </div>
         </div>
 
         {/* table search feature */}
