@@ -10,19 +10,24 @@ import { Card, Tag, Avatar, Button, Pagination } from "antd/lib";
 import {
   CalendarOutlined,
   ClockCircleOutlined,
-  EnvironmentOutlined,
-  PhoneOutlined,
   UserOutlined,
   MedicineBoxOutlined,
 } from "@ant-design/icons";
 import {
   formatDate,
+  getDegree,
   getStatusColor,
   getStatusText,
 } from "../../utils/constant";
 import type { PatientBookingModel } from "./PatientBookingModel";
 import { toast } from "react-toastify";
-
+import FeedBackDoctor from "./FeedBackDoctor";
+type dataToFeedBackModel = {
+  doctorId?: number;
+  patientId?: number;
+  doctorName?: string;
+  doctorAvatar?: string;
+};
 const PatientBookingList = () => {
   const [PatientBookings, setPatientBookings] = useState<PatientBookingModel[]>(
     []
@@ -32,6 +37,9 @@ const PatientBookingList = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
 
   const userInfor = useUserInfoStore((state) => state.userInfo);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [dataToFeedBack, setDataToFeedBack] = useState<dataToFeedBackModel>({});
+
   const handlePatientBookings = async () => {
     if (userInfor.patientId) {
       const res = await getPatientBookingByPatientId(userInfor?.patientId);
@@ -42,7 +50,6 @@ const PatientBookingList = () => {
     }
   };
   const onLog = async (page: number, pageSize: number) => {
-    console.log("Đang ở trang:", page, pageSize);
     window.scroll(0, 0);
     if (userInfor.patientId) {
       const res = await getPatientBookingByPatientId(
@@ -60,6 +67,10 @@ const PatientBookingList = () => {
     await handlePatientUpdateBooking(id, status);
     toast.success("Cập nhật trạng thái lịch khám thành công");
     await handlePatientBookings();
+  };
+  const handleFeedbackDoctor = (data: dataToFeedBackModel) => {
+    setIsModalOpen(true);
+    setDataToFeedBack(data);
   };
   useEffect(() => {
     handlePatientBookings();
@@ -100,12 +111,12 @@ const PatientBookingList = () => {
                 </div>
 
                 <div className="p-6">
-                  <div className="grid md:grid-cols-2 gap-8">
+                  <div className="grid gap-8">
                     {/* Left Column - Doctor & Clinic Info */}
                     <div className="space-y-6">
                       {/* Doctor Info */}
                       <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm">
-                        <div className="flex items-start space-x-4">
+                        <div className="flex items-start space-x-4 gap-5">
                           <Avatar
                             size={64}
                             src={booking.doctor?.account.avatar}
@@ -114,21 +125,15 @@ const PatientBookingList = () => {
                           />
                           <div className="flex-1 min-w-0">
                             <h4 className="font-semibold text-lg text-gray-800 mb-1">
-                              {booking?.doctor?.degree}{" "}
-                              {booking?.doctor?.account.name}
+                              {getDegree(booking?.doctor?.degree) +
+                                " " +
+                                booking?.doctor?.account.name}
                             </h4>
                             <div className="space-y-2">
                               <div className="flex items-center text-gray-600">
                                 <MedicineBoxOutlined className="mr-2 text-blue-500" />
                                 <span className="text-sm">
-                                  {booking?.doctor?.specialtyName} -{" "}
-                                  {booking?.doctor?.specialtyDescription}
-                                </span>
-                              </div>
-                              <div className="flex items-center text-gray-600">
-                                <PhoneOutlined className="mr-2 text-green-500" />
-                                <span className="text-sm">
-                                  {booking.doctor?.account.phoneNumber}
+                                  {booking?.doctor?.specialtyName}
                                 </span>
                               </div>
                             </div>
@@ -141,22 +146,6 @@ const PatientBookingList = () => {
                           </div>
                         </div>
                       </div>
-
-                      {/* Clinic Info */}
-                      <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm">
-                        <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
-                          <EnvironmentOutlined className="mr-2 text-red-500" />
-                          Thông tin bệnh viện
-                        </h4>
-                        <div className="space-y-2">
-                          <p className="font-medium text-gray-800">
-                            {booking?.clinic?.name}
-                          </p>
-                          <p className="text-gray-600 text-sm">
-                            {booking?.clinic?.address.city}
-                          </p>
-                        </div>
-                      </div>
                     </div>
 
                     {/* Right Column - Appointment Details */}
@@ -167,7 +156,7 @@ const PatientBookingList = () => {
                           <ClockCircleOutlined className="mr-2" />
                           Thời gian khám
                         </h4>
-                        <div className="flex justify-between space-x-4">
+                        <div className="flex justify-between space-x-4 md:flex-col lg:flex-row">
                           <div className="bg-white rounded-lg p-3 border border-green-200 w-full">
                             <p className="text-sm text-gray-600">Ngày khám</p>
                             <p className="font-semibold text-gray-800">
@@ -180,39 +169,11 @@ const PatientBookingList = () => {
                               {booking?.time?.start} - {booking?.time?.end}
                             </p>
                           </div>
-                        </div>
-                      </div>
-
-                      {/* Patient Info */}
-                      <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm">
-                        <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
-                          <UserOutlined className="mr-2 text-blue-500" />
-                          Thông tin bệnh nhân
-                        </h4>
-                        <div className="space-y-2">
-                          <div className="flex justify-between">
-                            <span className="text-gray-600 text-sm">
-                              Họ tên:
-                            </span>
-                            <span className="font-medium">
-                              {booking?.patient?.account.name}
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-600 text-sm">
-                              Email:
-                            </span>
-                            <span className="text-sm">
-                              {booking.patient?.account.email}
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-600 text-sm">
-                              Số điện thoại:
-                            </span>
-                            <span className="text-sm">
-                              {booking.patient?.account.phoneNumber}
-                            </span>
+                          <div className="bg-white rounded-lg p-3 border border-green-200 w-full">
+                            <p className="text-sm text-gray-600">Bệnh viện</p>
+                            <p className="font-semibold text-gray-800">
+                              {booking?.clinic?.name}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -236,6 +197,23 @@ const PatientBookingList = () => {
                             }}
                           >
                             Hủy lịch
+                          </Button>
+                        )}
+                        {booking.status === "COMPLETED" && (
+                          <Button
+                            className="flex-1"
+                            onClick={() => {
+                              if (booking.doctor?.id && booking.patient?.id) {
+                                handleFeedbackDoctor({
+                                  doctorId: booking.doctor?.id,
+                                  patientId: booking.patient.id,
+                                  doctorName: booking.doctor.account.name,
+                                  doctorAvatar: booking.doctor.account.avatar,
+                                });
+                              }
+                            }}
+                          >
+                            Đánh giá bác sĩ
                           </Button>
                         )}
                       </div>
@@ -273,6 +251,11 @@ const PatientBookingList = () => {
           />
         </div>
       </div>
+      <FeedBackDoctor
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+        dataToFeedBack={dataToFeedBack}
+      />
     </div>
   );
 };

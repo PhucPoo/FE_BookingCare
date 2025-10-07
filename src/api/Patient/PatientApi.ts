@@ -31,3 +31,7 @@ export const searchPatient = async (query: string) => {
   const res = await customAxiosInstance.get(`${api}/patients/search?${query}`);
   return res.data;
 };
+export const PatientFeedback = async (data) => {
+  const res = await customAxiosInstance.post(`${api}/feedbacks`, data);
+  return res.data;
+};
