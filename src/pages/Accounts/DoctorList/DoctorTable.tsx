@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Button, Modal, Pagination } from "antd/lib";
+import { Button, Modal, Pagination, type PaginationProps } from "antd/lib";
 import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
 import DetailDoctor from "./DetailDoctor";
 import EditDoctor from "./EditDoctor";
@@ -28,27 +28,38 @@ export interface Doctor {
 
 interface DoctorTableProps {
   doctors?: Doctor[];
-  setdoctor: (doctors: Doctor[]) => void;
   searchName?: string;
   searchPhone?: string;
   searchCost?: string;
-  onUpdateDoctor: (updatedDoctor: Doctor) => void;
+  onUpdateDoctor: (updatedDoctor: Doctor) => void ;
   onDeleteDoctor: (id: number) => void;
+  totalDoctorList: number;
+  pages: number;
+  pageSize: number;
+  setpages: (pages: number) => void;
+  setpageSize: (pageSize: number) => void;
+
 }
 
 const DoctorTable: React.FC<DoctorTableProps> = ({
   doctors = [],
-  setdoctor,
+  // setdoctor,
   onUpdateDoctor,
   onDeleteDoctor,
   searchName = "",
   searchPhone = "",
   searchCost = "",
+  totalDoctorList,
+  pages,
+  pageSize,
+  setpages,
+  setpageSize,
+
 }) => {
   const [sortColumn, setSortColumn] = useState<"name" | "createAt" | "">("");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 8;
+
+
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteDoctorId, setDeleteDoctorId] = useState<number>(0);
@@ -67,6 +78,11 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
       setSortDirection("asc");
     }
   };
+  const onShowSizeChange: PaginationProps['onShowSizeChange'] = (current, pageSize) => {
+    setpageSize(pageSize);
+    setpages(current);
+};
+
 
   const renderSortArrow = (column: "name" | "createAt") => {
     if (sortColumn !== column) return null;
@@ -96,10 +112,7 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
     });
   }, [doctors, sortColumn, sortDirection]);
 
-  const paginatedDoctors = sortedDoctors.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
+
 
   const handleConfirmDelete = async () => {
     try {
@@ -115,6 +128,7 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
     setEditingDoctor(null);
     setIsEditModalOpen(false);
   };
+
 
   return (
     <div className="w-full bg-white rounded shadow overflow-x-auto">
@@ -137,9 +151,9 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
           </tr>
         </thead>
         <tbody>
-          {paginatedDoctors.map((doc) => (
-          
-            
+          {sortedDoctors.map((doc) => (
+
+
             <tr className="hover:bg-gray-50" key={doc.id}>
               <td className="p-3 border border-gray-200 text-center">{doc.id}</td>
               <td
@@ -183,10 +197,13 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
 
       <div className="flex justify-center py-4">
         <Pagination
-          current={currentPage}
+          showSizeChanger
+          onChange={onShowSizeChange}
+          defaultCurrent={pages}
+          total={totalDoctorList}
           pageSize={pageSize}
-          total={sortedDoctors.length}
-          onChange={(page) => setCurrentPage(page)}
+          pageSizeOptions={['1', '2', '3', '5']}
+
         />
       </div>
 

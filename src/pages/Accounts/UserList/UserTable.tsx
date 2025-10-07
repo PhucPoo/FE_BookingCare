@@ -1,6 +1,5 @@
-import React, { useState, useMemo } from "react";
-import { Button, Modal, Pagination } from "antd/lib";
-import { notification } from "antd";
+import React, { useState } from "react";
+import { Button, Modal, Pagination, notification } from "antd/lib";
 import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
 import DetailUser from "./DetailUser";
 import EditUser from "./EditUser";
@@ -31,13 +30,13 @@ interface UserTableProps {
   searchCccd?: string;
   searchPhone?: string;
   searchEmail?: string;
-  roleFilter?: string | null;
-  genderFilter?: string | null;
-  dateFilter?: string | null;
   onUpdateUser: (updatedUser: User) => void;
   onDeleteUser: (id: number) => void;
-
- 
+  totalUsers: number;
+  pages: number;
+  pageSize: number;
+  setpages: (pages: number) => void;
+  setpageSize: (pageSize: number) => void;
 }
 
 type SortColumn = "name" | "createAt";
@@ -46,32 +45,27 @@ type SortDirection = "asc" | "desc";
 const UserTable: React.FC<UserTableProps> = ({
   users,
   setusers,
-  roleFilter,
-  genderFilter,
-  dateFilter,
   onUpdateUser,
   onDeleteUser,
   searchCccd = "",
   searchPhone = "",
   searchEmail = "",
+  totalUsers,
+  pages,
+  pageSize,
+  setpages,
+  setpageSize,
 }) => {
-  const [sortColumn, setSortColumn] = useState<SortColumn>("name");
+  const [sortColumn] = useState<SortColumn>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteUserId, setDeleteUserId] = useState<number>(0);
 
-  // Modal chi tiết
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
-  // Modal sửa
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
-
-  // Pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 8;
-
 
   // Fetch sorted users
   const fetchSortedUsers = async (direction: SortDirection) => {
@@ -83,17 +77,17 @@ const UserTable: React.FC<UserTableProps> = ({
     }
   };
 
-  const handleClick = () => {
+  const handleSortClick = () => {
     const next = sortDirection === "asc" ? "desc" : "asc";
     setSortDirection(next);
     fetchSortedUsers(next);
   };
 
-  // Modal delete
   const handleOk = async () => {
     try {
       await testDeleteAccountsApi(deleteUserId);
       onDeleteUser(deleteUserId);
+      notification.success({ message: "Xoá người dùng thành công" });
     } catch (err: any) {
       notification.error({
         message: "Có lỗi xảy ra",
@@ -106,7 +100,6 @@ const UserTable: React.FC<UserTableProps> = ({
 
   const handleCancel = () => setIsModalOpen(false);
 
-  // Update
   const handleUpdateUser = (user: User) => {
     onUpdateUser(user);
     setEditingUser(null);
@@ -120,29 +113,14 @@ const UserTable: React.FC<UserTableProps> = ({
     4: "Client",
   };
 
-  // Filter
-  const filtered = useMemo(() => {
-    return users.filter((u) => {
-      if (roleFilter && u.role?.name.toLowerCase() !== roleFilter) return false;
-      if (genderFilter && u.gender?.toLowerCase() !== genderFilter) return false;
-      if (
-        dateFilter &&
-        new Date(u.createAt).toLocaleDateString("vi-VN") !==
-        new Date(dateFilter).toLocaleDateString("vi-VN")
-      )
-        return false;
-      return true;
-    });
-  }, [users, roleFilter, genderFilter, dateFilter]);
   const highlightText = (text: string | number, keyword: string) => {
-  if (!keyword) return text;
-  const regex = new RegExp(`(${keyword})`, "gi");
-  return String(text).replace(regex, `<mark style="background: yellow;">$1</mark>`);
-};
-
-  // Pagination slice
-  const startIndex = (currentPage - 1) * pageSize;
-  const paginatedUsers = filtered.slice(startIndex, startIndex + pageSize);
+    if (!keyword) return text;
+    const regex = new RegExp(`(${keyword})`, "gi");
+    return String(text).replace(
+      regex,
+      `<mark style="background: yellow;">$1</mark>`
+    );
+  };
 
   return (
     <div className="w-full bg-white rounded shadow overflow-x-auto">
@@ -152,7 +130,7 @@ const UserTable: React.FC<UserTableProps> = ({
             <th className="p-3 border border-gray-200 text-center font-medium">ID</th>
             <th
               className="p-3 border border-gray-200 cursor-pointer text-left font-medium select-none"
-              onClick={handleClick}
+              onClick={handleSortClick}
             >
               Tên {sortDirection === "asc" ? "🔼" : "🔽"}
             </th>
@@ -163,7 +141,7 @@ const UserTable: React.FC<UserTableProps> = ({
             <th className="p-3 border border-gray-200 hidden lg:table-cell text-center font-medium">Role</th>
             <th
               className="p-3 border border-gray-200 hidden md:table-cell cursor-pointer text-center font-medium select-none"
-              onClick={handleClick}
+              onClick={handleSortClick}
             >
               Ngày tạo {sortDirection === "asc" ? "🔼" : "🔽"}
             </th>
@@ -171,22 +149,30 @@ const UserTable: React.FC<UserTableProps> = ({
           </tr>
         </thead>
         <tbody>
-          {paginatedUsers.map((u) => (
+          {users.map((u) => (
             <tr key={u.id} className="hover:bg-gray-50">
               <td className="p-3 border border-gray-200 text-center">{u.id}</td>
               <td className="p-3 border border-gray-200">{u.name}</td>
               <td
                 className="p-3 border border-gray-200 hidden md:table-cell"
-                 dangerouslySetInnerHTML={{ __html: highlightText(u.email, searchEmail || "") }}
+                dangerouslySetInnerHTML={{
+                  __html: highlightText(u.email || "", searchEmail),
+                }}
               />
               <td
                 className="p-3 border border-gray-200 hidden md:table-cell text-center"
-                dangerouslySetInnerHTML={{ __html: highlightText(u.phoneNumber, searchPhone || "") }}
+                dangerouslySetInnerHTML={{
+                  __html: highlightText(u.phoneNumber || "", searchPhone),
+                }}
               />
-              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">{u.gender}</td>
+              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">
+                {u.gender}
+              </td>
               <td
                 className="p-3 border border-gray-200 hidden md:table-cell text-center"
-               dangerouslySetInnerHTML={{ __html: highlightText(u.cccd, searchCccd || "") }}
+                dangerouslySetInnerHTML={{
+                  __html: highlightText(u.cccd || "", searchCccd),
+                }}
               />
               <td className="p-3 border border-gray-200 hidden lg:table-cell text-center">
                 {roleMap[u.role?.id || 0]}
@@ -233,10 +219,15 @@ const UserTable: React.FC<UserTableProps> = ({
       {/* Pagination */}
       <div className="flex justify-center py-4">
         <Pagination
-          current={currentPage}
+          showSizeChanger
+          current={pages}
+          total={totalUsers}
           pageSize={pageSize}
-          total={filtered.length}
-          onChange={(page) => setCurrentPage(page)}
+          pageSizeOptions={["1", "2", "3", "5"]}
+          onChange={(page, size) => {
+            setpages(page);
+            setpageSize(size);
+          }}
         />
       </div>
 

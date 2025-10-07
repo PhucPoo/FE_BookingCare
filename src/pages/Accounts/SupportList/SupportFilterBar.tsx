@@ -17,16 +17,33 @@ interface SupportFilterKeywords {
 interface SupportFilterBarProps {
   setFilteredSupports: (supports: Support[]) => void;
   onFilter: (filtered: Support[], keywords: SupportFilterKeywords) => void;
+  pages: number;
+  pageSize: number;
+  name: string;
+  setName: (name: string) => void;
+  phone: string;
+  setPhone: (phone: string) => void;
+  address: string;
+  setAddress: (address: string) => void; // người dùng nhập địa chỉ
+  clinicId: string | null;
+  setClinicId: (clinicId: string) => void;
 }
 
 const SupportFilterBar: React.FC<SupportFilterBarProps> = ({
   setFilteredSupports,
   onFilter,
+  pages,
+  pageSize,
+  name,
+  setName,
+  phone,
+  setPhone,
+  address,
+  setAddress, // người dùng nhập địa chỉ
+  clinicId,
+  setClinicId,
 }) => {
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState(""); // người dùng nhập địa chỉ
-  const [clinicId, setClinicId] = useState<string | null>(null);
+  
 
   const [clinicList, setClinicList] = useState<Clinic[]>([]);
 
@@ -58,7 +75,7 @@ const SupportFilterBar: React.FC<SupportFilterBarProps> = ({
         phoneNumber: phone || undefined,
         address: address || undefined, // gửi địa chỉ người dùng nhập
         clinicId: clinicId ? Number(clinicId) : undefined,
-      });
+      } , pages, pageSize);
 
       const supports = result.data?.result ?? [];
       setFilteredSupports(supports);

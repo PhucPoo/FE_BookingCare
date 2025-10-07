@@ -33,8 +33,7 @@ export const testSortAccountsApi = async (page: number, size: number,sort:string
 
 
 // 🟢 Get Accounts (có hỗ trợ sort & page)
-export const testGetAccountsApi = async (
-) => {
+export const testGetAccountsApi = async () => {
   const response = await customAxiosInstance.get(
     `http://localhost:8080/api/v1/accounts`,
     {
@@ -69,6 +68,30 @@ export const testPutAccountsApi = async (data: User) => {
   );
   console.log("🚀 ~ testPutAccountsApi ~ response:", response);
   return response.data;
+};
+
+interface SearchUserParams {
+  cccd?: string;
+  phoneNumber?: string;
+  email?: string;
+  roleId?: number;
+  gender?: string;
+  monthYear?: Date;
+}
+
+export const testSearchAccountApi = async (params: SearchUserParams,pageSize:number,page:number) => {
+  const response = await customAxiosInstance.get(
+    `http://localhost:8080/api/v1/accounts/search?page=${pageSize}&size=${page}`,
+    {
+      params: {
+        ...params,
+      },
+      ...config,
+    }
+  );
+  console.log("🚀 ~ testSearchDoctorsApi ~ response:", response);
+  return response.data;
+
 };
 
 // 🟢 Delete User

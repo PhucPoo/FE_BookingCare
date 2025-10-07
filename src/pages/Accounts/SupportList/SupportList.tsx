@@ -5,12 +5,20 @@ import SupportTable from "./SupportTable";
 import SupportFilterBar from "./SupportFilterBar";
 // import SupportAdvancedFilter from "./SupportAdvancedFilter"; 
 
-import { testDeleteSupportApi, testGetSupportApi } from "../../../api/testSupport";
+import { testDeleteSupportApi, testGetSupportApi, testSearchSupportApi } from "../../../api/testSupport";
+import { set } from "react-hook-form";
 
 const SupportManagement: React.FC = () => {
   const [supports, setSupports] = useState<Support[]>([]);
   const [filteredSupports, setFilteredSupports] = useState<Support[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState(""); // người dùng nhập địa chỉ
+  const [clinicId, setClinicId] = useState<string | null>(null);
+  const [pageSize, setPageSize] = useState<number>(2);
+  const [pages, setPages] = useState<number>(1);
+  const [totalDoctorList, setTotalDoctorList] = useState<number>(10);
 
   // state filter
   const [genderFilter, setGenderFilter] = useState<string | null>(null);
@@ -18,28 +26,35 @@ const SupportManagement: React.FC = () => {
   const [clinicFilter, setClinicFilter] = useState<string | null>(null);
 
   const [keywords, setKeywords] = useState({
-      name: "",
-      phone: "",
-      addressId: null as string | null,
-      clinicId: null as string | null,
-    });
+    name: "",
+    phone: "",
+    addressId: null as string | null,
+    clinicId: null as string | null,
+  });
   // Lấy danh sách trợ lý
-  const handleGetSupports = async () => {
-    try {
-      const res = await testGetSupportApi();
 
-      console.log(">>>", res);
-      setSupports(res.data.result);
-      setFilteredSupports(res.data.result);
-
-    } catch (error) {
-      console.error("Lỗi lấy danh sách trợ lý:", error);
-    }
-  };
 
   useEffect(() => {
-    handleGetSupports();
-  }, []);
+    const fetchData = async () => {
+      try {
+        const res = await testSearchSupportApi({
+          name: name || undefined,
+          phoneNumber: phone || undefined,
+          address: address || undefined, // gửi địa chỉ người dùng nhập
+          clinicId: clinicId ? Number(clinicId) : undefined,
+
+        }, pages, pageSize);
+
+        setSupports(res.data.result);
+        setFilteredSupports(res.data.result);
+        setTotalDoctorList(res.data.meta.totals);
+
+      } catch (error) {
+        console.error("Lỗi lấy danh sách trợ lý:", error);
+      }
+    };
+    fetchData();
+  }, [pages, pageSize]);
 
   // Cập nhật trợ lý
   const handleUpdateSupport = async (updatedSupport: Support) => {
@@ -112,7 +127,7 @@ const SupportManagement: React.FC = () => {
         Quản lý trợ lý
       </h1>
 
-     <SupportFilterBar
+      <SupportFilterBar
         setFilteredSupports={setFilteredSupports}
         onFilter={(filtered, kw) => {
           setFilteredSupports(filtered);
@@ -123,6 +138,16 @@ const SupportManagement: React.FC = () => {
             clinicId: kw.clinicId ?? null,
           });
         }}
+        pages={pages}
+        pageSize={pageSize}
+        name={name}
+        setName={setName}
+        phone={phone}
+        setPhone={setPhone}
+        address={address}
+        setAddress={setAddress}
+        clinicId={clinicId}
+        setClinicId={setClinicId}
       />
 
       <SupportTable
@@ -132,9 +157,14 @@ const SupportManagement: React.FC = () => {
         onDeleteSupport={handleDeleteSupport}
         searchName={keywords.name}
         searchPhone={keywords.phone}
+        totalSupportList={totalDoctorList}
+        pages={pages}
+        pageSize={pageSize}
+        setpages={setPages}
+        setpageSize={setPageSize}
       />
 
-     
+
     </div>
   );
 };

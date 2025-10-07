@@ -17,25 +17,56 @@ interface DoctorFilterKeywords {
   specialtyId?: string | null;
   clinicId?: string | null;
   monthYear?: string | null;
+
 }
 
 interface DoctorFilterBarProps {
-  setFilteredDoctors: (doctors: Doctor[]) => void;
+  filteredDoctors: (doctors: Doctor[]) => void;
   onFilter: (doctors: Doctor[], keywords: DoctorFilterKeywords) => void;
+  pages: number;
+  pageSize: number;
+  name: string;
+  setName: (name: string) => void;
+  cost: string;
+  setCost: (cost: string) => void;
+  phone: string;
+  setPhone: (phone: string) => void;
+  degree: string | null;
+  setDegree: (degree: string) => void;
+  specialtyId: string | null;
+  setSpecialtyId: (specialtyId: string) => void;
+  clinicId: string | null;
+  setClinicId: (clinicId: string) => void;
+  monthYear: string | null;
+  setMonthYear: (monthYear: string) => void;
+
+
 }
 
 const DoctorFilterBar: React.FC<DoctorFilterBarProps> = ({
-  setFilteredDoctors,
+  filteredDoctors,
   onFilter,
+  pages,
+  pageSize,
+  name,
+  setName,
+  cost,
+  setCost,
+  phone,
+  setPhone,
+  degree,
+  setDegree,
+  specialtyId,
+  setSpecialtyId,
+  clinicId,
+  setClinicId,
+  monthYear,
+  setMonthYear,
+
 }) => {
-  // state cho filter
-  const [name, setName] = useState("");
-  const [cost, setCost] = useState("");
-  const [phone, setPhone] = useState("");
-  const [degree, setDegree] = useState<string | null>(null);
-  const [specialtyId, setSpecialtyId] = useState<string | null>(null);
-  const [clinicId, setClinicId] = useState<string | null>(null);
-  const [monthYear, setMonthYear] = useState<string | null>(null);
+  
+ 
+
 
   // data list
   const [specialtyList, setSpecialtyList] = useState<Specialty[]>([]);
@@ -78,6 +109,7 @@ const DoctorFilterBar: React.FC<DoctorFilterBarProps> = ({
       monthYear,
     };
 
+
     try {
       const result = await testSearchDoctorApi({
         name: name || undefined,
@@ -88,14 +120,16 @@ const DoctorFilterBar: React.FC<DoctorFilterBarProps> = ({
         specialtyId: specialtyId ? Number(specialtyId) : undefined,
         clinicId: clinicId ? Number(clinicId) : undefined,
         monthYear: monthYear ? new Date(monthYear) : undefined,
-      });
+      }
+        , pageSize, pages);
 
-      const doctors = result.data?.result ?? [];
-      setFilteredDoctors(doctors);
+      const doctors = result.data?.result;
+      filteredDoctors(doctors);
+      
       onFilter(doctors, keywords);
     } catch (error) {
       console.error("Lỗi khi tìm kiếm bác sĩ:", error);
-      setFilteredDoctors([]);
+      filteredDoctors([]);
       onFilter([], keywords);
     }
   };
