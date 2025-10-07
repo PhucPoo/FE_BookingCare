@@ -42,10 +42,10 @@ type Props = {
   handleSort: (value: CheckRenderKey) => void;
   handleChange: (value: string) => void;
   handleFindByDate: () => void;
-  handleSearchBooking: (value: string) => void;
+  handleSearchBooking: (searchValue: string, searchKey: string) => void;
   setFilterCreatedAt: (value: { from: string; to: string }) => void;
   filterCreatedAt: { from: string; to: string };
-  handleSearchByClinic: (value: string) => void;
+  // handleSearchByClinic: (value: string) => void;
   setBookingDetail: (value: AdminBookingTableModel) => void;
   setIsModalOpen: (value: boolean) => void;
 };
@@ -62,7 +62,6 @@ const AdminBookingTable = ({
   currentPage,
   totalBookingList,
   handleAdminGetAllBookings,
-  handleSearchByClinic,
   setBookingDetail,
   setIsModalOpen,
 }: Props) => {
@@ -140,7 +139,7 @@ const AdminBookingTable = ({
               placeholder="Tìm kiếm bệnh nhân..."
               onChange={(e) => {
                 setTimeout(() => {
-                  handleSearchBooking(e.target.value);
+                  handleSearchBooking(e.target.value, "accountName");
                 }, 500);
               }}
               className="w-full lg:w-45 not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -173,10 +172,10 @@ const AdminBookingTable = ({
           <div className="w-full lg:w-auto">
             <input
               type="text"
-              placeholder="Tìm kiếm theo nơi khám..."
+              placeholder="Tìm kiếm theo số điện thoại..."
               onChange={(e) => {
                 setTimeout(() => {
-                  handleSearchByClinic(e.target.value);
+                  handleSearchBooking(e.target.value, "phoneNumber");
                 }, 500);
               }}
               className="w-full lg:w-45 not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"

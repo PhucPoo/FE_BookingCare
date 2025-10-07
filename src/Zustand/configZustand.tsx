@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
-import { loginApi } from "../api/auth/LoginApi";
+import { loginApi, logoutApi } from "../api/auth/LoginApi";
 import { toast } from "react-toastify";
 
 type UserInfoStoreState = {
@@ -36,10 +36,16 @@ const useUserInfoStore = create<UserInfoStore>()(
           document.cookie = `access_token=${res.data.accessToken}; path=/`;
           return res.data;
         },
-        logout: () => {
+        logout: async () => {
           set({ userInfo: { name: "", email: "", role: "", id: 0 } });
           document.cookie = `access_token=; path=/`;
           window.location.href = "/"; // Redirect to home page after logout
+          toast.success("Logout successful");
+          const res = await logoutApi({});
+          if (res.statusCode !== 200) {
+            toast.error(res.message || "Logout failed");
+            return;
+          }
         },
       }),
       {

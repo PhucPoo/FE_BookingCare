@@ -36,9 +36,9 @@ export const testSortDoctorApi = async (page: number, size: number, sort: string
   return response.data;
 };
 
-export const testGetDoctorApi = async () => {
+export const testGetDoctorApi = async (pages: number, pageSize: number,) => {
   const response = await customAxiosInstance.get(
-    `http://localhost:8080/api/v1/doctors`,
+    `http://localhost:8080/api/v1/doctors?page=${pages}&size=${pageSize}`,
     config
   );
   console.log("🚀 ~ testGetDoctorsApi ~ response:", response);
@@ -56,9 +56,9 @@ interface SearchDoctorParams {
   monthYear?: Date;
 }
 
-export const testSearchDoctorApi = async (params: SearchDoctorParams) => {
+export const testSearchDoctorApi = async (params: SearchDoctorParams,pageSize:number,page:number) => {
   const response = await customAxiosInstance.get(
-    `http://localhost:8080/api/v1/doctors/search`,
+    `http://localhost:8080/api/v1/doctors/search?page=${page}&size=${pageSize}`,
     {
       params: {
         name: params.name,
@@ -87,4 +87,7 @@ export const testDeleteDoctorApi = async (id: number) => {
   return response.data;
 
 };
+
+
+
 

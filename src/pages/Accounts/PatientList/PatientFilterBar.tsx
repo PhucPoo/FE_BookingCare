@@ -4,37 +4,71 @@ import { Button, Input } from 'antd/lib';
 import { testSearchPatientApi } from '../../../api/testPatient';
 
 interface PatientFilterKeywords {
-  name?: string;
-  phone?: string;
-  bhyt?: string;
-  cccd?: string;
-  address?: string;
+  name: string ;
+  phone: string  ;
+  bhyt: string ;
+  cccd: string ;
+  address: string ;
+
 }
 
 interface PatientFilterBarProps {
-  onFilter: (filtered: Patient[], keywords: PatientFilterKeywords) => void;
+filteredPatients: (patients: Patient[]) => void;
+  onFilter: (patients: Patient[], keywords: PatientFilterKeywords) => void;
+  pages: number;
+  pageSize: number;
+  name: string ;
+  setName: (name: string) => void;
+  phone: string ;
+  setPhone: (phone: string) => void;
+  bhyt: string ;
+  setBHYT: (bhyt: string) => void;
+  cccd: string ;
+  setCCCD: (cccd: string) => void;
+  address: string ;
+  setAddress: (address: string) => void;
+  
 }
 
-const PatientFilterBar: React.FC<PatientFilterBarProps> = ({ onFilter }) => {
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [bhyt, setBHYT] = useState('');
-  const [cccd, setCccd] = useState('');
-  const [address, setAddress] = useState('');
+const PatientFilterBar: React.FC<PatientFilterBarProps> = ({ 
+  filteredPatients,
+  onFilter,
+  pages,
+  pageSize,
+  name,
+  setName,
+  phone,
+  setPhone,
+  bhyt,
+  setBHYT,
+  cccd,
+  setCCCD,
+  address,
+  setAddress,
+  
 
+}) => {
+  
   const handleSearch = async () => {
-    const keywords: PatientFilterKeywords = { name, phone, bhyt, cccd, address };
+    const keywords: PatientFilterKeywords = { 
+      name, 
+      phone, 
+      bhyt, 
+      cccd, 
+      address 
+    };
 
     try {
       const result = await testSearchPatientApi({
-        name: name || undefined,
-        phoneNumber: phone || undefined,
-        address: address || undefined,
-        bhyt: bhyt || undefined,
-        cccd: cccd || undefined,
-      });
+        name: name ,
+        phoneNumber: phone ,
+        address: address ,
+        bhyt: bhyt ,
+        cccd: cccd ,
+      },pages,pageSize);
 
       const patients: Patient[] = result.data?.result ?? [];
+      filteredPatients(patients);
       onFilter(patients, keywords);
     } catch (error) {
       console.error("Lỗi khi tìm kiếm bệnh nhân:", error);
@@ -67,7 +101,7 @@ const PatientFilterBar: React.FC<PatientFilterBarProps> = ({ onFilter }) => {
       />
       <Input
         value={cccd}
-        onChange={(e) => setCccd(e.target.value)}
+        onChange={(e) => setCCCD(e.target.value)}
         placeholder="CCCD"
         className="border rounded px-3 py-2 flex-1 min-w-[150px]"
         size="large"

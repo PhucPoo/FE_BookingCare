@@ -3,7 +3,7 @@ import ServiceList from "../pages/Services/ServicesList/ServiceList";
 import ErrorPage from "../components/ErrorPage/ErrorPage";
 import BillPage from "../pages/Admin/Bill/AdminBillManagePage";
 import BookingPage from "../pages/Support/SupportBookingPage/SupportBookingPage";
-import DoctorBookingPage from "../pages/DoctorManage/DoctorBookingManage";
+import DoctorBookingPage from "../pages/DoctorManage/DoctorManageBooking/DoctorBookingManage";
 import DoctorDashboard from "../pages/Dashboard/DoctorDashboard/DoctorDashboard";
 import SupportDashboard from "../pages/Dashboard/SupportDashboard/SupportDashboard";
 import DoctorManagement from "../pages/Accounts/DoctorList/DoctorManagement";
@@ -14,7 +14,6 @@ import SupportList from "../pages/Accounts/SupportList/SupportList";
 import PatientList from "../pages/Accounts/PatientList/PatientList";
 import UserList from "../pages/Accounts/UserList/UserList";
 import SpecialtyGrid from "../pages/Specialty/SpecialtyList";
-import ListPatient_Doctor from "../pages/Doctors/ListPatient_Doctor";
 import ClinicDashboard from "../pages/Dashboard/ClinicDashboard/ClinicDashboard";
 import ClinicManagement from "../pages/Clinic/ClinicManagement";
 import { Navigate, Outlet, Route, Routes } from "react-router-dom";
@@ -22,6 +21,8 @@ import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import Login from "../pages/Login/Login";
 import Signup from "../pages/Signup/Signup";
 import ForgotPasswordForm from "../components/ForgotPasswordForm/ForgotPasswordForm";
+import OtpVerify from "../pages/Signup/Otpverify";
+import UpdateInfo from "../../src/components/updateinfo/updateinfo";
 
 import MainPage from "../pages/MainPage/MainPage";
 import MedicalFacilityList from "../pages/DanhSach/MedicalFacility/MedicalFacilityList";
@@ -37,6 +38,8 @@ import useUserInfoStore from "../Zustand/configZustand";
 import RouteCheckRole from "../utils/RouteCheckRole";
 import { permission } from "../utils/roleConfig";
 import PatientBookingList from "../pages/PatientBookingList/PatientBookingList";
+import PatientBillList from "../pages/PatientBillList/PatientBillList";
+import DoctorManagePatient from "../pages/DoctorManage/DoctorManagePatient/DoctorManagePatient";
 
 const AppRoutes = () => {
   const ProtectRouter = () => {
@@ -55,25 +58,25 @@ const AppRoutes = () => {
         />
         <Route path="login" element={<Login />} />
         <Route path="signup" element={<Signup />} />
+        <Route path="verify-otp" element={<OtpVerify />} />
         <Route path="forgot-password" element={<ForgotPasswordForm />} />
       </Route>
 
       <Route path="/" element={<MainPage />} />
-      
+
+      <Route path="/update" element={<UpdateInfo />} />
 
       <Route path="/danh-sach" element={<List />}>
-       
         {/* <Route
           path="/danh-sach"
           element={<Navigate to={"clinic-page"} replace={true} />}
         /> */}
-         <Route path="clinic-page" element={<MedicalFacilityList  />}>
-       
-        {/* <Route path="bac-si" element={<DoctorList />} />
+        <Route path="clinic-page" element={<MedicalFacilityList />}>
+          {/* <Route path="bac-si" element={<DoctorList />} />
         <Route path="chuyen-khoa" element={<SpecialtyList />} />
         <Route path="bai-viet" element={<ArticleList />} /> */}
         </Route>
-      
+
         <Route
           path="/danh-sach"
           element={<Navigate to={"error-page"} replace={true} />}
@@ -89,6 +92,7 @@ const AppRoutes = () => {
       <Route element={<ProtectRouter />}>
         <Route path="/dat-lich-kham/:id" element={<BookingDoctor />} />
         <Route path="/danh-sach-lich-kham" element={<PatientBookingList />} />
+        <Route path="/danh-sach-hoa-don" element={<PatientBillList />} />
       </Route>
 
       {/* admin */}
@@ -109,14 +113,12 @@ const AppRoutes = () => {
           <Route path="patient-list" element={<PatientList />} />
 
           <Route path="specialty" element={<SpecialtyGrid />} />
-          <Route path="clinic-page" element={<ClinicManagement/>} />
-
-          <Route path="patient_list" element={<MedicalFacilityList  />} />
+          <Route path="clinic-page" element={<ClinicManagement />} />
         </Route>
       </Route>
 
       {/* Phòng khám */}
-       <Route path="/clinic-dashboard" element={<ClinicDashboard />}>
+      <Route path="/clinic-dashboard" element={<ClinicDashboard />}>
         <Route
           path="/clinic-dashboard"
           element={<Navigate to={"clinic-list"} replace={true} />}
@@ -134,6 +136,7 @@ const AppRoutes = () => {
             element={<Navigate to={"booking-manage"} replace={true} />}
           />
           <Route path="booking-manage" element={<DoctorBookingPage />} />
+          <Route path="patient-manage" element={<DoctorManagePatient />} />
         </Route>
       </Route>
 
@@ -147,6 +150,7 @@ const AppRoutes = () => {
             element={<Navigate to={"booking-support-manage"} replace={true} />}
           />
           <Route path="booking-support-manage" element={<BookingPage />} />
+          {/* <Route path="bill-support-manage" element={<BookingPage />} /> */}
         </Route>
       </Route>
 

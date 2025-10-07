@@ -1,9 +1,19 @@
 import React, { useEffect, useState } from "react";
 import DoctorFilterBar from "./DoctorFilterBar";
 import DoctorTable, { type Doctor } from "./DoctorTable";
-import { testDeleteDoctorApi, testGetDoctorApi } from "../../../api/testDoctor";
+import { testDeleteDoctorApi, testSearchDoctorApi } from "../../../api/testDoctor";
 
 const DoctorManagement: React.FC = () => {
+  const [pageSize, setPageSize] = useState<number>(2);
+  const [pages, setPages] = useState<number>(1);
+  const [totalDoctorList, setTotalDoctorList] = useState<number>(10);
+  const [name, setName] = useState("");
+  const [cost, setCost] = useState("");
+  const [phone, setPhone] = useState("");
+  const [degree, setDegree] = useState<string | null>(null);
+  const [specialtyId, setSpecialtyId] = useState<string | null>(null);
+  const [clinicId, setClinicId] = useState<string | null>(null);
+  const [monthYear, setMonthYear] = useState<string | null>(null);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [filteredDoctors, setFilteredDoctors] = useState<Doctor[]>([]);
   const [keywords, setKeywords] = useState({
@@ -14,21 +24,45 @@ const DoctorManagement: React.FC = () => {
     specialtyId: null as string | null,
     clinicId: null as string | null,
     monthYear: null as string | null,
-  });
 
+  });
+  const parseCostRange = (range: string) => {
+    if (!range) return { min: undefined, max: undefined };
+    const [min, max] = range.split("-").map(Number);
+    return { min, max };
+  };
+
+  const costRange = parseCostRange(cost);
   // Lấy danh sách bác sĩ từ API
   useEffect(() => {
+    
     const fetchData = async () => {
       try {
-        const res = await testGetDoctorApi();
-        setDoctors(res.data.result ?? []);
-        setFilteredDoctors(res.data.result ?? []);
+        const res = await testSearchDoctorApi({
+          name: name || undefined,
+          phoneNumber: phone || undefined,
+          min: costRange.min,
+          max: costRange.max,
+          degree: degree || undefined,
+          specialtyId: specialtyId ? Number(specialtyId) : undefined,
+          clinicId: clinicId ? Number(clinicId) : undefined,
+          monthYear: monthYear ? new Date(monthYear) : undefined,
+
+        }, pageSize,pages);
+        setDoctors(res.data.result);
+        console.log( setDoctors(res.data.result));
+        
+        setFilteredDoctors(res.data.result);
+        setTotalDoctorList(res.data.meta.totals);
+
       } catch (error) {
         console.error("Lỗi load danh sách bác sĩ:", error);
       }
     };
     fetchData();
-  }, []);
+  }, [pages, pageSize]);
+
+
 
   // Cập nhật bác sĩ
   const handleUpdateDoctor = (updatedDoctor: Doctor) => {
@@ -63,7 +97,7 @@ const DoctorManagement: React.FC = () => {
 
       {/* Bộ lọc bác sĩ */}
       <DoctorFilterBar
-        setFilteredDoctors={setFilteredDoctors}
+        filteredDoctors={setFilteredDoctors}
         onFilter={(filtered, kw) => {
           setFilteredDoctors(filtered);
           setKeywords({
@@ -75,18 +109,42 @@ const DoctorManagement: React.FC = () => {
             clinicId: kw.clinicId ?? null,
             monthYear: kw.monthYear ?? null,
           });
-        }}
+        }
+        }
+       
+        pages={pages}
+        pageSize={pageSize}
+        name={name}
+        setName={setName}
+        cost={cost}
+        setCost={setCost}
+        phone={phone}
+        setPhone={setPhone}
+        degree={degree}
+        setDegree={setDegree}
+        specialtyId={specialtyId}
+        setSpecialtyId={setSpecialtyId}
+        clinicId={clinicId}
+        setClinicId={setClinicId}
+        monthYear={monthYear}
+        setMonthYear={setMonthYear}
       />
 
       {/* Bảng bác sĩ */}
       <DoctorTable
         doctors={filteredDoctors}
-        setdoctor={setDoctors}
         onUpdateDoctor={handleUpdateDoctor}
         onDeleteDoctor={handleDeleteDoctor}
         searchName={keywords.name}
         searchPhone={keywords.phone}
         searchCost={keywords.cost}
+        totalDoctorList={totalDoctorList}
+        pages={pages}
+        pageSize={pageSize}
+        setpages={setPages}
+        setpageSize={setPageSize}
+
+
       />
     </div>
   );

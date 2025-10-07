@@ -59,9 +59,9 @@ interface SearchSupportParams {
   clinicId?: number;
  
 }
-export const testSearchSupportApi = async (params: SearchSupportParams) => {
+export const testSearchSupportApi = async (params: SearchSupportParams,page:number,pageSize:number) => {
   const response = await customAxiosInstance.get(
-    `http://localhost:8080/api/v1/supports/search`,
+    `http://localhost:8080/api/v1/supports/search?page=${page}&size=${pageSize}`,
     {
       params: {
         address: params.address,

@@ -32,12 +32,10 @@ const BookingDoctor = () => {
   };
 
   const handleBookingDoctor = async () => {
-    
     if (!description) {
       toast.error("Điền lí do khám");
     }
-  console.log( "XXXXXXX",  userInfor);
-    if  (
+    if (
       locationJS.state.data.appointmentDate &&
       description &&
       id &&
@@ -53,9 +51,12 @@ const BookingDoctor = () => {
         clinicId: `${detailDoctor.clinic?.id}`,
         timeId: locationJS.state.data.timeId,
       };
-     
-      await BookingDoctorApi(data);
-      
+
+      const res = await BookingDoctorApi(data);
+      if (res.error) {
+        toast.error(res.message);
+        return;
+      }
       toast.success("Đặt lịch thành công");
       navigate("/");
     }

@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import Button from "antd/lib/button";
 import Modal from "antd/lib/modal";
-import { notification, Pagination } from "antd";
+import { notification } from "antd";
 import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
 
 import DetailSupport from "./DetailSupport";
@@ -9,6 +9,7 @@ import EditSupport from "./EditSupport";
 import type { User } from "../UserList/UserTable";
 import type { Clinic } from "../../Clinic/ClinicTable";
 import { testDeleteSupportApi } from "../../../api/testSupport";
+import { type PaginationProps, Pagination } from "antd/lib";
 
 export interface Support {
   id: number;
@@ -24,44 +25,39 @@ interface SupportTableProps {
   setsupport: (supports: Support[]) => void;
   searchName?: string;
   searchPhone?: string;
-  genderFilter?: string | null;
-  dateFilter?: string | null;
-  clinicFilter?: string | null;
   onUpdateSupport: (updatedSupport: Support) => void;
   onDeleteSupport: (id: number) => void;
+  totalSupportList: number;
+  pages: number;
+  pageSize: number;
+  setpages: (pages: number) => void;
+  setpageSize: (pageSize: number) => void;
 }
 
-type SortColumn = "name" | "createAt";
+type SortColumn = "id" | "name" | "createAt";
 type SortDirection = "asc" | "desc";
 
 const getStatusBadge = (isActive: boolean) =>
   isActive ? (
-    <span className="bg-green-500 text-white px-2 py-1 rounded text-sm">
-      Hoạt động
-    </span>
+    <span className="bg-green-500 text-white px-2 py-1 rounded text-sm">Hoạt động</span>
   ) : (
-    <span className="bg-red-500 text-white px-2 py-1 rounded text-sm">
-      Nghỉ
-    </span>
+    <span className="bg-red-500 text-white px-2 py-1 rounded text-sm">Nghỉ</span>
   );
 
 const SupportTable: React.FC<SupportTableProps> = ({
   supports,
-  setsupport,
-  genderFilter,
-  dateFilter,
-  clinicFilter,
   onUpdateSupport,
   onDeleteSupport,
   searchName = "",
   searchPhone = "",
+  totalSupportList,
+  pages,
+  pageSize,
+  setpages,
+  setpageSize,
 }) => {
-  const [sortColumn, setSortColumn] = useState<SortColumn>("name");
+  const [sortColumn, setSortColumn] = useState<SortColumn>("id");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
-
-  // Pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 8;
 
   // Modal xoá
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -75,33 +71,20 @@ const SupportTable: React.FC<SupportTableProps> = ({
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingSupport, setEditingSupport] = useState<Support | null>(null);
 
-  // --- Filter + Sort
+  // --- Filter + Sort ---
   const filteredAndSorted = useMemo(() => {
     let data = [...supports];
 
-    if (genderFilter) {
-      data = data.filter(
-        (s) => s.account.gender?.toLowerCase() === genderFilter
-      );
-    }
-    if (dateFilter) {
-      data = data.filter(
-        (s) =>
-          new Date(s.createAt).toLocaleDateString("vi-VN") ===
-          new Date(dateFilter).toLocaleDateString("vi-VN")
-      );
-    }
-    if (clinicFilter) {
-      data = data.filter(
-        (s) => s.clinic?.name?.toLowerCase() === clinicFilter
-      );
-    }
-
-    return data.sort((a, b) => {
+    // --- Sắp xếp theo cột ---
+    data.sort((a, b) => {
       let aVal: any;
       let bVal: any;
 
       switch (sortColumn) {
+        case "id":
+          aVal = a.id;
+          bVal = b.id;
+          break;
         case "name":
           aVal = a.account?.name?.toLowerCase() ?? "";
           bVal = b.account?.name?.toLowerCase() ?? "";
@@ -118,14 +101,15 @@ const SupportTable: React.FC<SupportTableProps> = ({
       if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
       return 0;
     });
-  }, [supports, sortColumn, sortDirection, genderFilter, dateFilter, clinicFilter]);
 
-  // --- Pagination slice
-  const startIndex = (currentPage - 1) * pageSize;
-  const paginatedSupports = filteredAndSorted.slice(
-    startIndex,
-    startIndex + pageSize
-  );
+    return data;
+  }, [supports, sortColumn, sortDirection]);
+
+  // --- Pagination ---
+  const onShowSizeChange: PaginationProps["onShowSizeChange"] = (current, size) => {
+    setpageSize(size);
+    setpages(current);
+  };
 
   const toggleSort = (col: SortColumn) => {
     if (sortColumn === col) {
@@ -136,7 +120,7 @@ const SupportTable: React.FC<SupportTableProps> = ({
     }
   };
 
-  // --- Delete
+  // --- Delete ---
   const handleOk = async () => {
     try {
       await testDeleteSupportApi(deleteSupportId);
@@ -151,13 +135,14 @@ const SupportTable: React.FC<SupportTableProps> = ({
     }
   };
 
-  // --- Update
+  // --- Update ---
   const handleUpdateSupport = (support: Support) => {
     onUpdateSupport(support);
     setEditingSupport(null);
     setIsEditModalOpen(false);
   };
 
+  // --- Highlight search ---
   const highlightText = (text: string | number, keyword: string) => {
     if (!keyword) return text;
     const regex = new RegExp(`(${keyword})`, "gi");
@@ -169,30 +154,42 @@ const SupportTable: React.FC<SupportTableProps> = ({
       <table className="min-w-full text-base border-separate border-spacing-0">
         <thead className="bg-gray-100">
           <tr>
-            <th className="p-3 border border-gray-200 text-center font-medium">ID</th>
+            {/* ID */}
+            <th
+              className="p-3 border border-gray-200 cursor-pointer text-center font-medium select-none"
+              onClick={() => toggleSort("id")}
+            >
+              ID {sortColumn === "id" && (sortDirection === "asc" ? "🔼" : "🔽")}
+            </th>
+
+            {/* Tên */}
             <th
               className="p-3 border border-gray-200 cursor-pointer text-left font-medium select-none"
               onClick={() => toggleSort("name")}
             >
               Tên {sortColumn === "name" && (sortDirection === "asc" ? "🔼" : "🔽")}
             </th>
+
             <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">Giới tính</th>
             <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">SĐT</th>
             <th className="p-3 border border-gray-200 hidden md:table-cell font-medium">Phòng khám</th>
             <th className="p-3 border border-gray-200 hidden md:table-cell font-medium">Địa chỉ phòng khám</th>
 
+            {/* Ngày tạo */}
             <th
               className="p-3 border border-gray-200 hidden md:table-cell cursor-pointer text-center font-medium select-none"
               onClick={() => toggleSort("createAt")}
             >
               Ngày tạo {sortColumn === "createAt" && (sortDirection === "asc" ? "🔼" : "🔽")}
             </th>
+
             <th className="p-3 border border-gray-200 text-center font-medium">Trạng thái</th>
             <th className="p-3 border border-gray-200 text-center font-medium">Thao tác</th>
           </tr>
         </thead>
+
         <tbody>
-          {paginatedSupports.map((sp) => (
+          {filteredAndSorted.map((sp) => (
             <tr key={sp.id} className="hover:bg-gray-50">
               <td className="p-3 border border-gray-200 text-center">{sp.id}</td>
               <td className="p-3 border border-gray-200">
@@ -202,7 +199,9 @@ const SupportTable: React.FC<SupportTableProps> = ({
                   }}
                 />
               </td>
-              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">{sp.account?.gender ?? "—"}</td>
+              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">
+                {sp.account?.gender ?? "—"}
+              </td>
               <td className="p-3 border border-gray-200 hidden md:table-cell text-center">
                 <span
                   dangerouslySetInnerHTML={{
@@ -211,11 +210,9 @@ const SupportTable: React.FC<SupportTableProps> = ({
                 />
               </td>
               <td className="p-3 border border-gray-200 hidden md:table-cell">{sp.clinic?.name ?? "—"}</td>
-                <td className="p-3 border border-gray-200 hidden md:table-cell">{sp.account?.address ?? "—"}</td>
+              <td className="p-3 border border-gray-200 hidden md:table-cell">{sp.account?.address ?? "—"}</td>
               <td className="p-3 border border-gray-200 hidden md:table-cell text-center">
-                {sp.account.createAt
-                  ? new Date(sp.account.createAt).toLocaleString("vi-VN")
-                  : "—"}
+                {sp.account.createAt ? new Date(sp.account.createAt).toLocaleString("vi-VN") : "—"}
               </td>
               <td className="p-3 border border-gray-200 text-center">{getStatusBadge(sp.isActive)}</td>
               <td className="p-3 border border-gray-200 text-center">
@@ -254,14 +251,15 @@ const SupportTable: React.FC<SupportTableProps> = ({
         </tbody>
       </table>
 
-
       {/* Pagination */}
       <div className="flex justify-center py-4">
         <Pagination
-          current={currentPage}
+          showSizeChanger
+          onChange={onShowSizeChange}
+          defaultCurrent={pages}
+          total={totalSupportList}
           pageSize={pageSize}
-          total={filteredAndSorted.length}
-          onChange={(page) => setCurrentPage(page)}
+          pageSizeOptions={["1", "2", "3", "5"]}
         />
       </div>
 

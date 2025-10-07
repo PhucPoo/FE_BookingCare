@@ -39,17 +39,17 @@ export const testGetPatientApi =async() => {
 };
 
 interface SearchPatientParams {
-  name?: string;
-  address?: string;
-  phoneNumber?: string;
-  bhyt?: string;
-  cccd?: string;
+  name: string;
+  address: string;
+  phoneNumber: string;
+  bhyt: string;
+  cccd: string;
 }
 
 
-export const testSearchPatientApi = async (params: SearchPatientParams) => {
+export const testSearchPatientApi = async (params: SearchPatientParams,page:number, pageSize:number) => {
   const response = await customAxiosInstance.get(
-    `http://localhost:8080/api/v1/patients/search`,
+    `http://localhost:8080/api/v1/patients/search?size=${pageSize}&page=${page}`,
     //http:localhost:8080/api/v1/patients/search?name=I'm super admin2222&address=Hà Nội&phoneNumber=08&bhyt=090&cccd=124
     {
       params: {
