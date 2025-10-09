@@ -15,8 +15,14 @@ export const getAvailableTimeOfDoctor = async (id: string, date: string) => {
   );
   return res.data;
 };
-export const getBookingsByDoctorId = async (id: string) => {
-  const res = await customAxiosInstance.get(`${api}/bookings/doctor/${id}`);
+export const getBookingsByDoctorId = async (
+  id: string | number,
+  page: number = 1,
+  size: number = 5
+) => {
+  const res = await customAxiosInstance.get(
+    `${api}/bookings/doctor/${id}?page=${page}&size=${size}`
+  );
   return res.data;
 };
 
@@ -29,22 +35,24 @@ export const handleDoctorUpdateBooking = async (id: string, status: string) => {
   return res.data;
 };
 export const doctorSortBooking = async (
-  id: string,
+  id: string | number,
   sortValue: string,
-  order: string
+  order: string,
+  page: number = 1,
+  size: number = 5
 ) => {
   const res = await customAxiosInstance.get(
-    `${api}/bookings/doctor/${id}?sort=${sortValue},${order}`
+    `${api}/bookings/doctor/${id}?sort=${sortValue},${order}&page=${page}&size=${size}`
   );
   return res.data;
 };
 export const getPatientByDoctorId = async (
   id: number,
-  page: string,
-  size: string
+  page: string | number,
+  size: string | number
 ) => {
   const res = await customAxiosInstance.get(
-    `${api}/medicalRecord/doctor/${id}?page=${page},size=${size}`
+    `${api}/medicalRecord/doctor/${id}?page=${page}&size=${size}`
   );
   return res.data;
 };
@@ -56,5 +64,41 @@ export const sortPatientByDoctorId = async (
   const res = await customAxiosInstance.get(
     `${api}/medicalRecord/doctor/${id}?sort=${sortValue},${order}`
   );
+  return res.data;
+};
+export const searchDoctor = async (
+  searchValue: string,
+  searchData: string,
+  size: number = 3,
+  page: number = 1
+) => {
+  const res = await customAxiosInstance.get(
+    `${api}/doctors/search?${searchValue}=${searchData}&size=${size}&page=${page}`
+  );
+  return res.data;
+};
+export const doctorSearchPatient = async (
+  query: string,
+  id: string | number,
+  page: number = 1,
+  size: number = 5
+) => {
+  const res = await customAxiosInstance.get(
+    `${api}/medicalRecord/doctor/${id}/search?${query}&page=${page}&size=${size}`
+  );
+  return res.data;
+};
+export const doctorSearchBooking = async (
+  id: string | number,
+  query: string
+) => {
+  ///doctor/${id}
+  const res = await customAxiosInstance.get(
+    `${api}/bookings/doctor/${id}/search?${query}`
+  );
+  return res.data;
+};
+export const getFeedbackByDoctorId = async (id: number | string) => {
+  const res = await customAxiosInstance.get(`${api}/feedbacks/doctor/${id}`);
   return res.data;
 };

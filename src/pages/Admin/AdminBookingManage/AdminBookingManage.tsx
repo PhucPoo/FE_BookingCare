@@ -5,9 +5,11 @@ import {
   adminSortBooking,
 } from "../../../api/Admin/AdminApi";
 import AdminBookingTable from "./AdminBookingTable";
-import { toast } from "react-toastify";
 import AdminBookingDetail from "./AdminBookingDetail";
-import type { CheckRenderKey } from "./CheckRenderKeyModel";
+import type {
+  CheckRenderKey,
+  dataToQueryAdminModel,
+} from "./CheckRenderKeyModel";
 
 type AdminBookingTableModel = {
   id?: number;
@@ -42,7 +44,7 @@ type AdminBookingTableModel = {
 
 const AdminBookingManage = () => {
   const [bookings, setBookings] = useState<AdminBookingTableModel[]>([]);
-  const [pageSize, setPageSize] = useState<number>(5);
+  const [pageSize, setPageSize] = useState<number>(10);
   const [totalBookingList, setTotalBookingList] = useState<number>(10);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [checkRender, setCheckRender] = useState<
@@ -57,12 +59,10 @@ const AdminBookingManage = () => {
     time: false,
     id: false,
   });
-  const [filterCreatedAt, setFilterCreatedAt] = useState<{
-    from: string;
-    to: string;
-  }>({
-    from: "",
-    to: "",
+  const [dataToQuery, setDataToQuery] = useState<dataToQueryAdminModel>({
+    accountName: "",
+    date: "",
+    phoneNumber: "",
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [BookingDetail, setBookingDetail] = useState<AdminBookingTableModel>(
@@ -78,80 +78,79 @@ const AdminBookingManage = () => {
       setPageSize(pageSize);
       setTotalBookingList(totals);
       setCurrentPage(page);
+      setDataToQuery({
+        accountName: "",
+        date: "",
+        phoneNumber: "",
+      });
     }
   };
+  const handleSetDataToQuery = (value: string, key: string) => {
+    setDataToQuery((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+  const buildQuery = (data: dataToQueryAdminModel) => {
+    let query = "";
+
+    Object.keys(data).forEach((key) => {
+      const typedKey = key as keyof dataToQueryAdminModel;
+      const value = data[typedKey];
+
+      if (value !== undefined && value !== "") {
+        query += `&${typedKey}=${encodeURIComponent(String(value))}`;
+      }
+    });
+
+    return query;
+  };
   //handle search
-  const handleSearchBooking = async (
-    searchValue: string,
-    searchKey: string
-  ) => {
-    const result = await adminSearchBooking(searchValue, searchKey);
-    if (!result.error) {
-      const {
-        meta: { page, pageSize, totals },
-      } = result.data;
-      setBookings(result.data.result);
-      setPageSize(pageSize);
-      setTotalBookingList(totals);
-      setCurrentPage(page);
-    }
+  const handleSearchBooking = async (value: string, key: string) => {
+    const nextData = { ...dataToQuery, [key]: value };
+    setDataToQuery({ ...dataToQuery, [key]: value });
+    const queryString = buildQuery(nextData);
+    const res = await adminSearchBooking(queryString);
+    setBookings(res.data.result);
+    setPageSize(res.data.meta.pageSize);
+    setTotalBookingList(res.data.meta.totals);
+    setCurrentPage(res.data.meta.page);
   };
   //onLog
   const onLog = async (page: number, pageSize: number) => {
-    const result = await adminGetAllBooking(page, pageSize);
-    if (!result.error) {
-      const {
-        meta: { page, pageSize, totals },
-      } = result.data;
-      setBookings(result.data.result);
-      setPageSize(pageSize);
-      setTotalBookingList(totals);
-      setCurrentPage(page);
+    if (
+      dataToQuery.accountName ||
+      dataToQuery.phoneNumber ||
+      dataToQuery.date
+    ) {
+      const nextData = { ...dataToQuery, page: page, size: pageSize };
+      const queryString = buildQuery(nextData);
+      const res = await adminSearchBooking(queryString, page, pageSize);
+      setBookings(res.data.result);
+      setPageSize(res.data.meta.pageSize);
+      setTotalBookingList(res.data.meta.totals);
+      setCurrentPage(res.data.meta.page);
+    } else {
+      const res = await adminGetAllBooking(page, pageSize);
+      setBookings(res.data.result);
+      const { meta } = res.data;
+      setPageSize(meta.pageSize);
+      setTotalBookingList(meta.totals);
+      setCurrentPage(meta.page);
     }
   };
   //handle sort
   const handleSort = async (key: CheckRenderKey) => {
-    const res = await adminSortBooking(key, checkRender[key] ? "asc" : "desc");
+    const res = await adminSortBooking(
+      key,
+      checkRender[key] ? "asc" : "desc",
+      currentPage,
+      pageSize
+    );
     setCheckRender({ ...checkRender, [key]: !checkRender[key] });
     setBookings(res.data.result);
   };
-  // handle change option (status and clinic)
-  const handleChange = (value: string) => {
-    let BookingListClone = bookings;
-    BookingListClone = BookingListClone.filter((item) => {
-      return item.status === value;
-    });
-    setBookings(BookingListClone);
-  };
-  //search by createAt
-  const handleFindByDate = () => {
-    if (!filterCreatedAt.from || !filterCreatedAt.to) {
-      toast.error("missing parameter");
-      return;
-    }
-    if (filterCreatedAt.from > filterCreatedAt.to) {
-      toast.error("from must be smaller to");
-      return;
-    }
-    const from = new Date(filterCreatedAt.from);
-    const to = new Date(filterCreatedAt.to);
-    let BookingListClone = bookings;
-    BookingListClone = BookingListClone.filter((item) => {
-      if (item?.appointmentDate) {
-        const date = new Date(item?.appointmentDate);
-        return from <= new Date(date) && new Date(date) <= to;
-      }
-    });
-    setBookings(BookingListClone);
-  };
 
-  // const handleSearchByClinic = (value: string) => {
-  //   let cloneBookings = bookings;
-  //   cloneBookings = cloneBookings.filter((item) => {
-  //     return item.clinic?.name?.includes(value);
-  //   });
-  //   setBookings(cloneBookings);
-  // };
   useEffect(() => {
     handleAdminGetAllBookings();
   }, []);
@@ -164,15 +163,12 @@ const AdminBookingManage = () => {
         totalBookingList={totalBookingList}
         handleAdminGetAllBookings={handleAdminGetAllBookings}
         onLog={onLog}
-        handleChange={handleChange}
-        handleFindByDate={handleFindByDate}
         handleSort={handleSort}
         handleSearchBooking={handleSearchBooking}
-        setFilterCreatedAt={setFilterCreatedAt}
-        filterCreatedAt={filterCreatedAt}
-        // handleSearchByClinic={handleSearchByClinic}
         setBookingDetail={setBookingDetail}
         setIsModalOpen={setIsModalOpen}
+        handleSetDataToQuery={handleSetDataToQuery}
+        dataToQuery={dataToQuery}
       />
       <AdminBookingDetail
         BookingDetail={BookingDetail}

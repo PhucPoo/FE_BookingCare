@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { getMedicalFacilityDetail } from "../../../api/Medical/MedicalFacilityApi";
-import fakeBackground from "../../../public/img/backgroundFake.jpg";
-import "./MedicalFacility.css";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+
 import {
   getAvailableTimeOfDoctor,
   searchDoctor,
 } from "../../../api/Doctor/DoctorApi";
-import type { DoctorSearchModel } from "./DoctorSearchModel";
+import type { DoctorSearchModel } from "../MedicalFacility/DoctorSearchModel";
 import { Button, Divider, Pagination, Select } from "antd/lib";
 import { getNext7Days } from "../../../utils/constant";
+import { getAllSpecialties } from "../../../api/Specialties/SpecialtiesApi";
+import Breadcrumb from "../../../components/Breadcrumb/Breadcrumb";
 type MedicalFacilityDetailModel = {
   id?: number;
   address?: { city?: string; id?: number };
@@ -20,30 +20,45 @@ type MedicalFacilityDetailModel = {
   position?: string;
 };
 
-const MedicalFacilityDetail = () => {
+const SpecialtyDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [medicalFacilityDetail, setMedicalFacilityDetail] =
+  const location = useLocation();
+
+  const [specialtyDetail, setSpecialtyDetail] =
     useState<MedicalFacilityDetailModel>({});
-  const [listDoctorOfClinic, setListDoctorOfClinic] = useState<
+  const [listDoctorOfSpecialty, setListDoctorOfSpecialty] = useState<
     DoctorSearchModel[]
   >([]);
   const [pageSize, setPageSize] = useState<number>(5);
   const [totalListDoctor, setTotalListDoctor] = useState<number>(10);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [DateSelected, SetDateSelected] = useState<string>("");
-  const handleGetMedicalFacilityDetail = async () => {
-    const result = await getMedicalFacilityDetail(id);
+  const handleGetSpecialty = async () => {
+    const result = await getAllSpecialties();
     if (!result.error) {
-      setMedicalFacilityDetail(result.data);
+      let specialtyDetailClone = result.data;
+
+      specialtyDetailClone = result.data.result.find(
+        (item: MedicalFacilityDetailModel) => {
+          if (id && item?.id) {
+            return item.id === +id;
+          }
+        }
+      );
+
+      setSpecialtyDetail(specialtyDetailClone);
+      setPageSize(result.data.meta.pageSize);
+      setTotalListDoctor(result.data.meta.totals);
+      setCurrentPage(result.data.meta.page);
     }
   };
   const handleSearchDoctor = async () => {
     if (id) {
-      const result = await searchDoctor("clinicId", id);
+      const result = await searchDoctor("specialtyId", id);
       const buildResult = await buildDataListDoctor(result.data.result);
       //check loi: https://chatgpt.com/c/68e241d0-0a38-8321-938e-914e3ebaf4d6
-      setListDoctorOfClinic(buildResult);
+      setListDoctorOfSpecialty(buildResult);
       setPageSize(result.data.meta.pageSize);
       setTotalListDoctor(result.data.meta.totals);
       setCurrentPage(result.data.meta.page);
@@ -68,12 +83,12 @@ const MedicalFacilityDetail = () => {
   const handleGetAvailableOfDoctor = async (doctorId: number, date: string) => {
     const res = await getAvailableTimeOfDoctor(doctorId.toString(), date);
     if (!res.error) {
-      const listDoctorOfClinicClone = listDoctorOfClinic;
+      const listDoctorOfClinicClone = listDoctorOfSpecialty;
       const currentItem = listDoctorOfClinicClone.find(
         (item) => item.id === doctorId
       );
       if (currentItem) currentItem.availableTime = res.data;
-      setListDoctorOfClinic(listDoctorOfClinicClone);
+      setListDoctorOfSpecialty(listDoctorOfClinicClone);
       SetDateSelected(date);
     }
   };
@@ -81,7 +96,7 @@ const MedicalFacilityDetail = () => {
     if (id) {
       const result = await searchDoctor("clinicId", id, pageSize, page);
       const buildResult = await buildDataListDoctor(result.data.result);
-      setListDoctorOfClinic(buildResult);
+      setListDoctorOfSpecialty(buildResult);
       setPageSize(result.data.meta.pageSize);
       setTotalListDoctor(result.data.meta.totals);
       setCurrentPage(result.data.meta.page);
@@ -90,41 +105,17 @@ const MedicalFacilityDetail = () => {
   };
   useEffect(() => {
     window.scroll(0, 0);
-    handleGetMedicalFacilityDetail();
+    handleGetSpecialty();
     handleSearchDoctor();
   }, []);
   return (
     <div>
-      <div className="medicalFacilityDetail-background">
-        <img src={fakeBackground} />
-      </div>
       <div className="container">
-        <div
-          className="medicalFacilityDetail-content flex gap-5 items-center  border-2 border-gray-300"
-          style={{ borderBottomColor: "transparent" }}
-        >
-          <img
-            src={medicalFacilityDetail?.image}
-            className="medicalFacilityDetail-img"
-          />
-          <div className="medicalFacilityDetail-name ">
-            <h1 className="text-2xl font-bold">{medicalFacilityDetail.name}</h1>
-          </div>
-        </div>
-
-        <div className="w-full  flex justify-around p-1 border-2 border-gray-400 shadow-xl/20">
-          <p className="uppercase cursor-pointer hover:text-yellow-300 hover:font-bold duration-75 hover:underline">
-            <a href="#description"> Giới thiệu</a>
-          </p>
-          <p className="uppercase cursor-pointer hover:text-yellow-300 hover:font-bold duration-75 hover:underline">
-            <a href="#doctor">Bác sĩ</a>
-          </p>
-          <p className="uppercase cursor-pointer hover:text-yellow-300 hover:font-bold duration-75 hover:underline">
-            Địa chỉ
-          </p>
-          <p className="uppercase cursor-pointer hover:text-yellow-300 hover:font-bold duration-75 hover:underline">
-            Thời gian
-          </p>
+        <Breadcrumb location={location.pathname} />
+        <p className="text-xl font-bold">{specialtyDetail.name}</p>
+        <div id="description" className="mt-10">
+          <p className="text-2xl font-bold text-blue-400">Mô tả</p>
+          <p>{specialtyDetail.description}</p>
         </div>
       </div>
       <div className="container mt-5">
@@ -135,9 +126,9 @@ const MedicalFacilityDetail = () => {
           </div>
           <Divider />
           <div className="mt-1">
-            {listDoctorOfClinic &&
-              listDoctorOfClinic.length > 0 &&
-              listDoctorOfClinic.map((doctor) => {
+            {listDoctorOfSpecialty &&
+              listDoctorOfSpecialty.length > 0 &&
+              listDoctorOfSpecialty.map((doctor) => {
                 return (
                   <div
                     className="bg-white w-full shadow-2xl mb-3 doctor-item p-2 flex"
@@ -221,10 +212,6 @@ const MedicalFacilityDetail = () => {
             responsive
           />
         </div>
-        <div id="description" className="mt-10">
-          <p className="text-2xl font-bold text-blue-400">Mô tả</p>
-          <p>{medicalFacilityDetail.description}</p>
-        </div>
       </div>
       <div className="booking_now fixed bottom-0 left-0 right-0 flex items-center justify-center bg-white">
         <div className="container">
@@ -237,4 +224,4 @@ const MedicalFacilityDetail = () => {
   );
 };
 
-export default MedicalFacilityDetail;
+export default SpecialtyDetail;

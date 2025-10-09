@@ -4,13 +4,13 @@ const LoadingPage = React.lazy(
   () => import("../../../components/LoadingPage/LoadingPage")
 );
 import "./Specialties.css";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Breadcrumb from "../../../components/Breadcrumb/Breadcrumb";
 import type { SpecialtiesModel } from "./SpeicaltyListModel";
 
 const SpecialtyList = () => {
   const location = useLocation();
-
+  const navigate = useNavigate();
   const [specialties, setSpecialties] = useState<SpecialtiesModel[]>([]);
   const handleGetAllDoctors = async () => {
     const res = await getAllSpecialties();
@@ -40,7 +40,10 @@ const SpecialtyList = () => {
         {specialties &&
           specialties.length > 0 &&
           specialties.map((specialty) => (
-            <div className="flex gap-5 items-center specialties_item-contain">
+            <div
+              className="flex gap-5 items-center specialties_item-contain"
+              onClick={() => navigate(`${specialty.id}`)}
+            >
               <img src={specialty?.image} className="specialties_item-img" />
               <div className="specialties_item-name text-xl">
                 {` ${specialty?.name}`}

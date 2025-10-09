@@ -1,8 +1,8 @@
-import { Button, Pagination } from "antd/lib";
+import { Button, Pagination, Select } from "antd/lib";
 
 import type { AdminBillManageModel } from "./AdminBillManageModel";
-import { formatDate } from "../../../utils/constant";
-import type { searchDataModel } from "./BillSearchModel";
+import { formatDate, formatMonthYear } from "../../../utils/constant";
+import type { searchDataModel, ServicesModel } from "./BillSearchModel";
 import type { CheckBillSortKeyModel } from "./CheckBillSortKeyModel";
 
 type Props = {
@@ -18,6 +18,7 @@ type Props = {
   setSearchData: (value: searchDataModel) => void;
   setBillDetail: (value: AdminBillManageModel) => void;
   setIsModalOpen: (value: boolean) => void;
+  services: ServicesModel[];
 };
 
 const BillTable = ({
@@ -33,6 +34,7 @@ const BillTable = ({
   setSearchData,
   setBillDetail,
   setIsModalOpen,
+  services,
 }: Props) => {
   return (
     <>
@@ -46,16 +48,16 @@ const BillTable = ({
 
         {/* table search feature */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6 p-4">
-          <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+          <div className="flex flex-col sm:flex-row gap-1 items-center justify-between">
             <div className="w-full sm:w-auto">
               <input
                 type="text"
                 placeholder="Tên bệnh nhân"
-                defaultValue={searchData.patient}
+                value={searchData.accountName}
                 onChange={(e) => {
+                  setSearchData({ ...searchData, accountName: e.target.value });
                   setTimeout(() => {
-                    setSearchData({ ...searchData, patient: e.target.value });
-                    handleSearchBillByCondition(e.target.value, "patient");
+                    handleSearchBillByCondition(e.target.value, "accountName");
                   }, 500);
                 }}
                 className="w-full sm:w-15 md:w-25 lg:w-50  not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -63,16 +65,32 @@ const BillTable = ({
             </div>
             <div className="w-full sm:w-auto">
               <input
-                type="text"
-                placeholder="Tên nhân viên hỗ trợ"
-                defaultValue={searchData.support}
+                type="month"
                 onChange={(e) => {
                   setTimeout(() => {
-                    setSearchData({ ...searchData, support: e.target.value });
-                    handleSearchBillByCondition(e.target.value, "support");
+                    handleSearchBillByCondition(
+                      formatMonthYear(e.target.value),
+                      // e.target.value,
+                      "monthYear"
+                    );
                   }, 500);
                 }}
                 className="w-full sm:w-15 md:w-25 lg:w-50  not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <div className="w-full sm:w-auto">
+              <Select
+                style={{ width: 220 }}
+                allowClear
+                options={services}
+                placeholder="Chọn theo dịch vụ"
+                size="large"
+                onChange={(e) => {
+                  setSearchData({ ...searchData, serviceId: e });
+                  setTimeout(() => {
+                    handleSearchBillByCondition(e, "serviceId");
+                  }, 500);
+                }}
               />
             </div>
             <div className="w-full sm:w-auto">
@@ -203,9 +221,8 @@ const BillTable = ({
         {/* pagination */}
         <div className="mt-6 flex flex-col sm:flex-row items-center justify-between bg-white px-6 py-3 rounded-lg shadow-sm border border-gray-200">
           <div className="text-sm text-gray-700 mb-4 sm:mb-0">
-            Hiển thị <span className="font-semibold">1</span> đến{" "}
-            <span className="font-semibold">5</span>
-            của <span className="font-semibold">20</span> kết quả
+            Tìm thấy <span className="font-semibold">{totalBillList}</span> kết
+            quả
           </div>
           <div className="flex items-center space-x-1">
             <Pagination

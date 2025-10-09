@@ -35,6 +35,7 @@
 .medicalFacilityDetail-img {
   width: 105px;
   height: 105px;
+  object-fit: contain;
 }
 .medicalFacilityDetail-name {
 }
@@ -48,4 +49,13 @@
   padding: 8px;
   border-radius: 5px;
   color: white;
+}
+.doctor-item {
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
+    var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+.doctor-item-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
 }
