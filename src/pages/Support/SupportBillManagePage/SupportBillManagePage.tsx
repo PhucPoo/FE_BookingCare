@@ -10,6 +10,7 @@ import SupportBillManageTable from "./SupportBillManageTable";
 import type { CheckBillSortKeyModel } from "../../Admin/Bill/CheckBillSortKeyModel";
 import SupportBIllManageDetail from "./SupportBIllManageDetail";
 import SupportBillCreateNew from "./SupportBillCreateNew";
+import type { searchBillModel } from "./searchBillModel";
 
 const SupportBillManagePage = () => {
   // const userInfo = useUserInfoStore((state) => state.userInfo);
@@ -17,7 +18,7 @@ const SupportBillManagePage = () => {
   const [BillDetail, setBillDetail] = useState<AdminBillManageModel>({});
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isModalCreateOpen, setIsModalCreateOpen] = useState<boolean>(false);
-  const [pageSize, setPageSize] = useState<number>(5);
+  const [pageSize, setPageSize] = useState<number>(3);
   const [totalBillList, setTotalBillList] = useState<number>(50);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [checkSort, setCheckSort] = useState<
@@ -30,17 +31,43 @@ const SupportBillManagePage = () => {
     status: false,
     id: false,
   });
+  const [checkSearchCondition, setCheckSearchCondition] =
+    useState<searchBillModel>({
+      phoneNumber: "",
+      cccd: "",
+      email: "",
+      page: currentPage,
+      size: pageSize,
+    });
+  const handleSetCheckSearchCondition = (
+    key: keyof searchBillModel,
+    value: string
+  ) => {
+    setCheckSearchCondition((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
   const handleGetBillList = async () => {
     const result = await getBillByClinicId(1, currentPage, pageSize);
-
     const { meta } = result.data;
     setBillList(result.data.result);
     setPageSize(meta.pageSize);
     setTotalBillList(meta.totals);
     setCurrentPage(meta.page);
+    setCheckSearchCondition({
+      cccd: "",
+      email: "",
+      phoneNumber: "",
+      page: 1,
+      size: 3,
+    });
   };
   const handleSearchBillByCondition = async (value: string, key: string) => {
-    const result = await supportSearchBill(value, key);
+    const dataToBuildQuery = { ...checkSearchCondition, [key]: value };
+    setCheckSearchCondition({ ...checkSearchCondition, [key]: value });
+    const newQuery = buildQuery(dataToBuildQuery);
+    const result = await supportSearchBill(newQuery, 1);
     const {
       meta: { page, pageSize, totals },
     } = result.data;
@@ -49,19 +76,43 @@ const SupportBillManagePage = () => {
     setTotalBillList(totals);
     setCurrentPage(page);
   };
+  const buildQuery = (data: searchBillModel) => {
+    let newQuery = "";
+    Object.keys(data).map((item) => {
+      const key = item as keyof searchBillModel;
+      const value = data[key];
+      if (value !== undefined && value !== "") {
+        newQuery += `&${key}=${encodeURIComponent(String(value))}`;
+      }
+    });
+    return newQuery;
+  };
   const handleSort = async (key: CheckBillSortKeyModel) => {
     const res = await supportSortBill(key, checkSort[key] ? "asc" : "desc");
     setCheckSort({ ...checkSort, [key]: !checkSort[key] });
     setBillList(res.data.result);
   };
   const onLog = async (page: number, pageSize: number) => {
-    const result = await getBillByClinicId(1, page, pageSize);
-
-    const { meta } = result.data;
-    setBillList(result.data.result);
-    setPageSize(meta.pageSize);
-    setTotalBillList(meta.totals);
-    setCurrentPage(meta.page);
+    if (
+      checkSearchCondition.cccd ||
+      checkSearchCondition.email ||
+      checkSearchCondition.phoneNumber
+    ) {
+      const nextData = { ...checkSearchCondition, page: page, size: pageSize };
+      const queryString = buildQuery(nextData);
+      const res = await supportSearchBill(queryString, 1);
+      setBillList(res.data.result);
+      setPageSize(res.data.meta.pageSize);
+      setTotalBillList(res.data.meta.totals);
+      setCurrentPage(res.data.meta.page);
+    } else {
+      const result = await getBillByClinicId(1, page, pageSize);
+      const { meta } = result.data;
+      setBillList(result.data.result);
+      setPageSize(meta.pageSize);
+      setTotalBillList(meta.totals);
+      setCurrentPage(meta.page);
+    }
   };
   useEffect(() => {
     handleGetBillList();
@@ -81,6 +132,8 @@ const SupportBillManagePage = () => {
         setBillDetail={setBillDetail}
         setIsModalOpen={setIsModalOpen}
         setIsModalCreateOpen={setIsModalCreateOpen}
+        checkSearchCondition={checkSearchCondition}
+        handleSetCheckSearchCondition={handleSetCheckSearchCondition}
       />
       <SupportBIllManageDetail
         isModalOpen={isModalOpen}

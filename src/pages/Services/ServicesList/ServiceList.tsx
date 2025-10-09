@@ -6,9 +6,13 @@ import ServiceListTable from "./ServiceListTable.tsx";
 import {
   getAllService,
   getSortService,
+  searchService,
 } from "../../../api/Services/ServiceApi.ts";
+import type {
+  CheckServiceSortKeyModel,
+  searchServiceModel,
+} from "./CheckServiceSortKeyModel.ts";
 import { toast } from "react-toastify";
-import type { CheckServiceSortKeyModel } from "./CheckServiceSortKeyModel.ts";
 interface Item {
   id: number;
   name: string;
@@ -23,14 +27,11 @@ const ServiceList = () => {
   const [pageSize, setPageSize] = useState<number>(10);
   const [totalServiceList, setTotalServiceList] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [filterData, setFilterData] = useState<{
-    from: string;
-    to: string;
-  }>({
-    from: "",
-    to: "",
+  const [dataToQuery, setDataToQuery] = useState<searchServiceModel>({
+    name: "",
+    min: "",
+    max: "",
   });
-
   const [checkRender, setCheckRender] = useState<
     Record<CheckServiceSortKeyModel, boolean>
   >({
@@ -51,10 +52,15 @@ const ServiceList = () => {
     setIsModalUpdateOpen(true);
   };
 
-  const onLog = (currentPage: number, pageSize: number) => {
-    console.log("Đang ở trang:", currentPage, pageSize);
-    setCurrentPage(currentPage);
-    setPageSize(pageSize);
+  const onLog = async (currentPage: number, pageSize: number) => {
+    const result = await getAllService(currentPage, pageSize);
+    setServiceList(result.data.result);
+    const {
+      data: { meta },
+    } = result;
+    setCurrentPage(meta.page);
+    setPageSize(meta.pageSize);
+    setTotalServiceList(meta.totals);
   };
 
   const handleSort = async (key: CheckServiceSortKeyModel) => {
@@ -62,43 +68,72 @@ const ServiceList = () => {
     setCheckRender({ ...checkRender, [key]: !checkRender[key] });
     setServiceList(res.data.result);
   };
+  const handleSetDataToQuery = async (value: string, key: string) => {
+    setDataToQuery((pre) => ({
+      ...pre,
+      [key]: value,
+    }));
+  };
 
-  const filterService = () => {
-    let ServiceListClone = ServiceList;
+  const handleSearchService = async (value: string, key: string) => {
+    const nextData = { ...dataToQuery, [key]: value };
+    const queryString = buildQuery(nextData);
+    const res = await searchService(queryString);
+    setServiceList(res.data.result);
+    setPageSize(res.data.meta.pageSize);
+    setTotalServiceList(res.data.meta.totals);
+    setCurrentPage(res.data.meta.page);
+  };
+  const filterService = async () => {
+    const nextData = { ...dataToQuery };
     if (
-      filterData.from > filterData.to ||
-      !filterData.from ||
-      !filterData.to ||
-      +filterData.from < 0 ||
-      +filterData.to < 0
+      !nextData.min ||
+      !nextData.max ||
+      nextData.min > nextData.max ||
+      +nextData.max <= 0 ||
+      +nextData.min <= 0
     ) {
-      toast.error("error filter");
-      return;
+      toast.error("Hãy đặt điều kiện hợp lí");
+    } else {
+      const queryString = buildQuery(nextData);
+      const res = await searchService(queryString);
+      setServiceList(res.data.result);
+      setPageSize(res.data.meta.pageSize);
+      setTotalServiceList(res.data.meta.totals);
+      setCurrentPage(res.data.meta.page);
     }
-    ServiceListClone = ServiceListClone.filter((item) => {
-      return +filterData.from <= item.cost && item.cost <= +filterData.to;
-    });
-    setServiceList(ServiceListClone);
   };
+  const buildQuery = (data: searchServiceModel) => {
+    let query = "";
 
-  const handleSearchService = (value: string) => {
-    let ServiceListClone = ServiceList;
-
-    ServiceListClone = ServiceListClone.filter((item) => {
-      return item.name.includes(value);
+    Object.keys(data).forEach((key) => {
+      const typedKey = key as keyof searchServiceModel;
+      const value = data[typedKey];
+      if (value !== undefined && value !== "") {
+        if (typedKey === "min" || typedKey === "max") {
+          query += `&cost.${typedKey}=${encodeURIComponent(String(value))}`;
+        } else {
+          query += `&${typedKey}=${encodeURIComponent(String(value))}`;
+        }
+      }
     });
-    setServiceList(ServiceListClone);
-  };
 
+    return query;
+  };
   const handleGetServiceList = async () => {
     const result = await getAllService();
-
     setServiceList(result.data.result);
-    setFilterData({
-      from: "",
-      to: "",
+    const {
+      data: { meta },
+    } = result;
+    setCurrentPage(meta.page);
+    setPageSize(meta.pageSize);
+    setTotalServiceList(meta.totals);
+    setDataToQuery({
+      name: "",
+      min: "",
+      max: "",
     });
-    setTotalServiceList(result.data.result.length);
   };
 
   useEffect(() => {
@@ -120,15 +155,15 @@ const ServiceList = () => {
             pageSize={pageSize}
             totalServiceList={totalServiceList}
             handleSearchService={handleSearchService}
-            filterService={filterService}
-            filterData={filterData}
             handleGetServiceList={handleGetServiceList}
-            setFilterData={setFilterData}
             setIsModalOpen={setIsModalOpen}
             handleSort={handleSort}
             ServiceList={ServiceList}
             handleUpdateService={handleUpdateService}
             onLog={onLog}
+            dataToQuery={dataToQuery}
+            handleSetDataToQuery={handleSetDataToQuery}
+            filterService={filterService}
           />
         </div>
       </div>

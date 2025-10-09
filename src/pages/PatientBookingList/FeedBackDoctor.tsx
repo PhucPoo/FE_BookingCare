@@ -9,17 +9,20 @@ type dataToFeedBackModel = {
   description?: string;
   doctorName?: string;
   doctorAvatar?: string;
+  bookingId?: string | number;
 };
 type Props = {
   isModalOpen: boolean;
   setIsModalOpen: (value: boolean) => void;
   dataToFeedBack: dataToFeedBackModel;
+  handlePatientBookings: () => void;
 };
 
 const FeedBackDoctor = ({
   isModalOpen,
   setIsModalOpen,
   dataToFeedBack,
+  handlePatientBookings,
 }: Props) => {
   const [value, setValue] = useState(5);
   const [ratingDes, setRatingDes] = useState("");
@@ -38,9 +41,11 @@ const FeedBackDoctor = ({
       patientId: dataToFeedBack.patientId,
       description: ratingDes,
       rate: value,
+      bookingId: dataToFeedBack.bookingId,
     };
     await PatientFeedback(data).then(() => {
       toast.success("Đã gửi đánh giá ");
+      handlePatientBookings();
       setIsModalOpen(false);
     });
   };
@@ -63,11 +68,11 @@ const FeedBackDoctor = ({
           </div>
           <Rate allowHalf defaultValue={value} onChange={setValue} />
           <div>
-            <p>viết đánh giá:</p>
+            <p>Viết đánh giá:</p>
             <textarea
               rows={4}
               cols={50}
-              className="border border-blue-300 focus:border-blue-300"
+              className="border border-blue-300 focus:border-blue-300 w-full"
               onChange={(e) => {
                 setRatingDes(e.target.value);
               }}

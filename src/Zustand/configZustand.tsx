@@ -9,7 +9,8 @@ type UserInfoStoreState = {
     email: string;
     role: string;
     id: number;
-    patientId?: number;
+    actorId: number;
+    actorType: string;
   };
 };
 type UserInfoStoreActions = {
@@ -25,7 +26,14 @@ const useUserInfoStore = create<UserInfoStore>()(
   devtools(
     persist(
       (set) => ({
-        userInfo: { name: "", email: "", role: "", id: 0, patientId: 0 },
+        userInfo: {
+          name: "",
+          email: "",
+          role: "",
+          id: 0,
+          actorId: 0,
+          actorType: "CLIENT",
+        },
         loginZustand: async (data) => {
           const res = await loginApi(data);
           if (res.statusCode !== 200) {
@@ -37,7 +45,16 @@ const useUserInfoStore = create<UserInfoStore>()(
           return res.data;
         },
         logout: async () => {
-          set({ userInfo: { name: "", email: "", role: "", id: 0 } });
+          set({
+            userInfo: {
+              name: "",
+              email: "",
+              role: "",
+              id: 0,
+              actorId: 0,
+              actorType: "CLIENT",
+            },
+          });
           document.cookie = `access_token=; path=/`;
           window.location.href = "/"; // Redirect to home page after logout
           toast.success("Logout successful");

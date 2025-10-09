@@ -22,13 +22,16 @@ import {
 import type { PatientBookingModel } from "./PatientBookingModel";
 import { toast } from "react-toastify";
 import FeedBackDoctor from "./FeedBackDoctor";
+import { useNavigate } from "react-router-dom";
 type dataToFeedBackModel = {
   doctorId?: number;
   patientId?: number;
   doctorName?: string;
   doctorAvatar?: string;
+  bookingId?: string | number;
 };
 const PatientBookingList = () => {
+  const navigate = useNavigate();
   const [PatientBookings, setPatientBookings] = useState<PatientBookingModel[]>(
     []
   );
@@ -41,8 +44,8 @@ const PatientBookingList = () => {
   const [dataToFeedBack, setDataToFeedBack] = useState<dataToFeedBackModel>({});
 
   const handlePatientBookings = async () => {
-    if (userInfor.patientId) {
-      const res = await getPatientBookingByPatientId(userInfor?.patientId);
+    if (userInfor.actorId) {
+      const res = await getPatientBookingByPatientId(userInfor?.actorId);
       setPatientBookings(res.data.result);
       setPageSize(res.data.meta.pageSize);
       setTotalBookings(res.data.meta.totals);
@@ -51,9 +54,9 @@ const PatientBookingList = () => {
   };
   const onLog = async (page: number, pageSize: number) => {
     window.scroll(0, 0);
-    if (userInfor.patientId) {
+    if (userInfor.actorId) {
       const res = await getPatientBookingByPatientId(
-        userInfor?.patientId,
+        userInfor?.actorId,
         page,
         pageSize
       );
@@ -122,6 +125,11 @@ const PatientBookingList = () => {
                             src={booking.doctor?.account.avatar}
                             icon={<UserOutlined />}
                             className="flex-shrink-0"
+                            onClick={() => {
+                              navigate(
+                                `/danh-sach/bac-si/${booking?.doctor?.id}`
+                              );
+                            }}
                           />
                           <div className="flex-1 min-w-0">
                             <h4 className="font-semibold text-lg text-gray-800 mb-1">
@@ -199,23 +207,25 @@ const PatientBookingList = () => {
                             Hủy lịch
                           </Button>
                         )}
-                        {booking.status === "COMPLETED" && (
-                          <Button
-                            className="flex-1"
-                            onClick={() => {
-                              if (booking.doctor?.id && booking.patient?.id) {
-                                handleFeedbackDoctor({
-                                  doctorId: booking.doctor?.id,
-                                  patientId: booking.patient.id,
-                                  doctorName: booking.doctor.account.name,
-                                  doctorAvatar: booking.doctor.account.avatar,
-                                });
-                              }
-                            }}
-                          >
-                            Đánh giá bác sĩ
-                          </Button>
-                        )}
+                        {booking.status === "COMPLETED" &&
+                          booking.checkFeedback === false && (
+                            <Button
+                              className="flex-1"
+                              onClick={() => {
+                                if (booking.doctor?.id && booking.patient?.id) {
+                                  handleFeedbackDoctor({
+                                    doctorId: booking.doctor?.id,
+                                    patientId: booking.patient.id,
+                                    doctorName: booking.doctor.account.name,
+                                    doctorAvatar: booking.doctor.account.avatar,
+                                    bookingId: booking.id,
+                                  });
+                                }
+                              }}
+                            >
+                              Đánh giá bác sĩ
+                            </Button>
+                          )}
                       </div>
                     </div>
                   </div>
@@ -255,6 +265,7 @@ const PatientBookingList = () => {
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
         dataToFeedBack={dataToFeedBack}
+        handlePatientBookings={handlePatientBookings}
       />
     </div>
   );

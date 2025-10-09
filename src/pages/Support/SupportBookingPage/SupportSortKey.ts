@@ -6,3 +6,10 @@ export type SupportSortKey =
   | "patient"
   | "clinic"
   | "time";
+export type dataToQueryModel = {
+  patientName: string;
+  monthYear: string;
+  doctorName: string;
+  page: number;
+  size: number;
+};

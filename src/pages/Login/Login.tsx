@@ -46,8 +46,10 @@ const Login: React.FC = () => {
 
       if (res) {
         toast.success("Đăng nhập thành công");
+
         if (res.userLogin.role === "CLIENT") {
           navigate("/");
+          return;
         }
         navigate(`/${res.userLogin.role.toLowerCase()}-dashboard`);
       }

@@ -3,12 +3,14 @@ import React from "react";
 import type { AdminBillManageModel } from "../../Admin/Bill/AdminBillManageModel";
 import type { CheckBillSortKeyModel } from "../../Admin/Bill/CheckBillSortKeyModel";
 import { formatDate } from "../../../utils/constant";
+import type { searchBillModel } from "./searchBillModel";
 
 type Props = {
   BillList: AdminBillManageModel[];
   pageSize: number;
   currentPage: number;
   totalBillList: number;
+  checkSearchCondition: searchBillModel;
   onLog: (page: number, pageSize: number) => void;
   handleSearchBillByCondition: (value: string, key: string) => void;
   handleSort: (value: CheckBillSortKeyModel) => void;
@@ -16,6 +18,10 @@ type Props = {
   setBillDetail: (value: AdminBillManageModel) => void;
   setIsModalOpen: (value: boolean) => void;
   setIsModalCreateOpen: (value: boolean) => void;
+  handleSetCheckSearchCondition: (
+    key: keyof searchBillModel,
+    value: string
+  ) => void;
 };
 
 const SupportBillManageTable = ({
@@ -30,6 +36,8 @@ const SupportBillManageTable = ({
   setBillDetail,
   setIsModalOpen,
   setIsModalCreateOpen,
+  checkSearchCondition,
+  handleSetCheckSearchCondition,
 }: Props) => {
   return (
     <div>
@@ -53,11 +61,41 @@ const SupportBillManageTable = ({
           <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
             <div className="w-full sm:w-auto">
               <input
-                type="text"
-                placeholder="Tên bệnh nhân"
+                type="number"
+                placeholder="Số điện thoại"
+                value={checkSearchCondition.phoneNumber}
                 onChange={(e) => {
+                  handleSetCheckSearchCondition("phoneNumber", e.target.value);
                   setTimeout(() => {
-                    handleSearchBillByCondition(e.target.value, "accountName");
+                    handleSearchBillByCondition(e.target.value, "phoneNumber");
+                  }, 500);
+                }}
+                className="w-full sm:w-15 md:w-25 lg:w-50  not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <div className="w-full sm:w-auto">
+              <input
+                type="text"
+                placeholder="Email"
+                value={checkSearchCondition.email}
+                onChange={(e) => {
+                  handleSetCheckSearchCondition("email", e.target.value);
+                  setTimeout(() => {
+                    handleSearchBillByCondition(e.target.value, "email");
+                  }, 500);
+                }}
+                className="w-full sm:w-15 md:w-25 lg:w-50  not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <div className="w-full sm:w-auto">
+              <input
+                type="number"
+                placeholder="Căn cước"
+                value={checkSearchCondition.cccd}
+                onChange={(e) => {
+                  handleSetCheckSearchCondition("cccd", e.target.value);
+                  setTimeout(() => {
+                    handleSearchBillByCondition(e.target.value, "cccd");
                   }, 500);
                 }}
                 className="w-full sm:w-15 md:w-25 lg:w-50  not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"

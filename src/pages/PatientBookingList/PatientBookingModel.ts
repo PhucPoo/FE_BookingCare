@@ -9,6 +9,7 @@ export type PatientBookingModel = {
   status?: string;
   time?: Time;
   updateAt?: string | null;
+  checkFeedback: boolean;
 };
 
 export interface Clinic {

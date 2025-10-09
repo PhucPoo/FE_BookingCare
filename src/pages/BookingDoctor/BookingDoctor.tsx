@@ -57,7 +57,7 @@ const BookingDoctor = () => {
       appointmentDate: locationJS.state.data.appointmentDate,
       description,
       doctorId: id,
-      patientId: userInfor?.patientId,
+      patientId: userInfor?.actorId,
       clinicId: `${detailDoctor.clinic?.id}`,
       timeId: locationJS.state.data.timeId,
     };

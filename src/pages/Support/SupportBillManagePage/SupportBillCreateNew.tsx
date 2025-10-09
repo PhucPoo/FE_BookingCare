@@ -12,6 +12,7 @@ import { searchPatient } from "../../../api/Patient/PatientApi";
 import { getAllService } from "../../../api/Services/ServiceApi";
 import { toast } from "react-toastify";
 import { createBill } from "../../../api/Bill/BillApi";
+import useUserInfoStore from "../../../Zustand/configZustand";
 
 type Props = {
   isModalCreateOpen: boolean;
@@ -40,9 +41,9 @@ const SupportBillCreateNew = ({
     patientId: number;
     supportId: number;
     status: string;
-    service: { serviceId: number; quantity: number }[];
+    services: { serviceId: number; quantity: number }[];
   }>({});
-
+  const userInfo = useUserInfoStore((state) => state.userInfo);
   const onRadioChange = (e: RadioChangeEvent) => {
     setRadioValue(e.target.value);
     setDataCreate({ ...dataToCreate, status: e.target.value });
@@ -87,7 +88,7 @@ const SupportBillCreateNew = ({
     });
     setListServiceSelected(listServiceSelectedClone);
     setCheckRender(!checkRender);
-    setDataCreate({ ...dataToCreate, service: listServiceSelected });
+    setDataCreate({ ...dataToCreate, services: listServiceSelected });
   };
 
   const handleUpdateQuantity = (id: number, value: string) => {
@@ -99,7 +100,7 @@ const SupportBillCreateNew = ({
       }
     });
     setListServiceSelected(listServiceSelectedClone);
-    setDataCreate({ ...dataToCreate, service: listServiceSelected });
+    setDataCreate({ ...dataToCreate, services: listServiceSelected });
   };
 
   const handleCreateBill = async () => {
@@ -109,9 +110,11 @@ const SupportBillCreateNew = ({
         toast.warning("thiếu dữ liệu ở tệp danh sách dịch vụ");
       }
     });
+    console.log("🚀 ~ handleCreateBill ~ dataToCreate:", dataToCreate);
+
     if (
       !dataToCreate.patientId ||
-      !dataToCreate.service ||
+      !dataToCreate.services ||
       !dataToCreate.status ||
       !dataToCreate.supportId
     ) {
@@ -121,6 +124,7 @@ const SupportBillCreateNew = ({
     const res = await createBill(dataToCreate);
     if (!res.error) {
       setIsModalCreateOpen(false);
+      toast.success("Hoàn thành");
       handleGetBillList();
     } else {
       toast.error(res.message);
@@ -140,6 +144,7 @@ const SupportBillCreateNew = ({
   };
   useEffect(() => {
     handleGetAllService();
+    setDataCreate({ ...dataToCreate, supportId: userInfo.actorId });
   }, [isModalCreateOpen, listServiceSelected, setListServiceSelected]);
   return (
     <Modal
@@ -322,7 +327,7 @@ const SupportBillCreateNew = ({
         className="w-full bg-blue-500 text-red-50 rounded-xl py-3 cursor-pointer"
         onClick={() => handleCreateBill()}
       >
-        Xác nhận tạo lịch khám
+        Xác nhận tạo hoá đơn
       </button>
     </Modal>
   );

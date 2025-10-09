@@ -7,3 +7,8 @@ export type CheckRenderKey =
   | "clinic"
   | "time"
   | "id";
+export type dataToQueryAdminModel = {
+  phoneNumber: string;
+  date: string;
+  accountName: string;
+};
