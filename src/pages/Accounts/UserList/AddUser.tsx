@@ -1,180 +1,129 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Input, Select, Button, Form, DatePicker } from "antd/lib";
+import { Modal, Input, Select, Button, Form, DatePicker, Row, Col, Tabs } from "antd/lib";
+import { notification } from "antd";
+import { UserOutlined, SolutionOutlined } from "@ant-design/icons";
 import type { User } from "../UserList/UserTable";
 import type { Clinic } from "../../Clinic/ClinicTable";
-import { testPostAccountsApi } from "../../../api/testApi";
+import type { Specialty } from "../../Specialty/SpecialtyTable";
+import {
+  testPostAccountsApi,
+
+} from "../../../api/testApi";
 import { testGetClinicApi } from "../../../api/testClinic";
 import { testGetSpecialtyApi } from "../../../api/testSpecialty";
 import { testPostDoctorApi } from "../../../api/testDoctor";
-import type { Specialty } from "../../Specialty/SpecialtyTable";
 import { testPostSupportApi } from "../../../api/testSupport";
 import { testPostPatientApi } from "../../../api/testPatient";
-import { notification } from 'antd';
 
 const { Option } = Select;
 
 interface AddUserProps {
   open: boolean;
   onCancel: () => void;
-  onAdd: (user: any) => void; // user hoặc doctor
   users: User[];
   setusers: (users: User[]) => void;
 }
 
 const AddUser: React.FC<AddUserProps> = ({ users, setusers, open, onCancel }) => {
-  const [form] = Form.useForm();
   const [selectedRole, setSelectedRole] = useState<number | null>(null);
   const [clinics, setClinics] = useState<Clinic[]>([]);
   const [specialties, setSpecialties] = useState<Specialty[]>([]);
-  
+  const [activeTab, setActiveTab] = useState("1");
+  const [createdAccount, setCreatedAccount] = useState<any>(null);
+
+  const [formStep1] = Form.useForm();
+  const [formStep2] = Form.useForm();
   const [api, contextHolder] = notification.useNotification();
 
-  // Load dropdown cho bác sĩ
+  // Load dropdown khi chọn role
   useEffect(() => {
+    // Chỉ load dữ liệu sau khi qua bước 1 và có createdAccount
+    if (!createdAccount) return;
+
     if (selectedRole === 2) {
-      // Bác sĩ cần cả clinic + specialty
-      Promise.all([testGetClinicApi(), testGetSpecialtyApi()])
-        .then(([clinicRes, specialtyRes]) => {
-          setClinics(clinicRes.data.result || []);
-          setSpecialties(specialtyRes.data.result || []);
-        })
-        .catch((err) => console.error("Fetch dropdown failed:", err));
+      Promise.all([testGetClinicApi(), testGetSpecialtyApi()]).then(([clinicRes, specialtyRes]) => {
+        setClinics(clinicRes.data.result || []);
+        setSpecialties(specialtyRes.data.result || []);
+      });
     } else if (selectedRole === 3) {
-      // Support chỉ cần clinic
-      testGetClinicApi()
-        .then((clinicRes) => {
-          setClinics(clinicRes.data.result || []);
-        })
-        .catch((err) => console.error("Fetch clinic failed:", err));
+      testGetClinicApi().then((clinicRes) => setClinics(clinicRes.data.result || []));
     }
-  }, [selectedRole]);
+  }, [selectedRole, createdAccount]);
 
+  const getErrorMessage = (err: any, fallback = "Có lỗi xảy ra") =>
+    err?.response?.data?.message ||
+    err?.response?.data?.error ||
+    err?.response?.data?.errors?.[0] ||
+    err?.message ||
+    fallback;
 
-  const getErrorMessage = (err: any, fallback = "Có lỗi xảy ra") => {
-    return (
-      err?.response?.data?.message ||
-      err?.response?.data?.error ||
-      err?.response?.data?.errors?.[0] ||
-      err?.message ||
-      fallback
-    );
-  };
+  // Xử lý bước 1 (tạo account)
+  const handleNext = async () => {
+  try {
+    const values = await formStep1.validateFields(); // chỉ validate khi bấm nút
+    const res = await testPostAccountsApi(values);
+    const account = res.data?.data || res;
+    setCreatedAccount(account);
+    setActiveTab("2");
+    notification.success({
+      message: "Tạo tài khoản thành công",
+      description: account.name,
+    });
+  } catch (err: any) {
+    if (err?.errorFields) {
+      // lỗi frontend (VD: chưa nhập required)
+      notification.warning({
+        message: "Vui lòng nhập đủ thông tin",
+      });
+    } else {
+      // lỗi backend (VD: email trùng, lỗi server)
+      notification.error({
+        message: "Lỗi tạo Account",
+        description: getErrorMessage(err),
+      });
+    }
+  }
+};
 
-  const handleSubmit = async (values: any) => {
+  // Xử lý bước 2 (theo role)
+  const handleSubmit = async () => {
     try {
-      // 1️⃣ Tạo account trước
-      const accountRes = await testPostAccountsApi(values);
-      const account = accountRes.data?.data || accountRes;
+      const values = await formStep2.validateFields();
+      if (!createdAccount) throw new Error("Chưa tạo tài khoản ở bước 1");
 
-      // 2️⃣ Nếu role = Bác sĩ
-      if (values.roleId === 2) {
-        if (account.role?.name !== "DOCTOR") {
-          notification.error({
-            message: "Lỗi quyền",
-            description: `Account ${account.id} chưa được gán role DOCTOR. Hãy kiểm tra lại backend.`,
-          });
-          return;
-        }
-
-        try {
-          const payloaddoc = {
-            cost: Number(values.cost),
-            degree: values.degree,
-            account: { id: account.id },
-            clinic: { id: Number(values.clinicId) },
-            specialty: { id: Number(values.specialtyId) },
-          };
-          await testPostDoctorApi(payloaddoc);
-
-          notification.success({
-            message: "Thêm Bác sĩ thành công",
-            description: `Bác sĩ: ${account.name}`,
-          });
-        } catch (err: any) {
-          notification.error({
-            message: "Lỗi thêm Bác sĩ",
-            description: getErrorMessage(err),
-          });
-          return;
-        }
-      }
-
-      // 3️⃣ Nếu role = Trợ lý
-      else if (values.roleId === 3) {
-        if (account.role?.name !== "SUPPORT") {
-          notification.error({
-            message: "Lỗi quyền",
-            description: `Account ${account.id} chưa được gán role SUPPORT. Hãy kiểm tra lại backend.`,
-          });
-          return;
-        }
-
-        try {
-          const payloadsp = {
-            account: { id: account.id },
-            clinic: { id: Number(values.clinicId) },
-          };
-          const res = await testPostSupportApi(payloadsp);
-
-          notification.success({
-            message: "Thêm Trợ lý thành công",
-            description: `Trợ lý: ${res.account.name}`,
-          });
-
-        } catch (err: any) {
-          api.open({
-            message: "Lỗi thêm Trợ lý",
-            description: err?.response?.data?.message || err?.message || "Có lỗi xảy ra",
-          });
-        }
-      }
-
-      // 4️⃣ Nếu role = Bệnh nhân
-      else if (values.roleId === 4) {
-        if (account.role?.name !== "CLIENT") {
-          notification.error({
-            message: "Lỗi quyền",
-            description: `Account ${account.id} chưa được gán role CLIENT. Hãy kiểm tra lại backend.`,
-          });
-          return;
-        }
-
-        try {
-          const payloaduser = {
-            accountId: account.id,
-            bhyt: values.bhyt,
-          };
-          await testPostPatientApi(payloaduser);
-
-          notification.success({
-            message: "Thêm Bệnh nhân thành công",
-            description: `Bệnh nhân: ${account.name}`,
-          });
-        } catch (err: any) {
-
-          notification.error({
-            message: "Lỗi thêm Bệnh nhân",
-            description: getErrorMessage(err),
-          });
-
-
-          return;
-        }
-      }
-
-      // 5️⃣ Các role khác (Admin...)
-      else {
-        setusers([...users, account]);
-        notification.success({
-          message: "Thêm User thành công",
-          description: `Người dùng: ${account.name}`,
+      if (selectedRole === 2) {
+        await testPostDoctorApi({
+          cost: Number(values.cost),
+          degree: values.degree,
+          account: { id: createdAccount.id },
+          clinic: { id: Number(values.clinicId) },
+          specialty: { id: Number(values.specialtyId) },
+        });
+      } else if (selectedRole === 3) {
+        await testPostSupportApi({
+          account: { id: createdAccount.id },
+          clinic: { id: Number(values.clinicId) },
+        });
+      } else if (selectedRole === 4) {
+        await testPostPatientApi({
+          accountId: createdAccount.id,
+          bhyt: values.bhyt,
         });
       }
+      setusers([...users, createdAccount]);
 
-      // ✅ Reset form + đóng modal nếu thành công
-      form.resetFields();
+      notification.success({
+        message: "Thêm người dùng thành công",
+        description: createdAccount.name,
+      });
+
+      
+      formStep1.resetFields();
+      formStep2.resetFields();
+      setCreatedAccount(null);
+      setActiveTab("1");
       onCancel();
-    } catch (err: any) {
+    } catch (err) {
       notification.error({
         message: "Lỗi thêm User",
         description: getErrorMessage(err),
@@ -182,141 +131,190 @@ const AddUser: React.FC<AddUserProps> = ({ users, setusers, open, onCancel }) =>
     }
   };
 
-
-
   return (
     <>
-    {contextHolder}
+      {contextHolder}
       <Modal
-        title={<div className="text-center text-lg font-semibold">Thêm người dùng mới</div>}
+        title="Thêm người dùng"
         open={open}
         onCancel={onCancel}
         footer={null}
         centered
-        width={600}
+        width={800}
       >
-        <Form form={form} layout="vertical" onFinish={handleSubmit} className="space-y-4">
-          {/* Thông tin chung */}
-          <Form.Item name="name" label="Tên người dùng" rules={[{ required: true }]}>
-            <Input placeholder="Nhập tên" size="large" />
-          </Form.Item>
-  
-          <Form.Item name="email" label="Email" rules={[{ required: true, type: "email" }]}>
-            <Input placeholder="Nhập email" size="large" />
-          </Form.Item>
-  
-          <Form.Item name="phoneNumber" label="Số điện thoại" rules={[
-            { required: true },
+        <Tabs
+          activeKey={activeTab}
+          onChange={setActiveTab}
+          items={[
             {
-              pattern: /^0\d{9,10}$/,
-              message: "Số điện thoại phải bắt đầu bằng 0 và có 10–11 chữ số",
+              key: "1",
+              label: (
+                <>
+                  <UserOutlined /> Tài khoản
+                </>
+              ),
+              children: (
+                <Form form={formStep1} layout="vertical" validateTrigger={false} >
+                  <Row gutter={16}>
+                    <Col span={12}>
+                      <Form.Item
+                        name="name"
+                        label="Tên người dùng"
+                        rules={[{ required: true }]}
+                      >
+                        <Input placeholder="Nhập tên" />
+                      </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                      <Form.Item
+                        name="email"
+                        label="Email"
+                        rules={[{ required: true, type: "email" }]}
+                      >
+                        <Input placeholder="Nhập email" />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row gutter={16}>
+                    <Col span={12}>
+                      <Form.Item
+                        name="phoneNumber"
+                        label="Số điện thoại"
+                        rules={[{ required: true }]}
+                      >
+                        <Input placeholder="Nhập số điện thoại" />
+                      </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                      <Form.Item name="cccd" label="CCCD" rules={[{ required: true }]}>
+                        <Input placeholder="Nhập CCCD" />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row gutter={16}>
+                    <Col span={12}>
+                      <Form.Item name="birth" label="Ngày sinh">
+                        <DatePicker style={{ width: "100%" }} />
+                      </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                      <Form.Item name="address" label="Địa chỉ" rules={[{ required: true }]}>
+                        <Input placeholder="Nhập địa chỉ" />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row gutter={16}>
+                    <Col span={12}>
+                      <Form.Item
+                        name="password"
+                        label="Mật khẩu"
+                        rules={[{ required: true }]}
+                      >
+                        <Input.Password placeholder="Nhập mật khẩu" />
+                      </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                      <Form.Item name="gender" label="Giới tính" rules={[{ required: true }]}>
+                        <Select placeholder="Chọn giới tính">
+                          <Option value="MALE">Nam</Option>
+                          <Option value="FEMALE">Nữ</Option>
+                          <Option value="OTHER">Khác</Option>
+                        </Select>
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Form.Item name="roleId" label="Vai trò" rules={[{ required: true }]}>
+                    <Select placeholder="Chọn vai trò" onChange={(val) => setSelectedRole(val)}>
+                      <Option value={1}>Admin</Option>
+                      <Option value={2}>Bác sĩ</Option>
+                      <Option value={3}>Trợ lý</Option>
+                      <Option value={4}>Người dùng</Option>
+                    </Select>
+                  </Form.Item>
+                  <Form.Item>
+                    <div className="flex justify-end space-x-3">
+                      <Button onClick={onCancel}>Hủy</Button>
+                      <Button type="primary" onClick={handleNext}>
+                        Tiếp theo
+                      </Button>
+                    </div>
+                  </Form.Item>
+                </Form>
+              ),
             },
-          ]}>
-            <Input placeholder="Nhập số điện thoại" size="large" />
-          </Form.Item>
-  
-          <Form.Item name="cccd" label="CCCD" rules={[{ required: true }]}>
-            <Input placeholder="Nhập số CCCD" size="large" />
-          </Form.Item>
-  
-          <Form.Item name="birth" label="Ngày sinh">
-            <DatePicker style={{ width: "100%" }} size="large" />
-          </Form.Item>
-  
-          <Form.Item name="address" label="Địa chỉ" rules={[{ required: true }]}>
-            <Input placeholder="Nhập địa chỉ" size="large" />
-          </Form.Item>
-  
-          <Form.Item name="password" label="Mật khẩu" rules={[{ required: true }]}>
-            <Input.Password placeholder="Nhập mật khẩu" size="large" />
-          </Form.Item>
-  
-          <Form.Item name="roleId" label="Vai trò" rules={[{ required: true }]}>
-            <Select placeholder="Chọn vai trò" size="large" onChange={(val) => setSelectedRole(val)}>
-              <Option value={1}>Admin</Option>
-              <Option value={2}>Bác sĩ</Option>
-              <Option value={3}>Trợ lý</Option>
-              <Option value={4}>Người dùng</Option>
-            </Select>
-          </Form.Item>
-  
-          <Form.Item name="gender" label="Giới tính" rules={[{ required: true }]}>
-            <Select placeholder="Chọn giới tính" size="large">
-              <Option value="MALE">Nam</Option>
-              <Option value="FEMALE">Nữ</Option>
-              <Option value="OTHER">Khác</Option>
-            </Select>
-          </Form.Item>
-  
-          {/* Nếu chọn role = bác sĩ thì hiển thị thêm */}
-          {selectedRole === 2 && (
-            <>
-              <Form.Item name="clinicId" label="Phòng khám" rules={[{ required: true }]}>
-                <Select placeholder="Chọn clinic" size="large">
-                  {clinics.map((c) => (
-                    <Option key={c.id} value={c.id}>
-                      {c.id} - {c.name}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-  
-              <Form.Item name="specialtyId" label="Chuyên khoa" rules={[{ required: true }]}>
-                <Select placeholder="Chọn specialty" size="large">
-                  {specialties.map((s) => (
-                    <Option key={s.id} value={s.id}>
-                      {s.id} - {s.name}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-  
-              <Form.Item name="cost" label="Giá khám" rules={[{ required: true }]}>
-                <Input type="number" placeholder="Nhập giá khám" size="large" />
-              </Form.Item>
-  
-              <Form.Item name="degree" label="Bằng cấp" rules={[{ required: true }]}>
-                <Select placeholder="Chọn bằng cấp" size="large">
-                  <Option value="BACHELOR">Cử nhân</Option>
-                  <Option value="MASTER">Thạc sĩ</Option>
-                  <Option value="DOCTOR">Tiến sĩ</Option>
-                </Select>
-              </Form.Item>
-            </>
-          )}
-          {selectedRole === 3 && (
-            <>
-              <Form.Item name="clinicId" label="Phòng khám" rules={[{ required: true }]}>
-                <Select placeholder="Chọn clinic" size="large">
-                  {clinics.map((c) => (
-                    <Option key={c.id} value={c.id}>
-                      {c.id} - {c.name}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-  
-            </>
-          )}
-          {selectedRole === 4 && (
-            <>
-              <Form.Item name="bhyt" label="Bảo hiểm y tế" rules={[{ required: true }]}>
-                <Input placeholder="Nhập mã BHYT (nếu có)" size="large" />
-              </Form.Item>
-  
-            </>
-          )}
-  
-  
-          <Form.Item>
-            <div className="flex justify-end space-x-3 pt-2">
-              <Button onClick={onCancel}>Hủy</Button>
-              <Button type="primary" htmlType="submit">
-                Thêm
-              </Button>
-            </div>
-          </Form.Item>
-        </Form>
+            {
+              key: "2",
+              label: (
+                <>
+                  <SolutionOutlined /> Chi tiết vai trò
+                </>
+              ),
+              children: (
+                <Form form={formStep2} layout="vertical">
+                  {selectedRole === 2 && (
+                    <>
+                      <Form.Item name="clinicId" label="Phòng khám" rules={[{ required: true }]}>
+                        <Select placeholder="Chọn clinic">
+                          {clinics.map((c) => (
+                            <Option key={c.id} value={c.id}>
+                              {c.id} - {c.name}
+                            </Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                      <Form.Item name="specialtyId" label="Chuyên khoa" rules={[{ required: true }]}>
+                        <Select placeholder="Chọn specialty">
+                          {specialties.map((s) => (
+                            <Option key={s.id} value={s.id}>
+                              {s.id} - {s.name}
+                            </Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                      <Form.Item name="cost" label="Giá khám" rules={[{ required: true }]}>
+                        <Input type="number" placeholder="Nhập giá khám" />
+                      </Form.Item>
+                      <Form.Item name="degree" label="Bằng cấp" rules={[{ required: true }]}>
+                        <Select placeholder="Chọn bằng cấp">
+                          <Option value="BACHELOR">Cử nhân</Option>
+                          <Option value="MASTER">Thạc sĩ</Option>
+                          <Option value="DOCTOR">Tiến sĩ</Option>
+                        </Select>
+                      </Form.Item>
+                    </>
+                  )}
+
+                  {selectedRole === 3 && (
+                    <Form.Item name="clinicId" label="Phòng khám" rules={[{ required: true }]}>
+                      <Select placeholder="Chọn clinic">
+                        {clinics.map((c) => (
+                          <Option key={c.id} value={c.id}>
+                            {c.id} - {c.name}
+                          </Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  )}
+
+                  {selectedRole === 4 && (
+                    <Form.Item name="bhyt" label="Bảo hiểm y tế" rules={[{ required: true }]}>
+                      <Input placeholder="Nhập mã BHYT" />
+                    </Form.Item>
+                  )}
+
+                  <Form.Item>
+                    <div className="flex justify-end space-x-3">
+                      <Button onClick={() => setActiveTab("1")}>Quay lại</Button>
+                      <Button type="primary" onClick={handleSubmit}>
+                        Thêm
+                      </Button>
+                    </div>
+                  </Form.Item>
+                </Form>
+              ),
+            },
+          ]}
+        />
       </Modal>
     </>
   );

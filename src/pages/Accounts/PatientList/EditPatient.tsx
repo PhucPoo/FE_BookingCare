@@ -34,16 +34,16 @@ const EditPatient: React.FC<EditPatientProps> = ({
   const handleSubmit = async (values: any) => {
     if (!patient) return;
 
-    const payload: Patient = {
+    const payload = {
       ...patient,
       bhyt: values.bhyt,
     };
 
     try {
       const res = await testPutPatientApi(patient.id, payload);
-      const updated = res.data.data;
+      const updated = res.data;
 
-      onUpdatepatient(updated); // gọi đúng prop
+      onUpdatepatient(updated); 
 
       notification.success({
         message: "Cập nhật thành công",
@@ -85,6 +85,7 @@ const EditPatient: React.FC<EditPatientProps> = ({
         <Form.Item name="bhyt" label="Mã BHYT">
           <Input placeholder="Nhập mã BHYT" size="large" />
         </Form.Item>
+        
 
         <Form.Item>
           <div className="flex justify-end space-x-3 pt-2">

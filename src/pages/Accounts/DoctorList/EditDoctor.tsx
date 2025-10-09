@@ -6,11 +6,10 @@ import Button from "antd/es/button";
 import Form from "antd/es/form";
 import type { Doctor } from "./DoctorTable";
 import type { Clinic } from "../../Clinic/ClinicTable";
-import type { Specialty } from "../../Specialty/SpecialtyList";
-import api from "../../../api/axios";
 import { testGetClinicApi } from "../../../api/testClinic";
 import { testGetSpecialtyApi } from "../../../api/testSpecialty";
 import { testPutDoctorApi } from "../../../api/testDoctor";
+import type { Specialty } from "../../Specialty/SpecialtyTable";
 
 const { Option } = Select;
 
@@ -42,6 +41,7 @@ const EditDoctor: React.FC<EditDoctorProps> = ({
 
         setClinics(clinicRes.data.result || []);
         setSpecialties(specialtyRes.data.result || []);
+        
       } catch (err) {
         console.error("Fetch dropdown failed:", err);
       }
@@ -57,8 +57,11 @@ const EditDoctor: React.FC<EditDoctorProps> = ({
       degree: doctor.degree,
       clinicId: doctor.clinic?.id,
       specialtyId: doctor.specialty?.id,
+      isActive: doctor.isActive,
+      
     });
   }
+
 
 
   const handleSubmit = async (values: any) => {
@@ -66,16 +69,17 @@ const EditDoctor: React.FC<EditDoctorProps> = ({
 
     const payload = {
       id: doctor.id,
+      isActive: values.isActive,
       cost: values.cost,
       degree: values.degree,
-      account: { id: doctor.account?.id }, // chỉ cần id
+      account: { id: doctor.account?.id }, 
       clinic: { id: values.clinicId },
       specialty: { id: values.specialtyId },
     };
 
     try {
-      const res = await  testPutDoctorApi(payload); // ✅ truyền payload + await
-      onUpdate(res.data);                          // ✅ lấy dữ liệu backend trả về
+      const res = await  testPutDoctorApi(payload); 
+      onUpdate(res.data);                          
       form.resetFields();
       
     } catch (err: any) {
@@ -155,6 +159,16 @@ const EditDoctor: React.FC<EditDoctorProps> = ({
                 {sp.id} - {sp.name}
               </Option>
             ))}
+          </Select>
+        </Form.Item>
+        <Form.Item
+          name="isActive"
+          label="Trạng thái"
+          rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
+        >
+          <Select placeholder="Chọn trạng thái" size="large">
+            <Option value={true}>Hoạt động</Option>
+            <Option value={false}>Nghỉ</Option>
           </Select>
         </Form.Item>
 

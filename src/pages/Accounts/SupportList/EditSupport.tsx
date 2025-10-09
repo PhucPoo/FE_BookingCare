@@ -65,14 +65,14 @@ const EditSupport: React.FC<EditSupportProps> = ({
 
     try {
       const res = await testPutSupportApi(payload);
-      const updatedSupport: Support = res.data.data;
-
+      
+      
+      onUpdate(res.data);
       notification.success({
         message: "Cập nhật thành công",
         description: ``,
       });
 
-      onUpdate(updatedSupport);
       form.resetFields();
       onCancel();
     } catch (err: any) {

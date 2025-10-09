@@ -96,7 +96,6 @@ const Signup: React.FC = () => {
       );
 
       if (response.status === 200) {
-        alert("Đăng ký thành công! Vui lòng kiểm tra email để lấy OTP.");
         navigate("/auth/verify-otp", {
           state: {
             email: formData.email,

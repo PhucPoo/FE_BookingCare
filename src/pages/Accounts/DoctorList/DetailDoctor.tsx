@@ -2,7 +2,6 @@ import React from "react";
 import Modal from "antd/es/modal";
 import Button from "antd/es/button";
 import type { Doctor } from "./DoctorTable";
-import type { Clinic } from "../../Clinic/ClinicTable";
 
 interface InformationDoctorProps {
   open: boolean;
@@ -65,7 +64,7 @@ const InformationDoctor: React.FC<InformationDoctorProps> = ({
             <strong>CCCD:</strong> {doctor.account?.cccd ?? "—"}
           </p>
            <p>
-            <strong>CCCD:</strong> {doctor.account?.address ?? "—"}
+            <strong>Địa chỉ:</strong> {doctor.account?.address ?? "—"}
           </p>
           <p>
             <strong>SĐT:</strong> {doctor.account?.phoneNumber ?? "—"}
@@ -112,9 +111,9 @@ const InformationDoctor: React.FC<InformationDoctorProps> = ({
           
           <div>
             <strong>Chuyên khoa:</strong>
-            {doctor.specialtyName ? (
+            {doctor.specialty.name ? (
               <span className="ml-2">
-                {doctor.specialtyName} - {doctor.specialtyDescription ?? "—"}
+                {doctor.specialty.name} - {doctor.specialty.description ?? "—"}
               </span>
             ) : "—"}
           </div>

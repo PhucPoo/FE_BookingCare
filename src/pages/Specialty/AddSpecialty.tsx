@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Modal, Form, Input, Button, Upload, notification } from "antd/lib";
+import { Modal, Form, Input, Button, Upload, } from "antd/lib";
 import { UploadOutlined } from "@ant-design/icons";
 import { testPostSpecialtyApi } from "../../api/testSpecialty";
 import type { Specialty } from "./SpecialtyTable";
+import { notification } from "antd";
 
 interface AddSpecialtyProps {
   open: boolean;
@@ -13,6 +14,7 @@ interface AddSpecialtyProps {
 const AddSpecialty: React.FC<AddSpecialtyProps> = ({ open, onCancel, onAdd }) => {
   const [form] = Form.useForm();
   const [file, setFile] = useState<File | null>(null);
+  const [fileList, setFileList] = useState<any[]>([]);
 
   const handleSubmit = () => {
     form.validateFields().then(async (values) => {
@@ -21,15 +23,12 @@ const AddSpecialty: React.FC<AddSpecialtyProps> = ({ open, onCancel, onAdd }) =>
         formData.append("name", values.name);
         formData.append("description", values.description || "");
         if (file) {
-          formData.append("file", file); 
+          formData.append("file", file);
         }
 
         // Gọi API
         const res = await testPostSpecialtyApi(formData);
-        console.log(">>>>>>", res);
-
         const specialty = res.data;
-
 
 
         // Cập nhật UI
@@ -44,17 +43,20 @@ const AddSpecialty: React.FC<AddSpecialtyProps> = ({ open, onCancel, onAdd }) =>
         setFile(null);
         onCancel();
       } catch (error: any) {
-        notification.error({
-          message: "Thêm thất bại",
-          description: error.response?.data?.message || "Có lỗi xảy ra",
-        });
+        console.log("Lỗi hiển thị là:", error);
+
+        // notification.error({
+        //   message: "Thêm thất bại",
+        //   description: error.response?.data?.message || "Có lỗi xảy ra",
+        // });
       }
     });
   };
 
-  const handleUploadChange = (info: any) => {
-    if (info.fileList.length > 0) {
-      setFile(info.fileList[0].originFileObj);
+  const handleUploadChange = ({ fileList }: any) => {
+    setFileList(fileList);
+    if (fileList.length > 0) {
+      setFile(fileList[0].originFileObj);
     } else {
       setFile(null);
     }
@@ -84,6 +86,7 @@ const AddSpecialty: React.FC<AddSpecialtyProps> = ({ open, onCancel, onAdd }) =>
           <Upload
             beforeUpload={() => false}
             onChange={handleUploadChange}
+            fileList={fileList}
             maxCount={1}
             listType="picture"
           >
