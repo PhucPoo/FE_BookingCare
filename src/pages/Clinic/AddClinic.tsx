@@ -4,16 +4,15 @@ import Input from "antd/es/input";
 import Button from "antd/es/button";
 import Form from "antd/es/form";
 import Select from "antd/es/select";
-import type { Clinic, CreateClinic } from "./ClinicTable";
+import type { Clinic } from "./ClinicTable";
 import { notification } from "antd";
-import { testGetClinicApi, testPostClinicApi } from "../../api/testClinic";
+import { testPostClinicApi } from "../../api/testClinic";
 import { testGetAddressApi } from "../../api/testAddress";
 
 const { Option } = Select;
 
 interface AddClinicProps {
-  clinics: CreateClinic[];
-  setclinic: React.Dispatch<React.SetStateAction<CreateClinic[]>>;
+  clinics: any[];
   open: boolean;
   onCancel: () => void;
   onAdd: (clinic: Clinic) => void;
@@ -31,7 +30,7 @@ const AddClinic: React.FC<AddClinicProps> = ({ open, onCancel, onAdd }) => {
   const handleSubmit = async (values: any) => {
   const { name, description, position, phoneNumber, addressId } = values;
 
-  const newClinic: CreateClinic =  {
+  const newClinic: any =  {
     name,
     description,
     position,
@@ -43,6 +42,11 @@ const AddClinic: React.FC<AddClinicProps> = ({ open, onCancel, onAdd }) => {
   try {
     const res = await testPostClinicApi(newClinic);
     const clinic=res.data
+
+    const address = addresses.find((a) => a.id === addressId);
+    if (address) {
+      clinic.address = address;
+    }
     onAdd(clinic);
 
     notification.success({

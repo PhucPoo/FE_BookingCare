@@ -1,6 +1,9 @@
-import { Button, Dropdown, Pagination, Select, type MenuProps } from "antd/lib";
+import { Button, Pagination } from "antd/lib";
 import { formatDate } from "../../../utils/constant";
-import type { CheckRenderKey } from "./CheckRenderKeyModel";
+import type {
+  CheckRenderKey,
+  dataToQueryAdminModel,
+} from "./CheckRenderKeyModel";
 
 type AdminBookingTableModel = {
   id?: number;
@@ -40,23 +43,16 @@ type Props = {
   handleAdminGetAllBookings: () => void;
   onLog: (page: number, pageSize: number) => void;
   handleSort: (value: CheckRenderKey) => void;
-  handleChange: (value: string) => void;
-  handleFindByDate: () => void;
   handleSearchBooking: (searchValue: string, searchKey: string) => void;
-  setFilterCreatedAt: (value: { from: string; to: string }) => void;
-  filterCreatedAt: { from: string; to: string };
-  // handleSearchByClinic: (value: string) => void;
   setBookingDetail: (value: AdminBookingTableModel) => void;
   setIsModalOpen: (value: boolean) => void;
+  dataToQuery: dataToQueryAdminModel;
+  handleSetDataToQuery: (value: string, key: string) => void;
 };
 const AdminBookingTable = ({
   onLog,
   handleSort,
-  handleChange,
-  handleFindByDate,
   handleSearchBooking,
-  setFilterCreatedAt,
-  filterCreatedAt,
   AdminBookingList,
   pageSize,
   currentPage,
@@ -64,61 +60,9 @@ const AdminBookingTable = ({
   handleAdminGetAllBookings,
   setBookingDetail,
   setIsModalOpen,
+  dataToQuery,
+  handleSetDataToQuery,
 }: Props) => {
-  const items: MenuProps["items"] = [
-    {
-      label: (
-        <div onClick={(e) => e.stopPropagation()}>
-          <input
-            type="date"
-            onChange={(e) => {
-              setTimeout(() => {
-                setFilterCreatedAt({
-                  ...filterCreatedAt,
-                  from: e.target.value,
-                });
-              }, 500);
-            }}
-            className="w-full lg:w-45 not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-      ),
-      key: "0",
-    },
-    {
-      label: (
-        <div onClick={(e) => e.stopPropagation()}>
-          <input
-            type="date"
-            onChange={(e) => {
-              setTimeout(() => {
-                setFilterCreatedAt({
-                  ...filterCreatedAt,
-                  to: e.target.value,
-                });
-              }, 500);
-            }}
-            className="w-full lg:w-45  not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-      ),
-      key: "1",
-    },
-    {
-      label: (
-        <div>
-          <Button
-            size="large"
-            onClick={() => handleFindByDate()}
-            type="primary"
-          >
-            Xác nhận
-          </Button>
-        </div>
-      ),
-      key: "3",
-    },
-  ];
   return (
     <div className="max-w-7xl mx-auto ">
       <div className="flex justify-between items-center">
@@ -136,8 +80,10 @@ const AdminBookingTable = ({
           <div className="w-full lg:w-auto">
             <input
               type="text"
-              placeholder="Tìm kiếm bệnh nhân..."
+              placeholder="Bệnh nhân..."
+              value={dataToQuery.accountName}
               onChange={(e) => {
+                handleSetDataToQuery(e.target.value, "accountName");
                 setTimeout(() => {
                   handleSearchBooking(e.target.value, "accountName");
                 }, 500);
@@ -145,37 +91,30 @@ const AdminBookingTable = ({
               className="w-full lg:w-45 not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
-          {/* createdAt */}
-          <div className="w-full lg:w-auto">
-            <Dropdown
-              menu={{ items }}
-              trigger={["click"]}
-              className="w-full lg:w-auto"
-            >
-              <Button size="large">Tìm theo ngày</Button>
-            </Dropdown>
-          </div>
-          {/* status */}
-          <div className="w-full lg:w-auto">
-            <Select
-              style={{ width: 120 }}
-              onChange={handleChange}
-              size="large"
-              placeholder="Trạng thái"
-              options={[
-                { value: "Done", label: "Done" },
-                { value: "Pending", label: "Pending" },
-              ]}
-            />
-          </div>
-          {/* clinic */}
+
+          {/* phoneNumber */}
           <div className="w-full lg:w-auto">
             <input
               type="text"
-              placeholder="Tìm kiếm theo số điện thoại..."
+              placeholder="Số điện thoại..."
+              value={dataToQuery.phoneNumber}
               onChange={(e) => {
+                handleSetDataToQuery(e.target.value, "phoneNumber");
                 setTimeout(() => {
                   handleSearchBooking(e.target.value, "phoneNumber");
+                }, 500);
+              }}
+              className="w-full lg:w-45 not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+          {/* date */}
+          <div className="w-full lg:w-auto">
+            <input
+              type="date"
+              onChange={(e) => {
+                handleSetDataToQuery(e.target.value, "date");
+                setTimeout(() => {
+                  handleSearchBooking(e.target.value, "date");
                 }, 500);
               }}
               className="w-full lg:w-45 not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -287,7 +226,7 @@ const AdminBookingTable = ({
                         {item.id}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                        {item.appointmentDate}
+                        {formatDate(item.appointmentDate)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
                         {formatDate(item?.createAt)}

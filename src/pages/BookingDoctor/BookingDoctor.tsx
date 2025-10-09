@@ -30,41 +30,57 @@ const BookingDoctor = () => {
       setDetailDoctor(res.data);
     }
   };
-
+  const handleCheckMissingInfo = (data) => {
+    let check = true;
+    const listInfo = [
+      "appointmentDate",
+      "description",
+      "doctorId",
+      "patientId",
+      "clinicId",
+      "timeId",
+    ];
+    for (let index = 0; index < listInfo.length; index++) {
+      if (!data[listInfo[index]]) {
+        toast.info(`Thiếu ${listInfo[index]}`);
+        check = false;
+        break;
+      }
+    }
+    return check;
+  };
   const handleBookingDoctor = async () => {
     if (!description) {
       toast.error("Điền lí do khám");
     }
-    if (
-      locationJS.state.data.appointmentDate &&
-      description &&
-      id &&
-      detailDoctor.clinic?.id &&
-      locationJS.state.data.timeId &&
-      userInfor?.patientId
-    ) {
-      const data = {
-        appointmentDate: locationJS.state.data.appointmentDate,
-        description,
-        doctorId: id,
-        patientId: userInfor?.patientId,
-        clinicId: `${detailDoctor.clinic?.id}`,
-        timeId: locationJS.state.data.timeId,
-      };
-
-      const res = await BookingDoctorApi(data);
-      if (res.error) {
-        toast.error(res.message);
-        return;
-      }
-      toast.success("Đặt lịch thành công");
-      navigate("/");
+    const data = {
+      appointmentDate: locationJS.state.data.appointmentDate,
+      description,
+      doctorId: id,
+      patientId: userInfor?.actorId,
+      clinicId: `${detailDoctor.clinic?.id}`,
+      timeId: locationJS.state.data.timeId,
+    };
+    if (handleCheckMissingInfo(data)) {
+      toast
+        .promise(BookingDoctorApi(data), {
+          pending: "Xin hãy đợi chút",
+        })
+        .then(() => {
+          toast.success("Đặt lịch thành công");
+          navigate("/");
+        });
+      // .catch((error) => {
+      //   console.log("🚀 ~ handleBookingDoctor ~ error:", error);
+      //       toast.error(error.response.data.message);
+      // });
     }
   };
   useEffect(() => {
     window.scroll(0, 0);
     handleGetDetailDoctor();
   }, []);
+
   return (
     <div>
       <MainPageHeader />

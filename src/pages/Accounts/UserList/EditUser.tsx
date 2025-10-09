@@ -18,11 +18,14 @@ interface EditUserProps {
   onCancel: () => void;
   onUpdate: (user: User) => void;
   user: User | null;
+ 
 }
 
 const EditUser: React.FC<EditUserProps> = ({ open, onCancel, onUpdate, user }) => {
   const [form] = Form.useForm();
   const [file, setFile] = useState<File | null>(null);
+  const [fileList, setFileList] = useState<any[]>([]);
+  
 
   // Đổ dữ liệu vào form khi mở modal
   useEffect(() => {
@@ -32,22 +35,33 @@ const EditUser: React.FC<EditUserProps> = ({ open, onCancel, onUpdate, user }) =
         email: user.email,
         phoneNumber: user.phoneNumber,
         cccd: user.cccd,
-        birth: user.birth ? dayjs(user.birth) : null,
+        birth: user.birth ? dayjs(user.birth, "YYYY-MM-DD") : null,
         gender: user.gender,
         address: user.address,
       });
+       if (user.avatar) {
+      setFileList([
+        {
+          uid: "-1",
+          status: "done",
+          url: user.avatar, 
+        },
+      ]);
+    }
       setFile(null);
     }
   }, [user, form]);
 
   // Upload file
-  const handleUploadChange = (info: any) => {
-    if (info.fileList.length > 0) {
-      setFile(info.fileList[0].originFileObj);
-    } else {
-      setFile(null);
-    }
-  };
+  const handleUploadChange = ({ fileList }: any) => {
+  setFileList(fileList);
+
+  if (fileList.length > 0 && fileList[0].originFileObj) {
+    setFile(fileList[0].originFileObj);
+  } else {
+    setFile(null);
+  }
+};
 
   // Submit form
   const handleSubmit = async (values: any) => {
@@ -62,7 +76,7 @@ const EditUser: React.FC<EditUserProps> = ({ open, onCancel, onUpdate, user }) =
     formData.append("gender", values.gender);
     formData.append("address", values.address);
 
-   
+
     if (values.birth) {
       formData.append("birth", values.birth.format("YYYY-MM-DD"));
     } else {
@@ -77,23 +91,26 @@ const EditUser: React.FC<EditUserProps> = ({ open, onCancel, onUpdate, user }) =
     }
 
     try {
-      await testPutAccountsApi(formData);
-
+      const u = await testPutAccountsApi(formData);
+      
       const updatedUser: User = {
         ...user,
         ...values,
+        
         id: user.id, // ✅ giữ id
         birth: values.birth ? values.birth.format("YYYY-MM-DD") : null,
         avatar: file ? file.name : user.avatar,
         updateAt: new Date().toISOString(),
       };
+      console.log("AAAAAAA",updatedUser);
+      
 
       notification.success({
         message: "Cập nhật thành công",
         description: `Người dùng ${user.name} đã được cập nhật.`,
       });
 
-      onUpdate(updatedUser);
+      onUpdate(u.data);
       form.resetFields();
       onCancel();
     } catch (err: any) {
@@ -164,7 +181,13 @@ const EditUser: React.FC<EditUserProps> = ({ open, onCancel, onUpdate, user }) =
         </Form.Item>
 
         <Form.Item label="Ảnh">
-          <Upload beforeUpload={() => false} onChange={handleUploadChange} maxCount={1} listType="picture">
+          <Upload
+            beforeUpload={() => false}
+            onChange={handleUploadChange}
+            fileList={fileList}
+            maxCount={1}
+            listType="picture"
+          >
             <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
           </Upload>
           {file && <p className="mt-2 text-sm text-gray-500">Ảnh: {file.name}</p>}

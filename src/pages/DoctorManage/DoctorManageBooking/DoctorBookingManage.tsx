@@ -1,61 +1,34 @@
 import { useEffect, useState } from "react";
 import BookingTableManage from "./DoctorBookingTableManage";
-import ModalRegisterTime from "./DoctorModalRegisterTime";
+
 import {
+  doctorSearchBooking,
   doctorSortBooking,
   getBookingsByDoctorId,
 } from "../../../api/Doctor/DoctorApi";
 import DoctorBookingDetail from "./DoctorBookingDetail";
 import type { DoctorBookingSortKeyModel } from "./DoctorBookingSortKeyModel";
+import type { Item } from "./DoctorBookingManageModel";
+import useUserInfoStore from "../../../Zustand/configZustand";
 
-type accountModel = {
-  id?: number;
-  name?: string;
-  avatar?: string;
-  address?: string;
-  phoneNumber?: string;
-  email?: string;
-  birth?: string;
+type dataToQueryModel = {
+  name: string;
+  phoneNumber: string;
+  KeyToSort: string;
+  date: string;
+  orderBy: string;
+  page: number;
+  size: number;
 };
-type Item = {
-  id: number;
-  doctor_id: string;
-  patient_id: string;
-  time_id: number;
-  clinic_id: number;
-  description: string;
-  status: string;
-  createdAt: string;
-  doctor?: {
-    id?: number;
-    account?: accountModel;
-    degree?: string;
-    specialtyName?: string;
-  };
-  appointmentDate?: string;
-  patient?: {
-    id?: number;
-    account?: accountModel;
-    bhyt?: string;
-  };
-  time?: {
-    id?: number;
-    start?: string;
-    end?: string;
-  };
-  clinic?: {
-    id?: number;
-    name?: string;
-  };
-};
-type TimeItem = {
-  id: number;
-  label: string;
+type searchInputValueModel = {
+  name: "";
+  phoneNumber: "";
+  date: "";
 };
 const BookingManage = () => {
   const [BookingList, setBookingList] = useState<Item[]>([]);
   const [pageSize, setPageSize] = useState<number>(10);
-  const [totalBillList, setTotalBillList] = useState<number>(500);
+  const [totalBooking, setTotalBooking] = useState<number>(500);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [filterCreatedAt, setFilterCreatedAt] = useState<{
     from: string;
@@ -64,23 +37,24 @@ const BookingManage = () => {
     from: "",
     to: "",
   });
-  const [timeSelected, setTimeSelected] = useState<TimeItem[]>([]);
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [dataToQuery, setDataToQuery] = useState<dataToQueryModel>({
+    name: "",
+    phoneNumber: "",
+    date: "",
+    KeyToSort: "",
+    orderBy: "",
+    page: 1,
+    size: 5,
+  });
+  const userInfo = useUserInfoStore((state) => state.userInfo);
   const [isDoctorDetailModalOpen, setIsDoctorDetailModalOpen] = useState(false);
-
   const [detailDoctorBooking, setDetailDoctorBooking] = useState({});
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-
+  const [searchInputValue, setSearchInputValue] =
+    useState<searchInputValueModel>({
+      name: "",
+      phoneNumber: "",
+      date: "",
+    });
   const [checkRender, setCheckRender] = useState<
     Record<DoctorBookingSortKeyModel, boolean>
   >({
@@ -91,76 +65,64 @@ const BookingManage = () => {
     patient: false,
     clinic: false,
     time: false,
+    id: false,
   });
 
-  const onLog = (page: number, pageSize: number) => {
-    console.log("Đang ở trang:", page, pageSize);
-  };
-
-  // handle change option (status and clinic)
-  const handleChange = (value: string) => {
-    let BookingListClone = BookingList;
-    BookingListClone = BookingListClone.filter((item) => {
-      return item.status === value;
-    });
-    setBookingList(BookingListClone);
+  const handleChangeSearchInputValue = (value: string, key: string) => {
+    setSearchInputValue((prevState) => ({
+      ...prevState,
+      [key]: value,
+    }));
   };
 
   //search by createAt
-  const handleFindByDate = () => {
-    if (!filterCreatedAt.from || !filterCreatedAt.to) {
-      alert("missing parameter");
-      return;
-    }
-    if (filterCreatedAt.from > filterCreatedAt.to) {
-      alert("from must be smaller to");
-      return;
-    }
-    const from = new Date(filterCreatedAt.from);
-    const to = new Date(filterCreatedAt.to);
-    let BookingListClone = BookingList;
-    BookingListClone = BookingListClone.filter((item) => {
-      return from <= new Date(item.createdAt) && new Date(item.createdAt) <= to;
-    });
-    setBookingList(BookingListClone);
-  };
+  const handleFindByDate = () => {};
 
   //handle sort
   const handleSort = async (key: DoctorBookingSortKeyModel) => {
     const res = await doctorSortBooking(
-      "2",
+      userInfo.actorId,
       key,
-      checkRender[key] ? "asc" : "desc"
+      checkRender[key] ? "asc" : "desc",
+      currentPage,
+      pageSize
     );
     setCheckRender({ ...checkRender, [key]: !checkRender[key] });
     setBookingList(res.data.result);
+    setPageSize(res.data.meta.pageSize);
+    setTotalBooking(res.data.meta.totals);
+    setCurrentPage(res.data.meta.page);
   };
-  const handleSearchByClinic = (value: string) => {
-    let cloneBookings = BookingList;
-    cloneBookings = cloneBookings.filter((item) => {
-      return item.clinic?.name?.includes(value);
+
+  const buildQuery = (data: dataToQueryModel) => {
+    let query = "";
+
+    Object.keys(data).forEach((key) => {
+      const typedKey = key as keyof dataToQueryModel;
+      const value = data[typedKey];
+
+      if (value !== undefined && value !== "") {
+        query += `&${typedKey}=${encodeURIComponent(String(value))}`;
+      }
     });
-    setBookingList(cloneBookings);
+
+    return query;
   };
   //handle search
-  const handleSearchBooking = (value: string, key: string) => {
-    let BookingListClone = BookingList;
-    switch (key) {
-      case "patient":
-        BookingListClone = BookingListClone.filter((item) => {
-          if (item && item.patient?.account?.name)
-            return item.patient?.account?.name.includes(value);
-        });
-        setBookingList(BookingListClone);
-        break;
-      default:
-        break;
-    }
+  const handleSearchBooking = async (value: string, key: string) => {
+    const nextData = { ...dataToQuery, [key]: value };
+    setDataToQuery({ ...dataToQuery, [key]: value });
+    const queryString = buildQuery(nextData);
+    const res = await doctorSearchBooking(userInfo.actorId, queryString);
+    setBookingList(res.data.result);
+    setPageSize(res.data.meta.pageSize);
+    setTotalBooking(res.data.meta.totals);
+    setCurrentPage(res.data.meta.page);
   };
 
   // initial value
   const handleGetBookingList = async () => {
-    const res = await getBookingsByDoctorId("2");
+    const res = await getBookingsByDoctorId(userInfo.actorId);
 
     setBookingList(res.data.result);
     const {
@@ -168,10 +130,32 @@ const BookingManage = () => {
     } = res.data;
 
     setPageSize(pageSize);
-    setTotalBillList(totals);
+    setTotalBooking(totals);
     setCurrentPage(page);
+    setSearchInputValue({
+      name: "",
+      phoneNumber: "",
+      date: "",
+    });
   };
-
+  const onLog = async (page: number, pageSize: number) => {
+    if (dataToQuery.name || dataToQuery.phoneNumber || dataToQuery.KeyToSort) {
+      const nextData = { ...dataToQuery, page: page, size: pageSize };
+      const queryString = buildQuery(nextData);
+      const res = await doctorSearchBooking(userInfo.actorId, queryString);
+      setBookingList(res.data.result);
+      setPageSize(res.data.meta.pageSize);
+      setTotalBooking(res.data.meta.totals);
+      setCurrentPage(res.data.meta.page);
+    } else {
+      const res = await getBookingsByDoctorId(userInfo.actorId, page, pageSize);
+      setBookingList(res.data.result);
+      const { meta } = res.data;
+      setPageSize(meta.pageSize);
+      setTotalBooking(meta.totals);
+      setCurrentPage(meta.page);
+    }
+  };
   useEffect(() => {
     handleGetBookingList();
   }, []);
@@ -181,28 +165,21 @@ const BookingManage = () => {
         BookingList={BookingList}
         pageSize={pageSize}
         currentPage={currentPage}
-        totalBillList={totalBillList}
+        totalBillList={totalBooking}
         onLog={onLog}
-        handleChange={handleChange}
+        // handleChange={handleChange}
         handleFindByDate={handleFindByDate}
         handleSort={handleSort}
         handleSearchBooking={handleSearchBooking}
         setFilterCreatedAt={setFilterCreatedAt}
         filterCreatedAt={filterCreatedAt}
         handleGetBookingList={handleGetBookingList}
-        showModal={showModal}
         setDetailDoctorBooking={setDetailDoctorBooking}
         setIsDoctorDetailModalOpen={setIsDoctorDetailModalOpen}
-        handleSearchByClinic={handleSearchByClinic}
+        handleChangeSearchInputValue={handleChangeSearchInputValue}
+        searchInputValue={searchInputValue}
       />
-      <ModalRegisterTime
-        isModalOpen={isModalOpen}
-        handleOk={handleOk}
-        handleCancel={handleCancel}
-        timeSelected={timeSelected}
-        setTimeSelected={setTimeSelected}
-        key={timeSelected[0]?.id || null}
-      />
+
       <DoctorBookingDetail
         BookingDetail={detailDoctorBooking}
         isModalOpen={isDoctorDetailModalOpen}

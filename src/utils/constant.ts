@@ -97,3 +97,16 @@ export const formatCurrency = (amount) => {
     currency: "VND",
   }).format(amount);
 };
+export const formatMonthYear = (dateString: string): string => {
+  // Tạo đối tượng Date từ chuỗi đầu vào
+  const date = new Date(dateString);
+
+  // Lấy tháng (getMonth() trả về từ 0–11 nên phải +1)
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+
+  // Lấy năm
+  const year = date.getFullYear();
+
+  // Ghép lại theo định dạng MM/YYYY
+  return `${month}/${year}`;
+};

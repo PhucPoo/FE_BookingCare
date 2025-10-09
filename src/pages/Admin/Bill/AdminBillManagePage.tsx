@@ -1,22 +1,31 @@
 import React, { useEffect, useState } from "react";
 import BillTable from "./AdminBillManageTable";
 import type { AdminBillManageModel } from "./AdminBillManageModel";
-import { adminGetAllBill, adminSortBill } from "../../../api/Admin/AdminApi";
-import type { searchDataModel } from "./BillSearchModel";
+import {
+  adminGetAllBill,
+  adminSearchBill,
+  adminSortBill,
+} from "../../../api/Admin/AdminApi";
+import type { searchDataModel, ServicesModel } from "./BillSearchModel";
 import AdminBillDetail from "./AdminBillDetail";
 import type { CheckBillSortKeyModel } from "./CheckBillSortKeyModel";
+import { getAllService } from "../../../api/Services/ServiceApi";
+import { formatMonthYear } from "../../../utils/constant";
 
 const BillManage = () => {
   const [BillList, setBillList] = useState<AdminBillManageModel[]>([]);
   const [BillDetail, setBillDetail] = useState<AdminBillManageModel>({});
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  const [pageSize, setPageSize] = useState<number>(10);
-  const [totalBillList, setTotalBillList] = useState<number>(500);
+  const [pageSize, setPageSize] = useState<number>(3);
+  const [totalBillList, setTotalBillList] = useState<number>(50);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [services, setServices] = useState<ServicesModel[]>([]);
   const [searchData, setSearchData] = useState<searchDataModel>({
-    patient: "",
+    accountName: "",
     support: "",
+    monthYear: "",
+    serviceId: "",
   });
   const [checkSort, setCheckSort] = useState<
     Record<CheckBillSortKeyModel, boolean>
@@ -28,40 +37,71 @@ const BillManage = () => {
     status: false,
     id: false,
   });
-  const onLog = (page: number, pageSize: number) => {
-    console.log("Đang ở trang:", page, pageSize);
-  };
-  const handleSearchBillByCondition = (value: string, key: string) => {
-    let BillListClone = BillList;
-
-    switch (key) {
-      case "patient":
-        BillListClone = BillListClone.filter((item) => {
-          if (item && item.patient?.name)
-            return item.patient?.name.includes(value);
-        });
-        setBillList(BillListClone);
-        break;
-      case "support":
-        BillListClone = BillListClone.filter((item) => {
-          if (item && item.support?.name)
-            return item.support?.name.includes(value);
-        });
-        setBillList(BillListClone);
-        break;
-
-      default:
-        break;
+  const onLog = async (page: number, pageSize: number) => {
+    if (
+      searchData.accountName ||
+      searchData.support ||
+      searchData.monthYear ||
+      searchData.serviceId
+    ) {
+      const nextData = { ...searchData, page: page, size: pageSize };
+      const queryString = buildQuery(nextData);
+      const res = await adminSearchBill(queryString);
+      setBillList(res.data.result);
+      setPageSize(res.data.meta.pageSize);
+      setTotalBillList(res.data.meta.totals);
+      setCurrentPage(res.data.meta.page);
+    } else {
+      const res = await adminGetAllBill(page, pageSize);
+      setBillList(res.data.result);
+      setPageSize(res.data.meta.pageSize);
+      setTotalBillList(res.data.meta.totals);
+      setCurrentPage(res.data.meta.page);
     }
+  };
+
+  const handleSearchBillByCondition = async (value: string, key: string) => {
+    const nextData = { ...searchData, [key]: value };
+    if (key === "monthDate") {
+      value = formatMonthYear(value);
+    }
+    setSearchData({ ...searchData, [key]: value });
+    const queryString = buildQuery(nextData);
+    const res = await adminSearchBill(queryString, currentPage, pageSize);
+    setBillList(res.data.result);
+    setPageSize(res.data.meta.pageSize);
+    setTotalBillList(res.data.meta.totals);
+    setCurrentPage(res.data.meta.page);
+  };
+  const buildQuery = (data: searchDataModel) => {
+    let query = "";
+
+    Object.keys(data).forEach((key) => {
+      const typedKey = key as keyof searchDataModel;
+      const value = data[typedKey];
+
+      if (value !== undefined && value !== "") {
+        query += `&${typedKey}=${encodeURIComponent(String(value))}`;
+      }
+    });
+
+    return query;
   };
   const handleSort = async (key: CheckBillSortKeyModel) => {
     const res = await adminSortBill(key, checkSort[key] ? "asc" : "desc");
     setCheckSort({ ...checkSort, [key]: !checkSort[key] });
     setBillList(res.data.result);
   };
+  const handleGetService = async () => {
+    const res = await getAllService(1, 5);
+    const data = [];
+    res.data.result.map((item: ServicesModel) => {
+      data.push({ value: item.id, label: item.name });
+    });
+    setServices(data);
+  };
   const handleGetBillList = async () => {
-    const result = await adminGetAllBill();
-
+    const result = await adminGetAllBill(1, 3);
     const {
       meta: { page, pageSize, totals },
     } = result.data;
@@ -70,12 +110,15 @@ const BillManage = () => {
     setTotalBillList(totals);
     setCurrentPage(page);
     setSearchData({
-      patient: "",
+      accountName: "",
       support: "",
+      monthYear: "",
+      serviceId: "",
     });
   };
   useEffect(() => {
     handleGetBillList();
+    handleGetService();
   }, []);
   return (
     <>
@@ -93,6 +136,7 @@ const BillManage = () => {
           setSearchData={setSearchData}
           setBillDetail={setBillDetail}
           setIsModalOpen={setIsModalOpen}
+          services={services}
         />
         <AdminBillDetail
           BillDetail={BillDetail}

@@ -1,71 +1,142 @@
-import React, { useState } from 'react';
-import type { Support } from './SupportTable'; // hoặc import từ supportTypes.ts nếu tách riêng
+import React, { useEffect, useState } from "react";
+import type { Support } from "./SupportTable";
+import { testGetClinicApi } from "../../../api/testClinic";
+import { testSearchSupportApi } from "../../../api/testSupport";
+import type { Clinic } from "../../Clinic/ClinicTable";
+import { Button, Input, Select } from "antd/lib";
 
-interface SupportFilterBarProps {
-  supports: Support[];
-  onFilter: (filtered: Support[]) => void;
+const { Option } = Select;
+
+interface SupportFilterKeywords {
+  name?: string;
+  phone?: string;
+  address?: string | null; // địa chỉ người dùng nhập
+  clinicId?: string | null;
 }
 
-const supportFilterBar: React.FC<SupportFilterBarProps> = ({ supports, onFilter,   }) => {
-  const [name, setName] = useState('');
-  // const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  // const [status, setStatus] = useState('');
+interface SupportFilterBarProps {
+  setFilteredSupports: (supports: Support[]) => void;
+  onFilter: (filtered: Support[], keywords: SupportFilterKeywords) => void;
+  pages: number;
+  pageSize: number;
+  name: string;
+  setName: (name: string) => void;
+  phone: string;
+  setPhone: (phone: string) => void;
+  address: string;
+  setAddress: (address: string) => void; // người dùng nhập địa chỉ
+  clinicId: string | null;
+  setClinicId: (clinicId: string) => void;
+}
 
-  const handleSearch = () => {
-    const filtered = supports.filter((support) => {
-      const matchName = name === '' || support.account.name.toLowerCase().includes(name.toLowerCase());
-      // const matchPrice = email === '' || support.account.email.toString().includes(email);
-      const matchPhone = phone === '' || support.account.phoneNumber.includes(phone);
-      return matchName && matchPhone ;
-    });
+const SupportFilterBar: React.FC<SupportFilterBarProps> = ({
+  setFilteredSupports,
+  onFilter,
+  pages,
+  pageSize,
+  name,
+  setName,
+  phone,
+  setPhone,
+  address,
+  setAddress, // người dùng nhập địa chỉ
+  clinicId,
+  setClinicId,
+}) => {
+  
 
-    onFilter(filtered);
+  const [clinicList, setClinicList] = useState<Clinic[]>([]);
+
+  // Load danh sách phòng khám
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const clinicRes = await testGetClinicApi();
+        setClinicList(clinicRes.data.result ?? []);
+      } catch (err) {
+        console.error("Lỗi load clinic:", err);
+      }
+    };
+    fetchData();
+  }, []);
+
+  // Handle Search
+  const handleSearch = async () => {
+    const keywords: SupportFilterKeywords = {
+      name,
+      phone,
+      address,
+      clinicId,
+    };
+
+    try {
+      const result = await testSearchSupportApi({
+        name: name || undefined,
+        phoneNumber: phone || undefined,
+        address: address || undefined, // gửi địa chỉ người dùng nhập
+        clinicId: clinicId ? Number(clinicId) : undefined,
+      } , pages, pageSize);
+
+      const supports = result.data?.result ?? [];
+      setFilteredSupports(supports);
+      onFilter(supports, keywords);
+    } catch (error) {
+      console.error("Lỗi khi tìm kiếm trợ lý:", error);
+      setFilteredSupports([]);
+      onFilter([], keywords);
+    }
   };
 
   return (
     <div className="flex flex-wrap gap-4 p-4 bg-white shadow rounded mb-4 w-full">
-      <input
-        type="text"
+      <Input
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="Tên trợ lý"
         className="border rounded px-3 py-2 flex-1 min-w-[150px]"
       />
-      {/* <input
-        type="text"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Email"
-        className="border rounded px-3 py-2 flex-1 min-w-[150px]"
-      /> */}
-      <input
+
+      <Input
         type="text"
         value={phone}
         onChange={(e) => setPhone(e.target.value)}
         placeholder="Số điện thoại"
         className="border rounded px-3 py-2 flex-1 min-w-[150px]"
       />
-      {/* <select
-        value={status}
-        onChange={(e) => setStatus(e.target.value)}
-        className="border rounded px-3 py-2 flex-1 min-w-[150px]"
+
+      <Input
+        type="text"
+        value={address}
+        onChange={(e) => setAddress(e.target.value)}
+        placeholder="Địa chỉ người dùng"
+        className="border rounded px-3 py-2 flex-1 min-w-[200px]"
+      />
+
+      <Select
+        placeholder="Chọn phòng khám"
+        style={{ width: 220 }}
+        size="large"
+        allowClear
+        value={clinicId}
+        onChange={setClinicId}
       >
-        <option value="">Trạng thái</option>
-        <option value="active">Hoạt động</option>
-        <option value="inactive">Nghỉ</option>
-      </select> */}
-      <button
+        {clinicList.map((c) => (
+          <Option key={c.id} value={String(c.id)}>
+            {c.name}
+          </Option>
+        ))}
+      </Select>
+
+      <Button
+        type="primary"
+        size="large"
+        className="min-w-[150px]"
         onClick={handleSearch}
-        className="bg-blue-600 text-white px-4 py-2 rounded flex-1 min-w-[150px]"
       >
         Tìm kiếm
-      </button>
-
+      </Button>
     </div>
-
-
   );
 };
 
-export default supportFilterBar;
+export default SupportFilterBar;

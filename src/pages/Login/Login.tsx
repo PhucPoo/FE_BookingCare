@@ -46,6 +46,7 @@ const Login: React.FC = () => {
 
       if (res && res.userLogin) {
         toast.success("Đăng nhập thành công");
+
         if (res.userLogin.role === "CLIENT") {
           navigate("/");
           return;

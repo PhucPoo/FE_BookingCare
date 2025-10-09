@@ -45,6 +45,7 @@ const MedicalFacilityList = () => {
             <div
               className="flex gap-5 medicalFacility_item_contain items-center cursor-pointer"
               onClick={() => navigate(`${medicalFacility.id}`)}
+              key={medicalFacility.id}
             >
               <img
                 src={medicalFacility?.image}

@@ -9,12 +9,17 @@ type UserInfoStoreState = {
     email: string;
     role: string;
     id: number;
+<<<<<<< HEAD
     patientId?: number;
     phoneNumber?: string;
     address?: string;
     dateOfBirth?: string;
     gender?: string;
     cccd?: string;
+=======
+    actorId: number;
+    actorType: string;
+>>>>>>> 8f1ba3998f6b471d49b39bd9c7a0b68b5287eeb5
   };
 };
 
@@ -49,6 +54,7 @@ const useUserInfoStore = create<UserInfoStore>()(
   devtools(
     persist(
       (set) => ({
+<<<<<<< HEAD
         userInfo: { 
           name: "", 
           email: "", 
@@ -60,6 +66,15 @@ const useUserInfoStore = create<UserInfoStore>()(
           dateOfBirth: "",
           gender: "",
           cccd: ""
+=======
+        userInfo: {
+          name: "",
+          email: "",
+          role: "",
+          id: 0,
+          actorId: 0,
+          actorType: "CLIENT",
+>>>>>>> 8f1ba3998f6b471d49b39bd9c7a0b68b5287eeb5
         },
         loginZustand: async (data) => {
           try {
@@ -89,6 +104,7 @@ const useUserInfoStore = create<UserInfoStore>()(
           }));
         },
         logout: async () => {
+<<<<<<< HEAD
           set({ 
             userInfo: { 
               name: "", 
@@ -101,6 +117,17 @@ const useUserInfoStore = create<UserInfoStore>()(
               gender: "",
               cccd: ""
             } 
+=======
+          set({
+            userInfo: {
+              name: "",
+              email: "",
+              role: "",
+              id: 0,
+              actorId: 0,
+              actorType: "CLIENT",
+            },
+>>>>>>> 8f1ba3998f6b471d49b39bd9c7a0b68b5287eeb5
           });
           document.cookie = `access_token=; path=/`;
           window.location.href = "/";
