@@ -266,7 +266,7 @@ const ProfileUpdate: React.FC = () => {
   };
 
   return (
-    <div className='body'>
+    <div className='updateinfo-body'>
         <div className="profile-container">
           <div className="profile-card">
             <div className="profile-header">
