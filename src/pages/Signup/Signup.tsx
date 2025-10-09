@@ -30,7 +30,7 @@ const Signup: React.FC = () => {
     setShowPassword(!showPassword);
   };
   const toggleComnfirmPasswordVisibility = () => {
-    setShowConfirmPassword(!showPassword);
+    setShowConfirmPassword(!showConfirmPassword);
   };
   const [errors, setErrors] = useState({
     email: "",
@@ -223,11 +223,7 @@ const Signup: React.FC = () => {
                       onClick={toggleComnfirmPasswordVisibility}
                       className="password-toggle"
                     >
-                      {showConfirmPassword ? (
-                        <EyeInvisibleOutlined />
-                      ) : (
-                        <EyeTwoTone />
-                      )}
+                      {showConfirmPassword ? <EyeInvisibleOutlined /> : <EyeTwoTone />}
                     </button>
                   </div>
                 </div>

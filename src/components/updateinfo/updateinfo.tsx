@@ -57,7 +57,6 @@ const ProfileUpdate: React.FC = () => {
   // Load user data from Zustand store
   useEffect(() => {
     console.log('User info from Zustand:', userInfo);
-
     if (userInfo && userInfo.id) {
       setFormData(prev => ({
         ...prev,
@@ -75,7 +74,6 @@ const ProfileUpdate: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-
     if (name === 'dateOfBirth') {
       console.log('DateOfBirth changed:', value);
     }
@@ -95,7 +93,6 @@ const ProfileUpdate: React.FC = () => {
         setError('Vui lòng chọn file ảnh hợp lệ');
         return;
       }
-
       if (file.size > 5 * 1024 * 1024) {
         setError('Kích thước ảnh không được vượt quá 5MB');
         return;
@@ -128,7 +125,6 @@ const ProfileUpdate: React.FC = () => {
     if (formData.dateOfBirth) {
       const birthDate = new Date(formData.dateOfBirth);
       const today = new Date();
-
       if (birthDate > today) {
         setError('Ngày sinh không được lớn hơn ngày hiện tại');
         return false;
@@ -158,7 +154,6 @@ const ProfileUpdate: React.FC = () => {
 
     try {
       const token = getCookie('access_token');
-
       if (!token) {
         setError('Vui lòng đăng nhập lại');
         setIsLoading(false);
@@ -184,7 +179,6 @@ const ProfileUpdate: React.FC = () => {
       if (formData.cccd.trim()) {
         formDataToSend.append('cccd', formData.cccd.trim());
       }
-
       // CRITICAL FIX: Backend sử dụng "birth" thay vì "dateOfBirth"
       if (formData.dateOfBirth && formData.dateOfBirth.trim()) {
         console.log('Sending birth field:', formData.dateOfBirth);
