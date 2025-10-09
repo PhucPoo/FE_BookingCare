@@ -1,13 +1,12 @@
-import React, { useState, useMemo } from "react";
-import Button from "antd/lib/button";
-import Modal from "antd/lib/modal";
+import React, { useState } from "react";
+import { Button, Modal, Pagination, Tooltip, notification } from "antd/lib";
+import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
 import DetailUser from "./DetailUser";
 import EditUser from "./EditUser";
 import { testDeleteAccountsApi, testSortAccountsApi } from "../../../api/testApi";
-import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
-import { notification, Pagination } from "antd";
 
 export interface User {
+  id: number;
   name: string;
   email: string;
   phoneNumber: string;
@@ -16,7 +15,7 @@ export interface User {
   birth: Date;
   address: string;
   gender: string;
-  avatar: File;
+  avatar: string | null;
   role: {
     id: number;
     name: string;
@@ -28,11 +27,16 @@ export interface User {
 interface UserTableProps {
   users: User[];
   setusers: (users: User[]) => void;
-  roleFilter?: string | null;
-  genderFilter?: string | null;
-  dateFilter?: string | null;
+  searchCccd?: string;
+  searchPhone?: string;
+  searchEmail?: string;
   onUpdateUser: (updatedUser: User) => void;
   onDeleteUser: (id: number) => void;
+  totalUsers: number;
+  pages: number;
+  pageSize: number;
+  setpages: (pages: number) => void;
+  setpageSize: (pageSize: number) => void;
 }
 
 type SortColumn = "name" | "createAt";
@@ -41,28 +45,27 @@ type SortDirection = "asc" | "desc";
 const UserTable: React.FC<UserTableProps> = ({
   users,
   setusers,
-  roleFilter,
-  genderFilter,
-  dateFilter,
   onUpdateUser,
   onDeleteUser,
+  searchCccd = "",
+  searchPhone = "",
+  searchEmail = "",
+  totalUsers,
+  pages,
+  pageSize,
+  setpages,
+  setpageSize,
 }) => {
-  const [sortColumn, setSortColumn] = useState<SortColumn>("name");
+  const [sortColumn] = useState<SortColumn>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteUserId, setDeleteUserId] = useState<number>(0);
 
-  // Modal chi tiết
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
-  // Modal sửa
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
-
-  // Pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 8;
 
   // Fetch sorted users
   const fetchSortedUsers = async (direction: SortDirection) => {
@@ -74,17 +77,17 @@ const UserTable: React.FC<UserTableProps> = ({
     }
   };
 
-  const handleClick = () => {
+  const handleSortClick = () => {
     const next = sortDirection === "asc" ? "desc" : "asc";
     setSortDirection(next);
     fetchSortedUsers(next);
   };
 
-  // Modal delete
   const handleOk = async () => {
     try {
       await testDeleteAccountsApi(deleteUserId);
       onDeleteUser(deleteUserId);
+      notification.success({ message: "Xoá người dùng thành công" });
     } catch (err: any) {
       notification.error({
         message: "Có lỗi xảy ra",
@@ -97,7 +100,6 @@ const UserTable: React.FC<UserTableProps> = ({
 
   const handleCancel = () => setIsModalOpen(false);
 
-  // Update
   const handleUpdateUser = (user: User) => {
     onUpdateUser(user);
     setEditingUser(null);
@@ -111,45 +113,41 @@ const UserTable: React.FC<UserTableProps> = ({
     4: "Client",
   };
 
-  // Filter
-  const filtered = useMemo(() => {
-    return users.filter((u) => {
-      if (roleFilter && u.role?.name.toLowerCase() !== roleFilter) return false;
-      if (genderFilter && u.gender?.toLowerCase() !== genderFilter) return false;
-      if (
-        dateFilter &&
-        new Date(u.createAt).toLocaleDateString("vi-VN") !==
-        new Date(dateFilter).toLocaleDateString("vi-VN")
-      )
-        return false;
-      return true;
-    });
-  }, [users, roleFilter, genderFilter, dateFilter]);
-
-  // Pagination slice
-  const startIndex = (currentPage - 1) * pageSize;
-  const paginatedUsers = filtered.slice(startIndex, startIndex + pageSize);
+  const highlightText = (text: string | number, keyword: string) => {
+    if (!keyword) return text;
+    const regex = new RegExp(`(${keyword})`, "gi");
+    return String(text).replace(
+      regex,
+      `<mark style="background: yellow;">$1</mark>`
+    );
+  };
 
   return (
     <div className="w-full bg-white rounded shadow overflow-x-auto">
       <table className="min-w-full text-base border-separate border-spacing-0">
         <thead className="bg-gray-100">
           <tr>
-            <th className="p-3 border border-gray-200 text-center font-medium">STT</th>
+            <th className="p-3 border border-gray-200 text-center font-medium">ID</th>
             <th
               className="p-3 border border-gray-200 cursor-pointer text-left font-medium select-none"
-              onClick={handleClick}
+              onClick={handleSortClick}
             >
               Tên {sortDirection === "asc" ? "🔼" : "🔽"}
             </th>
             <th className="p-3 border border-gray-200 hidden md:table-cell font-medium">Email</th>
-            <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">SĐT</th>
+            <Tooltip title="Số điện thoại">
+              <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">
+                SĐT
+              </th>
+            </Tooltip>
             <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">Gender</th>
-            <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">CCCD</th>
+            <Tooltip title="Căn cước công dân">
+              <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">CCCD</th>
+            </Tooltip>
             <th className="p-3 border border-gray-200 hidden lg:table-cell text-center font-medium">Role</th>
             <th
               className="p-3 border border-gray-200 hidden md:table-cell cursor-pointer text-center font-medium select-none"
-              onClick={handleClick}
+              onClick={handleSortClick}
             >
               Ngày tạo {sortDirection === "asc" ? "🔼" : "🔽"}
             </th>
@@ -157,14 +155,31 @@ const UserTable: React.FC<UserTableProps> = ({
           </tr>
         </thead>
         <tbody>
-          {paginatedUsers.map((u) => (
+          {users.map((u) => (
             <tr key={u.id} className="hover:bg-gray-50">
               <td className="p-3 border border-gray-200 text-center">{u.id}</td>
               <td className="p-3 border border-gray-200">{u.name}</td>
-              <td className="p-3 border border-gray-200 hidden md:table-cell">{u.email}</td>
-              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">{u.phoneNumber}</td>
-              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">{u.gender}</td>
-              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">{u.cccd}</td>
+              <td
+                className="p-3 border border-gray-200 hidden md:table-cell"
+                dangerouslySetInnerHTML={{
+                  __html: highlightText(u.email || "", searchEmail),
+                }}
+              />
+              <td
+                className="p-3 border border-gray-200 hidden md:table-cell text-center"
+                dangerouslySetInnerHTML={{
+                  __html: highlightText(u.phoneNumber || "", searchPhone),
+                }}
+              />
+              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">
+                {u.gender}
+              </td>
+              <td
+                className="p-3 border border-gray-200 hidden md:table-cell text-center"
+                dangerouslySetInnerHTML={{
+                  __html: highlightText(u.cccd || "", searchCccd),
+                }}
+              />
               <td className="p-3 border border-gray-200 hidden lg:table-cell text-center">
                 {roleMap[u.role?.id || 0]}
               </td>
@@ -207,23 +222,23 @@ const UserTable: React.FC<UserTableProps> = ({
         </tbody>
       </table>
 
-
       {/* Pagination */}
       <div className="flex justify-center py-4">
         <Pagination
-          current={currentPage}
+          showSizeChanger
+          current={pages}
+          total={totalUsers}
           pageSize={pageSize}
-          total={filtered.length}
-          onChange={(page) => setCurrentPage(page)}
+          pageSizeOptions={["1", "2", "3", "5"]}
+          onChange={(page, size) => {
+            setpages(page);
+            setpageSize(size);
+          }}
         />
       </div>
 
       {/* Modal chi tiết */}
-      <DetailUser
-        open={isDetailModalOpen}
-        user={selectedUser}
-        onClose={() => setIsDetailModalOpen(false)}
-      />
+      <DetailUser open={isDetailModalOpen} user={selectedUser} onClose={() => setIsDetailModalOpen(false)} />
 
       {/* Modal sửa */}
       <EditUser
@@ -234,15 +249,11 @@ const UserTable: React.FC<UserTableProps> = ({
           setEditingUser(null);
         }}
         onUpdate={handleUpdateUser}
+
       />
 
       {/* Modal xoá */}
-      <Modal
-        title="Xác nhận xoá"
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
-      >
+      <Modal title="Xác nhận xoá" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
         <p>Bạn có chắc chắn muốn xóa người dùng này không?</p>
       </Modal>
     </div>

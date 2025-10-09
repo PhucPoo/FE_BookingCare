@@ -1,10 +1,8 @@
 import React, { useState, useMemo } from "react";
-import Button from "antd/lib/button";
-import Modal from "antd/lib/modal";
+import { Button, Modal, Pagination, type PaginationProps } from "antd/lib";
+import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
 import EditSpecialty from "./EditSpecialty";
 import InformationSpecialty from "./Detail.Specialty";
-import { Pagination } from "antd/lib";
-import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
 
 export interface Specialty {
   id: number;
@@ -21,6 +19,11 @@ interface SpecialtyTableProps {
   setSpecialties: (s: Specialty[]) => void;
   onUpdateSpecialty: (s: Specialty) => void;
   onDeleteSpecialty: (id: number) => void;
+  totalSpecialtys: number;
+  pages: number;
+  pageSize: number;
+  setPageSize: (size: number) => void;
+  setpages: (pages: number) => void;
 }
 
 type SortColumn = "name" | "createAt" | "";
@@ -31,6 +34,11 @@ const SpecialtyTable: React.FC<SpecialtyTableProps> = ({
   setSpecialties,
   onUpdateSpecialty,
   onDeleteSpecialty,
+  totalSpecialtys,
+  pages,
+  pageSize,
+  setPageSize,
+  setpages,
 }) => {
   const [sortColumn, setSortColumn] = useState<SortColumn>("");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
@@ -47,9 +55,13 @@ const SpecialtyTable: React.FC<SpecialtyTableProps> = ({
     null
   );
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 8;
+  // 🟩 Pagination
+  const handlePageChange: PaginationProps["onChange"] = (page, size) => {
+    setpages(page);
+    setPageSize(size || pageSize);
+  };
 
+  // 🟥 Delete
   const handleOk = () => {
     onDeleteSpecialty(deleteId);
     setIsModalOpen(false);
@@ -57,7 +69,7 @@ const SpecialtyTable: React.FC<SpecialtyTableProps> = ({
 
   const handleCancel = () => setIsModalOpen(false);
 
-  // sort
+  // 🟦 Sort logic
   const sortedSpecialties = useMemo(() => {
     if (!sortColumn) return specialties;
     return [...specialties].sort((a, b) => {
@@ -97,9 +109,7 @@ const SpecialtyTable: React.FC<SpecialtyTableProps> = ({
       <span className="ml-1">{sortDirection === "asc" ? "▲" : "▼"}</span>
     ) : null;
 
-  const startIndex = (currentPage - 1) * pageSize;
-  const paginatedData = sortedSpecialties.slice(startIndex, startIndex + pageSize);
-
+  // 🧾 Render table
   return (
     <div className="w-full bg-white rounded shadow overflow-x-auto">
       <table className="min-w-full text-base border-separate border-spacing-0">
@@ -113,83 +123,112 @@ const SpecialtyTable: React.FC<SpecialtyTableProps> = ({
               Tên chuyên khoa {renderSortArrow("name")}
             </th>
             <th className="p-3 border border-gray-200 hidden md:table-cell font-medium">Mô tả</th>
-            <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">Trạng thái</th>
+            <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">
+              Trạng thái
+            </th>
             <th
               className="p-3 border border-gray-200 hidden md:table-cell cursor-pointer text-center font-medium"
               onClick={() => handleSort("createAt")}
             >
               Ngày tạo {renderSortArrow("createAt")}
             </th>
-            <th className="p-3 border border-gray-200 hidden lg:table-cell text-center font-medium">Ngày cập nhật</th>
-            <th className="p-3 border border-gray-200 hidden lg:table-cell text-center font-medium">Ảnh</th>
+            <th className="p-3 border border-gray-200 hidden lg:table-cell text-center font-medium">
+              Ngày cập nhật
+            </th>
+            <th className="p-3 border border-gray-200 hidden lg:table-cell text-center font-medium">
+              Ảnh
+            </th>
             <th className="p-3 border border-gray-200 text-center font-medium">Thao tác</th>
           </tr>
         </thead>
         <tbody>
-          {paginatedData.map((s, idx) => (
-            <tr key={s.id} className="hover:bg-gray-50">
-              <td className="p-3 border border-gray-200 text-center">{idx + 1}</td>
-              <td className="p-3 border border-gray-200">{s.name}</td>
-              <td className="p-3 border border-gray-200 hidden md:table-cell">{s.description}</td>
-              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">
-                {s.isActive ? "Hoạt động" : "Không hoạt động"}
-              </td>
-              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">
-                {s.createAt ? new Date(s.createAt).toLocaleDateString() : "—"}
-              </td>
-              <td className="p-3 border border-gray-200 hidden lg:table-cell text-center">
-                {s.updateAt ? new Date(s.updateAt).toLocaleDateString() : "—"}
-              </td>
-              <td className="p-3 border border-gray-200 hidden lg:table-cell text-center">
-                {s.image ? (
-                  <img
-                    src={s.image}
-                    alt={s.name}
-                    className="w-16 h-16 object-cover rounded mx-auto" // ảnh lớn hơn và căn giữa
-                  />
-                ) : (
-                  "—"
-                )}
-              </td>
-              <td className="p-3 border border-gray-200 text-center">
-                <div className="flex justify-center gap-2">
-                  <Button
-                    size="large"
-                    icon={<FaEdit />}
-                    style={{ backgroundColor: "#facc15", borderColor: "#facc15", color: "#000" }}
-                    onClick={() => {
-                      setEditingSpecialty(s);
-                      setIsEditModalOpen(true);
-                    }}
-                  />
-                  <Button
-                    size="large"
-                    icon={<FaTrash />}
-                    style={{ backgroundColor: "#b91c1c", borderColor: "#b91c1c", color: "#fff" }}
-                    onClick={() => {
-                      setIsModalOpen(true);
-                      setDeleteId(s.id);
-                    }}
-                  />
-                  <Button
-                    size="large"
-                    icon={<FaEye />}
-                    style={{ backgroundColor: "#3b82f6", borderColor: "#3b82f6", color: "#fff" }}
-                    onClick={() => {
-                      setSelectedSpecialty(s);
-                      setIsDetailModalOpen(true);
-                    }}
-                  />
-                </div>
+          {sortedSpecialties.length > 0 ? (
+            sortedSpecialties.map((s) => (
+              <tr key={s.id} className="hover:bg-gray-50">
+                <td className="p-3 border border-gray-200 text-center">
+                  {s.id}
+                </td>
+                <td className="p-3 border border-gray-200">{s.name}</td>
+                <td className="p-3 border border-gray-200 hidden md:table-cell">{s.description}</td>
+                <td className="p-3 border border-gray-200 hidden md:table-cell text-center">
+                  {s.isActive ? "Hoạt động" : "Không hoạt động"}
+                </td>
+                <td className="p-3 border border-gray-200 hidden md:table-cell text-center">
+                  {s.createAt ? new Date(s.createAt).toLocaleDateString("vi-VN") : "—"}
+                </td>
+                <td className="p-3 border border-gray-200 hidden lg:table-cell text-center">
+                  {s.updateAt ? new Date(s.updateAt).toLocaleDateString("vi-VN") : "—"}
+                </td>
+                <td className="p-3 border border-gray-200 hidden lg:table-cell text-center">
+                  {s.image ? (
+                    <img
+                      src={s.image}
+                      alt={s.name}
+                      className="w-16 h-16 object-cover rounded mx-auto"
+                    />
+                  ) : (
+                    "—"
+                  )}
+                </td>
+                <td className="p-3 border border-gray-200 text-center">
+                  <div className="flex justify-center gap-2">
+                    <Button
+                      size="large"
+                      icon={<FaEdit />}
+                      style={{
+                        backgroundColor: "#facc15",
+                        borderColor: "#facc15",
+                        color: "#000",
+                      }}
+                      onClick={() => {
+                        setEditingSpecialty(s);
+                        setIsEditModalOpen(true);
+                      }}
+                    />
+                    <Button
+                      size="large"
+                      icon={<FaTrash />}
+                      style={{
+                        backgroundColor: "#b91c1c",
+                        borderColor: "#b91c1c",
+                        color: "#fff",
+                      }}
+                      onClick={() => {
+                        setIsModalOpen(true);
+                        setDeleteId(s.id);
+                      }}
+                    />
+                    <Button
+                      size="large"
+                      icon={<FaEye />}
+                      style={{
+                        backgroundColor: "#3b82f6",
+                        borderColor: "#3b82f6",
+                        color: "#fff",
+                      }}
+                      onClick={() => {
+                        setSelectedSpecialty(s);
+                        setIsDetailModalOpen(true);
+                      }}
+                    />
+                  </div>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td
+                colSpan={8}
+                className="text-center text-gray-500 py-6 border border-gray-200"
+              >
+                Không có chuyên khoa nào được tìm thấy
               </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
 
-
-
-      {/* Modal detail */}
+      {/* Modal xem chi tiết */}
       <InformationSpecialty
         open={isDetailModalOpen}
         specialty={selectedSpecialty}
@@ -199,7 +238,7 @@ const SpecialtyTable: React.FC<SpecialtyTableProps> = ({
         }}
       />
 
-      {/* Modal edit */}
+      {/* Modal sửa */}
       <EditSpecialty
         open={isEditModalOpen}
         specialty={editingSpecialty}
@@ -210,7 +249,7 @@ const SpecialtyTable: React.FC<SpecialtyTableProps> = ({
         onUpdate={onUpdateSpecialty}
       />
 
-      {/* Modal delete */}
+      {/* Modal xóa */}
       <Modal
         title="Xóa chuyên khoa"
         open={isModalOpen}
@@ -219,16 +258,19 @@ const SpecialtyTable: React.FC<SpecialtyTableProps> = ({
       >
         <p>Bạn có chắc chắn muốn xóa chuyên khoa này không?</p>
       </Modal>
+
+      {/* Pagination */}
       <div className="flex justify-center py-4">
         <Pagination
-          current={currentPage}
+          showSizeChanger
+          current={pages}
+          total={totalSpecialtys}
           pageSize={pageSize}
-          total={sortedSpecialties.length}
-          onChange={(page) => setCurrentPage(page)}
+          pageSizeOptions={["3", "5", "10"]}
+          onChange={handlePageChange}
         />
       </div>
     </div>
-
   );
 };
 

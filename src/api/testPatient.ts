@@ -8,7 +8,6 @@ const config = {
   },
 };
 export const testPostPatientApi =async(data: CreatePatientDto)=> {
-  console.log("@@@@@@@@@@@@@@@@@@@@");
   
     const response = await customAxiosInstance.post(
     `http://localhost:8080/api/v1/patients`,
@@ -37,6 +36,35 @@ export const testGetPatientApi =async() => {
   console.log("🚀 ~ testGetPatientsApi ~ response:", response);
   return response.data;
   
+};
+
+interface SearchPatientParams {
+  name: string;
+  address: string;
+  phoneNumber: string;
+  bhyt: string;
+  cccd: string;
+}
+
+
+export const testSearchPatientApi = async (params: SearchPatientParams,page:number, pageSize:number) => {
+  const response = await customAxiosInstance.get(
+    `http://localhost:8080/api/v1/patients/search?size=${pageSize}&page=${page}`,
+    //http:localhost:8080/api/v1/patients/search?name=I'm super admin2222&address=Hà Nội&phoneNumber=08&bhyt=090&cccd=124
+    {
+      params: {
+       name: params.name,
+       address: params.address,
+       phoneNumber: params.phoneNumber,
+       bhyt: params.bhyt,
+       cccd: params.cccd,
+      },
+      ...config,
+    }
+  );
+  console.log("🚀 ~ testSearchDoctorsApi ~ response:", response);
+  return response.data;
+
 };
 export const testDeletePatientApi =async() => {
     const response = await customAxiosInstance.delete(

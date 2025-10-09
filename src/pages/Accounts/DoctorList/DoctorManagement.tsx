@@ -1,34 +1,67 @@
 import React, { useEffect, useState } from "react";
 import DoctorFilterBar from "./DoctorFilterBar";
 import DoctorTable, { type Doctor } from "./DoctorTable";
-import { testDeleteDoctorApi, testGetDoctorApi } from "../../../api/testDoctor";
-import DoctorAdvancedFilter from "./DoctorAdvancedFilter";
-
+import { testDeleteDoctorApi, testSearchDoctorApi } from "../../../api/testDoctor";
 
 const DoctorManagement: React.FC = () => {
+  const [pageSize, setPageSize] = useState<number>(2);
+  const [pages, setPages] = useState<number>(1);
+  const [totalDoctorList, setTotalDoctorList] = useState<number>(10);
+  const [name, setName] = useState("");
+  const [cost, setCost] = useState("");
+  const [phone, setPhone] = useState("");
+  const [degree, setDegree] = useState<string | null>(null);
+  const [specialtyId, setSpecialtyId] = useState<string | null>(null);
+  const [clinicId, setClinicId] = useState<string | null>(null);
+  const [monthYear, setMonthYear] = useState<string | null>(null);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [filteredDoctors, setFilteredDoctors] = useState<Doctor[]>([]);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [keywords, setKeywords] = useState({
+    name: "",
+    phone: "",
+    cost: "",
+    degree: null as string | null,
+    specialtyId: null as string | null,
+    clinicId: null as string | null,
+    monthYear: null as string | null,
 
-  const [DegreeFilter, setDegreeFilter] = useState<string | null>(null);
-  const [CreateAtFilter, setCreatedAtFilter] = useState<string | null>(null);
-  const [SpecialtyFilter, setSpecialtyFilter] = useState<string | null>(null);
-  const [ClinicFilter, setClinicFilter] = useState<string | null>(null);
+  });
+  const parseCostRange = (range: string) => {
+    if (!range) return { min: undefined, max: undefined };
+    const [min, max] = range.split("-").map(Number);
+    return { min, max };
+  };
 
-
+  const costRange = parseCostRange(cost);
   // Lấy danh sách bác sĩ từ API
   useEffect(() => {
+    
     const fetchData = async () => {
       try {
-        const res = await testGetDoctorApi();
+        const res = await testSearchDoctorApi({
+          name: name ,
+          phoneNumber: phone || undefined,
+          min: costRange.min,
+          max: costRange.max,
+          degree: degree || undefined,
+          specialtyId: specialtyId ? Number(specialtyId) : undefined,
+          clinicId: clinicId ? Number(clinicId) : undefined,
+          monthYear: monthYear || undefined,
+
+        }, pageSize,pages);
         setDoctors(res.data.result);
+        console.log( setDoctors(res.data.result));
+        
         setFilteredDoctors(res.data.result);
+        setTotalDoctorList(res.data.meta.totals);
+
       } catch (error) {
-        console.error(error);
+        console.error("Lỗi load danh sách bác sĩ:", error);
       }
     };
     fetchData();
-  }, []);
+  }, [pages, pageSize]);
+
 
 
   // Cập nhật bác sĩ
@@ -46,60 +79,28 @@ const DoctorManagement: React.FC = () => {
   const handleDeleteDoctor = async (id: number) => {
     try {
       await testDeleteDoctorApi(id); // gọi API xóa DB
-      setDoctors(prev => {
-        const newDoctors = prev.filter(doc => Number(doc.id) !== Number(id));
-        console.log("Danh sách bác sĩ sau khi xóa:", newDoctors);
-        return newDoctors;
-      });
+       const res = await testSearchDoctorApi(
+      {
+        name: name,
+        phoneNumber: phone || undefined,
+        min: costRange.min,
+        max: costRange.max,
+        degree: degree || undefined,
+        specialtyId: specialtyId ? Number(specialtyId) : undefined,
+        clinicId: clinicId ? Number(clinicId) : undefined,
+        monthYear: monthYear || undefined,
+      },
+      pageSize,
+      pages
+    );
+
+    setDoctors(res.data.result);
+    setFilteredDoctors(res.data.result);
+    setTotalDoctorList(res.data.meta.totals);
     } catch (err) {
       console.error("Lỗi xóa bác sĩ:", err);
     }
   };
-  const handleFilter = () => {
-    let data = [...doctors];
-
-    // Lọc theo học vị
-    if (DegreeFilter) {
-      data = data.filter(
-        (s) => s.degree?.toLowerCase() === DegreeFilter.toLowerCase()
-      );
-    }
-
-    // Lọc theo tháng/năm tạo
-    if (CreateAtFilter) {
-      const selectedMonth = new Date(CreateAtFilter).getMonth();
-      const selectedYear = new Date(CreateAtFilter).getFullYear();
-
-      data = data.filter((s) => {
-        const createDate = new Date(s.createAt);
-        return (
-          createDate.getMonth() === selectedMonth &&
-          createDate.getFullYear() === selectedYear
-        );
-      });
-    }
-
-    // Lọc theo chuyên khoa
-    if (SpecialtyFilter) {
-      data = data.filter(
-        (s) => s.specialtyName?.toLowerCase() === SpecialtyFilter.toLowerCase()
-      );
-    }
-
-    // Lọc theo phòng khám
-    if (ClinicFilter) {
-      data = data.filter(
-        (s) => s.clinic?.name?.toLowerCase() === ClinicFilter.toLowerCase()
-      );
-    }
-
-    setFilteredDoctors(data);
-  };
-   useEffect(() => {
-      handleFilter();
-    }, [DegreeFilter,CreateAtFilter,ClinicFilter,SpecialtyFilter]);
-
-
 
   return (
     <div className="p-4 sm:p-6">
@@ -108,33 +109,56 @@ const DoctorManagement: React.FC = () => {
       </h1>
 
       {/* Bộ lọc bác sĩ */}
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex-1">
-          <DoctorFilterBar doctors={doctors} onFilter={setFilteredDoctors} />
-        </div>
-      </div>
-
-      {/* Thanh lọc + nút Thêm bác sĩ */}
-
-
-      <DoctorAdvancedFilter
-        onChangeDegree={setDegreeFilter}
-        onChangeCreatedAt={setCreatedAtFilter}
-        onChangeSpecialty={setSpecialtyFilter}
-        onChangeClinic={setClinicFilter}
-        onOpenAdd={() => setIsAddModalOpen(true)}
-      ></DoctorAdvancedFilter>
+      <DoctorFilterBar
+        filteredDoctors={setFilteredDoctors}
+        onFilter={(filtered, kw) => {
+          setFilteredDoctors(filtered);
+          setKeywords({
+            name: kw.name ?? "",
+            phone: kw.phone ?? "",
+            cost: kw.cost ?? "",
+            degree: kw.degree ?? null,
+            specialtyId: kw.specialtyId ?? null,
+            clinicId: kw.clinicId ?? null,
+            monthYear: kw.monthYear ?? null,
+          });
+        }
+        }
+       
+        pages={pages}
+        pageSize={pageSize}
+        name={name}
+        setName={setName}
+        cost={cost}
+        setCost={setCost}
+        phone={phone}
+        setPhone={setPhone}
+        degree={degree}
+        setDegree={setDegree}
+        specialtyId={specialtyId}
+        setSpecialtyId={setSpecialtyId}
+        clinicId={clinicId}
+        setClinicId={setClinicId}
+        monthYear={monthYear}
+        setMonthYear={setMonthYear}
+      />
 
       {/* Bảng bác sĩ */}
       <DoctorTable
         doctors={filteredDoctors}
-        setdoctor={setDoctors}
         onUpdateDoctor={handleUpdateDoctor}
         onDeleteDoctor={handleDeleteDoctor}
+        searchName={keywords.name}
+        searchPhone={keywords.phone}
+        searchCost={keywords.cost}
+        totalDoctorList={totalDoctorList}
+        pages={pages}
+        pageSize={pageSize}
+        setpages={setPages}
+        setpageSize={setPageSize}
+
+
       />
-
-      
-
     </div>
   );
 };

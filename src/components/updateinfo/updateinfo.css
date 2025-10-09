@@ -4,31 +4,51 @@
 }  */
 
 .body {
+  position: relative;
   font-family: Arial, sans-serif;
-  background-color: #b2ebf2; 
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
 }
 
+.body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: #fff;
+  background-size: cover;
+  background-position: center;
+  filter: blur(10px);
+  transform: scale(1.08);
+  z-index: 0;
+}
+
+/* Form chính (modal) */
 .profile-container {
+  position: relative;
+  z-index: 1;
+  background: #ffffff; /* trắng hoàn toàn */
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
   width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
+  max-width: 650px; /* rộng hơn để cân đối */
+  text-align: center;
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.6s ease; /* hiệu ứng xuất hiện mượt */
 }
-
 /* Card */
 .profile-card {
-  background: #ccf5f9;
+  background: #f0f7f8;
   border-radius: 20px;
-  border: 2px solid #4682b4;
+  border: 2px solid #4093d7;
   padding: 30px 40px;
   width: 100%;
-  max-width: 700px; /* rộng ra cho giống ảnh */
-  text-align: center;
+  max-width: 800px; 
+  text-align: start;
 }
 
 /* Header */
@@ -39,7 +59,7 @@
 .brand-title {
   font-size: 20px;
   font-weight: bold;
-  color: #000;
+  color: #d75f5f;
   margin-bottom: 4px;
 }
 
@@ -115,16 +135,22 @@
 }
 
 /* File input */
+.file-upload-wrapper{
+  margin-top: 20px;
+}
 .file-upload-button {
   background-color: #1890ff;
   color: white;
-  padding: 6px 16px;
+  max-width: 300px;
+  padding: 12px 20px;
   border-radius: 6px;
   cursor: pointer;
   transition: 0.3s;
   font-size: 14px;
   white-space: nowrap;
-
+}
+.file-info{
+  padding-top:15px;
 }
 
 /* Button */

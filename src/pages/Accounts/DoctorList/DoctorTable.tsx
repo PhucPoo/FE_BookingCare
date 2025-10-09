@@ -1,17 +1,17 @@
 import React, { useState, useMemo } from "react";
-import Button from "antd/lib/button";
-import Modal from "antd/lib/modal";
+import { Button, Modal, Pagination, type PaginationProps } from "antd/lib";
+import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
 import DetailDoctor from "./DetailDoctor";
 import EditDoctor from "./EditDoctor";
 import type { Clinic } from "../../Clinic/ClinicTable";
 import type { Specialty } from "../../Specialty/SpecialtyTable";
-import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
-import { Pagination } from "antd/lib";
+import { Tooltip } from "antd/lib";
 
 export interface Doctor {
   id: number;
   cost: number;
   degree: "BACHELOR" | "MASTER" | "DOCTOR";
+  isActive: boolean;
   accountId: number;
   account: {
     id: number;
@@ -29,32 +29,100 @@ export interface Doctor {
 }
 
 interface DoctorTableProps {
-  doctors: Doctor[];
-  setdoctor: (doctors: Doctor[]) => void;
+  doctors?: Doctor[];
+  searchName?: string;
+  searchPhone?: string;
+  searchCost?: string;
   onUpdateDoctor: (updatedDoctor: Doctor) => void;
   onDeleteDoctor: (id: number) => void;
+  totalDoctorList: number;
+  pages: number;
+  pageSize: number;
+  setpages: (pages: number) => void;
+  setpageSize: (pageSize: number) => void;
+
 }
 
-type SortColumn = "name" | "createAt" | "";
-type SortDirection = "asc" | "desc";
+const getStatusBadge = (isActive: boolean) =>
+  isActive ? (
+    <span className="bg-green-500 text-white px-2 py-1 rounded text-sm">Hoạt động</span>
+  ) : (
+    <span className="bg-red-500 text-white px-2 py-1 rounded text-sm">Nghỉ</span>
+  );
+
 
 const DoctorTable: React.FC<DoctorTableProps> = ({
-  doctors,
-  setdoctor,
+  doctors = [],
+  // setdoctor,
   onUpdateDoctor,
   onDeleteDoctor,
+  searchName = "",
+  searchPhone = "",
+  searchCost = "",
+  totalDoctorList,
+  pages,
+  pageSize,
+  setpages,
+  setpageSize,
+
 }) => {
-  // Sort
-  const [sortColumn, setSortColumn] = useState<SortColumn>("");
-  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+  const [sortColumn, setSortColumn] = useState<"name" | "createAt" | "">("");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
-  // Pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 8;
 
-  // Modal delete
+
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteDoctorId, setDeleteDoctorId] = useState<number>(0);
+
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
+
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingDoctor, setEditingDoctor] = useState<Doctor | null>(null);
+
+  const handleSort = (column: "name" | "createAt") => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortColumn(column);
+      setSortDirection("asc");
+    }
+  };
+  const onShowSizeChange: PaginationProps['onShowSizeChange'] = (current, pageSize) => {
+    setpageSize(pageSize);
+    setpages(current);
+  };
+
+
+  const renderSortArrow = (column: "name" | "createAt") => {
+    if (sortColumn !== column) return null;
+    return <span>{sortDirection === "asc" ? "▲" : "▼"}</span>;
+  };
+
+  const highlightText = (text: string | number, keyword: string) => {
+    if (!keyword) return String(text);
+    const regex = new RegExp(`(${keyword})`, "gi");
+    return String(text).replace(regex, `<mark style="background: yellow;">$1</mark>`);
+  };
+
+  const sortedDoctors = useMemo(() => {
+    const validDoctors = Array.isArray(doctors) ? doctors : [];
+    if (!sortColumn) return validDoctors;
+
+    return [...validDoctors].sort((a, b) => {
+      let aVal: any, bVal: any;
+      if (sortColumn === "name") {
+        aVal = a.account.name.toLowerCase();
+        bVal = b.account.name.toLowerCase();
+      } else {
+        aVal = new Date(a.createAt).getTime();
+        bVal = new Date(b.createAt).getTime();
+      }
+      return sortDirection === "asc" ? aVal - bVal : bVal - aVal;
+    });
+  }, [doctors, sortColumn, sortDirection]);
+
+
 
   const handleConfirmDelete = async () => {
     try {
@@ -65,132 +133,77 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
     }
   };
 
-  // Modal detail
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
-
-  // Modal edit
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editingDoctor, setEditingDoctor] = useState<Doctor | null>(null);
-
   const handleUpdateDoctor = (doctor: Doctor) => {
     onUpdateDoctor(doctor);
     setEditingDoctor(null);
     setIsEditModalOpen(false);
   };
 
-  // Sort logic
-  const sortedDoctors = useMemo(() => {
-    if (!sortColumn) return doctors;
-
-    return [...doctors].sort((a, b) => {
-      let aVal: any, bVal: any;
-
-      switch (sortColumn) {
-        case "name":
-          aVal = a.account.name.toLowerCase();
-          bVal = b.account.name.toLowerCase();
-          break;
-        case "createAt":
-          aVal = new Date(a.createAt).getTime();
-          bVal = new Date(b.createAt).getTime();
-          break;
-        default:
-          return 0;
-      }
-
-      if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
-      if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
-      return 0;
-    });
-  }, [doctors, sortColumn, sortDirection]);
-
-  const handleSort = (column: SortColumn) => {
-    if (sortColumn === column) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      setSortColumn(column);
-      setSortDirection("asc");
-    }
-  };
-
-  const renderSortArrow = (column: SortColumn) => {
-    if (sortColumn !== column) return null;
-    return <span className="ml-1">{sortDirection === "asc" ? "▲" : "▼"}</span>;
-  };
-
-  // Pagination slice
-  const startIndex = (currentPage - 1) * pageSize;
-  const paginatedDoctors = sortedDoctors.slice(startIndex, startIndex + pageSize);
 
   return (
     <div className="w-full bg-white rounded shadow overflow-x-auto">
       <table className="min-w-full text-base border-separate border-spacing-0">
         <thead className="bg-gray-100">
           <tr>
-            <th className="p-3 border border-gray-200 text-center font-medium">STT</th>
-            <th
-              className="p-3 border border-gray-200 cursor-pointer select-none md:table-cell font-medium"
-              onClick={() => handleSort("name")}
-            >
+            <th className="p-3 border border-gray-200 text-center font-medium">ID</th>
+            <th className="p-3 border border-gray-200 cursor-pointer text-left font-medium select-none" onClick={() => handleSort("name")}>
               Tên bác sĩ {renderSortArrow("name")}
             </th>
+            <Tooltip title="Số điện thoại" >
             <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">SĐT</th>
-            <th className="p-3 border border-gray-200 hidden xl:table-cell text-center font-medium">Chi phí</th>
-            <th className="p-3 border border-gray-200 hidden xl:table-cell text-center font-medium">Bằng cấp</th>
-            <th className="p-3 border border-gray-200 hidden xl:table-cell font-medium">Chuyên khoa</th>
-            <th className="p-3 border border-gray-200 hidden xl:table-cell font-medium">Phòng khám</th>
-            <th
-              className="p-3 border border-gray-200 hidden md:table-cell cursor-pointer select-none text-center font-medium"
-              onClick={() => handleSort("createAt")}
-            >
+            </Tooltip>
+            <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">Chi phí</th>
+            <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">Bằng cấp</th>
+            <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">Chuyên khoa</th>
+            <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">Phòng khám</th>
+            <th className="p-3 border border-gray-200 text-center font-medium">Trạng thái</th>
+
+            <th className="p-3 border border-gray-200 hidden md:table-cell cursor-pointer text-center font-medium select-none" onClick={() => handleSort("createAt")}>
               Ngày tạo {renderSortArrow("createAt")}
             </th>
             <th className="p-3 border border-gray-200 text-center font-medium">Thao tác</th>
           </tr>
         </thead>
         <tbody>
-          {paginatedDoctors.map((doc, idx) => (
-            <tr key={doc.id} className="hover:bg-gray-50">
-              <td className="p-3 border border-gray-200 text-center">{startIndex + idx + 1}</td>
-              <td className="p-3 border border-gray-200">{doc.account.name}</td>
-              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">{doc.account.phoneNumber}</td>
-              <td className="p-3 border border-gray-200 hidden xl:table-cell text-center">{doc.cost}</td>
-              <td className="p-3 border border-gray-200 hidden xl:table-cell text-center">{doc.degree}</td>
-              <td className="p-3 border border-gray-200 hidden xl:table-cell">{doc.specialtyName || "—"}</td>
-              <td className="p-3 border border-gray-200 hidden xl:table-cell">{doc.clinic?.name || "—"}</td>
+          {sortedDoctors.map((doc) => (
+
+
+            <tr className="hover:bg-gray-50" key={doc.id}>
+              <td className="p-3 border border-gray-200 text-center">{doc.id}</td>
+              <td
+                className="p-3 border border-gray-200"
+                dangerouslySetInnerHTML={{ __html: highlightText(doc.account.name, searchName) }}
+              />
+              <td
+                className="p-3 border border-gray-200 hidden md:table-cell text-center"
+                dangerouslySetInnerHTML={{ __html: highlightText(doc.account.phoneNumber, searchPhone) }}
+              />
+              <td
+                className="p-3 border border-gray-200 hidden md:table-cell text-center"
+                dangerouslySetInnerHTML={{ __html: highlightText(doc.cost, searchCost) }}
+              />
+              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">{doc.degree}</td>
+              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">{doc.specialty?.name || "—"}</td>
+              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">{doc.clinic?.name || "—"}</td>
+              <td className="p-3 border border-gray-200 text-center">{getStatusBadge(doc.isActive)}</td>
+
               <td className="p-3 border border-gray-200 hidden md:table-cell text-center">
                 {doc.createAt ? new Date(doc.createAt).toLocaleDateString() : "—"}
               </td>
-              <td className="p-3 border border-gray-200 text-center">
-                <div className="flex flex-wrap justify-center gap-2">
-                  <Button
+              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">
+                <div className="flex justify-center gap-2">
+                  <Button icon={<FaEdit />}
+                    style={{ backgroundColor: "#facc15", borderColor: "#facc15", color: "#000", }}
                     size="large"
-                    icon={<FaEdit />}
-                    style={{ backgroundColor: "#facc15", borderColor: "#facc15", color: "#000" }}
-                    onClick={() => {
-                      setEditingDoctor(doc);
-                      setIsEditModalOpen(true);
-                    }}
-                  />
-                  <Button
-                    size="large"
-                    icon={<FaTrash />}
+                    onClick={() => { setEditingDoctor(doc); setIsEditModalOpen(true); }} />
+                  <Button icon={<FaTrash />}
                     style={{ backgroundColor: "#b91c1c", borderColor: "#b91c1c", color: "#fff" }}
-                    onClick={() => {
-                      setDeleteDoctorId(doc.id);
-                      setIsDeleteModalOpen(true);
-                    }}
-                  />
-                  <Button
                     size="large"
-                    icon={<FaEye />}
+                    danger onClick={() => { setDeleteDoctorId(doc.id); setIsDeleteModalOpen(true); }} />
+                  <Button icon={<FaEye />}
                     style={{ backgroundColor: "#3b82f6", borderColor: "#3b82f6", color: "#fff" }}
-                    onClick={() => {
-                      setSelectedDoctor(doc);
-                      setIsDetailModalOpen(true);
-                    }}
-                  />
+                    size="large"
+                    onClick={() => { setSelectedDoctor(doc); setIsDetailModalOpen(true); }} />
                 </div>
               </td>
             </tr>
@@ -198,42 +211,21 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
         </tbody>
       </table>
 
-
-      {/* Pagination */}
       <div className="flex justify-center py-4">
         <Pagination
-          current={currentPage}
+          showSizeChanger
+          onChange={onShowSizeChange}
+          defaultCurrent={pages}
+          total={totalDoctorList}
           pageSize={pageSize}
-          total={sortedDoctors.length}
-          onChange={(page) => setCurrentPage(page)}
+          pageSizeOptions={['1', '2', '3', '5']}
+
         />
       </div>
 
-      {/* Modal chi tiết */}
-      <DetailDoctor
-        open={isDetailModalOpen}
-        doctor={selectedDoctor}
-        onClose={() => setIsDetailModalOpen(false)}
-      />
-
-      {/* Modal sửa */}
-      <EditDoctor
-        open={isEditModalOpen}
-        doctor={editingDoctor}
-        onCancel={() => {
-          setIsEditModalOpen(false);
-          setEditingDoctor(null);
-        }}
-        onUpdate={handleUpdateDoctor}
-      />
-
-      {/* Modal xác nhận xóa */}
-      <Modal
-        title="Xác nhận xóa"
-        open={isDeleteModalOpen}
-        onOk={handleConfirmDelete}
-        onCancel={() => setIsDeleteModalOpen(false)}
-      >
+      <DetailDoctor open={isDetailModalOpen} doctor={selectedDoctor} onClose={() => setIsDetailModalOpen(false)} />
+      <EditDoctor open={isEditModalOpen} doctor={editingDoctor} onCancel={() => { setIsEditModalOpen(false); setEditingDoctor(null); }} onUpdate={handleUpdateDoctor} />
+      <Modal title="Xác nhận xóa" open={isDeleteModalOpen} onOk={handleConfirmDelete} onCancel={() => setIsDeleteModalOpen(false)}>
         <p>Bạn có chắc chắn muốn xóa bác sĩ này không?</p>
       </Modal>
     </div>

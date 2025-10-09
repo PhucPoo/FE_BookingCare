@@ -14,11 +14,13 @@ interface InformationuserProps {
 }
 
 
-const Informationuser: React.FC<InformationuserProps> = ({
+const DetailUser: React.FC<InformationuserProps> = ({
   open,
   user,
   onClose,
 }) => {
+  console.log("ABC",user);
+  
   const handleFormatDay = (time: string | number | Date) => {
     const date = new Date(time);
     const VNTime = date.toLocaleString("vi-VN", {
@@ -32,6 +34,18 @@ const Informationuser: React.FC<InformationuserProps> = ({
     });
     return VNTime;
   };
+  const handleFormatDayOnly = (time: string | number | Date) => {
+    const date = new Date(time);
+    const VNTime = date.toLocaleString("vi-VN", {
+      timeZone: "Asia/Ho_Chi_Minh",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+    return VNTime;
+  };
+  console.log(user);
+  
   return (
     <Modal
       title={
@@ -57,24 +71,36 @@ const Informationuser: React.FC<InformationuserProps> = ({
             <strong>Tên:</strong> {user.name}
           </p>
           <p>
+            <strong>Giới tính:</strong> {user.gender}
+          </p>
+          <p>
             <strong>Email:</strong> {user.email}
           </p>
           <p>
             <strong>CCCD:</strong> {user.cccd}
           </p>
-          {/* <b>Ngày sinh:</b>{" "}
-          {birthday ? dayjs(birth).format("DD/MM/YYYY") : "Chưa có"} */}
+          <p>
+            <strong>Ngày sinh:</strong>
+            {handleFormatDayOnly(user.birth)}
+          </p>
           <p>
             <strong>Địa chỉ:</strong> {user.address}
           </p>
           <p>
             <strong>SĐT:</strong> {user.phoneNumber}
           </p>
-          {user.avatar instanceof File ? (
-            <img src={URL.createObjectURL(user.avatar)} alt={user.name} />
-          ) : (
-            <img src={user.avatar} alt={user.name} />
-          )}
+          <p>
+            <strong>Ảnh:</strong>{" "}
+            {user.avatar ? (
+              <img
+                src={user.avatar}
+                alt="Người dùng"
+                className="w-32 h-32 object-cover rounded"
+              />
+            ) : (
+              "Chưa có"
+            )}
+          </p>
           <p>
             <strong>Ngày tạo:</strong>
             {handleFormatDay(user.createAt)}
@@ -89,4 +115,4 @@ const Informationuser: React.FC<InformationuserProps> = ({
   );
 };
 
-export default Informationuser;
+export default DetailUser;

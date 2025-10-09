@@ -3,6 +3,7 @@ import React from "react";
 import Modal from "antd/es/modal";
 import Button from "antd/es/button";
 import type { Clinic } from "./ClinicTable"; // đảm bảo đường dẫn đúng
+import { Tooltip } from "antd/lib";
 
 interface InformationClinicProps {
   open: boolean;
@@ -40,7 +41,14 @@ const InformationClinic: React.FC<InformationClinicProps> = ({
             <strong>Tên phòng khám:</strong> {clinic.name}
           </p>
           <p>
-            <strong>Mô tả:</strong> {clinic.description}
+            <strong>Mô tả:</strong>{" "}
+            <Tooltip title={clinic.description}>
+              <span>
+                {clinic.description.length > 100
+                  ? clinic.description.slice(0, 100) + "..."
+                  : clinic.description}
+              </span>
+            </Tooltip>
           </p>
           <p>
             <strong>Vị trí:</strong> {clinic.position}
@@ -48,7 +56,7 @@ const InformationClinic: React.FC<InformationClinicProps> = ({
           <p>
             <strong>Số điện thoại:</strong> {clinic.phoneNumber}
           </p>
-         
+
           <p>
             <strong>Ảnh:</strong>{" "}
             {clinic.image ? (
@@ -63,9 +71,9 @@ const InformationClinic: React.FC<InformationClinicProps> = ({
           </p>
           <p>
             <strong>Địa chỉ:</strong>{" "}
-            {clinic.address.city }
+            {clinic.address.city}
           </p>
-         
+
         </div>
       )}
     </Modal>

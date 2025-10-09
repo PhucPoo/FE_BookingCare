@@ -1,5 +1,6 @@
 import type { Specialty } from "../pages/Specialty/SpecialtyTable";
 import customAxiosInstance from "../utils/configAxios";
+import dayjs from "dayjs";
 
 const config = {
   headers: {
@@ -27,6 +28,32 @@ export const testPutSpecialtyApi = async (id: number, formData: FormData) => {
   return response.data;
 
 };
+interface SearchSpecialtyParams {
+  name: string;
+  monthYear:Date;
+}
+
+
+export const testSearchSpecialtyApi = async (params: SearchSpecialtyParams,page:number, pageSize:number) => {
+  const monthYear =
+    params.monthYear instanceof Date
+      ? dayjs(params.monthYear).format("YYYY-MM") 
+      : params.monthYear || undefined;
+  const response = await customAxiosInstance.get(
+    `http://localhost:8080/api/v1/specialties/search?page=${page}&size=${pageSize}`,{
+      params: {
+      name: params.name,
+      monthYear,
+    },
+    }
+    
+  );
+  console.log("🚀 ~ testGetSpecialtysApi ~ response:", response);
+  return response.data;
+
+};
+
+
 export const testGetSpecialtyApi = async () => {
   const response = await customAxiosInstance.get(
     `http://localhost:8080/api/v1/specialties`,
@@ -46,4 +73,6 @@ export const testDeleteSpecialtyApi = async () => {
   return response.data;
 
 };
+
+
 
