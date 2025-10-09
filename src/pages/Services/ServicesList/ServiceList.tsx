@@ -53,14 +53,26 @@ const ServiceList = () => {
   };
 
   const onLog = async (currentPage: number, pageSize: number) => {
-    const result = await getAllService(currentPage, pageSize);
-    setServiceList(result.data.result);
-    const {
-      data: { meta },
-    } = result;
-    setCurrentPage(meta.page);
-    setPageSize(meta.pageSize);
-    setTotalServiceList(meta.totals);
+    if (dataToQuery.name || dataToQuery.min || dataToQuery.max) {
+      const nextData = {
+        ...dataToQuery,
+        page: currentPage,
+        size: pageSize,
+      };
+      const queryString = buildQuery(nextData);
+      const res = await searchService(queryString, currentPage, pageSize);
+      setServiceList(res.data.result);
+      setPageSize(res.data.meta.pageSize);
+      setTotalServiceList(res.data.meta.totals);
+      setCurrentPage(res.data.meta.page);
+    } else {
+      const res = await getAllService(currentPage, pageSize);
+      setServiceList(res.data.result);
+      const { meta } = res.data;
+      setPageSize(meta.pageSize);
+      setTotalServiceList(meta.totals);
+      setCurrentPage(meta.page);
+    }
   };
 
   const handleSort = async (key: CheckServiceSortKeyModel) => {
@@ -121,7 +133,7 @@ const ServiceList = () => {
     return query;
   };
   const handleGetServiceList = async () => {
-    const result = await getAllService();
+    const result = await getAllService(0, 3);
     setServiceList(result.data.result);
     const {
       data: { meta },

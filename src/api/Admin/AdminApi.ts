@@ -10,9 +10,14 @@ export const adminGetAllBooking = async (
   );
   return res.data;
 };
-export const adminSortBooking = async (sortValue: string, order: string) => {
+export const adminSortBooking = async (
+  sortValue: string,
+  order: string,
+  page: number = 1,
+  size: number = 5
+) => {
   const res = await customAxiosInstance.get(
-    `${api}/bookings?sort=${sortValue},${order}`
+    `${api}/bookings?sort=${sortValue},${order}&page=${page}&size=${size}`
   );
   return res.data;
 };

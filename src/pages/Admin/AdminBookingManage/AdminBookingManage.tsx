@@ -44,7 +44,7 @@ type AdminBookingTableModel = {
 
 const AdminBookingManage = () => {
   const [bookings, setBookings] = useState<AdminBookingTableModel[]>([]);
-  const [pageSize, setPageSize] = useState<number>(5);
+  const [pageSize, setPageSize] = useState<number>(10);
   const [totalBookingList, setTotalBookingList] = useState<number>(10);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [checkRender, setCheckRender] = useState<
@@ -141,7 +141,12 @@ const AdminBookingManage = () => {
   };
   //handle sort
   const handleSort = async (key: CheckRenderKey) => {
-    const res = await adminSortBooking(key, checkRender[key] ? "asc" : "desc");
+    const res = await adminSortBooking(
+      key,
+      checkRender[key] ? "asc" : "desc",
+      currentPage,
+      pageSize
+    );
     setCheckRender({ ...checkRender, [key]: !checkRender[key] });
     setBookings(res.data.result);
   };

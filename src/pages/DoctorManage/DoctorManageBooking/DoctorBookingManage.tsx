@@ -23,6 +23,7 @@ type dataToQueryModel = {
 type searchInputValueModel = {
   name: "";
   phoneNumber: "";
+  date: "";
 };
 const BookingManage = () => {
   const [BookingList, setBookingList] = useState<Item[]>([]);
@@ -52,6 +53,7 @@ const BookingManage = () => {
     useState<searchInputValueModel>({
       name: "",
       phoneNumber: "",
+      date: "",
     });
   const [checkRender, setCheckRender] = useState<
     Record<DoctorBookingSortKeyModel, boolean>
@@ -72,33 +74,9 @@ const BookingManage = () => {
       [key]: value,
     }));
   };
-  // handle change option (status and clinic)
-  // const handleChange = (value: string) => {
-  //   let BookingListClone = BookingList;
-  //   BookingListClone = BookingListClone.filter((item) => {
-  //     return item.status === value;
-  //   });
-  //   setBookingList(BookingListClone);
-  // };
 
   //search by createAt
-  const handleFindByDate = () => {
-    // if (!filterCreatedAt.from || !filterCreatedAt.to) {
-    //   alert("missing parameter");
-    //   return;
-    // }
-    // if (filterCreatedAt.from > filterCreatedAt.to) {
-    //   alert("from must be smaller to");
-    //   return;
-    // }
-    // const from = new Date(filterCreatedAt.from);
-    // const to = new Date(filterCreatedAt.to);
-    // let BookingListClone = BookingList;
-    // BookingListClone = BookingListClone.filter((item) => {
-    //   return from <= new Date(item.createdAt) && new Date(item.createdAt) <= to;
-    // });
-    // setBookingList(BookingListClone);
-  };
+  const handleFindByDate = () => {};
 
   //handle sort
   const handleSort = async (key: DoctorBookingSortKeyModel) => {
@@ -157,6 +135,7 @@ const BookingManage = () => {
     setSearchInputValue({
       name: "",
       phoneNumber: "",
+      date: "",
     });
   };
   const onLog = async (page: number, pageSize: number) => {

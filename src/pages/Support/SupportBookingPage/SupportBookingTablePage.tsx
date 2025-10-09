@@ -85,9 +85,9 @@ const BookingTablePage = ({
                 type="date"
                 className="w-full  lg:w-45  not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 onChange={(e) => {
-                  handleSetDataToQuery("monthYear", e.target.value);
+                  handleSetDataToQuery("date", e.target.value);
                   setTimeout(() => {
-                    handleSearchBooking(e.target.value, "monthYear");
+                    handleSearchBooking(e.target.value, "date");
                   }, 500);
                 }}
               />

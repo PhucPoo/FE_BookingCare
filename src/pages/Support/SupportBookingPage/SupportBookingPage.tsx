@@ -64,7 +64,7 @@ const BookingPage = () => {
   const [dataToQuery, setDataToQuery] = useState<dataToQueryModel>({
     patientName: "",
     doctorName: "",
-    monthYear: "",
+    date: "",
     page: currentPage,
     size: pageSize,
   });
@@ -83,11 +83,7 @@ const BookingPage = () => {
   const [SupportBookingDetailData, SupportBookingDetailDataData] = useState({});
 
   const onLog = async (page: number, pageSize: number) => {
-    if (
-      dataToQuery.doctorName ||
-      dataToQuery.monthYear ||
-      dataToQuery.patientName
-    ) {
+    if (dataToQuery.doctorName || dataToQuery.date || dataToQuery.patientName) {
       const nextData = { ...dataToQuery, page: page, size: pageSize };
       const queryString = buildQuery(nextData);
       const res = await supportSearchBooking(queryString, 1);
@@ -124,7 +120,7 @@ const BookingPage = () => {
       setDataToQuery({
         patientName: "",
         doctorName: "",
-        monthYear: "",
+        date: "",
         page: 1,
         size: 5,
       });
@@ -152,9 +148,6 @@ const BookingPage = () => {
   };
   //handle search
   const handleSearchBooking = async (value: string, key: string) => {
-    if (key === "monthYear") {
-      value = formatMonthYear(value);
-    }
     const dataToBuildQuery = { ...dataToQuery, [key]: value };
 
     setDataToQuery({ ...dataToQuery, [key]: value });

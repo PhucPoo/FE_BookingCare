@@ -8,7 +8,7 @@ export type SupportSortKey =
   | "time";
 export type dataToQueryModel = {
   patientName: string;
-  monthYear: string;
+  date: string;
   doctorName: string;
   page: number;
   size: number;

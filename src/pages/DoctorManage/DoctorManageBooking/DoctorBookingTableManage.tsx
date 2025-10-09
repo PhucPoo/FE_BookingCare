@@ -1,12 +1,9 @@
+import { Button, Pagination, Popconfirm } from "antd/lib";
 import {
-  Button,
-  Dropdown,
-  Pagination,
-  Popconfirm,
-  // Select,
-  type MenuProps,
-} from "antd/lib";
-import { formatDate, getStatusBooking } from "../../../utils/constant";
+  formatDate,
+  // formatMonthYear,
+  getStatusBooking,
+} from "../../../utils/constant";
 import { handleDoctorUpdateBooking } from "../../../api/Doctor/DoctorApi";
 import type { DoctorBookingSortKeyModel } from "./DoctorBookingSortKeyModel";
 import useUserInfoStore from "../../../Zustand/configZustand";
@@ -38,71 +35,15 @@ const BookingTableManage = ({
   totalBillList,
   onLog,
   handleSort,
-  // handleChange,
-  handleFindByDate,
+
   handleSearchBooking,
-  setFilterCreatedAt,
-  filterCreatedAt,
+
   handleGetBookingList,
   setDetailDoctorBooking,
   setIsDoctorDetailModalOpen,
   handleChangeSearchInputValue,
   searchInputValue,
 }: Props) => {
-  const items: MenuProps["items"] = [
-    {
-      label: (
-        <div onClick={(e) => e.stopPropagation()}>
-          <input
-            type="date"
-            onChange={(e) => {
-              setTimeout(() => {
-                setFilterCreatedAt({
-                  ...filterCreatedAt,
-                  from: e.target.value,
-                });
-              }, 500);
-            }}
-            className="w-full lg:w-45 not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-      ),
-      key: "0",
-    },
-    {
-      label: (
-        <div onClick={(e) => e.stopPropagation()}>
-          <input
-            type="date"
-            onChange={(e) => {
-              setTimeout(() => {
-                setFilterCreatedAt({
-                  ...filterCreatedAt,
-                  to: e.target.value,
-                });
-              }, 500);
-            }}
-            className="w-full lg:w-45  not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-      ),
-      key: "1",
-    },
-    {
-      label: (
-        <div>
-          <Button
-            size="large"
-            onClick={() => handleFindByDate()}
-            type="primary"
-          >
-            Xác nhận
-          </Button>
-        </div>
-      ),
-      key: "3",
-    },
-  ];
   const userInfo = useUserInfoStore((state) => state.userInfo);
   const handleUpdateBooking = async (id: string, status: string) => {
     handleDoctorUpdateBooking(id, status);
@@ -140,29 +81,23 @@ const BookingTableManage = ({
             />
           </div>
           {/* createdAt */}
-          <div className="w-full lg:w-auto">
-            <Dropdown
-              menu={{ items }}
-              trigger={["click"]}
-              className="w-full lg:w-auto"
-            >
-              <Button size="large">Tìm theo ngày</Button>
-            </Dropdown>
-          </div>
-          <div className="w-full lg:w-auto">
+          <div className="w-full sm:w-auto">
             <input
-              type="text"
-              placeholder="Tìm kiếm theo số điện thoại..."
-              value={searchInputValue.phoneNumber}
+              type="date"
               onChange={(e) => {
-                handleChangeSearchInputValue(e.target.value, "phoneNumber");
+                handleChangeSearchInputValue(e.target.value, "date");
                 setTimeout(() => {
-                  handleSearchBooking(e.target.value, "phoneNumber");
+                  handleSearchBooking(
+                    e.target.value,
+                    // e.target.value,
+                    "date"
+                  );
                 }, 500);
               }}
-              className="w-full lg:w-45 not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full sm:w-15 md:w-25 lg:w-50  not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
+
           {/* refresh */}
           <div className="w-full lg:w-auto">
             <Button
