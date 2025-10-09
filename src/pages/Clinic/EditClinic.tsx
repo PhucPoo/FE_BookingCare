@@ -15,14 +15,15 @@ interface Address {
 interface EditClinicProps {
   open: boolean;
   onCancel: () => void;
-  onUpdate: (clinic: Clinic) => void;
+  onUpdate: (update: Clinic) => void;
   clinic: Clinic | null;
 }
 
 const EditClinic: React.FC<EditClinicProps> = ({ open, onCancel, onUpdate, clinic }) => {
   const [form] = Form.useForm();
   const [addresses, setAddresses] = useState<Address[]>([]);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [fileList, setFileList] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -44,24 +45,25 @@ const EditClinic: React.FC<EditClinicProps> = ({ open, onCancel, onUpdate, clini
         description: clinic.description,
         position: clinic.position,
         phoneNumber: clinic.phoneNumber,
-        addressId: clinic.address,
+        addressId: clinic.address?.id,
         image: null,
       });
-      setSelectedFile(null);
+      setFileList([
+        {
+          uid: "-1",
+          status: "done",
+          url: clinic.image,
+        },
+      ]);
     }
   }, [clinic, form]);
 
-  const handleUploadChange = (info: any) => {
-    if (info.fileList.length > 0) {
-      setSelectedFile(info.fileList[0].originFileObj);
+  const handleUploadChange = ({ fileList }: any) => {
+    setFileList(fileList);
+    if (fileList.length > 0) {
+      setFile(fileList[0].originFileObj);
     } else {
-      setSelectedFile(null);
-    }
-  };
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      setSelectedFile(event.target.files[0]);
+      setFile(null);
     }
   };
 
@@ -78,25 +80,29 @@ const EditClinic: React.FC<EditClinicProps> = ({ open, onCancel, onUpdate, clini
     formData.append("phoneNumber", values.phoneNumber || "");
     formData.append("addressId", String(values.addressId) || "");
 
-    if (selectedFile) {
-      formData.append("file", selectedFile);
-      setLoading(true);
+    if (file) {
+      formData.append("file", file);
+    } else {
+      // Gửi file rỗng nếu không chọn ảnh mới
+      formData.append("file", new Blob([], { type: "application/octet-stream" }));
     }
 
     try {
       const res = await testPutClinicApi(clinic.id, formData);
-      const updatedClinic: Clinic = res.data.result;
-
+      const updatedClinic = res.data.result|| res.data || {
+        ...clinic,
+        ...values,
+      };
+      onUpdate(updatedClinic);
       onCancel();
 
-      onUpdate(updatedClinic);
       notification.success({
         message: "Cập nhật thành công",
         description: `Phòng khám ${updatedClinic.name} đã được cập nhật`,
       });
 
       form.resetFields();
-      setSelectedFile(null);
+      setFile(null);
     } catch (error: any) {
       notification.error({
         message: "Cập nhật thất bại",
@@ -111,7 +117,7 @@ const EditClinic: React.FC<EditClinicProps> = ({ open, onCancel, onUpdate, clini
     <Modal
       title={<div className="text-center text-lg font-semibold">Chỉnh sửa phòng khám</div>}
       open={open}
-      onCancel={() => { form.resetFields(); setSelectedFile(null); onCancel(); }}
+      onCancel={() => { form.resetFields(); setFile(null); onCancel(); }}
       footer={null}
       centered
       width={520}
@@ -137,15 +143,15 @@ const EditClinic: React.FC<EditClinicProps> = ({ open, onCancel, onUpdate, clini
           <Upload
             beforeUpload={() => false}
             onChange={handleUploadChange}
+            fileList={fileList}
             maxCount={1}
             listType="picture"
           >
             <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
           </Upload>
-          {selectedFile && <p className="mt-2 text-sm text-gray-500">Ảnh: {selectedFile.name}</p>}
+          {file && <p className="mt-2 text-sm text-gray-500">Ảnh: {file.name}</p>}
         </Form.Item>
 
-        {/* Đổi name từ "address " -> "addressId" */}
         <Form.Item name="addressId" label="Địa chỉ" rules={[{ required: true, message: "Vui lòng chọn địa chỉ!" }]}>
           <Select placeholder="Chọn địa chỉ" size="large" allowClear>
             {addresses.map((addr) => (
@@ -158,7 +164,7 @@ const EditClinic: React.FC<EditClinicProps> = ({ open, onCancel, onUpdate, clini
 
         <Form.Item>
           <div className="flex justify-end space-x-3 pt-2">
-            <Button onClick={() => { form.resetFields(); setSelectedFile(null); onCancel(); }} size="large">
+            <Button onClick={() => { form.resetFields(); setFile(null); onCancel(); }} size="large">
               Hủy
             </Button>
             <Button type="primary" size="large" loading={loading} htmlType="submit">

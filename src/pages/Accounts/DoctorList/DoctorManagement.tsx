@@ -39,14 +39,14 @@ const DoctorManagement: React.FC = () => {
     const fetchData = async () => {
       try {
         const res = await testSearchDoctorApi({
-          name: name || undefined,
+          name: name ,
           phoneNumber: phone || undefined,
           min: costRange.min,
           max: costRange.max,
           degree: degree || undefined,
           specialtyId: specialtyId ? Number(specialtyId) : undefined,
           clinicId: clinicId ? Number(clinicId) : undefined,
-          monthYear: monthYear ? new Date(monthYear) : undefined,
+          monthYear: monthYear || undefined,
 
         }, pageSize,pages);
         setDoctors(res.data.result);
@@ -79,11 +79,24 @@ const DoctorManagement: React.FC = () => {
   const handleDeleteDoctor = async (id: number) => {
     try {
       await testDeleteDoctorApi(id); // gọi API xóa DB
-      setDoctors((prev) => {
-        const newDoctors = prev.filter((doc) => Number(doc.id) !== Number(id));
-        setFilteredDoctors(newDoctors);
-        return newDoctors;
-      });
+       const res = await testSearchDoctorApi(
+      {
+        name: name,
+        phoneNumber: phone || undefined,
+        min: costRange.min,
+        max: costRange.max,
+        degree: degree || undefined,
+        specialtyId: specialtyId ? Number(specialtyId) : undefined,
+        clinicId: clinicId ? Number(clinicId) : undefined,
+        monthYear: monthYear || undefined,
+      },
+      pageSize,
+      pages
+    );
+
+    setDoctors(res.data.result);
+    setFilteredDoctors(res.data.result);
+    setTotalDoctorList(res.data.meta.totals);
     } catch (err) {
       console.error("Lỗi xóa bác sĩ:", err);
     }

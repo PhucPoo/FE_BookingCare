@@ -1,59 +1,60 @@
 import React, { useEffect, useState } from "react";
-import Button from "antd/lib/button";
-import { DatePicker, Input } from "antd/lib";
+import { Button } from "antd/lib";
 import SpecialtyTable, { type Specialty } from "./SpecialtyTable";
 import AddSpecialty from "./AddSpecialty";
 import EditSpecialty from "./EditSpecialty";
-import { testGetSpecialtyApi } from "../../api/testSpecialty";
-
-
+import { testGetSpecialtyApi, testSearchSpecialtyApi } from "../../api/testSpecialty";
+import SpecialtyFilterBar from "./SpecialtyFilterBar";
 
 const SpecialtyList: React.FC = () => {
   const [specialties, setSpecialties] = useState<Specialty[]>([]);
   const [filteredSpecialties, setFilteredSpecialties] = useState<Specialty[]>([]);
+
+  // modal state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingSpecialty, setEditingSpecialty] = useState<Specialty | null>(null);
 
   // filter state
-  const [nameFilter, setNameFilter] = useState<string | null>(null);
-  const [dateFilter, setDateFilter] = useState<string | null>(null);
+  const [name, setName] = useState<string>("");
+  const [monthYear, setMonthYear] = useState<Date | null>(null);
 
-  // Lấy danh sách specialty
+  // pagination
+  const [pageSize, setPageSize] = useState<number>(5);
+  const [pages, setPages] = useState<number>(1);
+  const [totalSpecialtys, setTotalSpecialtys] = useState<number>(0);
+
+  const [keywords, setKeywords] = useState({
+    name: "",
+    monthYear: null as string | null,
+  });
   const handleGetSpecialties = async () => {
     try {
-      const res = await testGetSpecialtyApi();
-      setSpecialties(res.data.result);
-      setFilteredSpecialties(res.data.result);
+      const res = await testSearchSpecialtyApi(
+        {
+          name:name,
+          monthYear: keywords.monthYear ? new Date(keywords.monthYear) : undefined,
+        },pages, pageSize);
+      const result = res.data.result ?? [];
+      setSpecialties(result);
+      setFilteredSpecialties(result);
+      setTotalSpecialtys(res.data.meta?.totals ?? result.length);
     } catch (error) {
-      console.error("Lỗi lấy danh sách specialties:", error);
+      console.error("Lỗi lấy danh sách chuyên khoa:", error);
     }
   };
 
   useEffect(() => {
     handleGetSpecialties();
-  }, []);
+  }, [pages, pageSize]);
 
-  // Thêm
-  const handleAddSpecialty = async (newSpecialty: Specialty) => {
-
+  const handleAddSpecialty = (newSpecialty: Specialty) => {
     const updated = [...specialties, newSpecialty];
     setSpecialties(updated);
     setFilteredSpecialties(updated);
     setIsAddModalOpen(false);
-    // try {
-    //   const res = await testPostSpecialtyApi(newSpecialty);
-    //   const saved = res.data.data;
-    //   const updated = [...specialties, saved];
-    //   setSpecialties(updated);
-    //   setFilteredSpecialties(updated);
-    //   setIsAddModalOpen(false);
-    // } catch (error) {
-    //   console.error("Lỗi thêm specialty:", error);
-    // }
   };
 
-  // Cập nhật
   const handleUpdateSpecialty = (updated: Specialty) => {
     const updatedList = specialties.map((s) =>
       s.id === updated.id ? { ...s, ...updated } : s
@@ -64,51 +65,38 @@ const SpecialtyList: React.FC = () => {
     setEditingSpecialty(null);
   };
 
-  // Xóa
+  // 🟥 Xóa chuyên khoa
   const handleDeleteSpecialty = (id: number) => {
     const updated = specialties.filter((s) => s.id !== id);
     setSpecialties(updated);
     setFilteredSpecialties(updated);
   };
 
-  // Filter
-  const handleFilter = () => {
-    let data = [...specialties];
-    if (nameFilter) {
-      data = data.filter((s) =>
-        s.name.toLowerCase().includes(nameFilter.toLowerCase())
-      );
-    }
-    if (dateFilter) {
-      data = data.filter(
-        (s) =>
-          s.createAt &&
-          new Date(s.createAt).toLocaleDateString("vi-VN") ===
-          new Date(dateFilter).toLocaleDateString("vi-VN")
-      );
-    }
-    setFilteredSpecialties(data);
+  // 🟦 Khi FilterBar tìm kiếm xong (API search)
+  const handleFilteredSpecialties = (specialties: Specialty[]) => {
+    setFilteredSpecialties(specialties);
   };
 
-  useEffect(() => {
-    handleFilter();
-  }, [nameFilter, dateFilter, specialties]);
+  const handleFilter = (specialties: Specialty[], keywords: { name: string; monthYear: Date | null }) => {
+    console.log("Bộ lọc hiện tại:", keywords);
+    setFilteredSpecialties(specialties);
+  };
 
   return (
     <div className="p-6 bg-white rounded-xl shadow-sm">
       <h1 className="text-2xl font-bold mb-6 text-blue-700">Quản lý Chuyên khoa</h1>
 
-      {/* Filter */}
+      {/* 🔍 Thanh tìm kiếm */}
       <div className="mb-6 flex flex-wrap items-center gap-4">
-        <Input
-          placeholder="Tên chuyên khoa"
-          style={{ width: 200 }}
-          onChange={(e) => setNameFilter(e.target.value || null)}
-        />
-        <DatePicker
-          placeholder="Ngày tạo"
-          style={{ width: 180 }}
-          onChange={(_, dateString) => setDateFilter(dateString || null)}
+        <SpecialtyFilterBar
+          filteredSpecialties={handleFilteredSpecialties}
+          onFilter={handleFilter}
+          pages={pages}
+          pageSize={pageSize}
+          name={name}
+          setName={setName}
+          monthYear={monthYear}
+          setMonthYear={setMonthYear}
         />
 
         <Button
@@ -122,22 +110,25 @@ const SpecialtyList: React.FC = () => {
         </Button>
       </div>
 
-      {/* Bảng */}
+      {/* 🧾 Bảng dữ liệu */}
       <SpecialtyTable
         specialties={filteredSpecialties}
         setSpecialties={setSpecialties}
         onUpdateSpecialty={handleUpdateSpecialty}
         onDeleteSpecialty={handleDeleteSpecialty}
+        pages={pages}
+        pageSize={pageSize}
+        setpages={setPages}
+        setPageSize={setPageSize}
+        totalSpecialtys={totalSpecialtys}
       />
 
-      {/* Modal thêm */}
       <AddSpecialty
         open={isAddModalOpen}
         onCancel={() => setIsAddModalOpen(false)}
         onAdd={handleAddSpecialty}
       />
 
-      {/* Modal sửa */}
       <EditSpecialty
         open={isEditModalOpen}
         specialty={editingSpecialty}

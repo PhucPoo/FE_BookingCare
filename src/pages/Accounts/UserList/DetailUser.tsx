@@ -14,11 +14,13 @@ interface InformationuserProps {
 }
 
 
-const Informationuser: React.FC<InformationuserProps> = ({
+const DetailUser: React.FC<InformationuserProps> = ({
   open,
   user,
   onClose,
 }) => {
+  console.log("ABC",user);
+  
   const handleFormatDay = (time: string | number | Date) => {
     const date = new Date(time);
     const VNTime = date.toLocaleString("vi-VN", {
@@ -42,6 +44,7 @@ const Informationuser: React.FC<InformationuserProps> = ({
     });
     return VNTime;
   };
+  console.log(user);
   
   return (
     <Modal
@@ -86,11 +89,18 @@ const Informationuser: React.FC<InformationuserProps> = ({
           <p>
             <strong>SĐT:</strong> {user.phoneNumber}
           </p>
-          {user.avatar instanceof File ? (
-            <img src={URL.createObjectURL(user.avatar)} alt={user.name} />
-          ) : (
-            <img src={user.avatar} alt={user.name} />
-          )}
+          <p>
+            <strong>Ảnh:</strong>{" "}
+            {user.avatar ? (
+              <img
+                src={user.avatar}
+                alt="Người dùng"
+                className="w-32 h-32 object-cover rounded"
+              />
+            ) : (
+              "Chưa có"
+            )}
+          </p>
           <p>
             <strong>Ngày tạo:</strong>
             {handleFormatDay(user.createAt)}
@@ -105,4 +115,4 @@ const Informationuser: React.FC<InformationuserProps> = ({
   );
 };
 
-export default Informationuser;
+export default DetailUser;

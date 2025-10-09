@@ -8,8 +8,7 @@ import DetailSupport from "./DetailSupport";
 import EditSupport from "./EditSupport";
 import type { User } from "../UserList/UserTable";
 import type { Clinic } from "../../Clinic/ClinicTable";
-import { testDeleteSupportApi } from "../../../api/testSupport";
-import { type PaginationProps, Pagination } from "antd/lib";
+import { type PaginationProps, Pagination, Tooltip } from "antd/lib";
 
 export interface Support {
   id: number;
@@ -121,18 +120,10 @@ const SupportTable: React.FC<SupportTableProps> = ({
   };
 
   // --- Delete ---
-  const handleOk = async () => {
-    try {
-      await testDeleteSupportApi(deleteSupportId);
-      onDeleteSupport(deleteSupportId);
-    } catch (err: any) {
-      notification.error({
-        message: "Có lỗi xảy ra",
-        description: err?.response?.data?.message ?? "Không thể xoá trợ lý",
-      });
-    } finally {
-      setIsModalOpen(false);
-    }
+  const handleDelete = async (id: number) => {
+    onDeleteSupport(id);
+    setEditingSupport(null);
+    setIsEditModalOpen(false);
   };
 
   // --- Update ---
@@ -171,7 +162,9 @@ const SupportTable: React.FC<SupportTableProps> = ({
             </th>
 
             <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">Giới tính</th>
-            <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">SĐT</th>
+            <Tooltip title="Số điện thoại">
+              <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">SĐT</th>
+            </Tooltip>
             <th className="p-3 border border-gray-200 hidden md:table-cell font-medium">Phòng khám</th>
             <th className="p-3 border border-gray-200 hidden md:table-cell font-medium">Địa chỉ phòng khám</th>
 
@@ -285,7 +278,10 @@ const SupportTable: React.FC<SupportTableProps> = ({
       <Modal
         title="Xác nhận xoá"
         open={isModalOpen}
-        onOk={handleOk}
+        onOk={() => {
+          handleDelete(deleteSupportId);
+          setIsModalOpen(false);
+        }}
         onCancel={() => setIsModalOpen(false)}
       >
         <p>Bạn có chắc chắn muốn xóa trợ lý này không?</p>

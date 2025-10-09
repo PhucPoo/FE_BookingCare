@@ -46,14 +46,14 @@ export const testGetDoctorApi = async (pages: number, pageSize: number,) => {
 
 };
 interface SearchDoctorParams {
-  name?: string;
+  name: string;
   phoneNumber?: string;
   min?: number;
   max?: number;
   degree?: string;
   specialtyId?: number;
   clinicId?: number;
-  monthYear?: Date;
+  monthYear?: string;
 }
 
 export const testSearchDoctorApi = async (params: SearchDoctorParams,pageSize:number,page:number) => {

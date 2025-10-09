@@ -5,13 +5,11 @@ import SupportTable from "./SupportTable";
 import SupportFilterBar from "./SupportFilterBar";
 // import SupportAdvancedFilter from "./SupportAdvancedFilter"; 
 
-import { testDeleteSupportApi, testGetSupportApi, testSearchSupportApi } from "../../../api/testSupport";
-import { set } from "react-hook-form";
+import { testDeleteSupportApi, testSearchSupportApi } from "../../../api/testSupport";
 
 const SupportManagement: React.FC = () => {
   const [supports, setSupports] = useState<Support[]>([]);
   const [filteredSupports, setFilteredSupports] = useState<Support[]>([]);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState(""); // người dùng nhập địa chỉ
@@ -19,6 +17,9 @@ const SupportManagement: React.FC = () => {
   const [pageSize, setPageSize] = useState<number>(2);
   const [pages, setPages] = useState<number>(1);
   const [totalDoctorList, setTotalDoctorList] = useState<number>(10);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingSupport, setEditingSupport] = useState<Support | null>(null);
+
 
   // state filter
   const [genderFilter, setGenderFilter] = useState<string | null>(null);
@@ -60,20 +61,19 @@ const SupportManagement: React.FC = () => {
   const handleUpdateSupport = async (updatedSupport: Support) => {
     try {
       // Gọi lại API để lấy danh sách mới
-      const res = await testGetSupportApi();
-      const updatedData = res.data.result;
-      console.log(">>>", updatedData);
-
 
       const updatedList = supports.map((s) =>
-        s.id === updatedSupport.id ? { ...s, ...updatedData } : s
+        s.id === updatedSupport.id ? { ...s, ...updatedSupport } : s
       );
       setSupports(updatedList);
 
       const updatedFiltered = filteredSupports.map((s) =>
-        s.id === updatedSupport.id ? { ...s, ...updatedData } : s
+        s.id === updatedSupport.id ? { ...s, ...updatedSupport } : s
       );
       setFilteredSupports(updatedFiltered);
+      setIsEditModalOpen(false);
+      setEditingSupport(null);
+
 
       console.log("Cập nhật trợ lý thành công:", updatedSupport);
     } catch (error) {
@@ -85,9 +85,18 @@ const SupportManagement: React.FC = () => {
   const handleDeleteSupport = async (id: number) => {
     try {
       await testDeleteSupportApi(id);
-      const updatedList = supports.filter((s) => s.id !== id);
-      setSupports(updatedList);
-      setFilteredSupports(updatedList);
+
+      const res = await testSearchSupportApi({
+        name: name || undefined,
+        phoneNumber: phone || undefined,
+        address: address || undefined,
+        clinicId: clinicId ? Number(clinicId) : undefined,
+      }, pages, pageSize);
+
+      setSupports(res.data.result);
+      setFilteredSupports(res.data.result);
+      setTotalDoctorList(res.data.meta.totals);
+
       console.log("Xóa trợ lý thành công:", id);
     } catch (err) {
       console.error("Lỗi xóa trợ lý:", err);
@@ -163,6 +172,8 @@ const SupportManagement: React.FC = () => {
         setpages={setPages}
         setpageSize={setPageSize}
       />
+
+
 
 
     </div>
