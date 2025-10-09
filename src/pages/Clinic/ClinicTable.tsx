@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Button, Modal, Pagination, } from "antd/lib";
+import { Button, Modal, Pagination, Tooltip, type PaginationProps, } from "antd/lib";
 import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
 import InformationClinic from "./DetailClinic";
 import EditClinic from "./EditClinic";
@@ -19,7 +19,12 @@ export interface Clinic {
 interface ClinicTableProps {
   clinics: Clinic[];
   onUpdateClinic: (updatedClinic: Clinic) => void;
-  onDeleteClinic: (id: number) => Promise<void>; // sửa thành async để notification bắt lỗi
+  onDeleteClinic: (id: number) => void;
+  totalClinics: number;
+  pages: number;
+  pageSize: number;
+  setPageSize: (size: number) => void;
+  setpages: (pages: number) => void;
 }
 
 type SortColumn = "name" | "create_at" | "";
@@ -29,6 +34,11 @@ const ClinicTable: React.FC<ClinicTableProps> = ({
   clinics,
   onUpdateClinic,
   onDeleteClinic,
+  totalClinics,
+  pages,
+  pageSize,
+  setPageSize,
+  setpages,
 }) => {
   const [sortColumn, setSortColumn] = useState<SortColumn>("");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
@@ -42,8 +52,7 @@ const ClinicTable: React.FC<ClinicTableProps> = ({
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteClinicId, setDeleteClinicId] = useState<number>(0);
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 8;
+
 
   const sortedClinics = useMemo(() => {
     if (!sortColumn) return clinics;
@@ -53,10 +62,6 @@ const ClinicTable: React.FC<ClinicTableProps> = ({
         case "name":
           aVal = a.name.toLowerCase();
           bVal = b.name.toLowerCase();
-          break;
-        case "create_at":
-          aVal = a.create_at ? a.create_at.getTime() : 0;
-          bVal = b.create_at ? b.create_at.getTime() : 0;
           break;
         default:
           return 0;
@@ -82,10 +87,10 @@ const ClinicTable: React.FC<ClinicTableProps> = ({
     ) : null;
 
   // Pagination
-  const paginatedClinics = useMemo(() => {
-    const start = (currentPage - 1) * pageSize;
-    return sortedClinics.slice(start, start + pageSize);
-  }, [sortedClinics, currentPage]);
+  const handlePageChange: PaginationProps["onChange"] = (page, size) => {
+    setpages(page);
+    setPageSize(size);
+  };
 
   const handleDelete = async () => {
     try {
@@ -102,6 +107,8 @@ const ClinicTable: React.FC<ClinicTableProps> = ({
       });
     }
   };
+  console.log(totalClinics);
+
 
   return (
     <div className="w-full bg-white rounded shadow overflow-x-auto">
@@ -135,17 +142,21 @@ const ClinicTable: React.FC<ClinicTableProps> = ({
           </tr>
         </thead>
         <tbody className="text-sm md:text-base">
-          {paginatedClinics.map((clinic, idx) => (
+          {sortedClinics.map((clinic) => (
             <tr
               key={clinic.id}
               className="hover:bg-gray-100 transition"
             >
               <td className="p-3 border border-gray-200 text-center">
-                {idx + 1 + (currentPage - 1) * pageSize}
+                {clinic.id}
               </td>
               <td className="p-3 border border-gray-200">{clinic.name}</td>
-              <td className="p-3 border border-gray-200 hidden md:table-cell">
-                {clinic.description}
+              <td className="p-3 border border-gray-200 hidden md:table-cell max-w-[250px] truncate">
+                <Tooltip title={clinic.description}>
+                  {clinic.description.length > 50
+                    ? clinic.description.slice(0, 50) + "..."
+                    : clinic.description}
+                </Tooltip>
               </td>
               <td className="p-3 border border-gray-200 hidden lg:table-cell">
                 {clinic.position}
@@ -223,10 +234,12 @@ const ClinicTable: React.FC<ClinicTableProps> = ({
       {/* Pagination */}
       <div className="flex justify-center py-4">
         <Pagination
-          current={currentPage}
+          showSizeChanger
+          current={pages}
+          total={totalClinics}
           pageSize={pageSize}
-          total={sortedClinics.length}
-          onChange={(page) => setCurrentPage(page)}
+          pageSizeOptions={["1", "3", "5"]}
+          onChange={handlePageChange}
         />
       </div>
     </div>

@@ -74,9 +74,9 @@ interface SearchUserParams {
   cccd?: string;
   phoneNumber?: string;
   email?: string;
-  roleId?: number;
+  roleName?: string;
   gender?: string;
-  monthYear?: Date;
+  monthYear?: string;
 }
 
 export const testSearchAccountApi = async (params: SearchUserParams,pageSize:number,page:number) => {

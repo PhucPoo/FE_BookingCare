@@ -3,7 +3,7 @@ import type { User } from "./UserTable";
 import UserFilterBar from "./UserFilterBar";
 import UserTable from "./UserTable";
 import AddUser from "./AddUser";
-import { testGetAccountsApi, testSearchAccountApi } from "../../../api/testApi";
+import { testSearchAccountApi } from "../../../api/testApi";
 import { Button } from "antd/lib";
 
 const UserManagement: React.FC = () => {
@@ -20,7 +20,7 @@ const UserManagement: React.FC = () => {
   const [cccd, setCccd] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [roleID, setRoleID] = useState<string | null>(null);
+  const [role, setRole] = useState<string | null>(null);
   const [gender, setGender] = useState<string | null>(null);
   const [monthYear, setMonthYear] = useState<string | null>(null);
 
@@ -29,39 +29,40 @@ const UserManagement: React.FC = () => {
     cccd: "",
     phone: "",
     email: "",
-    roleId: null as string | null,
+    role: null as string | null,
     gender: null as string | null,
     monthYear: null as string | null,
   });
 
-  // ✅ Fetch users with pagination
-  const handleGetAccounts = async () => {
-    
-  };
 
   useEffect(() => {
     const fetchData = async () => {
-    try {
-      const result = await testSearchAccountApi({
-        cccd: keywords.cccd || undefined,
-        phoneNumber: keywords.phone || undefined,
-        email: keywords.email || undefined,
-        roleId: keywords.roleId === "admin" ? 1 : keywords.roleId === "doctor" ? 2 : keywords.roleId === "patient" ? 3 : keywords.roleId === "support" ? 4 : undefined,
-        gender: keywords.gender || undefined,
-        monthYear: keywords.monthYear ? new Date(keywords.monthYear) : undefined,
-      },pages, pageSize);
-      const data = result.data.result;
-      setUsers(data);
-      setFilteredUsers(data);
-      setTotalUsers(result.data.meta?.totals || data.length);
-    } catch (error) {
-      console.error("Lỗi lấy danh sách người dùng:", error);
-    }
-  };
-  fetchData();
+      try {
+        
+        const result = await testSearchAccountApi({
+          cccd: cccd || undefined,
+          phoneNumber: phone || undefined,
+          email: email || undefined,
+          roleName: role ?? undefined,
+          gender: gender || undefined,
+          monthYear: monthYear || undefined,
+        }, pages, pageSize);
+
+
+        const data = result.data.result;
+        
+        setUsers(data);
+        setFilteredUsers(data);
+        
+        setTotalUsers(result.data.meta?.totals || data.length);
+      } catch (error) {
+        console.error("Lỗi lấy danh sách người dùng:", error);
+      }
+    };
+    fetchData();
   }, [pages, pageSize]);
 
-  // ✅ Update user
+  //  Update user
   const handleUpdateUser = (updatedUser: User) => {
     const updatedList = users.map((u) =>
       u.id === updatedUser.id ? { ...u, ...updatedUser } : u
@@ -71,32 +72,33 @@ const UserManagement: React.FC = () => {
     console.log("Cập nhật user:", updatedUser);
   };
 
-  // ✅ Delete user
+  //  Delete user
   const handleDeleteUser = (id: number) => {
+
     const updatedList = users.filter((u) => u.id !== id);
     setUsers(updatedList);
     setFilteredUsers(updatedList);
     console.log("Đã xóa user ID:", id);
   };
 
-  // ✅ Client-side filter
-  const handleFilter = () => {
-    let data = [...users];
-    if (roleID) data = data.filter((u) => u.role.name?.toLowerCase() === roleID);
-    if (gender) data = data.filter((u) => u.gender?.toLowerCase() === gender);
-    if (monthYear) {
-      data = data.filter(
-        (u) =>
-          new Date(u.createAt).toLocaleDateString("vi-VN") ===
-          new Date(monthYear).toLocaleDateString("vi-VN")
-      );
-    }
-    setFilteredUsers(data);
-  };
+  //  Client-side filter
+  // const handleFilter = () => {
+  //   let data = [...users];
+  //   if (role) data = data.filter((u) => u.role.name?.toLowerCase() === role);
+  //   if (gender) data = data.filter((u) => u.gender?.toLowerCase() === gender);
+  //   if (monthYear) {
+  //     data = data.filter(
+  //       (u) =>
+  //         new Date(u.createAt).toLocaleDateString("vi-VN") ===
+  //         new Date(monthYear).toLocaleDateString("vi-VN")
+  //     );
+  //   }
+  //   setFilteredUsers(data);
+  // };
 
-  useEffect(() => {
-    handleFilter();
-  }, [roleID, gender, monthYear, users]);
+  // useEffect(() => {
+  //   handleFilter();
+  // }, [role, gender, monthYear, users]);
 
   return (
     <div className="p-6 bg-white rounded-xl shadow-sm">
@@ -112,7 +114,7 @@ const UserManagement: React.FC = () => {
             cccd: kw.cccd ?? "",
             phone: kw.phone ?? "",
             email: kw.email ?? "",
-            roleId: kw.roleId ?? null,
+            role: kw.role ?? null,
             gender: kw.gender ?? null,
             monthYear: kw.monthYear ?? null,
           });
@@ -125,8 +127,8 @@ const UserManagement: React.FC = () => {
         setPhone={setPhone}
         email={email}
         setEmail={setEmail}
-        roleID={roleID}
-        setRoleID={setRoleID}
+        role={role}
+        setRole={setRole}
         gender={gender}
         setGender={setGender}
         monthYear={monthYear}

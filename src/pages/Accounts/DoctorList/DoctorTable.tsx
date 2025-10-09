@@ -5,11 +5,13 @@ import DetailDoctor from "./DetailDoctor";
 import EditDoctor from "./EditDoctor";
 import type { Clinic } from "../../Clinic/ClinicTable";
 import type { Specialty } from "../../Specialty/SpecialtyTable";
+import { Tooltip } from "antd/lib";
 
 export interface Doctor {
   id: number;
   cost: number;
   degree: "BACHELOR" | "MASTER" | "DOCTOR";
+  isActive: boolean;
   accountId: number;
   account: {
     id: number;
@@ -31,7 +33,7 @@ interface DoctorTableProps {
   searchName?: string;
   searchPhone?: string;
   searchCost?: string;
-  onUpdateDoctor: (updatedDoctor: Doctor) => void ;
+  onUpdateDoctor: (updatedDoctor: Doctor) => void;
   onDeleteDoctor: (id: number) => void;
   totalDoctorList: number;
   pages: number;
@@ -40,6 +42,14 @@ interface DoctorTableProps {
   setpageSize: (pageSize: number) => void;
 
 }
+
+const getStatusBadge = (isActive: boolean) =>
+  isActive ? (
+    <span className="bg-green-500 text-white px-2 py-1 rounded text-sm">Hoạt động</span>
+  ) : (
+    <span className="bg-red-500 text-white px-2 py-1 rounded text-sm">Nghỉ</span>
+  );
+
 
 const DoctorTable: React.FC<DoctorTableProps> = ({
   doctors = [],
@@ -81,7 +91,7 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
   const onShowSizeChange: PaginationProps['onShowSizeChange'] = (current, pageSize) => {
     setpageSize(pageSize);
     setpages(current);
-};
+  };
 
 
   const renderSortArrow = (column: "name" | "createAt") => {
@@ -139,11 +149,15 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
             <th className="p-3 border border-gray-200 cursor-pointer text-left font-medium select-none" onClick={() => handleSort("name")}>
               Tên bác sĩ {renderSortArrow("name")}
             </th>
+            <Tooltip title="Số điện thoại" >
             <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">SĐT</th>
+            </Tooltip>
             <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">Chi phí</th>
             <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">Bằng cấp</th>
             <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">Chuyên khoa</th>
             <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">Phòng khám</th>
+            <th className="p-3 border border-gray-200 text-center font-medium">Trạng thái</th>
+
             <th className="p-3 border border-gray-200 hidden md:table-cell cursor-pointer text-center font-medium select-none" onClick={() => handleSort("createAt")}>
               Ngày tạo {renderSortArrow("createAt")}
             </th>
@@ -169,8 +183,10 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
                 dangerouslySetInnerHTML={{ __html: highlightText(doc.cost, searchCost) }}
               />
               <td className="p-3 border border-gray-200 hidden md:table-cell text-center">{doc.degree}</td>
-              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">{doc.specialtyName || "—"}</td>
+              <td className="p-3 border border-gray-200 hidden md:table-cell text-center">{doc.specialty?.name || "—"}</td>
               <td className="p-3 border border-gray-200 hidden md:table-cell text-center">{doc.clinic?.name || "—"}</td>
+              <td className="p-3 border border-gray-200 text-center">{getStatusBadge(doc.isActive)}</td>
+
               <td className="p-3 border border-gray-200 hidden md:table-cell text-center">
                 {doc.createAt ? new Date(doc.createAt).toLocaleDateString() : "—"}
               </td>

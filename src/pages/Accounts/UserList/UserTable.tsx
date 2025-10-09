@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Modal, Pagination, notification } from "antd/lib";
+import { Button, Modal, Pagination, Tooltip, notification } from "antd/lib";
 import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
 import DetailUser from "./DetailUser";
 import EditUser from "./EditUser";
@@ -15,7 +15,7 @@ export interface User {
   birth: Date;
   address: string;
   gender: string;
-  avatar: File;
+  avatar: string | null;
   role: {
     id: number;
     name: string;
@@ -135,9 +135,15 @@ const UserTable: React.FC<UserTableProps> = ({
               Tên {sortDirection === "asc" ? "🔼" : "🔽"}
             </th>
             <th className="p-3 border border-gray-200 hidden md:table-cell font-medium">Email</th>
-            <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">SĐT</th>
+            <Tooltip title="Số điện thoại">
+              <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">
+                SĐT
+              </th>
+            </Tooltip>
             <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">Gender</th>
-            <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">CCCD</th>
+            <Tooltip title="Căn cước công dân">
+              <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">CCCD</th>
+            </Tooltip>
             <th className="p-3 border border-gray-200 hidden lg:table-cell text-center font-medium">Role</th>
             <th
               className="p-3 border border-gray-200 hidden md:table-cell cursor-pointer text-center font-medium select-none"
@@ -243,6 +249,7 @@ const UserTable: React.FC<UserTableProps> = ({
           setEditingUser(null);
         }}
         onUpdate={handleUpdateUser}
+
       />
 
       {/* Modal xoá */}

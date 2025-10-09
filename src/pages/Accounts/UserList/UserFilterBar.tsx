@@ -13,7 +13,7 @@ interface UserFilterBarProps {
       cccd: string;
       phone: string;
       email: string;
-      roleId?: string | null;
+      role?: string | null;
       gender?: string | null;
       monthYear?: string | null;
     }
@@ -24,8 +24,8 @@ interface UserFilterBarProps {
   setPhone: (phone: string) => void;
   email: string;
   setEmail: (email: string) => void;
-  roleID: string | null;
-  setRoleID: (roleID: string | null) => void;
+  role: string | null;
+  setRole: (role: string | null) => void;
   gender: string | null;
   setGender: (gender: string | null) => void;
   monthYear: string | null;
@@ -43,14 +43,14 @@ const UserFilterBar: React.FC<UserFilterBarProps> = ({
   setPhone,
   email,
   setEmail,
-  roleID,
-  setRoleID,
+  role,
+  setRole,
   gender,
   setGender,
   monthYear,
   setMonthYear,
-  pages ,
-  pageSize ,
+  pages,
+  pageSize,
 }) => {
   // 🚀 Hàm tìm kiếm
   const handleSearch = async () => {
@@ -58,7 +58,7 @@ const UserFilterBar: React.FC<UserFilterBarProps> = ({
       cccd,
       phone,
       email,
-      roleId: roleID,
+      role: role,
       gender,
       monthYear,
     };
@@ -69,22 +69,15 @@ const UserFilterBar: React.FC<UserFilterBarProps> = ({
           phoneNumber: phone || undefined,
           cccd: cccd || undefined,
           email: email || undefined,
-          roleId:
-            roleID === "admin"
-              ? 1
-              : roleID === "doctor"
-              ? 2
-              : roleID === "patient"
-              ? 3
-              : roleID === "support"
-              ? 4
-              : undefined,
+          roleName: role || undefined,
           gender: gender || undefined,
-          monthYear: monthYear ? new Date(monthYear) : undefined,
+          monthYear: monthYear || undefined,
+
         },
         pages,
         pageSize
       );
+      console.log("🔎 Đang tìm kiếm với monthYear =", monthYear);
 
       const users = result.data?.result || [];
       filteredUsers(users);
@@ -124,17 +117,17 @@ const UserFilterBar: React.FC<UserFilterBarProps> = ({
 
       <Select
         placeholder="Chọn role"
-        value={roleID ?? undefined}
+        value={role ?? undefined}
         style={{ width: 200 }}
         size="large"
         allowClear
-        onChange={(val) => setRoleID(val)}
+        onChange={(val) => setRole(val)}
       >
         <OptGroup label="Role">
           <Option value="admin">Admin</Option>
           <Option value="doctor">Doctor</Option>
-          <Option value="patient">Patient</Option>
           <Option value="support">Support</Option>
+          <Option value="patient">Patient</Option>
         </OptGroup>
       </Select>
 
@@ -155,10 +148,12 @@ const UserFilterBar: React.FC<UserFilterBarProps> = ({
 
       <Space.Compact size="large">
         <DatePicker
+          picker="month"
           placeholder="Ngày tạo"
           style={{ width: 180 }}
           size="large"
-          onChange={(_, dateString) => setMonthYear(dateString || null)}
+          onChange={(date) => setMonthYear(date ? date.format("YYYY-MM") : null)}
+
         />
       </Space.Compact>
 

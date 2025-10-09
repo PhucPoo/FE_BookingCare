@@ -112,14 +112,14 @@ const DoctorFilterBar: React.FC<DoctorFilterBarProps> = ({
 
     try {
       const result = await testSearchDoctorApi({
-        name: name || undefined,
+        name: name ,
         phoneNumber: phone || undefined,
         min: costRange.min,
         max: costRange.max,
         degree: degree || undefined,
         specialtyId: specialtyId ? Number(specialtyId) : undefined,
         clinicId: clinicId ? Number(clinicId) : undefined,
-        monthYear: monthYear ? new Date(monthYear) : undefined,
+        monthYear: monthYear || undefined,
       }
         , pageSize, pages);
 
@@ -183,7 +183,7 @@ const DoctorFilterBar: React.FC<DoctorFilterBarProps> = ({
         placeholder="Tháng/Năm tạo"
         className="w-full"
         size="large"
-        onChange={(_, dateString) => setMonthYear(dateString || null)}
+        onChange={(date) => setMonthYear(date ? date.format("YYYY-MM") : null)}
       />
 
       <Select

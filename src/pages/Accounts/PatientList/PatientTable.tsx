@@ -7,7 +7,7 @@ import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
 
 import DetailPatient from "./DetailPatient";
 import EditPatient from "./EditPatient";
-import { Pagination,  type PaginationProps } from "antd/lib";
+import { Pagination, Tooltip, type PaginationProps } from "antd/lib";
 
 export interface Patient {
   id: number;
@@ -57,7 +57,7 @@ type SortDirection = "asc" | "desc";
 
 const PatientTable: React.FC<PatientTableProps> = ({
   patients,
-  
+
   onUpdatePatient,
   onDeletePatient,
   searchName = "",
@@ -88,40 +88,40 @@ const PatientTable: React.FC<PatientTableProps> = ({
 
   // --- Filter + Sort
   const filteredAndSorted = useMemo(() => {
-  const data = Array.isArray(patients) ? [...patients] : [];
+    const data = Array.isArray(patients) ? [...patients] : [];
 
-  return data.sort((a, b) => {
-    let aVal: any;
-    let bVal: any;
+    return data.sort((a, b) => {
+      let aVal: any;
+      let bVal: any;
 
-    switch (sortColumn) {
-      case "id":
-        aVal = a.id;
-        bVal = b.id;
-        break;
-      case "name":
-        aVal = a.account?.name?.toLowerCase() ?? "";
-        bVal = b.account?.name?.toLowerCase() ?? "";
-        break;
-      case "createAt":
-        aVal = a.createAt ? new Date(a.createAt).getTime() : 0;
-        bVal = b.createAt ? new Date(b.createAt).getTime() : 0;
-        break;
-      default:
-        return 0;
-    }
+      switch (sortColumn) {
+        case "id":
+          aVal = a.id;
+          bVal = b.id;
+          break;
+        case "name":
+          aVal = a.account?.name?.toLowerCase() ?? "";
+          bVal = b.account?.name?.toLowerCase() ?? "";
+          break;
+        case "createAt":
+          aVal = a.createAt ? new Date(a.createAt).getTime() : 0;
+          bVal = b.createAt ? new Date(b.createAt).getTime() : 0;
+          break;
+        default:
+          return 0;
+      }
 
-    if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
-    if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
-    return 0;
-  });
-}, [patients, sortColumn, sortDirection]);
+      if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
+      if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
+      return 0;
+    });
+  }, [patients, sortColumn, sortDirection]);
 
 
   // --- Pagination slice
-   const onShowSizeChange: PaginationProps['onShowSizeChange'] = (current, pageSize) => {
-      setPageSize(pageSize);
-      setpages(current);
+  const onShowSizeChange: PaginationProps['onShowSizeChange'] = (current, pageSize) => {
+    setPageSize(pageSize);
+    setpages(current);
   };
 
   const toggleSort = (col: SortColumn) => {
@@ -160,7 +160,7 @@ const PatientTable: React.FC<PatientTableProps> = ({
     const regex = new RegExp(`(${keyword})`, "gi");
     return String(text).replace(regex, `<mark style="background: yellow;">$1</mark>`);
   };
-  
+
 
   return (
     <div className="w-full bg-white rounded shadow overflow-x-auto">
@@ -179,9 +179,15 @@ const PatientTable: React.FC<PatientTableProps> = ({
             >
               Tên bệnh nhân {sortColumn === "name" && (sortDirection === "asc" ? "🔼" : "🔽")}
             </th>
-            <th className="p-3 border border-gray-200 hidden md:table-cell font-medium">CCCD</th>
+            <Tooltip title="Căn cước công dân">
+              <th className="p-3 border border-gray-200 hidden md:table-cell font-medium">CCCD</th>
+            </Tooltip>
+             <Tooltip title="Số điện thoại">
             <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">SĐT</th>
+            </Tooltip>
+             <Tooltip title="Mã bảo hiểm y tế">
             <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">Mã BHYT</th>
+            </Tooltip>
             <th className="p-3 border border-gray-200 hidden md:table-cell text-center font-medium">Địa chỉ</th>
             <th
               className="p-3 border border-gray-200 hidden md:table-cell cursor-pointer select-none text-center font-medium"
@@ -287,7 +293,7 @@ const PatientTable: React.FC<PatientTableProps> = ({
           total={totalPatients}
           pageSize={pageSize}
           pageSizeOptions={['1', '2', '3', '5']}
-         
+
         />
       </div>
 
