@@ -26,12 +26,6 @@ customAxiosInstance.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-<<<<<<< HEAD
-    // Không cần else để delete Authorization - axios tự động không gửi nếu undefined
-    
-=======
-
->>>>>>> 8f1ba3998f6b471d49b39bd9c7a0b68b5287eeb5
     return config;
   },
   function (error) {
@@ -51,16 +45,7 @@ customAxiosInstance.interceptors.response.use(
     console.log("🚀 ~ error:", error);
     // Bất kì mã trạng thái nào lọt ra ngoài tầm 2xx đều khiến hàm này được trigger
     // Làm gì đó với lỗi response
-<<<<<<< HEAD
-    
-    // Kiểm tra xem có error.response không trước khi truy cập
-    if (error.response?.data?.data?.message) {
-      toast.error(error.response.data.data.message);
-    }
-    
-=======
     toast.error(error.response.data.message);
->>>>>>> 8f1ba3998f6b471d49b39bd9c7a0b68b5287eeb5
     if (error.response?.status === 401) {
       // Không toast.error 2 lần
       if (!error.response?.data?.data?.message) {
