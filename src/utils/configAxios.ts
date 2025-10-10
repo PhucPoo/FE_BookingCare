@@ -13,7 +13,7 @@ customAxiosInstance.defaults.withCredentials = true;
 const getCookie = (name: string): string | null => {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
+  if (parts.length === 2) return parts.pop()?.split(";").shift() || null;
   return null;
 };
 
@@ -21,8 +21,8 @@ const getCookie = (name: string): string | null => {
 customAxiosInstance.interceptors.request.use(
   function (config) {
     // Làm gì đó trước khi request dược gửi đi
-    const token = getCookie('access_token');
-    
+    const token = getCookie("access_token");
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -45,21 +45,22 @@ customAxiosInstance.interceptors.response.use(
     console.log("🚀 ~ error:", error);
     // Bất kì mã trạng thái nào lọt ra ngoài tầm 2xx đều khiến hàm này được trigger
     // Làm gì đó với lỗi response
-    toast.error(error.response.data.message);
+    // toast.error(error.response.data.message);
     if (error.response?.status === 401) {
       // Không toast.error 2 lần
       if (!error.response?.data?.data?.message) {
         toast.error("Không thể xác thực, vui lòng đăng nhập lại!");
       }
       // Xóa cookie khi bị 401
-      document.cookie = "access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      document.cookie =
+        "access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
       window.location.href = "/login"; // Sửa từ "auth/login" thành "/login"
     }
-    
+
     if (error.response?.status === 410) {
       // 410 Gone: token da het han, can phai refresh token
     }
-    
+
     return Promise.reject(error);
   }
 );
