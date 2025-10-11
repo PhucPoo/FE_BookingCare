@@ -54,7 +54,7 @@ customAxiosInstance.interceptors.response.use(
       // Xóa cookie khi bị 401
       document.cookie =
         "access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-      window.location.href = "/login"; // Sửa từ "auth/login" thành "/login"
+      window.location.href = "/auth/login";
     }
 
     if (error.response?.status === 410) {

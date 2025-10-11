@@ -57,7 +57,7 @@ const MainPageDoctor = () => {
                     </span>
                   </div>
                   <h3>{item.account?.name}</h3>
-                  <p style={{ paddingTop: "18px", height: "70px" }}>
+                  <p style={{ paddingTop: "18px", height: "60px" }}>
                     {item.clinic?.name}
                   </p>
                   {/* <p>{item.cost}</p> */}
