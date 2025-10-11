@@ -57,9 +57,13 @@ const MainPageDoctor = () => {
                     </span>
                   </div>
                   <h3>{item.account?.name}</h3>
-                  <p style={{ paddingTop: "18px" }}>{item.clinic?.name}</p>
+                  <p style={{ paddingTop: "18px", height: "70px" }}>
+                    {item.clinic?.name}
+                  </p>
                   {/* <p>{item.cost}</p> */}
-                  <p>Địa chỉ nơi khám: {item.clinic?.address?.city}</p>
+                  <p style={{ height: "40px" }}>
+                    Địa chỉ nơi khám: {item.clinic?.address?.city}
+                  </p>
                   <button
                     onClick={() => {
                       navigate(`danh-sach/bac-si/${item.id}`);
