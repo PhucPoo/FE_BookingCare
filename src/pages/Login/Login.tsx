@@ -44,7 +44,7 @@ const Login: React.FC = () => {
     try {
       const res = await useUserInfoStore.getState().loginZustand(formData);
 
-      if (res) {
+      if (res && res.userLogin) {
         toast.success("Đăng nhập thành công");
 
         if (res.userLogin.role === "CLIENT") {

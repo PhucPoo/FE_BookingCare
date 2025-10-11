@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import useUserInfoStore from "../../../Zustand/configZustand";
 import { Button, Popover } from "antd/lib";
 import { Divider } from "antd/lib";
-import { useState } from "react";
+
 const MainPageHeader = () => {
   const navigate = useNavigate();
   const userInfo = useUserInfoStore((state) => state.userInfo);
@@ -12,7 +12,8 @@ const MainPageHeader = () => {
       <Link to="/update">Thông tin cá nhân</Link>
       <Link to="/danh-sach-lich-kham">Danh sách lịch khám</Link>
       <Link to="/danh-sach-hoa-don">Danh sách hoá đơn</Link>
-      <Link to="/benh-an">bệnh án</Link>
+      <Link to="/benh-an">Bệnh án</Link>
+      <Link to="/doi-mat-khau">Đổi mật khẩu</Link>
       {userInfo.role === "ADMIN" && (
         <Link to="/admin-dashboard">Dành cho admin</Link>
       )}
@@ -41,7 +42,6 @@ const MainPageHeader = () => {
       <Link to="/auth/signup">Đăng kí</Link>
     </div>
   );
-  const [isAccountOpen, setIsAccountOpen] = useState(false);
 
   return (
     <div>

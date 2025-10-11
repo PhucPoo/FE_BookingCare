@@ -42,12 +42,19 @@ import PatientBillList from "../pages/PatientBillList/PatientBillList";
 import DoctorManagePatient from "../pages/DoctorManage/DoctorManagePatient/DoctorManagePatient";
 import SupportBillManagePage from "../pages/Support/SupportBillManagePage/SupportBillManagePage";
 import SpecialtyDetail from "../pages/DanhSach/Specialty/SpecialtyDetail";
+import ChangePasswordPage from "../pages/ChangePassword/ChangePasswordPage";
 
 const AppRoutes = () => {
+  const userInfo = useUserInfoStore((state) => state.userInfo);
   const ProtectRouter = () => {
-    const userInfo = useUserInfoStore((state) => state.userInfo);
     if (!userInfo.email || !userInfo.role) {
       return <Navigate to={"/auth"} replace={true} />;
+    }
+    return <Outlet />;
+  };
+  const CheckLoggedIn = () => {
+    if (userInfo.email && userInfo.role) {
+      return <Navigate to={"/"} replace={true} />;
     }
     return <Outlet />;
   };
@@ -58,8 +65,11 @@ const AppRoutes = () => {
           path="/auth"
           element={<Navigate to={"login"} replace={true} />}
         />
-        <Route path="login" element={<Login />} />
-        <Route path="signup" element={<Signup />} />
+        <Route element={<CheckLoggedIn />}>
+          {" "}
+          <Route path="login" element={<Login />} />
+          <Route path="signup" element={<Signup />} />
+        </Route>
         <Route path="verify-otp" element={<OtpVerify />} />
         <Route path="forgot-password" element={<ForgotPasswordForm />} />
       </Route>
@@ -86,6 +96,7 @@ const AppRoutes = () => {
         <Route path="/dat-lich-kham/:id" element={<BookingDoctor />} />
         <Route path="/danh-sach-lich-kham" element={<PatientBookingList />} />
         <Route path="/danh-sach-hoa-don" element={<PatientBillList />} />
+        <Route path="/doi-mat-khau" element={<ChangePasswordPage />} />
       </Route>
 
       {/* admin */}
