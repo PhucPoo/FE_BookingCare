@@ -209,6 +209,8 @@ const SpecialtyDetail = () => {
             pageSize={pageSize}
             total={totalListDoctor}
             onChange={onLog}
+            pageSizeOptions={["3", "5", "10"]}
+            showSizeChanger
             responsive
           />
         </div>

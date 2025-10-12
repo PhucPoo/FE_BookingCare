@@ -21,12 +21,7 @@ export const getBillByClinicId = async (
   );
   return res.data;
 };
-// export const c = async (value: string, key: string, size: number = 5) => {
-//   const res = await customAxiosInstance.get(
-//     `${api}/bill/search?${key}=${value}&size=${size}`
-//   );
-//   return res.data;
-// };
+
 export const supportSortBill = async (
   id: string,
   sortOrder: string,
@@ -34,6 +29,17 @@ export const supportSortBill = async (
 ) => {
   const res = await customAxiosInstance.get(
     `${api}/bill?sort=${id},${sortOrder}&size=${size}`
+  );
+  return res.data;
+};
+export const supportSortBooking = async (
+  id: string,
+  sortOrder: string,
+  size: number = 5,
+  page: number = 1
+) => {
+  const res = await customAxiosInstance.get(
+    `${api}/bookings?sort=${id},${sortOrder}&size=${size}&page=${page}`
   );
   return res.data;
 };
@@ -54,5 +60,16 @@ export const supportSearchBill = async (query: string, id: string | number) => {
 };
 export const getClinicBySupportId = async (id: string | number) => {
   const res = await customAxiosInstance.get(`${api}/supports/${id}/clinic`);
+  return res.data;
+};
+export const handleSupportUpdateBooking = async (
+  id: string | number,
+  status: string
+) => {
+  const data = {};
+  const res = await customAxiosInstance.put(
+    `${api}/bookings/${id}/status?status=${status}`,
+    data
+  );
   return res.data;
 };

@@ -231,6 +231,8 @@ const DoctorManagePatientTable = ({
               pageSize={pageSize}
               total={totalListPatient}
               onChange={onLog}
+              pageSizeOptions={["3", "5", "10"]}
+              showSizeChanger
               responsive
             />
           </div>

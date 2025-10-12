@@ -245,6 +245,8 @@ const ServiceListTable = ({
             pageSize={pageSize}
             total={totalServiceList}
             onChange={onLog}
+            pageSizeOptions={["3", "5", "10"]}
+            showSizeChanger
             responsive
           />
         </div>

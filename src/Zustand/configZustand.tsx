@@ -82,7 +82,6 @@ const useUserInfoStore = create<UserInfoStore>()(
         },
         logout: async () => {
           const res = await logoutApi({});
-          console.log("🚀 ~ res:", res);
           if (res.error) {
             toast.error(res.message || "Logout failed");
             return;

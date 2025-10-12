@@ -41,8 +41,8 @@ type Props = {
   handleSort: (value: SupportSortKey) => void;
   handleSearchBooking: (value: string, key: string) => void;
   handleGetBookingList: () => void;
-  confirm: () => void;
-  cancel: () => void;
+  confirm: (id: number, status: string) => void;
+  cancel: (id: number, status: string) => void;
   SupportBookingDetailDataData: (data: BookingListModel) => void;
   setIsModalOpen: (value: boolean) => void;
   handleSetDataToQuery: (key: keyof dataToQueryModel, value: string) => void;
@@ -153,7 +153,7 @@ const BookingTablePage = ({
                   <th
                     className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
                     onClick={() => {
-                      handleSort("createdAt");
+                      handleSort("createAt");
                     }}
                   >
                     Ngày tạo
@@ -250,8 +250,12 @@ const BookingTablePage = ({
                             <Button type="primary">
                               <Popconfirm
                                 title={"Xác nhận đặt lịch từ bệnh nhân"}
-                                onConfirm={confirm}
-                                onCancel={cancel}
+                                onConfirm={() => {
+                                  if (item.id) confirm(item.id, "CONFIRMED");
+                                }}
+                                onCancel={() => {
+                                  if (item.id) cancel(item.id, "CANCELLED");
+                                }}
                                 okText="Xác nhận"
                                 cancelText="huỷ"
                               >
@@ -280,6 +284,8 @@ const BookingTablePage = ({
               pageSize={pageSize}
               total={totalBillList}
               onChange={onLog}
+              pageSizeOptions={["3", "5", "10"]}
+              showSizeChanger
               responsive
             />
           </div>
