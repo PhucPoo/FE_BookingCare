@@ -34,7 +34,7 @@ const Header = () => {
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2 cursor-pointer hover:opacity-90">
           <img
-            src="https://i.pravatar.cc/300?img=8"
+            src={userInfo.avatar}
             alt="User avatar"
             className="w-9 h-9 rounded-full object-cover border-2 border-indigo-500"
           />
