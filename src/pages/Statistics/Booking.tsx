@@ -135,7 +135,7 @@ const StatisticBooking = () => {
     labels,
     datasets: [
       {
-        label: "Doanh thu",
+        label: "Lịch khám đã hoàn thành",
         data: values,
         backgroundColor: "#8884d8",
         borderRadius: 8, // bo góc cột
@@ -159,10 +159,19 @@ const StatisticBooking = () => {
         callbacks: {
           label: function (context) {
             const value = context.parsed.y;
-            if (value >= 1_000_000)
-              return `Số đơn: ${(value / 1_000_000).toFixed(2)}M`;
-            if (value >= 1_000) return `Số đơn: ${(value / 1_000).toFixed(0)}K`;
             return `Số đơn: ${value}`;
+          },
+        },
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            stepSize: 1, // mỗi nấc tăng 1 đơn vị
+            precision: 0, // không hiện số thập phân
+            callback: function (value) {
+              return value; // giữ nguyên số
+            },
           },
         },
       },
