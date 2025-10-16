@@ -1,28 +1,22 @@
 import { useEffect, useState } from "react";
 import {
+  doctorSearchPatient,
   getPatientByDoctorId,
   sortPatientByDoctorId,
 } from "../../../api/Doctor/DoctorApi";
 import type { DoctorManagePatientModel } from "./DoctorManagePatientModel";
 import DoctorManagePatientTable from "./DoctorManagePatientTable";
 import type { DoctorManagePatientSortKeyModel } from "./DoctorManagePatientSortKey";
-
+import useUserInfoStore from "../../../Zustand/configZustand";
+type DataToQuery = {
+  phoneNumber: string;
+  name: string;
+};
 const DoctorManagePatient = () => {
   const [pageSize, setPageSize] = useState<number>(10);
   const [totalListPatient, setTotalListPatient] = useState<number>(500);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [searchValue, setSearchValue] = useState({
-    patient: "",
-    clinic: "",
-  });
 
-  const [filterCreatedAt, setFilterCreatedAt] = useState<{
-    from: string;
-    to: string;
-  }>({
-    from: "",
-    to: "",
-  });
   const [listPatient, setListPatient] = useState<DoctorManagePatientModel[]>(
     []
   );
@@ -36,13 +30,22 @@ const DoctorManagePatient = () => {
     createAt: false,
   });
 
+  const [dataToQuery, setDataToQuery] = useState<DataToQuery>({
+    phoneNumber: "",
+    name: "",
+  });
+  const userInfo = useUserInfoStore((state) => state.userInfo);
+
   const handleGetPatientByDoctorId = async () => {
-    const res = await getPatientByDoctorId(2, "1", "5");
+    const res = await getPatientByDoctorId(userInfo.actorId, "1", "5");
     setListPatient(res.data.result);
-    setPageSize(res.data.meta.page);
+    setPageSize(res.data.meta.pageSize);
     setTotalListPatient(res.data.meta.totals);
     setCurrentPage(res.data.meta.page);
-    setSearchValue({ clinic: "", patient: "" });
+    setDataToQuery({
+      name: "",
+      phoneNumber: "",
+    });
   };
 
   //handle sort
@@ -58,55 +61,58 @@ const DoctorManagePatient = () => {
     setTotalListPatient(res.data.meta.pageSize);
     setCurrentPage(res.data.meta.page);
   };
+  const buildQuery = (data: DataToQuery) => {
+    let query = "";
 
-  //handle search
-  const handleSearch = (value: string, key: string) => {
-    let PatientListClone = listPatient;
-    switch (key) {
-      case "patient":
-        PatientListClone = PatientListClone.filter((item) => {
-          if (item && item.patient?.name)
-            return item.patient?.name.includes(value);
-        });
-        setListPatient(PatientListClone);
-        break;
-      case "clinic":
-        PatientListClone = PatientListClone.filter((item) => {
-          if (item && item.clinic?.name)
-            return item.clinic?.name.includes(value);
-        });
-        setListPatient(PatientListClone);
-        break;
-      default:
-        break;
-    }
-    setSearchValue({ ...searchValue, [key]: value });
-  };
+    Object.keys(data).forEach((key) => {
+      const typedKey = key as keyof DataToQuery;
+      const value = data[typedKey];
 
-  //search by createAt
-  const handleFindByDate = () => {
-    console.log(filterCreatedAt);
-
-    if (!filterCreatedAt.from || !filterCreatedAt.to) {
-      alert("missing parameter");
-      return;
-    }
-    if (filterCreatedAt.from > filterCreatedAt.to) {
-      alert("from must be smaller to");
-      return;
-    }
-    const from = new Date(filterCreatedAt.from);
-    const to = new Date(filterCreatedAt.to);
-
-    let listPatientClone = listPatient;
-    listPatientClone = listPatientClone.filter((item) => {
-      return from <= new Date(item.createAt) && new Date(item.createAt) <= to;
+      if (value !== undefined && value !== "") {
+        query += `&${typedKey}=${encodeURIComponent(String(value))}`;
+      }
     });
-    setListPatient(listPatientClone);
+
+    return query;
   };
-  const onLog = (page: number, pageSize: number) => {
-    console.log("Đang ở trang:", page, pageSize);
+  //handle search
+  const handleSearch = async (value: string, key: string) => {
+    const nextData = { ...dataToQuery, [key]: value };
+    setDataToQuery({ ...dataToQuery, [key]: value });
+    const queryString = buildQuery(nextData);
+    const res = await doctorSearchPatient(queryString, userInfo.actorId);
+    setListPatient(res.data.result);
+    setPageSize(res.data.meta.pageSize);
+    setTotalListPatient(res.data.meta.totals);
+    setCurrentPage(res.data.meta.page);
   };
+
+  const onLog = async (page: number, pageSize: number) => {
+    if (dataToQuery.name || dataToQuery.phoneNumber) {
+      const nextData = { ...dataToQuery, page: page, size: pageSize };
+      const queryString = buildQuery(nextData);
+      const res = await doctorSearchPatient(queryString, userInfo.actorId);
+      setListPatient(res.data.result);
+      setPageSize(res.data.meta.pageSize);
+      setTotalListPatient(res.data.meta.totals);
+      setCurrentPage(res.data.meta.page);
+    } else {
+      const res = await getPatientByDoctorId(userInfo.actorId, page, pageSize);
+      setListPatient(res.data.result);
+      const { meta } = res.data;
+      setPageSize(meta.pageSize);
+      setTotalListPatient(meta.totals);
+      setCurrentPage(meta.page);
+    }
+  };
+  const handleSearchChange = (key: keyof DataToQuery, value: string) => {
+    //dùng để controll input
+    setDataToQuery((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
   useEffect(() => {
     handleGetPatientByDoctorId();
   }, []);
@@ -121,11 +127,9 @@ const DoctorManagePatient = () => {
         handleGetPatientByDoctorId={handleGetPatientByDoctorId}
         handleSort={handleSort}
         handleSearch={handleSearch}
-        handleFindByDate={handleFindByDate}
-        setFilterCreatedAt={setFilterCreatedAt}
-        filterCreatedAt={filterCreatedAt}
         onLog={onLog}
-        searchData={searchValue}
+        searchValue={dataToQuery}
+        setSearchValue={handleSearchChange}
       />
     </div>
   );

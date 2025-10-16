@@ -4,13 +4,14 @@ import { useEffect, useState } from "react";
 import {
   getAvailableTimeOfDoctor,
   getDoctorById,
+  getFeedbackByDoctorId,
 } from "../../../api/Doctor/DoctorApi";
 import { getDegree, getNext7Days } from "../../../utils/constant";
 import LoadingPage from "../../../components/LoadingPage/LoadingPage";
 import { FaLocationDot } from "react-icons/fa6";
 import { RiCalendarScheduleFill } from "react-icons/ri";
 import { FaRegHandPointUp } from "react-icons/fa";
-import { Button, Select } from "antd/lib";
+import { Button, Rate, Select } from "antd/lib";
 import "./Doctor.css";
 import type { DoctorDetailModel } from "./DoctorDetailModel";
 
@@ -19,7 +20,17 @@ type availableTime = {
   start?: string;
   end?: string;
 };
-
+type FeedbackModel = {
+  patient: {
+    id: number;
+    account: {
+      id: number;
+      name: string;
+    };
+  };
+  rate: number;
+  description: string;
+};
 const DoctorDetail = () => {
   const location = useLocation();
   const id =
@@ -29,14 +40,21 @@ const DoctorDetail = () => {
   const [DateSelected, SetDateSelected] = useState<string>("");
   const [availableTime, setAvailableTime] = useState<availableTime[]>([]);
   const [openInsurance, setOpenInsurance] = useState<boolean>(false);
+  const [DoctorFeedback, setDoctorFeedback] = useState<FeedbackModel[]>([]);
   const navigate = useNavigate();
   const handleGetDetailDoctor = async () => {
     const res = await getDoctorById(id);
     if (!res.error) {
       setDetailDoctor(res.data);
+      handleGetFeedBackByDoctorId();
     }
   };
-
+  const handleGetFeedBackByDoctorId = async () => {
+    if (id) {
+      const res = await getFeedbackByDoctorId(id);
+      setDoctorFeedback(res.data.result);
+    }
+  };
   const handleGetAvailableOfDoctor = async (date: string) => {
     const res = await getAvailableTimeOfDoctor(id, date);
     if (!res.error) {
@@ -47,7 +65,7 @@ const DoctorDetail = () => {
   useEffect(() => {
     window.scroll(0, 0);
     handleGetDetailDoctor();
-  }, []);
+  }, [detailDoctor?.id]);
 
   if (!detailDoctor) {
     return <LoadingPage></LoadingPage>;
@@ -109,7 +127,7 @@ const DoctorDetail = () => {
                           }
                         );
                       }}
-                    >{`${item.start} - ${item.start}`}</Button>
+                    >{`${item.start} - ${item.end}`}</Button>
                   ))}
               </div>
               <p className="flex mt-2 text-sm gap-1">
@@ -179,6 +197,31 @@ const DoctorDetail = () => {
         style={{ backgroundColor: "#f9f9f9", borderColor: "#cccccc" }}
       >
         <div className="container">{detailDoctor.description}</div>
+      </div>
+      <div className="    py-5 container">
+        <p className="text-2xl font-bold text-blue-400 my-5">
+          Phản hồi của bệnh nhân sau khi đi khám
+        </p>
+        <div className="border-t-1">
+          {DoctorFeedback &&
+            DoctorFeedback.map((item) => {
+              return (
+                <div key={item?.patient?.id}>
+                  <div className="flex items-center gap-2 mt-2">
+                    <p className="font-bold ">{item?.patient?.account?.name}</p>
+                    <Rate
+                      disabled
+                      defaultValue={item?.rate}
+                      style={{
+                        fontSize: "15px",
+                      }}
+                    />
+                  </div>
+                  <p>{item?.description}</p>
+                </div>
+              );
+            })}
+        </div>
       </div>
     </div>
   );

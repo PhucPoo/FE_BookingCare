@@ -11,3 +11,13 @@ export const getBillByPatient = async (
   );
   return res.data;
 };
+export const createBill = async (data) => {
+  const res = await customAxiosInstance.post(`${api}/bill`, data);
+  return res.data;
+};
+// export const supportSearchBill = async (query: string, id: string | number) => {
+//   const res = await customAxiosInstance.get(
+//     `${api}/bill/clinic${id}/search?${query}`
+//   );
+//   return res.data;
+// };

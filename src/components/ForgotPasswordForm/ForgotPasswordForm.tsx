@@ -76,11 +76,21 @@ const ForgotPasswordForm: React.FC = () => {
   const verifyOtpAPI = async (email: string, otp: string) => {
     setLoading(true);
     setError("");
-    const code = otp;
-    const response = await verifyOtp({ email, code });
-    console.log("🚀 ~ verifyOtpAPI ~ response:", response);
-    if (!response.error) {
-      setStep("newPassword");
+    try {
+      const code = otp;
+      const response = await verifyOtp({ email, code });
+      console.log("🚀 ~ verifyOtpAPI ~ response:", response);
+
+      if (response && !response.error) {
+        return { success: true, message: "Xác thực OTP thành công" };
+      } else {
+        return {
+          success: false,
+          message: response?.message || "OTP không hợp lệ",
+        };
+      }
+    } catch (err) {
+      return { success: false, message: "Lỗi kết nối tới server" };
     }
   };
 

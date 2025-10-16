@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from "react";
 import { Button, Modal, Pagination, type PaginationProps } from "antd/lib";
-import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
+import { FaEdit, FaEye, FaPlus, FaTrash } from "react-icons/fa";
 import EditSpecialty from "./EditSpecialty";
 import InformationSpecialty from "./Detail.Specialty";
+import SpecialtyClinicModal from "./SpecialtyClinicModal";
 
 export interface Specialty {
   id: number;
@@ -54,6 +55,10 @@ const SpecialtyTable: React.FC<SpecialtyTableProps> = ({
   const [editingSpecialty, setEditingSpecialty] = useState<Specialty | null>(
     null
   );
+
+    const [selectedSpecialtiesId, setSelectedSpecialtiesId] = useState<number | null>(null);
+    const [selectedSpecialtiesName, setSelectedSpecialtiesName] = useState<string | null>(null);
+    const [isSpecialtyClinicModalOpen, setIsSpecialtyClinicModalOpen] = useState(false);
 
   // 🟩 Pagination
   const handlePageChange: PaginationProps["onChange"] = (page, size) => {
@@ -108,6 +113,12 @@ const SpecialtyTable: React.FC<SpecialtyTableProps> = ({
     sortColumn === col ? (
       <span className="ml-1">{sortDirection === "asc" ? "▲" : "▼"}</span>
     ) : null;
+
+     const handleOpenModal = (clinicId: number,clinicName:string) => {
+    setSelectedSpecialtiesId(clinicId);
+    setSelectedSpecialtiesName(clinicName)
+    setIsSpecialtyClinicModalOpen(true);
+  };
 
   // 🧾 Render table
   return (
@@ -211,6 +222,13 @@ const SpecialtyTable: React.FC<SpecialtyTableProps> = ({
                         setIsDetailModalOpen(true);
                       }}
                     />
+                    <Button
+                      size="large"
+                      icon={<FaPlus />}
+                      className="!bg-green-500 !border-green-500 !text-white hover:!bg-green-600 rounded-lg"
+                      onClick={() => handleOpenModal(s.id,s.name)}
+
+                    />
                   </div>
                 </td>
               </tr>
@@ -227,6 +245,15 @@ const SpecialtyTable: React.FC<SpecialtyTableProps> = ({
           )}
         </tbody>
       </table>
+
+        {selectedSpecialtiesId !== null && (
+        <SpecialtyClinicModal
+          open={isSpecialtyClinicModalOpen}
+          specialtyId={selectedSpecialtiesId} 
+          specialtyName={selectedSpecialtiesName}
+          onClose={() => setIsSpecialtyClinicModalOpen(false)}
+        />
+      )}
 
       {/* Modal xem chi tiết */}
       <InformationSpecialty

@@ -161,22 +161,7 @@ const Sidebar: React.FC = () => {
             <FaConciergeBell /> Quản lý dịch vụ
           </Link>
         )}
-        {userInfo.role === "ADMIN" && (
-          <Link
-            to="/doctor-dashboard"
-            className={linkClass("/doctor-dashboard", true)}
-          >
-            <FaConciergeBell /> Đến router doctor
-          </Link>
-        )}
-        {userInfo.role === "ADMIN" && (
-          <Link
-            to="/support-dashboard"
-            className={linkClass("/support-dashboard", true)}
-          >
-            <FaConciergeBell /> Đến router support
-          </Link>
-        )}
+
         {userInfo.role === "DOCTOR" && (
           <Link
             to="/doctor-dashboard/booking-manage"

@@ -5,4 +5,5 @@ export type DoctorBookingSortKeyModel =
   | "doctor"
   | "patient"
   | "clinic"
-  | "time";
+  | "time"
+  | "id";

@@ -1,98 +1,38 @@
-import {
-  Button,
-  Dropdown,
-  Pagination,
-  Popconfirm,
-  type MenuProps,
-} from "antd/lib";
+import { Button, Pagination, Popconfirm } from "antd/lib";
 import type { DoctorManagePatientModel } from "./DoctorManagePatientModel";
 import type { DoctorManagePatientSortKeyModel } from "./DoctorManagePatientSortKey";
 import { formatDate } from "../../../utils/constant";
 import useUserInfoStore from "../../../Zustand/configZustand";
 
+type DataToQuery = {
+  phoneNumber: string;
+  name: string;
+};
 type Props = {
   ListPatient: DoctorManagePatientModel[];
   pageSize: number;
   currentPage: number;
   totalListPatient: number;
-  filterCreatedAt: { from: string; to: string };
-  searchData: { patient: string; clinic: string };
+  searchValue: DataToQuery;
+  setSearchValue: (key: keyof DataToQuery, value: string) => void;
   onLog: (page: number, pageSize: number) => void;
   handleSort: (value: DoctorManagePatientSortKeyModel) => void;
-  handleFindByDate: () => void;
   handleSearch: (value: string, key: string) => void;
-  setFilterCreatedAt: (value: { from: string; to: string }) => void;
   handleGetPatientByDoctorId: () => void;
 };
 
 const DoctorManagePatientTable = ({
   ListPatient,
   currentPage,
-  filterCreatedAt,
   pageSize,
   totalListPatient,
-  searchData,
-  handleFindByDate,
+  searchValue,
+  setSearchValue,
   handleGetPatientByDoctorId,
   handleSearch,
   handleSort,
   onLog,
-  setFilterCreatedAt,
 }: Props) => {
-  const items: MenuProps["items"] = [
-    {
-      label: (
-        <div onClick={(e) => e.stopPropagation()}>
-          <input
-            type="date"
-            onChange={(e) => {
-              setTimeout(() => {
-                setFilterCreatedAt({
-                  ...filterCreatedAt,
-                  from: e.target.value,
-                });
-              }, 500);
-            }}
-            className="w-full lg:w-45 not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-      ),
-      key: "0",
-    },
-    {
-      label: (
-        <div onClick={(e) => e.stopPropagation()}>
-          <input
-            type="date"
-            onChange={(e) => {
-              setTimeout(() => {
-                setFilterCreatedAt({
-                  ...filterCreatedAt,
-                  to: e.target.value,
-                });
-              }, 500);
-            }}
-            className="w-full lg:w-45  not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-      ),
-      key: "1",
-    },
-    {
-      label: (
-        <div>
-          <Button
-            size="large"
-            onClick={() => handleFindByDate()}
-            type="primary"
-          >
-            Xác nhận
-          </Button>
-        </div>
-      ),
-      key: "3",
-    },
-  ];
   const userInfo = useUserInfoStore((state) => state.userInfo);
   return (
     <div>
@@ -115,41 +55,32 @@ const DoctorManagePatientTable = ({
             <div className="w-full lg:w-auto">
               <input
                 type="text"
-                placeholder="Tìm kiếm bệnh nhân..."
-                defaultValue={searchData?.patient}
+                placeholder="Tên bệnh nhân..."
+                value={searchValue?.name}
                 onChange={(e) => {
+                  setSearchValue("name", e.target.value);
                   setTimeout(() => {
-                    handleSearch(e.target.value, "patient");
+                    handleSearch(e.target.value, "name");
                   }, 500);
                 }}
                 className="w-full lg:w-45 not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
-            {/* createdAt */}
-            <div className="w-full lg:w-auto">
-              <Dropdown
-                menu={{ items }}
-                trigger={["click"]}
-                className="w-full lg:w-auto"
-              >
-                <Button size="large">Tìm theo ngày</Button>
-              </Dropdown>
-            </div>
-
-            {/* clinic */}
             <div className="w-full lg:w-auto">
               <input
                 type="text"
-                placeholder="Tìm kiếm theo nơi khám..."
-                defaultValue={searchData?.clinic}
+                placeholder="Số điện thoại..."
+                value={searchValue?.phoneNumber}
                 onChange={(e) => {
+                  setSearchValue("phoneNumber", e.target.value);
                   setTimeout(() => {
-                    handleSearch(e.target.value, "clinic");
+                    handleSearch(e.target.value, "phoneNumber");
                   }, 500);
                 }}
                 className="w-full lg:w-45 not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
+
             {/* refresh */}
             <div className="w-full lg:w-auto">
               <Button
@@ -291,10 +222,8 @@ const DoctorManagePatientTable = ({
         {/* pagination */}
         <div className="mt-6 flex flex-col sm:flex-row items-center justify-between bg-white px-6 py-3 rounded-lg shadow-sm border border-gray-200">
           <div className="text-sm text-gray-700 mb-4 sm:mb-0">
-            Hiển thị <span className="font-semibold">{currentPage}</span> đến
-            <span className="font-semibold">{pageSize}</span>
-            của <span className="font-semibold">{totalListPatient}</span> kết
-            quả
+            Tìm thấy <span className="font-semibold">{totalListPatient}</span>{" "}
+            kết quả
           </div>
           <div className="flex items-center space-x-1">
             <Pagination
@@ -302,6 +231,8 @@ const DoctorManagePatientTable = ({
               pageSize={pageSize}
               total={totalListPatient}
               onChange={onLog}
+              pageSizeOptions={["3", "5", "10"]}
+              showSizeChanger
               responsive
             />
           </div>

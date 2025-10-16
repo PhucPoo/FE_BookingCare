@@ -2,17 +2,17 @@ import { IoIosAddCircle } from "react-icons/io";
 import { Button, Pagination, Popconfirm } from "antd/lib";
 import { deleteService } from "../../../api/Services/ServiceApi";
 import { toast } from "react-toastify";
-import type { CheckServiceSortKeyModel } from "./CheckServiceSortKeyModel";
+import type {
+  CheckServiceSortKeyModel,
+  searchServiceModel,
+} from "./CheckServiceSortKeyModel";
 
 type Props = {
   pageSize: number;
   totalServiceList: number;
   currentPage: number;
-  handleSearchService: (value: string) => void;
-  filterService: () => void;
+  handleSearchService: (value: string, key: string) => void;
   handleGetServiceList: () => void;
-  setFilterData: (value: { from: string; to: string }) => void;
-  filterData: { from: string; to: string };
   setIsModalOpen: (e: boolean) => void;
   handleSort: (value: CheckServiceSortKeyModel) => void;
   ServiceList: {
@@ -28,6 +28,9 @@ type Props = {
     description: string;
   }) => void;
   onLog: (page: number, pageSize: number) => void;
+  dataToQuery: searchServiceModel;
+  handleSetDataToQuery: (value: string, key: string) => void;
+  filterService: () => void;
 };
 
 const ServiceListTable = ({
@@ -35,15 +38,15 @@ const ServiceListTable = ({
   pageSize,
   totalServiceList,
   handleSearchService,
-  filterService,
   handleGetServiceList,
-  setFilterData,
-  filterData,
   setIsModalOpen,
   handleSort,
   ServiceList,
   handleUpdateService,
   onLog,
+  dataToQuery,
+  handleSetDataToQuery,
+  filterService,
 }: Props) => {
   const handleDeleteService = async (id: number) => {
     const result = await deleteService(id);
@@ -61,9 +64,11 @@ const ServiceListTable = ({
             <input
               type="text"
               placeholder="Tìm kiếm dịch vụ..."
+              value={dataToQuery.name}
               onChange={(e) => {
+                handleSetDataToQuery(e.target.value, "name");
                 setTimeout(() => {
-                  handleSearchService(e.target.value);
+                  handleSearchService(e.target.value, "name");
                 }, 500);
               }}
               className="w-full sm:w-15 md:w-25 lg:w-50  not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -78,19 +83,25 @@ const ServiceListTable = ({
               <input
                 type="number"
                 placeholder="Từ"
-                value={filterData.from}
+                value={dataToQuery.min}
                 className="w-full sm:w-16 md:w-32  px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 onChange={(e) => {
-                  setFilterData({ ...filterData, from: e.target.value });
+                  handleSetDataToQuery(e.target.value, "min");
+                  // setTimeout(() => {
+                  //   handleSearchService(e.target.value, "min");
+                  // }, 500);
                 }}
               />
               <input
                 type="number"
                 placeholder="Đến"
-                value={filterData.to}
+                value={dataToQuery.max}
                 className="w-full sm:w-16 md:w-32   px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 onChange={(e) => {
-                  setFilterData({ ...filterData, to: e.target.value });
+                  handleSetDataToQuery(e.target.value, "max");
+                  // setTimeout(() => {
+                  //   handleSearchService(e.target.value, "max");
+                  // }, 500);
                 }}
               />
             </div>
@@ -225,9 +236,8 @@ const ServiceListTable = ({
       {/* pagination */}
       <div className="mt-6 flex flex-col sm:flex-row items-center justify-between bg-white px-6 py-3 rounded-lg shadow-sm border border-gray-200">
         <div className="text-sm text-gray-700 mb-4 sm:mb-0">
-          Hiển thị <span className="font-semibold">{currentPage}</span> đến
-          <span className="font-semibold">{pageSize}</span>
-          của <span className="font-semibold">{totalServiceList}</span> kết quả
+          Tìm thấy <span className="font-semibold">{totalServiceList}</span> kết
+          quả
         </div>
         <div className="flex items-center space-x-1">
           <Pagination
@@ -235,6 +245,8 @@ const ServiceListTable = ({
             pageSize={pageSize}
             total={totalServiceList}
             onChange={onLog}
+            pageSizeOptions={["3", "5", "10"]}
+            showSizeChanger
             responsive
           />
         </div>

@@ -1,13 +1,6 @@
-import {
-  Button,
-  Dropdown,
-  Pagination,
-  Popconfirm,
-  Select,
-  type MenuProps,
-} from "antd/lib";
+import { Button, Pagination, Popconfirm } from "antd/lib";
 import { formatDate, getStatusBooking } from "../../../utils/constant";
-import type { SupportSortKey } from "./SupportSortKey";
+import type { dataToQueryModel, SupportSortKey } from "./SupportSortKey";
 type BookingListModel = {
   id?: number;
   appointmentDate?: string;
@@ -46,17 +39,14 @@ type Props = {
   totalBillList: number;
   onLog: (page: number, pageSize: number) => void;
   handleSort: (value: SupportSortKey) => void;
-  handleChange: (value: string) => void;
-  handleFindByDate: () => void;
   handleSearchBooking: (value: string, key: string) => void;
-  setFilterCreatedAt: (value: { from: string; to: string }) => void;
-  filterCreatedAt: { from: string; to: string };
   handleGetBookingList: () => void;
-  confirm: () => void;
-  cancel: () => void;
+  confirm: (id: number, status: string) => void;
+  cancel: (id: number, status: string) => void;
   SupportBookingDetailDataData: (data: BookingListModel) => void;
   setIsModalOpen: (value: boolean) => void;
-  handleSearchByClinic: (value: string) => void;
+  handleSetDataToQuery: (key: keyof dataToQueryModel, value: string) => void;
+  dataToQuery: dataToQueryModel;
 };
 
 const BookingTablePage = ({
@@ -64,74 +54,17 @@ const BookingTablePage = ({
   pageSize,
   currentPage,
   totalBillList,
+  dataToQuery,
   onLog,
   handleSort,
-  handleChange,
-  handleFindByDate,
   handleSearchBooking,
-  setFilterCreatedAt,
-  filterCreatedAt,
   handleGetBookingList,
   confirm,
   cancel,
   SupportBookingDetailDataData,
   setIsModalOpen,
-  handleSearchByClinic,
+  handleSetDataToQuery,
 }: Props) => {
-  const items: MenuProps["items"] = [
-    {
-      label: (
-        <div onClick={(e) => e.stopPropagation()}>
-          <input
-            type="date"
-            onChange={(e) => {
-              setTimeout(() => {
-                setFilterCreatedAt({
-                  ...filterCreatedAt,
-                  from: e.target.value,
-                });
-              }, 500);
-            }}
-            className="w-full lg:w-45 not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-      ),
-      key: "0",
-    },
-    {
-      label: (
-        <div onClick={(e) => e.stopPropagation()}>
-          <input
-            type="date"
-            onChange={(e) => {
-              setTimeout(() => {
-                setFilterCreatedAt({
-                  ...filterCreatedAt,
-                  to: e.target.value,
-                });
-              }, 500);
-            }}
-            className="w-full lg:w-45  not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-      ),
-      key: "1",
-    },
-    {
-      label: (
-        <div>
-          <Button
-            size="large"
-            onClick={() => handleFindByDate()}
-            type="primary"
-          >
-            Xác nhận
-          </Button>
-        </div>
-      ),
-      key: "3",
-    },
-  ];
   return (
     <>
       <div className="max-w-7xl mx-auto">
@@ -149,11 +82,26 @@ const BookingTablePage = ({
           <div className="flex flex-col lg:flex-row gap-2 items-center justify-between">
             <div className="w-full lg:w-auto">
               <input
-                type="text"
-                placeholder="Tìm kiếm bác sĩ..."
+                type="date"
+                className="w-full  lg:w-45  not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 onChange={(e) => {
+                  handleSetDataToQuery("date", e.target.value);
                   setTimeout(() => {
-                    handleSearchBooking(e.target.value, "doctor");
+                    handleSearchBooking(e.target.value, "date");
+                  }, 500);
+                }}
+              />
+            </div>
+
+            <div className="w-full lg:w-auto">
+              <input
+                type="text"
+                placeholder="Tìm theo tên bác sĩ..."
+                value={dataToQuery.doctorName}
+                onChange={(e) => {
+                  handleSetDataToQuery("doctorName", e.target.value);
+                  setTimeout(() => {
+                    handleSearchBooking(e.target.value, "doctorName");
                   }, 500);
                 }}
                 className="w-full  lg:w-45  not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -162,41 +110,12 @@ const BookingTablePage = ({
             <div className="w-full lg:w-auto">
               <input
                 type="text"
-                placeholder="Tìm kiếm bệnh nhân..."
+                placeholder="Tìm theo tên bệnh nhân..."
+                value={dataToQuery.patientName}
                 onChange={(e) => {
+                  handleSetDataToQuery("patientName", e.target.value);
                   setTimeout(() => {
-                    handleSearchBooking(e.target.value, "patient");
-                  }, 500);
-                }}
-                className="w-full lg:w-45 not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-
-            <div className="w-full lg:w-auto flex gap-2">
-              <Dropdown menu={{ items }} trigger={["click"]}>
-                <Button size="large">Tìm theo ngày</Button>
-              </Dropdown>
-            </div>
-            <div className="w-full lg:w-auto">
-              <Select
-                className="w-full"
-                style={{ width: 120 }}
-                onChange={handleChange}
-                size="large"
-                placeholder="Trạng thái"
-                options={[
-                  { value: "CONFIRMED", label: "CONFIRMED" },
-                  { value: "PENDING", label: "PENDING" },
-                ]}
-              />
-            </div>
-            <div className="w-full lg:w-auto">
-              <input
-                type="text"
-                placeholder="Nơi khám..."
-                onChange={(e) => {
-                  setTimeout(() => {
-                    handleSearchByClinic(e.target.value);
+                    handleSearchBooking(e.target.value, "patientName");
                   }, 500);
                 }}
                 className="w-full  lg:w-45  not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -234,7 +153,7 @@ const BookingTablePage = ({
                   <th
                     className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
                     onClick={() => {
-                      handleSort("createdAt");
+                      handleSort("createAt");
                     }}
                   >
                     Ngày tạo
@@ -295,7 +214,7 @@ const BookingTablePage = ({
                         key={item.id}
                       >
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                          {item.appointmentDate}
+                          {formatDate(item?.appointmentDate)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
                           {formatDate(item?.createAt)}
@@ -331,8 +250,12 @@ const BookingTablePage = ({
                             <Button type="primary">
                               <Popconfirm
                                 title={"Xác nhận đặt lịch từ bệnh nhân"}
-                                onConfirm={confirm}
-                                onCancel={cancel}
+                                onConfirm={() => {
+                                  if (item.id) confirm(item.id, "CONFIRMED");
+                                }}
+                                onCancel={() => {
+                                  if (item.id) cancel(item.id, "CANCELLED");
+                                }}
                                 okText="Xác nhận"
                                 cancelText="huỷ"
                               >
@@ -352,9 +275,8 @@ const BookingTablePage = ({
         {/* pagination */}
         <div className="mt-6 flex flex-col sm:flex-row items-center justify-between bg-white px-6 py-3 rounded-lg shadow-sm border border-gray-200">
           <div className="text-sm text-gray-700 mb-4 sm:mb-0">
-            Hiển thị <span className="font-semibold">1</span> đến{" "}
-            <span className="font-semibold">5</span>
-            của <span className="font-semibold">20</span> kết quả
+            Tìm thấy <span className="font-semibold">{totalBillList}</span> kết
+            quả
           </div>
           <div className="flex items-center space-x-1">
             <Pagination
@@ -362,6 +284,8 @@ const BookingTablePage = ({
               pageSize={pageSize}
               total={totalBillList}
               onChange={onLog}
+              pageSizeOptions={["3", "5", "10"]}
+              showSizeChanger
               responsive
             />
           </div>

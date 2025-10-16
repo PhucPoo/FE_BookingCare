@@ -3,7 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import useUserInfoStore from "../../../Zustand/configZustand";
 import { Button, Popover } from "antd/lib";
 import { Divider } from "antd/lib";
-import { useState } from "react";
+import { toast } from "react-toastify";
+
 const MainPageHeader = () => {
   const navigate = useNavigate();
   const userInfo = useUserInfoStore((state) => state.userInfo);
@@ -12,7 +13,8 @@ const MainPageHeader = () => {
       <Link to="/update">Thông tin cá nhân</Link>
       <Link to="/danh-sach-lich-kham">Danh sách lịch khám</Link>
       <Link to="/danh-sach-hoa-don">Danh sách hoá đơn</Link>
-      <Link to="/benh-an">bệnh án</Link>
+      <Link to="/benh-an">Bệnh án</Link>
+      <Link to="/doi-mat-khau">Đổi mật khẩu</Link>
       {userInfo.role === "ADMIN" && (
         <Link to="/admin-dashboard">Dành cho admin</Link>
       )}
@@ -24,10 +26,12 @@ const MainPageHeader = () => {
       )}
       <Divider style={{ margin: "5px 0" }}></Divider>
       <Link
-        to="/#!"
+        to="/#"
         className="flex items-center gap-3"
-        onClick={() => {
-          useUserInfoStore.getState().logout();
+        onClick={async () => {
+          await useUserInfoStore.getState().logout();
+          toast.success("Đăng xuất thành công");
+          navigate("/");
         }}
       >
         <IoIosLogOut className="text-xl" />
@@ -41,7 +45,6 @@ const MainPageHeader = () => {
       <Link to="/auth/signup">Đăng kí</Link>
     </div>
   );
-  const [isAccountOpen, setIsAccountOpen] = useState(false);
 
   return (
     <div>
@@ -188,7 +191,7 @@ const MainPageHeader = () => {
                           d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                         />
                       </svg>
-                      {userInfo.name}
+                      {userInfo.name}+"aa"
                     </Button>
                   </Popover>
                 </div>

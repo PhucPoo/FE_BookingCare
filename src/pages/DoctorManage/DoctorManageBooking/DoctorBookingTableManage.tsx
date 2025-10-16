@@ -1,137 +1,50 @@
+import { Button, Pagination, Popconfirm } from "antd/lib";
 import {
-  Button,
-  Dropdown,
-  Pagination,
-  Popconfirm,
-  Select,
-  type MenuProps,
-} from "antd/lib";
-import { formatDate, getStatusBooking } from "../../../utils/constant";
+  formatDate,
+  // formatMonthYear,
+  getStatusBooking,
+} from "../../../utils/constant";
 import { handleDoctorUpdateBooking } from "../../../api/Doctor/DoctorApi";
 import type { DoctorBookingSortKeyModel } from "./DoctorBookingSortKeyModel";
-type BookingListModel = {
-  id?: number;
-  appointmentDate?: string;
-  description?: string;
-  status?: string;
-  createAt?: string;
-  doctor?: {
-    id?: number;
-    account?: {
-      id?: number;
-      name?: string;
-    };
-  };
+import useUserInfoStore from "../../../Zustand/configZustand";
+import type { Item } from "./DoctorBookingManageModel";
 
-  patient?: {
-    id?: number;
-    account?: {
-      id?: number;
-      name?: string;
-    };
-  };
-  time?: {
-    id?: number;
-    start?: string;
-    end?: string;
-  };
-  clinic?: {
-    id?: number;
-    name?: string;
-  };
-};
 type Props = {
-  BookingList: BookingListModel[];
+  BookingList: Item[];
   pageSize: number;
   currentPage: number;
   totalBillList: number;
+  searchInputValue: { name: ""; phoneNumber: "" };
   onLog: (page: number, pageSize: number) => void;
   handleSort: (value: DoctorBookingSortKeyModel) => void;
-  handleChange: (value: string) => void;
+  // handleChange: (value: string) => void;
   handleFindByDate: () => void;
   handleSearchBooking: (value: string, key: string) => void;
   setFilterCreatedAt: (value: { from: string; to: string }) => void;
   filterCreatedAt: { from: string; to: string };
   handleGetBookingList: () => void;
-  showModal: () => void;
-  setDetailDoctorBooking: (data: BookingListModel) => void;
+  setDetailDoctorBooking: (data: Item) => void;
   setIsDoctorDetailModalOpen: (value: boolean) => void;
-  handleSearchByClinic: (value: string) => void;
+  handleChangeSearchInputValue: (value: string, key: string) => void;
 };
 
 const BookingTableManage = ({
   BookingList,
-
   pageSize,
   currentPage,
   totalBillList,
   onLog,
   handleSort,
-  handleChange,
-  handleFindByDate,
+
   handleSearchBooking,
-  setFilterCreatedAt,
-  filterCreatedAt,
+
   handleGetBookingList,
-  showModal,
   setDetailDoctorBooking,
   setIsDoctorDetailModalOpen,
-  handleSearchByClinic,
+  handleChangeSearchInputValue,
+  searchInputValue,
 }: Props) => {
-  const items: MenuProps["items"] = [
-    {
-      label: (
-        <div onClick={(e) => e.stopPropagation()}>
-          <input
-            type="date"
-            onChange={(e) => {
-              setTimeout(() => {
-                setFilterCreatedAt({
-                  ...filterCreatedAt,
-                  from: e.target.value,
-                });
-              }, 500);
-            }}
-            className="w-full lg:w-45 not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-      ),
-      key: "0",
-    },
-    {
-      label: (
-        <div onClick={(e) => e.stopPropagation()}>
-          <input
-            type="date"
-            onChange={(e) => {
-              setTimeout(() => {
-                setFilterCreatedAt({
-                  ...filterCreatedAt,
-                  to: e.target.value,
-                });
-              }, 500);
-            }}
-            className="w-full lg:w-45  not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-      ),
-      key: "1",
-    },
-    {
-      label: (
-        <div>
-          <Button
-            size="large"
-            onClick={() => handleFindByDate()}
-            type="primary"
-          >
-            Xác nhận
-          </Button>
-        </div>
-      ),
-      key: "3",
-    },
-  ];
+  const userInfo = useUserInfoStore((state) => state.userInfo);
   const handleUpdateBooking = async (id: string, status: string) => {
     handleDoctorUpdateBooking(id, status);
     handleGetBookingList();
@@ -143,18 +56,9 @@ const BookingTableManage = ({
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
             Danh sách lịch khám
           </h1>
-          <p className="text-gray-600">Danh sách lịch khám bởi bác sĩ</p>
-        </div>
-
-        <div className="mb-6">
-          <Button
-            size="large"
-            onClick={() => {
-              showModal();
-            }}
-          >
-            Đăng kí lịch khám
-          </Button>
+          <p className="text-gray-600">
+            Danh sách lịch khám bởi bác sĩ {userInfo.name}
+          </p>
         </div>
       </div>
 
@@ -166,50 +70,34 @@ const BookingTableManage = ({
             <input
               type="text"
               placeholder="Tìm kiếm bệnh nhân..."
+              value={searchInputValue.name}
               onChange={(e) => {
+                handleChangeSearchInputValue(e.target.value, "name");
                 setTimeout(() => {
-                  handleSearchBooking(e.target.value, "patient");
+                  handleSearchBooking(e.target.value, "name");
                 }, 500);
               }}
               className="w-full lg:w-45 not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
           {/* createdAt */}
-          <div className="w-full lg:w-auto">
-            <Dropdown
-              menu={{ items }}
-              trigger={["click"]}
-              className="w-full lg:w-auto"
-            >
-              <Button size="large">Tìm theo ngày</Button>
-            </Dropdown>
-          </div>
-          {/* status */}
-          <div className="w-full lg:w-auto">
-            <Select
-              style={{ width: 120 }}
-              onChange={handleChange}
-              size="large"
-              placeholder="Trạng thái"
-              options={[
-                { value: "Done", label: "Done" },
-                { value: "Pending", label: "Pending" },
-              ]}
-            />
-          </div>
-          {/* clinic */}
-          <div className="w-full lg:w-auto">
+          <div className="w-full sm:w-auto">
             <input
-              type="text"
-              placeholder="Tìm kiếm theo nơi khám..."
+              type="date"
               onChange={(e) => {
+                handleChangeSearchInputValue(e.target.value, "date");
                 setTimeout(() => {
-                  handleSearchByClinic(e.target.value);
+                  handleSearchBooking(
+                    e.target.value,
+                    // e.target.value,
+                    "date"
+                  );
                 }, 500);
               }}
-              className="w-full lg:w-45 not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full sm:w-15 md:w-25 lg:w-50  not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
+
           {/* refresh */}
           <div className="w-full lg:w-auto">
             <Button
@@ -235,6 +123,14 @@ const BookingTableManage = ({
                 <th
                   className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
                   onClick={() => {
+                    handleSort("id");
+                  }}
+                >
+                  ID
+                </th>
+                <th
+                  className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
+                  onClick={() => {
                     handleSort("appointmentDate");
                   }}
                 >
@@ -257,13 +153,21 @@ const BookingTableManage = ({
                 >
                   Status
                 </th>
-                <th
+                {/* <th
                   className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
                   onClick={() => {
                     handleSort("doctor");
                   }}
                 >
                   Bác sĩ
+                </th> */}
+                <th
+                  className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
+                  // onClick={() => {
+                  //   handleSort("doctor");
+                  // }}
+                >
+                  Số điện thoại
                 </th>
                 <th
                   className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
@@ -273,14 +177,7 @@ const BookingTableManage = ({
                 >
                   Bệnh nhân
                 </th>
-                <th
-                  className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
-                  onClick={() => {
-                    handleSort("clinic");
-                  }}
-                >
-                  Bệnh viện
-                </th>
+
                 <th
                   className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
                   onClick={() => {
@@ -305,7 +202,10 @@ const BookingTableManage = ({
                       key={item.id}
                     >
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                        {item.appointmentDate}
+                        {item.id}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
+                        {formatDate(item?.appointmentDate)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
                         {formatDate(item?.createAt)}
@@ -313,17 +213,16 @@ const BookingTableManage = ({
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
                         {getStatusBooking(item.status)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
+                      {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
                         {item.doctor?.account?.name}
+                      </td> */}
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
+                        {item.patient?.account?.phoneNumber}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
                         {item.patient?.account?.name}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                        {item?.clinic?.name && item?.clinic?.name?.length > 20
-                          ? item.clinic?.name?.slice(0, 20) + "..."
-                          : item.clinic?.name}
-                      </td>
+
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
                         {`${item.time?.end}-${item.time?.start}`}
                       </td>
@@ -385,6 +284,8 @@ const BookingTableManage = ({
             pageSize={pageSize}
             total={totalBillList}
             onChange={onLog}
+            pageSizeOptions={["3", "5", "10"]}
+            showSizeChanger
             responsive
           />
         </div>
