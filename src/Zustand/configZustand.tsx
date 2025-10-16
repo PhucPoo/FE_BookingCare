@@ -29,7 +29,6 @@ type LoginResponse = {
   };
   accessToken: string;
 };
-
 type UserInfoStoreActions = {
   loginZustand: (formData: {
     userName: string;
@@ -97,8 +96,7 @@ const useUserInfoStore = create<UserInfoStore>()(
             },
           });
           document.cookie = `access_token=; path=/`;
-          window.location.href = "/";
-          toast.success("Logout successful");
+          return true;
         },
       }),
       {

@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import useUserInfoStore from "../../../Zustand/configZustand";
 import { Button, Popover } from "antd/lib";
 import { Divider } from "antd/lib";
+import { toast } from "react-toastify";
 
 const MainPageHeader = () => {
   const navigate = useNavigate();
@@ -25,10 +26,12 @@ const MainPageHeader = () => {
       )}
       <Divider style={{ margin: "5px 0" }}></Divider>
       <Link
-        to="/#!"
+        to="/#"
         className="flex items-center gap-3"
-        onClick={() => {
-          useUserInfoStore.getState().logout();
+        onClick={async () => {
+          await useUserInfoStore.getState().logout();
+          toast.success("Đăng xuất thành công");
+          navigate("/");
         }}
       >
         <IoIosLogOut className="text-xl" />
