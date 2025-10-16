@@ -110,3 +110,9 @@ export const formatMonthYear = (dateString: string): string => {
   // Ghép lại theo định dạng MM/YYYY
   return `${month}/${year}`;
 };
+export const formatNumber = (value: number): string => {
+  return value.toLocaleString("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  });
+};

@@ -8,7 +8,7 @@ function DashboardLayout() {
       <SidebarDashboard />
       <div className="flex-1 ml-64 min-h-screen bg-gray-50">
         <Header />
-        <div className="p-5">
+        <div className="py-5">
           <Outlet />
         </div>
       </div>

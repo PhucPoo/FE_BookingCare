@@ -237,6 +237,7 @@ const ProfileUpdate: React.FC = () => {
         if (response.ok && data.statusCode === 200) {
           toast.success("Cập nhật thông tin thành công!");
           setFormData(data);
+          navigate("/admin-dashboard");
           
           console.log("test");
         }
@@ -245,7 +246,6 @@ const ProfileUpdate: React.FC = () => {
         updateUserInfo(updatedUserInfo);
 
         setSuccessMessage("Cập nhật thông tin thành công!");
-        navigate("/");
 
         // Update form data với dữ liệu từ response
         setFormData({
