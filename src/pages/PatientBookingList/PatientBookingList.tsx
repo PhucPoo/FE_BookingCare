@@ -257,6 +257,8 @@ const PatientBookingList = () => {
             pageSize={pageSize}
             total={totalBookings}
             onChange={onLog}
+            pageSizeOptions={["3", "5", "10"]}
+            showSizeChanger
             responsive
           />
         </div>

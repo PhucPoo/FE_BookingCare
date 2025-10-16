@@ -23,7 +23,7 @@ const ChangePasswordPage = () => {
       return;
     }
     await changePasswordApi({ password, newPassword }, userInfo.id)
-      .then((res) => {
+      .then(() => {
         toast.success("Đổi mật khẩu thành công, hãy đăng nhập lại");
         setTimeout(() => {
           useUserInfoStore.getState().logout();

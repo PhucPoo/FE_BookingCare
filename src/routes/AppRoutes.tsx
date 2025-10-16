@@ -43,21 +43,24 @@ import DoctorManagePatient from "../pages/DoctorManage/DoctorManagePatient/Docto
 import SupportBillManagePage from "../pages/Support/SupportBillManagePage/SupportBillManagePage";
 import SpecialtyDetail from "../pages/DanhSach/Specialty/SpecialtyDetail";
 import ChangePasswordPage from "../pages/ChangePassword/ChangePasswordPage";
+import MedicalServices from "../pages/DichVuYTe/MeidcalServices";
+import MedicalServicesDetail from "../pages/DichVuYTe/MedicalServicesDetail";
 
 const AppRoutes = () => {
   const userInfo = useUserInfoStore((state) => state.userInfo);
   const ProtectRouter = () => {
-    if (!userInfo.email || !userInfo.role) {
+    if (!userInfo.email || !userInfo.role || !document.cookie) {
       return <Navigate to={"/auth"} replace={true} />;
     }
     return <Outlet />;
   };
   const CheckLoggedIn = () => {
-    if (userInfo.email && userInfo.role) {
+    if (userInfo.email && userInfo.role && document.cookie) {
       return <Navigate to={"/"} replace={true} />;
     }
     return <Outlet />;
   };
+
   return (
     <Routes>
       <Route path="/auth">
@@ -90,6 +93,17 @@ const AppRoutes = () => {
         <Route path="chuyen-khoa" element={<SpecialtyList />} />
         <Route path="chuyen-khoa/:id" element={<SpecialtyDetail />} />
         <Route path="bai-viet" element={<ArticleList />} />
+      </Route>
+      <Route path="/dich-vu-y-te" element={<List />}>
+        <Route
+          path="/dich-vu-y-te"
+          element={<Navigate to={"error-page"} replace={true} />}
+        />
+        <Route path="kham-chuyen-khoa" element={<MedicalServices />} />
+        <Route
+          path="kham-chuyen-khoa/:id"
+          element={<MedicalServicesDetail />}
+        />
       </Route>
       {/* protected route */}
       <Route element={<ProtectRouter />}>

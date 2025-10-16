@@ -1,5 +1,5 @@
 export type SupportSortKey =
-  | "createdAt"
+  | "createAt"
   | "doctor"
   | "appointmentDate"
   | "status"

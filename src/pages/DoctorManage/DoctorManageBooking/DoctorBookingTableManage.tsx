@@ -284,6 +284,8 @@ const BookingTableManage = ({
             pageSize={pageSize}
             total={totalBillList}
             onChange={onLog}
+            pageSizeOptions={["3", "5", "10"]}
+            showSizeChanger
             responsive
           />
         </div>

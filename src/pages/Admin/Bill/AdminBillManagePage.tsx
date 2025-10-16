@@ -46,7 +46,7 @@ const BillManage = () => {
     ) {
       const nextData = { ...searchData, page: page, size: pageSize };
       const queryString = buildQuery(nextData);
-      const res = await adminSearchBill(queryString);
+      const res = await adminSearchBill(queryString, currentPage, pageSize);
       setBillList(res.data.result);
       setPageSize(res.data.meta.pageSize);
       setTotalBillList(res.data.meta.totals);
@@ -94,7 +94,7 @@ const BillManage = () => {
   };
   const handleGetService = async () => {
     const res = await getAllService(1, 5);
-    const data = [];
+    const data: any[] = [];
     res.data.result.map((item: ServicesModel) => {
       data.push({ value: item.id, label: item.name });
     });
