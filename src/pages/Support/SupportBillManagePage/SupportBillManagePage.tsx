@@ -133,7 +133,7 @@ const SupportBillManagePage = () => {
   };
   useEffect(() => {
     handleGetBillList();
-  }, []);
+  }, [clinicInfo?.id]);
 
   return (
     <div className="p-5 bg-white mx-5">
