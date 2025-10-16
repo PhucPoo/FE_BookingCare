@@ -38,11 +38,16 @@ const SupportBillCreateNew = ({
   >([]);
   const [radioValue, setRadioValue] = useState(0);
   const [dataToCreate, setDataCreate] = useState<{
-    patientId: number;
-    supportId: number;
+    patientId: number | string;
+    supportId: number | string;
     status: string;
     services: { serviceId: number; quantity: number }[];
-  }>({});
+  }>({
+    status: "UNPAID",
+    patientId: "",
+    supportId: "",
+    services: [],
+  });
   const userInfo = useUserInfoStore((state) => state.userInfo);
   const onRadioChange = (e: RadioChangeEvent) => {
     setRadioValue(e.target.value);
@@ -110,7 +115,6 @@ const SupportBillCreateNew = ({
         toast.warning("thiếu dữ liệu ở tệp danh sách dịch vụ");
       }
     });
-    console.log("🚀 ~ handleCreateBill ~ dataToCreate:", dataToCreate);
 
     if (
       !dataToCreate.patientId ||
@@ -126,6 +130,7 @@ const SupportBillCreateNew = ({
       setIsModalCreateOpen(false);
       toast.success("Hoàn thành");
       handleGetBillList();
+      reset();
     } else {
       toast.error(res.message);
     }
