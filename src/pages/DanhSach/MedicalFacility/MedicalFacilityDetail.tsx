@@ -138,79 +138,81 @@ const MedicalFacilityDetail = () => {
             {listDoctorOfClinic &&
               listDoctorOfClinic.length > 0 &&
               listDoctorOfClinic.map((doctor) => {
-                return (
-                  <div
-                    className="bg-white w-full shadow-2xl mb-3 doctor-item p-2 flex"
-                    key={doctor.id}
-                  >
-                    {/* content left */}
-                    <div className="flex gap-5 content_left w-1/2">
-                      <img
-                        src={
-                          doctor.account.avatar
-                            ? doctor?.account?.avatar
-                            : "null"
-                        }
-                        className="doctor-item-img"
-                      />
+                if (doctor && doctor.isActive) {
+                  return (
+                    <div
+                      className="bg-white w-full shadow-2xl mb-3 doctor-item p-2 flex"
+                      key={doctor.id}
+                    >
+                      {/* content left */}
+                      <div className="flex gap-5 content_left w-1/2">
+                        <img
+                          src={
+                            doctor.account.avatar
+                              ? doctor?.account?.avatar
+                              : "null"
+                          }
+                          className="doctor-item-img"
+                        />
 
-                      <div className="flex gap-2 flex-col">
-                        <p className="text-blue-300 font-bold">
-                          {doctor.account.name}
-                        </p>
-                        <p className="text-sm">{doctor.account.address}</p>
+                        <div className="flex gap-2 flex-col">
+                          <p className="text-blue-300 font-bold">
+                            {doctor.account.name}
+                          </p>
+                          <p className="text-sm">{doctor.account.address}</p>
+                        </div>
                       </div>
-                    </div>
-                    <Divider
-                      type="vertical"
-                      size="large"
-                      style={{ height: "100px" }}
-                    />
-                    {/* content right */}
-                    <div className="content_right w-1/2">
-                      <Select
-                        style={{ width: 190 }}
-                        defaultValue={getNext7Days()[0].label}
-                        options={getNext7Days()}
-                        placeholder="Chọn thời gian"
-                        onChange={(e) =>
-                          handleGetAvailableOfDoctor(doctor.id, e)
-                        }
+                      <Divider
+                        type="vertical"
+                        size="large"
+                        style={{ height: "100px" }}
                       />
+                      {/* content right */}
+                      <div className="content_right w-1/2">
+                        <Select
+                          style={{ width: 190 }}
+                          defaultValue={getNext7Days()[0].label}
+                          options={getNext7Days()}
+                          placeholder="Chọn thời gian"
+                          onChange={(e) =>
+                            handleGetAvailableOfDoctor(doctor.id, e)
+                          }
+                        />
 
-                      <div className="mt-3 flex gap-3 flex-wrap ">
-                        {doctor.availableTime?.length === 0 &&
-                          "Hiện bác sĩ hiện không có lịch khám, hãy chọn 1 ngày khác"}
-                        {doctor.availableTime &&
-                          doctor.availableTime?.length > 1 &&
-                          doctor.availableTime.map((item) => {
-                            return (
-                              <Button
-                                key={item.id}
-                                onClick={() => {
-                                  navigate(
-                                    `/dat-lich-kham/${doctor.id}?timeStart=${item.start}&timeEnd=${item.end}`,
-                                    {
-                                      state: {
-                                        data: {
-                                          appointmentDate: DateSelected
-                                            ? DateSelected
-                                            : getNext7Days()[0].value,
-                                          doctorId: doctor.id,
-                                          clinicId: `${doctor.clinic?.id}`,
-                                          timeId: item.id,
+                        <div className="mt-3 flex gap-3 flex-wrap ">
+                          {doctor.availableTime?.length === 0 &&
+                            "Hiện bác sĩ hiện không có lịch khám, hãy chọn 1 ngày khác"}
+                          {doctor.availableTime &&
+                            doctor.availableTime?.length > 1 &&
+                            doctor.availableTime.map((item) => {
+                              return (
+                                <Button
+                                  key={item.id}
+                                  onClick={() => {
+                                    navigate(
+                                      `/dat-lich-kham/${doctor.id}?timeStart=${item.start}&timeEnd=${item.end}`,
+                                      {
+                                        state: {
+                                          data: {
+                                            appointmentDate: DateSelected
+                                              ? DateSelected
+                                              : getNext7Days()[0].value,
+                                            doctorId: doctor.id,
+                                            clinicId: `${doctor.clinic?.id}`,
+                                            timeId: item.id,
+                                          },
                                         },
-                                      },
-                                    }
-                                  );
-                                }}
-                              >{`${item.start} - ${item.end}`}</Button>
-                            );
-                          })}
+                                      }
+                                    );
+                                  }}
+                                >{`${item.start} - ${item.end}`}</Button>
+                              );
+                            })}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
+                  );
+                }
               })}
           </div>
           <Pagination
