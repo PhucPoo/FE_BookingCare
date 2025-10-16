@@ -15,6 +15,7 @@ const MainPageHeader = () => {
       <Link to="/benh-an">bệnh án</Link>
       {userInfo.role === "ADMIN" && (
         <Link to="/admin-dashboard">Dành cho admin</Link>
+        
       )}
       {userInfo.role === "DOCTOR" && (
         <Link to="/doctor-dashboard">Dành cho bác sĩ</Link>

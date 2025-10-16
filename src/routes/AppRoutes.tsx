@@ -23,6 +23,9 @@ import Signup from "../pages/Signup/Signup";
 import ForgotPasswordForm from "../components/ForgotPasswordForm/ForgotPasswordForm";
 import OtpVerify from "../pages/Signup/Otpverify";
 import UpdateInfo from "../../src/components/updateinfo/updateinfo";
+import UpdateAdminInfo from "../../src/components/updateinfo/AdminUpdate";
+import UpdateDoctorInfo from "../../src/components/updateinfo/DoctorUpdate";
+import UpdateSupportInfo from "../../src/components/updateinfo/SupportUpdate";
 
 import MainPage from "../pages/MainPage/MainPage";
 import MedicalFacilityList from "../pages/DanhSach/MedicalFacility/MedicalFacilityList";
@@ -93,7 +96,8 @@ const AppRoutes = () => {
       {/* admin */}
       <Route element={<RouteCheckRole requiredPermission={permission.ADMIN} />}>
         <Route path="/admin-dashboard" element={<DashboardLayout />}>
-        
+        <Route path="update" element={<UpdateAdminInfo />} />
+
           <Route
             path="/admin-dashboard"
             element={<Navigate to={"statistics"} replace={true} />}
@@ -110,6 +114,7 @@ const AppRoutes = () => {
 
           <Route path="specialty" element={<SpecialtyGrid />} />
           <Route path="clinic-page" element={<ClinicManagement />} />
+          <Route path="update" element={<UpdateInfo />} />
         </Route>
       </Route>
 
@@ -127,6 +132,7 @@ const AppRoutes = () => {
         element={<RouteCheckRole requiredPermission={permission.DOCTOR} />}
       >
         <Route path="/doctor-dashboard" element={<DoctorDashboard />}>
+        <Route path="update" element={<UpdateDoctorInfo />} />
           <Route
             path="/doctor-dashboard"
             element={<Navigate to={"booking-manage"} replace={true} />}
@@ -141,6 +147,7 @@ const AppRoutes = () => {
         element={<RouteCheckRole requiredPermission={permission.SUPPORT} />}
       >
         <Route path="/support-dashboard" element={<SupportDashboard />}>
+        <Route path="update" element={<UpdateSupportInfo />} />
           <Route
             path="/support-dashboard"
             element={<Navigate to={"booking-support-manage"} replace={true} />}

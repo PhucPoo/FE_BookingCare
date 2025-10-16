@@ -236,7 +236,7 @@ const ProfileUpdate: React.FC = () => {
         };
         if (response.ok && data.statusCode === 200) {
           alert("Cập nhật thông tin thành công!");
-          navigate("/");
+          navigate("/admin-dashboard");
         }
 
         console.log("Updating Zustand with:", updatedUserInfo);
