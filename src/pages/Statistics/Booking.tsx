@@ -208,7 +208,6 @@ const StatisticBooking = () => {
   const handleSearchClinic = async (e: string) => {
     await adminSearchClinic("name", e)
       .then(async (res) => {
-        console.log("🚀 ~ handleSearchClinic ~ res:", res);
         const result = await buildClinicData(res.data.result);
         setSearchClinicList(result);
       })
@@ -223,7 +222,7 @@ const StatisticBooking = () => {
     <>
       <div className="statistic-content">
         <div className="text-xl mb-2">Báo cáo lịch khám hoàn thành</div>
-        <div className="flex justify-between items-center ">
+        <div className="flex justify-between items-center gap-3">
           <div>
             <Select
               style={{ width: "200px" }}
