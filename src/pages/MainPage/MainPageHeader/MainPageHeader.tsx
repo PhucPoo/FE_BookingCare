@@ -17,6 +17,7 @@ const MainPageHeader = () => {
       <Link to="/doi-mat-khau">Đổi mật khẩu</Link>
       {userInfo.role === "ADMIN" && (
         <Link to="/admin-dashboard">Dành cho admin</Link>
+        
       )}
       {userInfo.role === "DOCTOR" && (
         <Link to="/doctor-dashboard">Dành cho bác sĩ</Link>
@@ -191,7 +192,7 @@ const MainPageHeader = () => {
                           d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                         />
                       </svg>
-                      {userInfo.name}+"aa"
+                      {userInfo.name}
                     </Button>
                   </Popover>
                 </div>

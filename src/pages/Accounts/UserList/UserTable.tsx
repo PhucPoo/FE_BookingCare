@@ -199,7 +199,7 @@ const UserTable: React.FC<UserTableProps> = ({
                       setIsEditModalOpen(true);
                     }}
                   />
-                  <Button
+                  {/* <Button
                     size="large"
                     icon={<FaTrash />}
                     style={{ backgroundColor: "#b91c1c", borderColor: "#b91c1c", color: "#fff" }}
@@ -207,7 +207,7 @@ const UserTable: React.FC<UserTableProps> = ({
                       setIsModalOpen(true);
                       setDeleteUserId(u.id);
                     }}
-                  />
+                  /> */}
                   <Button
                     size="large"
                     icon={<FaEye />}

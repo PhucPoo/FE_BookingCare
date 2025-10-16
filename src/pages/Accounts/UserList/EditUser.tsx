@@ -18,14 +18,14 @@ interface EditUserProps {
   onCancel: () => void;
   onUpdate: (user: User) => void;
   user: User | null;
- 
+
 }
 
 const EditUser: React.FC<EditUserProps> = ({ open, onCancel, onUpdate, user }) => {
   const [form] = Form.useForm();
   const [file, setFile] = useState<File | null>(null);
   const [fileList, setFileList] = useState<any[]>([]);
-  
+
 
   // Đổ dữ liệu vào form khi mở modal
   useEffect(() => {
@@ -39,29 +39,29 @@ const EditUser: React.FC<EditUserProps> = ({ open, onCancel, onUpdate, user }) =
         gender: user.gender,
         address: user.address,
       });
-       if (user.avatar) {
-      setFileList([
-        {
-          uid: "-1",
-          status: "done",
-          url: user.avatar, 
-        },
-      ]);
-    }
+      if (user.avatar) {
+        setFileList([
+          {
+            uid: "-1",
+            status: "done",
+            url: user.avatar,
+          },
+        ]);
+      }
       setFile(null);
     }
   }, [user, form]);
 
   // Upload file
   const handleUploadChange = ({ fileList }: any) => {
-  setFileList(fileList);
+    setFileList(fileList);
 
-  if (fileList.length > 0 && fileList[0].originFileObj) {
-    setFile(fileList[0].originFileObj);
-  } else {
-    setFile(null);
-  }
-};
+    if (fileList.length > 0 && fileList[0].originFileObj) {
+      setFile(fileList[0].originFileObj);
+    } else {
+      setFile(null);
+    }
+  };
 
   // Submit form
   const handleSubmit = async (values: any) => {
@@ -92,18 +92,18 @@ const EditUser: React.FC<EditUserProps> = ({ open, onCancel, onUpdate, user }) =
 
     try {
       const u = await testPutAccountsApi(formData);
-      
+
       const updatedUser: User = {
         ...user,
         ...values,
-        
+
         id: user.id, // ✅ giữ id
         birth: values.birth ? values.birth.format("YYYY-MM-DD") : null,
         avatar: file ? file.name : user.avatar,
         updateAt: new Date().toISOString(),
       };
-      console.log("AAAAAAA",updatedUser);
-      
+      console.log("AAAAAAA", updatedUser);
+
 
       notification.success({
         message: "Cập nhật thành công",
@@ -138,9 +138,9 @@ const EditUser: React.FC<EditUserProps> = ({ open, onCancel, onUpdate, user }) =
         <Form.Item name="name" label="Tên người dùng" rules={[{ required: true }]}>
           <Input placeholder="Nhập tên người dùng" size="large" />
         </Form.Item>
-        <Form.Item name="email" label="Email" rules={[{ required: true, type: "email" }]}>
+        {/* <Form.Item name="email" label="Email" rules={[{ required: true, type: "email" }]}>
           <Input placeholder="Nhập email" size="large" />
-        </Form.Item>
+        </Form.Item> */}
 
         <Form.Item
           name="phoneNumber"
@@ -184,6 +184,9 @@ const EditUser: React.FC<EditUserProps> = ({ open, onCancel, onUpdate, user }) =
           <Upload
             beforeUpload={() => false}
             onChange={handleUploadChange}
+            showUploadList={{
+              showRemoveIcon: false, 
+            }}
             fileList={fileList}
             maxCount={1}
             listType="picture"

@@ -5,12 +5,19 @@ import { toast } from "react-toastify";
 
 type UserInfoStoreState = {
   userInfo: {
+    avatar: string;
+    cccd: string;
+    gender: string;
+    dateOfBirth: string;
+    address: string;
+    phoneNumber: string;
     name: string;
     email: string;
     role: string;
     id: number;
     actorId: number;
     actorType: string;
+    avatar: string;
   };
 };
 
@@ -45,18 +52,23 @@ const useUserInfoStore = create<UserInfoStore>()(
     persist(
       (set) => ({
         userInfo: {
+          cccd: "",
+          gender: "",
+          dateOfBirth: "",
+          address: "",
+          phoneNumber: "",
           name: "",
           email: "",
           role: "",
           id: 0,
           actorId: 0,
           actorType: "CLIENT",
+          avatar: "",
         },
+
         loginZustand: async (data) => {
           try {
-            console.log("Sending login data:", data);
             const res = await loginApi(data);
-            console.log("API Response:", res);
 
             if (res.statusCode !== 200) {
               toast.error(res.message || "Đăng nhập thất bại");
@@ -87,12 +99,18 @@ const useUserInfoStore = create<UserInfoStore>()(
           }
           set({
             userInfo: {
+              cccd: "",
+              gender: "",
+              dateOfBirth: "",
+              address: "",
+              phoneNumber: "",
               name: "",
               email: "",
               role: "",
               id: 0,
               actorId: 0,
               actorType: "CLIENT",
+              avatar: "",
             },
           });
           document.cookie = `access_token=; path=/`;

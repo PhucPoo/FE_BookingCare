@@ -53,3 +53,24 @@ export const adminSearchBill = async (
   );
   return res.data;
 };
+export const adminGetStatistic = async (query: string) => {
+  const res = await customAxiosInstance.get(`${api}/statistic/price/${query}`);
+  return res.data;
+};
+export const adminSearchClinic = async (
+  searchValue: string,
+  searchData: string,
+  size: number = 3,
+  page: number = 1
+) => {
+  const res = await customAxiosInstance.get(
+    `${api}/clinics/search?${searchValue}=${searchData}&size=${size}&page=${page}`
+  );
+  return res.data;
+};
+export const adminGetStatisticBooking = async (query: string) => {
+  const res = await customAxiosInstance.get(
+    `${api}/statistic/bookingSuccess/${query}`
+  );
+  return res.data;
+};
