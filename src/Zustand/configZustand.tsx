@@ -29,14 +29,13 @@ type LoginResponse = {
   };
   accessToken: string;
 };
-
 type UserInfoStoreActions = {
   loginZustand: (formData: {
     userName: string;
     password: string;
   }) => Promise<LoginResponse | undefined>;
   logout: () => void;
-  updateUserInfo: (userData: Partial<UserInfoStoreState['userInfo']>) => void;
+  updateUserInfo: (userData: Partial<UserInfoStoreState["userInfo"]>) => void;
 };
 
 type UserInfoStore = UserInfoStoreState & UserInfoStoreActions;
@@ -55,10 +54,10 @@ const useUserInfoStore = create<UserInfoStore>()(
         },
         loginZustand: async (data) => {
           try {
-            console.log('Sending login data:', data);
+            console.log("Sending login data:", data);
             const res = await loginApi(data);
-            console.log('API Response:', res);
-            
+            console.log("API Response:", res);
+
             if (res.statusCode !== 200) {
               toast.error(res.message || "Đăng nhập thất bại");
               return undefined;
@@ -67,7 +66,7 @@ const useUserInfoStore = create<UserInfoStore>()(
             document.cookie = `access_token=${res.data.accessToken}; path=/`;
             return res.data;
           } catch (error: any) {
-            console.error('Login API Error:', error);
+            console.error("Login API Error:", error);
             toast.error(error.message || "Có lỗi kết nối đến server");
             return undefined;
           }
@@ -76,11 +75,16 @@ const useUserInfoStore = create<UserInfoStore>()(
           set((state) => ({
             userInfo: {
               ...state.userInfo,
-              ...userData
-            }
+              ...userData,
+            },
           }));
         },
         logout: async () => {
+          const res = await logoutApi({});
+          if (res.error) {
+            toast.error(res.message || "Logout failed");
+            return;
+          }
           set({
             userInfo: {
               name: "",
@@ -92,13 +96,7 @@ const useUserInfoStore = create<UserInfoStore>()(
             },
           });
           document.cookie = `access_token=; path=/`;
-          window.location.href = "/";
-          toast.success("Logout successful");
-          const res = await logoutApi({});
-          if (res.statusCode !== 200) {
-            toast.error(res.message || "Logout failed");
-            return;
-          }
+          return true;
         },
       }),
       {

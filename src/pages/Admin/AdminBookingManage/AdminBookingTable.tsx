@@ -281,6 +281,8 @@ const AdminBookingTable = ({
             pageSize={pageSize}
             total={totalBookingList}
             onChange={onLog}
+            pageSizeOptions={["3", "5", "10"]}
+            showSizeChanger
             responsive
           />
         </div>

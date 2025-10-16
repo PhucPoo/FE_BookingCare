@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
 import BookingTablePage from "./SupportBookingTablePage";
-import { message, type PopconfirmProps } from "antd/lib";
+
 import {
   getBookingByClinicId,
   getClinicBySupportId,
+  handleSupportUpdateBooking,
   supportSearchBooking,
+  supportSortBooking,
 } from "../../../api/Support/SupportApi";
 import SupportBookingDetail from "./SupportBookingDetail";
 import type { dataToQueryModel, SupportSortKey } from "./SupportSortKey";
-import { formatMonthYear } from "../../../utils/constant";
+
 import useUserInfoStore from "../../../Zustand/configZustand";
+import { toast } from "react-toastify";
 type accountModel = {
   id?: number;
   name?: string;
@@ -72,7 +75,7 @@ const BookingPage = () => {
     Record<SupportSortKey, boolean>
   >({
     appointmentDate: false,
-    createdAt: false,
+    createAt: false,
     status: false,
     doctor: false,
     patient: false,
@@ -102,21 +105,22 @@ const BookingPage = () => {
   };
   const handleGetClinicInfo = async () => {
     const res = await getClinicBySupportId(userInfo.actorId);
-    console.log("🚀 ~ handleGetClinicInfo ~ res:", res);
     setClinicInfo(res.data);
   };
   // initial value
   const handleGetBookingList = async () => {
     await handleGetClinicInfo();
     if (clinicInfo?.id) {
-      const res = await getBookingByClinicId(clinicInfo?.id);
+      const res = await getBookingByClinicId(
+        clinicInfo?.id,
+        currentPage,
+        pageSize
+      );
       setBookingList(res.data.result);
-      const {
-        meta: { page, pageSize, totals },
-      } = res.data;
-      setPageSize(pageSize);
-      setTotalBillList(totals);
-      setCurrentPage(page);
+      const { meta } = res.data;
+      setPageSize(meta.pageSize);
+      setTotalBillList(meta.totals);
+      setCurrentPage(meta.page);
       setDataToQuery({
         patientName: "",
         doctorName: "",
@@ -128,7 +132,20 @@ const BookingPage = () => {
   };
 
   //handle sort
-  const handleSort = (key: SupportSortKey) => {};
+  const handleSort = async (key: SupportSortKey) => {
+    const res = await supportSortBooking(
+      key,
+      checkRender[key] ? "asc" : "desc",
+      pageSize,
+      currentPage
+    );
+    setCheckRender({ ...checkRender, [key]: !checkRender[key] });
+    setBookingList(res.data.result);
+    setPageSize(res.data.meta.pageSize);
+    setTotalBillList(res.data.meta.totals);
+    setCurrentPage(res.data.meta.page);
+  };
+
   const handleSetDataToQuery = (key: keyof dataToQueryModel, value: string) => {
     setDataToQuery((prev) => ({
       ...prev,
@@ -159,14 +176,32 @@ const BookingPage = () => {
     setCurrentPage(res.data.meta.page);
   };
 
-  const confirm: PopconfirmProps["onConfirm"] = (e) => {
-    console.log(e);
-    message.success("Click on Yes");
+  const confirm = async (id: number, status: string) => {
+    if (id && status) {
+      await handleSupportUpdateBooking(id, status)
+        .then(() => {
+          handleGetBookingList();
+        })
+        .catch((err) => {
+          toast.error(err.response.data.message);
+        });
+    } else {
+      toast.warning(`Thiếu ${id ? "id" : "status"}`);
+    }
   };
 
-  const cancel: PopconfirmProps["onCancel"] = (e) => {
-    console.log(e);
-    message.error("Click on No");
+  const cancel = async (id: number, status: string) => {
+    if (id && status) {
+      await handleSupportUpdateBooking(id, status)
+        .then(() => {
+          handleGetBookingList();
+        })
+        .catch((err) => {
+          toast.error(err.response.data.message);
+        });
+    } else {
+      toast.warning(`Thiếu ${id ? "id" : "status"}`);
+    }
   };
 
   useEffect(() => {

@@ -74,22 +74,25 @@ const ForgotPasswordForm: React.FC = () => {
 
   // Xác thực OTP
   const verifyOtpAPI = async (email: string, otp: string) => {
-  setLoading(true);
-  setError("");
-  try {
-    const code = otp;
-    const response = await verifyOtp({ email, code });
-    console.log("🚀 ~ verifyOtpAPI ~ response:", response);
+    setLoading(true);
+    setError("");
+    try {
+      const code = otp;
+      const response = await verifyOtp({ email, code });
+      console.log("🚀 ~ verifyOtpAPI ~ response:", response);
 
-    if (response && !response.error) {
-      return { success: true, message: "Xác thực OTP thành công" };
-    } else {
-      return { success: false, message: response?.message || "OTP không hợp lệ" };
+      if (response && !response.error) {
+        return { success: true, message: "Xác thực OTP thành công" };
+      } else {
+        return {
+          success: false,
+          message: response?.message || "OTP không hợp lệ",
+        };
+      }
+    } catch (err) {
+      return { success: false, message: "Lỗi kết nối tới server" };
     }
-  } catch (err) {
-    return { success: false, message: "Lỗi kết nối tới server" };
-  }
-};
+  };
 
   // Đổi mật khẩu mới
   const saveNewPasswordAPI = async (email: string, password: string) => {

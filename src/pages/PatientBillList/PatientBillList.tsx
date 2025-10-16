@@ -199,6 +199,8 @@ const PatientBillList = () => {
           pageSize={pageSize}
           total={totalBills}
           onChange={onLog}
+          pageSizeOptions={["3", "5", "10"]}
+          showSizeChanger
           responsive
         />
         <PatientBillDescriptionModal
