@@ -14,6 +14,7 @@ import { testGetSpecialtyApi } from "../../../api/testSpecialty";
 import { testPostDoctorApi } from "../../../api/testDoctor";
 import { testPostSupportApi } from "../../../api/testSupport";
 import { testPostPatientApi } from "../../../api/testPatient";
+import { testGetClinicOFSpecialtyApi } from "../../../api/testclinicSpecialty";
 
 const { Option } = Select;
 
@@ -31,9 +32,22 @@ const AddUser: React.FC<AddUserProps> = ({ users, setusers, open, onCancel }) =>
   const [activeTab, setActiveTab] = useState("1");
   const [createdAccount, setCreatedAccount] = useState<any>(null);
 
+  const [selectedClinicId, setSelectedClinicId] = useState<number | null>(null);
+
   const [formStep1] = Form.useForm();
   const [formStep2] = Form.useForm();
   const [api, contextHolder] = notification.useNotification();
+
+  useEffect(() => {
+  // Chỉ gọi khi đã tạo account và chọn clinic
+  if (!selectedClinicId || !createdAccount) return;
+
+  testGetClinicOFSpecialtyApi(selectedClinicId).then(data => {
+    const listspecialties = data.data.result.specialties.map(value => value);
+    setSpecialties(listspecialties);
+  });
+}, [selectedClinicId, createdAccount]);
+
 
   // Load dropdown khi chọn role
   useEffect(() => {
@@ -41,9 +55,9 @@ const AddUser: React.FC<AddUserProps> = ({ users, setusers, open, onCancel }) =>
     if (!createdAccount) return;
 
     if (selectedRole === 2) {
-      Promise.all([testGetClinicApi(), testGetSpecialtyApi()]).then(([clinicRes, specialtyRes]) => {
+      Promise.all([testGetClinicApi()]).then(([clinicRes]) => {
         setClinics(clinicRes.data.result || []);
-        setSpecialties(specialtyRes.data.result || []);
+        // setSpecialties(specialtyRes.data.result || []);
       });
     } else if (selectedRole === 3) {
       testGetClinicApi().then((clinicRes) => setClinics(clinicRes.data.result || []));
@@ -59,31 +73,31 @@ const AddUser: React.FC<AddUserProps> = ({ users, setusers, open, onCancel }) =>
 
   // Xử lý bước 1 (tạo account)
   const handleNext = async () => {
-  try {
-    const values = await formStep1.validateFields(); // chỉ validate khi bấm nút
-    const res = await testPostAccountsApi(values);
-    const account = res.data?.data || res;
-    setCreatedAccount(account);
-    setActiveTab("2");
-    notification.success({
-      message: "Tạo tài khoản thành công",
-      description: account.name,
-    });
-  } catch (err: any) {
-    if (err?.errorFields) {
-      // lỗi frontend (VD: chưa nhập required)
-      notification.warning({
-        message: "Vui lòng nhập đủ thông tin",
+    try {
+      const values = await formStep1.validateFields(); // chỉ validate khi bấm nút
+      const res = await testPostAccountsApi(values);
+      const account = res.data?.data || res;
+      setCreatedAccount(account);
+      setActiveTab("2");
+      notification.success({
+        message: "Tạo tài khoản thành công",
+        description: account.name,
       });
-    } else {
-      // lỗi backend (VD: email trùng, lỗi server)
-      notification.error({
-        message: "Lỗi tạo Account",
-        description: getErrorMessage(err),
-      });
+    } catch (err: any) {
+      if (err?.errorFields) {
+        // lỗi frontend (VD: chưa nhập required)
+        notification.warning({
+          message: "Vui lòng nhập đủ thông tin",
+        });
+      } else {
+        // lỗi backend (VD: email trùng, lỗi server)
+        notification.error({
+          message: "Lỗi tạo Account",
+          description: getErrorMessage(err),
+        });
+      }
     }
-  }
-};
+  };
 
   // Xử lý bước 2 (theo role)
   const handleSubmit = async () => {
@@ -117,7 +131,7 @@ const AddUser: React.FC<AddUserProps> = ({ users, setusers, open, onCancel }) =>
         description: createdAccount.name,
       });
 
-      
+
       formStep1.resetFields();
       formStep2.resetFields();
       setCreatedAccount(null);
@@ -254,7 +268,9 @@ const AddUser: React.FC<AddUserProps> = ({ users, setusers, open, onCancel }) =>
                   {selectedRole === 2 && (
                     <>
                       <Form.Item name="clinicId" label="Phòng khám" rules={[{ required: true }]}>
-                        <Select placeholder="Chọn clinic">
+                        <Select onSelect={(value) => {
+                          setSelectedClinicId(value)
+                        }} placeholder="Chọn clinic">
                           {clinics.map((c) => (
                             <Option key={c.id} value={c.id}>
                               {c.id} - {c.name}

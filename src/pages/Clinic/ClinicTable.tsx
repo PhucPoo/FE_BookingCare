@@ -1,10 +1,11 @@
 import React, { useState, useMemo } from "react";
 import { Button, Modal, Pagination, Tooltip, type PaginationProps, } from "antd/lib";
-import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
+import { FaEdit, FaTrash, FaEye, FaPlus } from "react-icons/fa";
 import InformationClinic from "./DetailClinic";
 import EditClinic from "./EditClinic";
 import type { Address } from "./AddClinic";
 import { notification } from "antd";
+import ClinicSpecialtyModal from "./ClinicSpecialtyModal";
 export interface Clinic {
   id: number;
   name: string;
@@ -51,6 +52,10 @@ const ClinicTable: React.FC<ClinicTableProps> = ({
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteClinicId, setDeleteClinicId] = useState<number>(0);
+
+  const [selectedClinicId, setSelectedClinicId] = useState<number | null>(null);
+  const [selectedClinicName, setSelectedClinicName] = useState<string | null>(null);
+  const [isClinicSpecialtyModalOpen, setIsClinicSpecialtyModalOpen] = useState(false);
 
 
 
@@ -108,6 +113,14 @@ const ClinicTable: React.FC<ClinicTableProps> = ({
     }
   };
   console.log(totalClinics);
+
+  const handleOpenModal = (clinicId: number,clinicName:string) => {
+    setSelectedClinicId(clinicId);
+    setSelectedClinicName(clinicName);
+    setIsClinicSpecialtyModalOpen(true);
+
+  };
+
 
 
   return (
@@ -198,6 +211,15 @@ const ClinicTable: React.FC<ClinicTableProps> = ({
                       setSelectedClinic(clinic);
                       setIsDetailModalOpen(true);
                     }}
+
+                  />
+                  {/* Thêm chuyên khoa */}
+                  <Button
+                    size="large"
+                    icon={<FaPlus />}
+                    className="!bg-green-500 !border-green-500 !text-white hover:!bg-green-600 rounded-lg"
+                    onClick={() => handleOpenModal(clinic.id,clinic.name)}
+
                   />
                 </div>
               </td>
@@ -205,6 +227,16 @@ const ClinicTable: React.FC<ClinicTableProps> = ({
           ))}
         </tbody>
       </table>
+
+      {selectedClinicId !== null && (
+        <ClinicSpecialtyModal
+          open={isClinicSpecialtyModalOpen}
+          clinicId={selectedClinicId} 
+          clinicName={selectedClinicName}
+          onClose={() => setIsClinicSpecialtyModalOpen(false)}
+        />
+      )}
+
 
       {/* Modal chi tiết */}
       <InformationClinic
