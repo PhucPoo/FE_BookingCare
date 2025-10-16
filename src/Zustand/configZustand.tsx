@@ -5,6 +5,12 @@ import { toast } from "react-toastify";
 
 type UserInfoStoreState = {
   userInfo: {
+    avatar: string;
+    cccd: string;
+    gender: string;
+    dateOfBirth: string;
+    address: string;
+    phoneNumber: string;
     name: string;
     email: string;
     role: string;
@@ -46,6 +52,11 @@ const useUserInfoStore = create<UserInfoStore>()(
     persist(
       (set) => ({
         userInfo: {
+          cccd: "",
+          gender: "",
+          dateOfBirth: "",
+          address: "",
+          phoneNumber: "",
           name: "",
           email: "",
           role: "",
@@ -54,6 +65,7 @@ const useUserInfoStore = create<UserInfoStore>()(
           actorType: "CLIENT",
           avatar: "",
         },
+
         loginZustand: async (data) => {
           try {
             const res = await loginApi(data);
@@ -87,6 +99,11 @@ const useUserInfoStore = create<UserInfoStore>()(
           }
           set({
             userInfo: {
+              cccd: "",
+              gender: "",
+              dateOfBirth: "",
+              address: "",
+              phoneNumber: "",
               name: "",
               email: "",
               role: "",

@@ -11,7 +11,16 @@ const Header = () => {
   const navigate = useNavigate();
   const content = (
     <div className="flex flex-col gap-2.5 cursor-pointer">
-      <p className="hover:bg-cyan-300 hover:text-amber-50 p-2">
+      <p
+        className="hover:bg-cyan-300 hover:text-amber-50 p-2"
+        onClick={() => {
+          const role = userInfo.role;
+          if (role === "ADMIN") navigate("/admin-dashboard/update");
+          else if (role === "DOCTOR") navigate("/doctor-dashboard/update");
+          else if (role === "SUPPORT") navigate("/support-dashboard/update");
+          else navigate("/update");
+        }}
+      >
         Cập nhật thông tin
       </p>
       <p
@@ -26,6 +35,7 @@ const Header = () => {
       </p>
     </div>
   );
+
   return (
     <header className="w-full h-20 bg-white shadow-sm flex items-center justify-between px-10 ">
       <div className="w-1/3">
