@@ -1,8 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Input, DatePicker, Select } from "antd/lib";
 import dayjs from "dayjs";
 import type { Clinic } from "./ClinicTable";
 import { testSearchClinicApi } from "../../api/testClinic";
+import type { Address } from "./AddClinic";
+import test from "node:test";
+import { testGetAddressApi } from "../../api/testAddress";
+
+const { Option } = Select;
 
 interface ClinicFilterKeywords {
     name: string;
@@ -21,7 +26,7 @@ interface ClinicFilterBarProps {
     setName: (name: string) => void;
     phoneNumber: string;
     setPhoneNumber: (phone: string) => void;
-    addressID: number | null;
+    addressID: number ;
     setAddressID: (addressId: number | null) => void;
     monthYear: Date | null;
     setMonthYear: (monthYear: Date | null) => void;
@@ -41,11 +46,13 @@ const ClinicFilterBar: React.FC<ClinicFilterBarProps> = ({
     monthYear,
     setMonthYear,
 }) => {
+    const [addressList, setAddressList] = useState<Address[]>([]);
+
     const handleSearch = async () => {
         const keywords: ClinicFilterKeywords = {
             name,
             phoneNumber,
-            addressID:addressID,
+            addressID: addressID,
             monthYear,
         };
 
@@ -63,13 +70,28 @@ const ClinicFilterBar: React.FC<ClinicFilterBarProps> = ({
 
             const clinics: Clinic[] = result.data?.result ?? [];
             filteredClinics(clinics);
-            onFilter(clinics, keywords);
             
+            onFilter(clinics, keywords);
+
         } catch (error) {
             console.error("Lỗi khi tìm kiếm phòng khám:", error);
             onFilter([], keywords);
         }
     };
+    useEffect(() => {
+        const fetchData = async () => {
+          try {
+            const addressList = await Promise.all([testGetAddressApi(),]) 
+            console.log("AAAAAAAAAA",addressList[0].data.result);
+            
+            
+            setAddressList(addressList[0].data.result)
+          } catch(err){
+            console.error("Lỗi load address:", err);
+          }
+        };
+        fetchData();
+      }, []);
 
     return (
         <div className="flex flex-wrap gap-4 p-4 bg-white shadow rounded mb-4 w-full">
@@ -83,17 +105,20 @@ const ClinicFilterBar: React.FC<ClinicFilterBarProps> = ({
 
             <Select
                 value={addressID ?? undefined}
-                onChange={(value) => setAddressID(value)}
+                onChange={setAddressID}
                 placeholder="Chọn địa chỉ"
                 className="flex-1 min-w-[180px]"
                 size="large"
                 allowClear
-                options={[
-                    { label: "Hà Nội", value: 1 },
-                    { label: "TP.HCM", value: 2 },
-                    { label: "Đà Nẵng", value: 3 },
-                ]}
-            />
+
+            >
+                {addressList.map((c) => (
+                    <Option key={c.id} value={String(c.id)}>
+                        {c.city}
+                    </Option>
+                ))}
+
+            </Select>
 
             <Input
                 value={phoneNumber}
