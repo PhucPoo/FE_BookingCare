@@ -2,7 +2,7 @@ import type { createServiceModel } from "../../model/createServiceModel";
 import customAxiosInstance from "../../utils/configAxios";
 import { api } from "../../utils/constant";
 
-export const getAllService = async (page: number, size: number) => {
+export const getAllService = async (page: number = 1, size: number = 5) => {
   const response = await customAxiosInstance.get(
     `${api}/services?page=${page}&size=${size}`
   );

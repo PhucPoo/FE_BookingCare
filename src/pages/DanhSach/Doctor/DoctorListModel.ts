@@ -14,4 +14,5 @@ export type DoctorListModel = {
       city?: string;
     };
   };
+  isActive: boolean;
 };
