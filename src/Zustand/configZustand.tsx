@@ -11,6 +11,7 @@ type UserInfoStoreState = {
     id: number;
     actorId: number;
     actorType: string;
+    avatar: string;
   };
 };
 
@@ -51,12 +52,11 @@ const useUserInfoStore = create<UserInfoStore>()(
           id: 0,
           actorId: 0,
           actorType: "CLIENT",
+          avatar: "",
         },
         loginZustand: async (data) => {
           try {
-            console.log("Sending login data:", data);
             const res = await loginApi(data);
-            console.log("API Response:", res);
 
             if (res.statusCode !== 200) {
               toast.error(res.message || "Đăng nhập thất bại");
@@ -93,6 +93,7 @@ const useUserInfoStore = create<UserInfoStore>()(
               id: 0,
               actorId: 0,
               actorType: "CLIENT",
+              avatar: "",
             },
           });
           document.cookie = `access_token=; path=/`;
