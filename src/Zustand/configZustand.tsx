@@ -5,6 +5,11 @@ import { toast } from "react-toastify";
 
 type UserInfoStoreState = {
   userInfo: {
+    cccd: string;
+    gender: string;
+    dateOfBirth: string;
+    address: string;
+    phoneNumber: string;
     name: string;
     email: string;
     role: string;

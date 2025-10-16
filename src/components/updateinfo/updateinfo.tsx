@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { SaveOutlined } from '@ant-design/icons';
 import './updateinfo.css';
 import useUserInfoStore from '../../Zustand/configZustand';
+import MainPage from '../../pages/MainPage/MainPage';
+import MainPageHeader from '../../pages/MainPage/MainPageHeader/MainPageHeader';
+import Footer from '../UI/Footer';
 
 interface UserProfile {
   id: number;
@@ -260,7 +263,9 @@ const ProfileUpdate: React.FC = () => {
   };
 
   return (
-    <div className='body'>
+    <div>
+      <MainPageHeader />
+          <div className='updateinfo-body'>
       <div className="profile-container">
         <div className="profile-card">
           <div className="profile-header">
@@ -271,29 +276,6 @@ const ProfileUpdate: React.FC = () => {
           <form onSubmit={handleSubmit} className="profile-form">
             {error && <div className="error-message">{error}</div>}
             {successMessage && <div className="success-message">{successMessage}</div>}
-
-            {/* <div className="form-row">
-                <div className="form-group full-width" style={{ textAlign: 'center' }}>
-                  <label className="form-label">ID người dùng</label>
-                  <div className="input-wrapper" style={{ maxWidth: '200px', margin: '0 auto' }}>
-                    <input
-                      type="text"
-                      name="id"
-                      value={formData.id}
-                      readOnly
-                      disabled
-                      className="form-input readonly"
-                      style={{
-                        backgroundColor: '#f5f5f5',
-                        color: '#666',
-                        cursor: 'not-allowed',
-                        textAlign: 'center',
-                        fontWeight: 'bold'
-                      }}
-                    />
-                  </div>
-                </div>
-              </div> */}
 
             <div className="form-row">
               <div className="form-group">
@@ -420,6 +402,8 @@ const ProfileUpdate: React.FC = () => {
           </form>
         </div>
       </div>
+    </div>
+    <Footer />
     </div>
   );
 };

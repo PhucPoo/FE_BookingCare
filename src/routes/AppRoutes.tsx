@@ -66,7 +66,7 @@ const AppRoutes = () => {
 
       <Route path="/" element={<MainPage />} />
 
-      <Route path="/update" element={<UpdateInfo />} />
+
 
       <Route path="/danh-sach" element={<List />}>
         <Route
@@ -83,6 +83,8 @@ const AppRoutes = () => {
       </Route>
       {/* protected route */}
       <Route element={<ProtectRouter />}>
+        <Route path="/update" element={<UpdateInfo />} />
+        
         <Route path="/dat-lich-kham/:id" element={<BookingDoctor />} />
         <Route path="/danh-sach-lich-kham" element={<PatientBookingList />} />
         <Route path="/danh-sach-hoa-don" element={<PatientBillList />} />
@@ -91,6 +93,7 @@ const AppRoutes = () => {
       {/* admin */}
       <Route element={<RouteCheckRole requiredPermission={permission.ADMIN} />}>
         <Route path="/admin-dashboard" element={<DashboardLayout />}>
+        
           <Route
             path="/admin-dashboard"
             element={<Navigate to={"statistics"} replace={true} />}

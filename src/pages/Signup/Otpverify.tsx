@@ -79,51 +79,38 @@ export default function OtpVerify() {
 setLoading(true);
     let lastData: any = null;
     try {
-      const attempts = [
-        {
-          url: `http://localhost:8080/api/v1/auth/forgot-password-send-email?email=${encodeURIComponent(email)}`,
-          options: { method: "GET" },
+    const response = await fetch(
+      "http://localhost:8080/api/v1/auth/register",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      ];
-
-      let ok = false;
-      for (const att of attempts) {
-        try {
-          console.log("Trying resend endpoint:", att.url, att.options);
-          const res = await fetch(att.url, att.options as RequestInit);
-          const data = await res.json();
-          lastData = { status: res.status, body: data };
-          console.log("Resend attempt response:", lastData);
-
-          // chấp nhận khi response.ok hoặc backend trả statusCode 200 hoặc success flag
-          if (res.ok || data?.statusCode === 200 || data?.success === true) {
-            ok = true;
-            break;
-          }
-          // nếu backend trả message rõ ràng (vd "OTP sent") ta cũng xem là ok
-          if (typeof data?.message === "string" && /sent|đã|gửi/i.test(data.message)) {
-            ok = true;
-            break;
-          }
-        } catch (e) {
-          console.warn("Attempt failed:", att.url, e);
-        }
+        body: JSON.stringify({
+          email,
+          password,
+          name,
+          phoneNumber,
+          roleId: 2
+        }),
       }
+    );
 
-      if (ok) {
-        message.success("OTP đã được gửi lại tới email của bạn!");
-        setOtpTimer(60);
-      } else {
-        console.error("All resend attempts failed. Last response:", lastData);
-        message.error(lastData?.body?.message || "Gửi lại OTP thất bại");
-      }
-    } catch (err) {
-      console.error("Resend OTP error:", err);
-      message.error("Có lỗi xảy ra khi gửi lại OTP");
-    } finally {
-      setLoading(false);
+    const data = await response.json();
+    
+    if (response.ok || data?.statusCode === 200) {
+      message.success("OTP đã được gửi lại tới email của bạn!");
+      setOtpTimer(60);
+    } else {
+      message.error(data.message || "Gửi lại OTP thất bại");
     }
-  };
+  } catch (error) {
+    console.error("Resend OTP error:", error);
+    message.error("Có lỗi xảy ra khi gửi lại OTP");
+  } finally {
+    setLoading(false);
+  }
+};
 
 
   return (
