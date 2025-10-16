@@ -21,7 +21,7 @@ export const testLoginApi = async () => {
 };
 export const testSortAccountsApi = async (page: number, size: number,sort:string,order:string) => {
   const response = await customAxiosInstance.get(
-   `http://localhost:8080/api/v1/accounts?page=1&size=10&sort=${sort},${order}`,
+   `http://localhost:8080/api/v1/accounts?page=${page}&size=${size}&sort=${sort},${order}`,
   
     config
   );

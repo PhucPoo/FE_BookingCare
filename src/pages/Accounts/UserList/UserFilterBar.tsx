@@ -127,7 +127,7 @@ const UserFilterBar: React.FC<UserFilterBarProps> = ({
           <Option value="admin">Admin</Option>
           <Option value="doctor">Doctor</Option>
           <Option value="support">Support</Option>
-          <Option value="patient">Patient</Option>
+          <Option value="client">Client</Option>
         </OptGroup>
       </Select>
 

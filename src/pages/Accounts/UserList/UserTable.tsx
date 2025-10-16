@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Modal, Pagination, Tooltip, notification } from "antd/lib";
 import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
 import DetailUser from "./DetailUser";
@@ -56,7 +56,7 @@ const UserTable: React.FC<UserTableProps> = ({
   setpages,
   setpageSize,
 }) => {
-  const [sortColumn] = useState<SortColumn>("name");
+  const [sortColumn, setSortColumn] = useState<SortColumn>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteUserId, setDeleteUserId] = useState<number>(0);
@@ -67,20 +67,22 @@ const UserTable: React.FC<UserTableProps> = ({
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
 
+  
   // Fetch sorted users
-  const fetchSortedUsers = async (direction: SortDirection) => {
+  const fetchSortedUsers = async (column: SortColumn, direction: SortDirection) => {
     try {
-      const res = await testSortAccountsApi(1, 100, sortColumn, direction);
+      const res = await testSortAccountsApi(pages, pageSize, column, direction);
       setusers(res.data.result);
     } catch (err) {
       console.error("Lỗi load users sort:", err);
     }
   };
 
-  const handleSortClick = () => {
-    const next = sortDirection === "asc" ? "desc" : "asc";
-    setSortDirection(next);
-    fetchSortedUsers(next);
+  const handleSortClick = (column: SortColumn) => {
+    const nextDirection = sortDirection === "asc" ? "desc" : "asc";
+    setSortColumn(column);
+    setSortDirection(nextDirection);
+    fetchSortedUsers(column, nextDirection);
   };
 
   const handleOk = async () => {
@@ -130,7 +132,7 @@ const UserTable: React.FC<UserTableProps> = ({
             <th className="p-3 border border-gray-200 text-center font-medium">ID</th>
             <th
               className="p-3 border border-gray-200 cursor-pointer text-left font-medium select-none"
-              onClick={handleSortClick}
+              onClick={() => handleSortClick("name")}
             >
               Tên {sortDirection === "asc" ? "🔼" : "🔽"}
             </th>
@@ -147,7 +149,7 @@ const UserTable: React.FC<UserTableProps> = ({
             <th className="p-3 border border-gray-200 hidden lg:table-cell text-center font-medium">Role</th>
             <th
               className="p-3 border border-gray-200 hidden md:table-cell cursor-pointer text-center font-medium select-none"
-              onClick={handleSortClick}
+              onClick={() => handleSortClick("createAt")}
             >
               Ngày tạo {sortDirection === "asc" ? "🔼" : "🔽"}
             </th>

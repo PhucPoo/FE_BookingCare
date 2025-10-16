@@ -2,18 +2,21 @@ import { useEffect, useState } from "react";
 import type { AdminBillManageModel } from "../../Admin/Bill/AdminBillManageModel";
 import {
   getBillByClinicId,
+  getClinicBySupportId,
   supportSearchBill,
   supportSortBill,
 } from "../../../api/Support/SupportApi";
-// import useUserInfoStore from "../../../Zustand/configZustand";
 import SupportBillManageTable from "./SupportBillManageTable";
 import type { CheckBillSortKeyModel } from "../../Admin/Bill/CheckBillSortKeyModel";
 import SupportBIllManageDetail from "./SupportBIllManageDetail";
 import SupportBillCreateNew from "./SupportBillCreateNew";
 import type { searchBillModel } from "./searchBillModel";
-
+import useUserInfoStore from "../../../Zustand/configZustand";
+type clinicInfoModel = {
+  id: string | number;
+  name: string;
+};
 const SupportBillManagePage = () => {
-  // const userInfo = useUserInfoStore((state) => state.userInfo);
   const [BillList, setBillList] = useState<AdminBillManageModel[]>([]);
   const [BillDetail, setBillDetail] = useState<AdminBillManageModel>({});
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -39,6 +42,7 @@ const SupportBillManagePage = () => {
       page: currentPage,
       size: pageSize,
     });
+  const [clinicInfo, setClinicInfo] = useState<clinicInfoModel>();
   const handleSetCheckSearchCondition = (
     key: keyof searchBillModel,
     value: string
@@ -48,20 +52,33 @@ const SupportBillManagePage = () => {
       [key]: value,
     }));
   };
+
+  const userInfo = useUserInfoStore((state) => state.userInfo);
+  const handleGetClinicInfo = async () => {
+    const res = await getClinicBySupportId(userInfo.actorId);
+    setClinicInfo(res.data);
+  };
   const handleGetBillList = async () => {
-    const result = await getBillByClinicId(1, currentPage, pageSize);
-    const { meta } = result.data;
-    setBillList(result.data.result);
-    setPageSize(meta.pageSize);
-    setTotalBillList(meta.totals);
-    setCurrentPage(meta.page);
-    setCheckSearchCondition({
-      cccd: "",
-      email: "",
-      phoneNumber: "",
-      page: 1,
-      size: 3,
-    });
+    await handleGetClinicInfo();
+    if (clinicInfo?.id) {
+      const result = await getBillByClinicId(
+        clinicInfo?.id,
+        currentPage,
+        pageSize
+      );
+      const { meta } = result.data;
+      setBillList(result.data.result);
+      setPageSize(meta.pageSize);
+      setTotalBillList(meta.totals);
+      setCurrentPage(meta.page);
+      setCheckSearchCondition({
+        cccd: "",
+        email: "",
+        phoneNumber: "",
+        page: 1,
+        size: 3,
+      });
+    }
   };
   const handleSearchBillByCondition = async (value: string, key: string) => {
     const dataToBuildQuery = { ...checkSearchCondition, [key]: value };
@@ -116,7 +133,7 @@ const SupportBillManagePage = () => {
   };
   useEffect(() => {
     handleGetBillList();
-  }, []);
+  }, [clinicInfo?.id]);
 
   return (
     <div className="p-5 bg-white mx-5">

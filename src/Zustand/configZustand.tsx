@@ -35,7 +35,6 @@ type LoginResponse = {
   };
   accessToken: string;
 };
-
 type UserInfoStoreActions = {
   loginZustand: (formData: {
     userName: string;
@@ -94,6 +93,11 @@ const useUserInfoStore = create<UserInfoStore>()(
           }));
         },
         logout: async () => {
+          const res = await logoutApi({});
+          if (res.error) {
+            toast.error(res.message || "Logout failed");
+            return;
+          }
           set({
             userInfo: {
               avatar: "",
@@ -111,13 +115,7 @@ const useUserInfoStore = create<UserInfoStore>()(
             },
           });
           document.cookie = `access_token=; path=/`;
-          window.location.href = "/";
-          toast.success("Logout successful");
-          const res = await logoutApi({});
-          if (res.statusCode !== 200) {
-            toast.error(res.message || "Logout failed");
-            return;
-          }
+          return true;
         },
       }),
       {

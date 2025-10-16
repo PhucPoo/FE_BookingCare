@@ -3,12 +3,12 @@ import { FaChevronDown } from "react-icons/fa";
 import SearchBar from "../UI/SearchBar";
 import useUserInfoStore from "../../Zustand/configZustand";
 import { Popover } from "antd/lib";
+import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 const Header = () => {
-  const navigate = useNavigate();
   const userInfo = useUserInfoStore((state) => state.userInfo);
-
+  const navigate = useNavigate();
   const content = (
     <div className="flex flex-col gap-2.5 cursor-pointer">
       <p
@@ -25,7 +25,11 @@ const Header = () => {
       </p>
       <p
         className="hover:bg-cyan-300 hover:text-amber-50 p-2"
-        onClick={() => useUserInfoStore.getState().logout()}
+        onClick={async () => {
+          await useUserInfoStore.getState().logout();
+          toast.success("Đăng xuất thành công");
+          navigate("/");
+        }}
       >
         Đăng xuất
       </p>

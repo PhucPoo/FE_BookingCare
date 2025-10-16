@@ -7,6 +7,8 @@ import MainPage from "../../pages/MainPage/MainPage";
 import MainPageHeader from "../../pages/MainPage/MainPageHeader/MainPageHeader";
 import Footer from "../UI/Footer";
 import { Button, Form, Upload } from "antd/lib";
+import { toast } from "react-toastify";
+import customAxiosInstance from "../../utils/configAxios";
 
 interface UserProfile {
   id: number;
@@ -25,7 +27,7 @@ interface FormData {
   id: number;
   name: string;
   email: string;
-  phone: string;
+  phoneNumber: string;
   address: string;
   dateOfBirth: string;
   gender: string;
@@ -43,13 +45,14 @@ interface UpdateResponse {
 const ProfileUpdate: React.FC = () => {
   const navigate = useNavigate();
   const userInfo = useUserInfoStore((state) => state.userInfo);
+  console.log("User Info in AdminUpdate:", userInfo);
   const updateUserInfo = useUserInfoStore((state) => state.updateUserInfo);
 
   const [formData, setFormData] = useState<FormData>({
     id: 0,
     name: "",
     email: "",
-    phone: "",
+    phoneNumber: "",
     address: "",
     dateOfBirth: "",
     gender: "OTHER",
@@ -57,42 +60,39 @@ const ProfileUpdate: React.FC = () => {
     avatar: "",
   });
   const [fileList, setFileList] = useState<any[]>([]);
+  console.log("FileList:", fileList);
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
   // Load user data from Zustand store
-  useEffect(() => {
-    console.log("User info from Zustand:", userInfo);
-    if (userInfo && userInfo.id) {
-      setFormData((prev) => ({
-        ...prev,
-        id: userInfo.id || 0,
-        name: userInfo.name || "",
-        email: userInfo.email || "",
-        phone: userInfo.phoneNumber || "",
-        address: userInfo.address || "",
-        dateOfBirth: userInfo.dateOfBirth || "",
-        gender: userInfo.gender || "OTHER",
-        cccd: userInfo.cccd || "",
-        avatar: userInfo.avatar || "",
-      }));
-      if (userInfo.avatar) {
+  const hanbdleLoadUserData =async () => {
+ if (userInfo && userInfo.id) {
+         // Sau khi cập nhật xong → gọi lại GET để lấy data mới nhất
+          const refreshedRes = await customAxiosInstance("http://localhost:8080/api/v1/accounts/"+userInfo.id,
+          );
+          console.log("Refreshed Response:", refreshedRes);
+      setFormData(refreshedRes.data.data);
+      if (refreshedRes.data.data.avatar) {
         setFileList([
           {
             uid: "-1",
             name: "avatar.png",
             status: "done",
-            url: userInfo.avatar,
-            thumbUrl: userInfo.avatar,
+            url: refreshedRes.data.data.avatar,
+            thumbUrl: refreshedRes.data.data.avatar,
           },
         ]);
       }
       setFile(null);
     }
+  }
+  useEffect( () => {
+    
+   hanbdleLoadUserData()
   }, [userInfo]);
-  console.log("AAAAAAAA", userInfo);
+
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -129,7 +129,7 @@ const ProfileUpdate: React.FC = () => {
       return false;
     }
 
-    if (formData.phone && !/^(0[0-9]{9})$/.test(formData.phone)) {
+    if (formData.phoneNumber && !/^(0[0-9]{9})$/.test(formData.phoneNumber)) {
       setError(
         "Số điện thoại không hợp lệ (phải có 10 chữ số và bắt đầu bằng 0)"
       );
@@ -179,8 +179,8 @@ const ProfileUpdate: React.FC = () => {
       formDataToSend.append("id", formData.id.toString());
       formDataToSend.append("name", formData.name.trim());
 
-      if (formData.phone.trim()) {
-        formDataToSend.append("phoneNumber", formData.phone.trim());
+      if (formData.phoneNumber.trim()) {
+        formDataToSend.append("phoneNumber", formData.phoneNumber.trim());
       }
 
       if (formData.gender) {
@@ -217,10 +217,10 @@ const ProfileUpdate: React.FC = () => {
         },
         body: formDataToSend,
       });
-
+    
       const data: UpdateResponse = await response.json();
       console.log("Full Response:", data);
-      console.log("Response birth field:", data.data?.birth);
+    //   console.log("Response birth field:", data.data?.birth);
 
       if (response.ok && data.statusCode === 200) {
         const updatedUserInfo = {
@@ -235,8 +235,10 @@ const ProfileUpdate: React.FC = () => {
           avatar: data.data.avatar || "",
         };
         if (response.ok && data.statusCode === 200) {
-          alert("Cập nhật thông tin thành công!");
-          navigate("/support-dashboard");
+          toast.success("Cập nhật thông tin thành công!");
+          setFormData(data);
+          
+          console.log("test");
         }
 
         console.log("Updating Zustand with:", updatedUserInfo);
@@ -249,7 +251,7 @@ const ProfileUpdate: React.FC = () => {
           id: data.data.id,
           name: data.data.name,
           email: data.data.email || "",
-          phone: data.data.phoneNumber || "",
+          phoneNumber: data.data.phoneNumber || "",
           address: data.data.address || "",
           dateOfBirth: data.data.birth || "", // Map birth -> dateOfBirth
           gender: data.data.gender || "OTHER",
@@ -326,9 +328,9 @@ const ProfileUpdate: React.FC = () => {
                   <label className="form-label">Số điện thoại</label>
                   <input
                     type="tel"
-                    name="phone"
+                    name="phoneNumber"
                     placeholder="Nhập số điện thoại"
-                    value={formData.phone}
+                    value={formData.phoneNumber}
                     onChange={handleInputChange}
                     className="form-input"
                     pattern="^(0[0-9]{9})$"
@@ -364,7 +366,7 @@ const ProfileUpdate: React.FC = () => {
                   />
                 </div>
 
-                <div className="form-group">
+                {/* <div className="form-group">
                   <label className="form-label">Ngày sinh</label>
                   <input
                     type="date"
@@ -373,7 +375,7 @@ const ProfileUpdate: React.FC = () => {
                     onChange={handleInputChange}
                     className="form-input"
                   />
-                </div>
+                </div> */}
               </div>
 
               <div className="form-row">

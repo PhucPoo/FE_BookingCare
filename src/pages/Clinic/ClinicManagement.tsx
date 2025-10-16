@@ -26,6 +26,10 @@ const ClinicManagement: React.FC = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingClinic, setEditingClinic] = useState<Clinic | null>(null);
 
+  
+
+  
+
   const [keywords, setKeywords] = useState({
     name: "",
     phoneNumber: "",

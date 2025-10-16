@@ -41,18 +41,25 @@ const DoctorList = () => {
       <div>
         {doctors &&
           doctors.length > 0 &&
-          doctors.map((doctor) => (
-            <div
-              className="flex gap-5 items-center doctors_item_contain cursor-pointer"
-              onClick={() => navigate(`${doctor.id}`)}
-              key={doctor.id}
-            >
-              <img src={doctor?.account?.avatar} className="doctors_item-img" />
-              <div className="doctors_item-name text-xl">
-                {`${getDegree(doctor.degree)} ${doctor?.account?.name}`}
-              </div>
-            </div>
-          ))}
+          doctors.map((doctor) => {
+            if (doctor && doctor.isActive) {
+              return (
+                <div
+                  className="flex gap-5 items-center doctors_item_contain cursor-pointer"
+                  onClick={() => navigate(`${doctor.id}`)}
+                  key={doctor.id}
+                >
+                  <img
+                    src={doctor?.account?.avatar}
+                    className="doctors_item-img"
+                  />
+                  <div className="doctors_item-name text-xl">
+                    {`${getDegree(doctor.degree)} ${doctor?.account?.name}`}
+                  </div>
+                </div>
+              );
+            }
+          })}
       </div>
     </div>
   );
