@@ -78,6 +78,7 @@ const AppRoutes = () => {
         </Route>
         <Route path="verify-otp" element={<OtpVerify />} />
         <Route path="forgot-password" element={<ForgotPasswordForm />} />
+        <Route path="update" element={<UpdateInfo />}/>
       </Route>
 
       <Route path="/" element={<MainPage />} />

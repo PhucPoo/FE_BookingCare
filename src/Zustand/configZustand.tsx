@@ -52,7 +52,6 @@ const useUserInfoStore = create<UserInfoStore>()(
     persist(
       (set) => ({
         userInfo: {
-          avatar: "",
           cccd: "",
           gender: "",
           dateOfBirth: "",
@@ -100,7 +99,6 @@ const useUserInfoStore = create<UserInfoStore>()(
           }
           set({
             userInfo: {
-              avatar: "",
               cccd: "",
               gender: "",
               dateOfBirth: "",

@@ -245,6 +245,7 @@ const ProfileUpdate: React.FC = () => {
         updateUserInfo(updatedUserInfo);
 
         setSuccessMessage("Cập nhật thông tin thành công!");
+        navigate("/");
 
         // Update form data với dữ liệu từ response
         setFormData({

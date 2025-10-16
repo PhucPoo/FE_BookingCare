@@ -188,9 +188,9 @@ const PatientBookingList = () => {
 
                       {/* Actions */}
                       <div className="flex space-x-3">
-                        <Button type="primary" className="flex-1">
+                        {/* <Button type="primary" className="flex-1">
                           Xem chi tiết
-                        </Button>
+                        </Button> */}
                         {booking.status === "PENDING" && (
                           <Button
                             danger
