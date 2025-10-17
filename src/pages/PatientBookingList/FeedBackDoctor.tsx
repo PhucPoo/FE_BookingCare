@@ -43,6 +43,8 @@ const FeedBackDoctor = ({
       rate: value,
       bookingId: dataToFeedBack.bookingId,
     };
+    console.log("🚀 ~ handleFeedbackDoctor ~ data:", data);
+    // return;
     await PatientFeedback(data).then(() => {
       toast.success("Đã gửi đánh giá ");
       handlePatientBookings();

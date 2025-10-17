@@ -248,21 +248,26 @@ const BookingTablePage = ({
                             >
                               Chi tiết
                             </Button>
-                            <Button type="primary">
-                              <Popconfirm
-                                title={"Xác nhận đặt lịch từ bệnh nhân"}
-                                onConfirm={() => {
-                                  if (item.id) confirm(item.id, "CONFIRMED");
-                                }}
-                                onCancel={() => {
-                                  if (item.id) cancel(item.id, "CANCELLED");
-                                }}
-                                okText="Xác nhận"
-                                cancelText="huỷ"
-                              >
-                                Thao tác
-                              </Popconfirm>
-                            </Button>
+                            {item.status === "COMPLETED" ||
+                            item.status === "CANCELLED" ? (
+                              <Button disabled>Thao tác</Button>
+                            ) : (
+                              <Button type="primary">
+                                <Popconfirm
+                                  title={"Xác nhận đặt lịch từ bệnh nhân"}
+                                  onConfirm={() => {
+                                    if (item.id) confirm(item.id, "CONFIRMED");
+                                  }}
+                                  onCancel={() => {
+                                    if (item.id) cancel(item.id, "CANCELLED");
+                                  }}
+                                  okText="Xác nhận"
+                                  cancelText="huỷ"
+                                >
+                                  Thao tác
+                                </Popconfirm>
+                              </Button>
+                            )}
                           </div>
                         </td>
                       </tr>
