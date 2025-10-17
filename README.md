@@ -1,4 +1,7 @@
-_Structure của dự án:
+# Tài liệu:
+**Slide báo cáo:** "https://www.canva.com/design/DAG16glos0U/kZlgLi06F9AkXpOcljuywQ/edit?utm_content=DAG16glos0U&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton"
+**Tài liệu báo cáo:** "https://humgedu-my.sharepoint.com/:w:/g/personal/2221050679_student_humg_edu_vn/Eddy9UuGVqZEk4qWmFmk_soBlscusrfChmmsdASp0yn_-w?rtime=OgZdCJEN3kg"
+**Structure của dự án:**
 bookingcare-admin/
 │── public/                  # Ảnh, favicon, static files
 │── src/
