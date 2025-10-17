@@ -5,7 +5,7 @@ export const getAllDoctors = async () => {
   const res = await customAxiosInstance.get(`${api}/doctors`);
   return res.data;
 };
-export const getDoctorById = async (id: string) => {
+export const getDoctorById = async (id: string | number) => {
   const res = await customAxiosInstance.get(`${api}/doctors/${id}`);
   return res.data;
 };
@@ -100,5 +100,9 @@ export const doctorSearchBooking = async (
 };
 export const getFeedbackByDoctorId = async (id: number | string) => {
   const res = await customAxiosInstance.get(`${api}/feedbacks/doctor/${id}`);
+  return res.data;
+};
+export const DoctorGetPatientDetail = async (id: number | string) => {
+  const res = await customAxiosInstance.get(`${api}/patients/${id}`);
   return res.data;
 };

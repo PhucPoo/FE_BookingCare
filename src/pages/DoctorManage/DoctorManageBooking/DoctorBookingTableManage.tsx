@@ -46,8 +46,13 @@ const BookingTableManage = ({
 }: Props) => {
   const userInfo = useUserInfoStore((state) => state.userInfo);
   const handleUpdateBooking = async (id: string, status: string) => {
-    handleDoctorUpdateBooking(id, status);
-    handleGetBookingList();
+    await handleDoctorUpdateBooking(id, status)
+      .then(() => {
+        handleGetBookingList();
+      })
+      .catch((err) => {
+        console.log("🚀 ~ handleUpdateBooking ~ err:", err);
+      });
   };
   return (
     <div className="max-w-7xl mx-auto">
@@ -81,7 +86,8 @@ const BookingTableManage = ({
             />
           </div>
           {/* createdAt */}
-          <div className="w-full sm:w-auto">
+          <div className="w-full sm:w-auto flex items-center gap-3">
+            <p>Tìm theo ngày khám</p>
             <input
               type="date"
               onChange={(e) => {

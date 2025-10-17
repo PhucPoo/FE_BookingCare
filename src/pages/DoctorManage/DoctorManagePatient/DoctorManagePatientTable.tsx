@@ -1,4 +1,4 @@
-import { Button, Pagination, Popconfirm } from "antd/lib";
+import { Button, Pagination } from "antd/lib";
 import type { DoctorManagePatientModel } from "./DoctorManagePatientModel";
 import type { DoctorManagePatientSortKeyModel } from "./DoctorManagePatientSortKey";
 import { formatDate } from "../../../utils/constant";
@@ -19,6 +19,8 @@ type Props = {
   handleSort: (value: DoctorManagePatientSortKeyModel) => void;
   handleSearch: (value: string, key: string) => void;
   handleGetPatientByDoctorId: () => void;
+  setIsModalOpen: (value: boolean) => void;
+  setMedicalRecordSelected: (value: DoctorManagePatientModel) => void;
 };
 
 const DoctorManagePatientTable = ({
@@ -32,6 +34,8 @@ const DoctorManagePatientTable = ({
   handleSearch,
   handleSort,
   onLog,
+  setIsModalOpen,
+  setMedicalRecordSelected,
 }: Props) => {
   const userInfo = useUserInfoStore((state) => state.userInfo);
   return (
@@ -184,30 +188,14 @@ const DoctorManagePatientTable = ({
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <div className="flex items-center justify-center space-x-2">
-                            <Button type="primary">
-                              <Popconfirm
-                                title={"Xoá bệnh nhân"}
-                                onConfirm={() => {
-                                  if (item && item.id) {
-                                    // handleUpdateBooking(
-                                    //   `${item.id}`,
-                                    //   "CONFIRMED"
-                                    // );
-                                  }
-                                }}
-                                onCancel={() => {
-                                  if (item && item.id) {
-                                    // handleUpdateBooking(
-                                    //   `${item.id}`,
-                                    //   "CANCELLED"
-                                    // );
-                                  }
-                                }}
-                                okText="Xác nhận"
-                                cancelText="Dừng"
-                              >
-                                Xoá
-                              </Popconfirm>
+                            <Button
+                              type="primary"
+                              onClick={() => {
+                                setMedicalRecordSelected(item);
+                                setIsModalOpen(true);
+                              }}
+                            >
+                              Chi tiết
                             </Button>
                           </div>
                         </td>

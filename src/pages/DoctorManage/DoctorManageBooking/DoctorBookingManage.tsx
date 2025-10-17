@@ -122,16 +122,18 @@ const BookingManage = () => {
 
   // initial value
   const handleGetBookingList = async () => {
-    const res = await getBookingsByDoctorId(userInfo.actorId);
+    const res = await getBookingsByDoctorId(
+      userInfo.actorId,
+      currentPage,
+      pageSize
+    );
 
     setBookingList(res.data.result);
-    const {
-      meta: { page, pageSize, totals },
-    } = res.data;
+    const { meta } = res.data;
 
-    setPageSize(pageSize);
-    setTotalBooking(totals);
-    setCurrentPage(page);
+    setPageSize(meta.pageSize);
+    setTotalBooking(meta.totals);
+    setCurrentPage(meta.page);
     setSearchInputValue({
       name: "",
       phoneNumber: "",

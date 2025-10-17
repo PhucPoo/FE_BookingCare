@@ -22,13 +22,9 @@ export const getBillByClinicId = async (
   return res.data;
 };
 
-export const supportSortBill = async (
-  id: string,
-  sortOrder: string,
-  size: number = 5
-) => {
+export const supportSortBill = async (query: string, id: string | number) => {
   const res = await customAxiosInstance.get(
-    `${api}/bill?sort=${id},${sortOrder}&size=${size}`
+    `${api}/bill/clinic/${id}?${query}`
   );
   return res.data;
 };

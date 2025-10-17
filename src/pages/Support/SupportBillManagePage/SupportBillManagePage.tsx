@@ -4,7 +4,6 @@ import {
   getBillByClinicId,
   getClinicBySupportId,
   supportSearchBill,
-  supportSortBill,
 } from "../../../api/Support/SupportApi";
 import SupportBillManageTable from "./SupportBillManageTable";
 import type { CheckBillSortKeyModel } from "../../Admin/Bill/CheckBillSortKeyModel";
@@ -41,6 +40,7 @@ const SupportBillManagePage = () => {
       email: "",
       page: currentPage,
       size: pageSize,
+      sort: "",
     });
   const [clinicInfo, setClinicInfo] = useState<clinicInfoModel>();
   const handleSetCheckSearchCondition = (
@@ -77,6 +77,7 @@ const SupportBillManagePage = () => {
         phoneNumber: "",
         page: 1,
         size: 3,
+        sort: "",
       });
     }
   };
@@ -84,14 +85,16 @@ const SupportBillManagePage = () => {
     const dataToBuildQuery = { ...checkSearchCondition, [key]: value };
     setCheckSearchCondition({ ...checkSearchCondition, [key]: value });
     const newQuery = buildQuery(dataToBuildQuery);
-    const result = await supportSearchBill(newQuery, 1);
-    const {
-      meta: { page, pageSize, totals },
-    } = result.data;
-    setBillList(result.data.result);
-    setPageSize(pageSize);
-    setTotalBillList(totals);
-    setCurrentPage(page);
+    if (clinicInfo?.id) {
+      const result = await supportSearchBill(newQuery, clinicInfo?.id);
+      const {
+        meta: { page, pageSize, totals },
+      } = result.data;
+      setBillList(result.data.result);
+      setPageSize(pageSize);
+      setTotalBillList(totals);
+      setCurrentPage(page);
+    }
   };
   const buildQuery = (data: searchBillModel) => {
     let newQuery = "";
@@ -105,9 +108,25 @@ const SupportBillManagePage = () => {
     return newQuery;
   };
   const handleSort = async (key: CheckBillSortKeyModel) => {
-    const res = await supportSortBill(key, checkSort[key] ? "asc" : "desc");
-    setCheckSort({ ...checkSort, [key]: !checkSort[key] });
-    setBillList(res.data.result);
+    const dataToBuildQuery = {
+      ...checkSearchCondition,
+      ["sort"]: `${key},${checkSort[key] ? "asc" : "desc"}`,
+    };
+    setCheckSearchCondition({
+      ...checkSearchCondition,
+      ["sort"]: `${key},${checkSort[key] ? "asc" : "desc"}`,
+    });
+    const newQuery = buildQuery(dataToBuildQuery);
+
+    if (clinicInfo?.id) {
+      const res = await supportSearchBill(newQuery, clinicInfo?.id);
+      setCheckSort({ ...checkSort, [key]: !checkSort[key] });
+      const { meta } = res.data;
+      setBillList(res.data.result);
+      setPageSize(meta.pageSize);
+      setTotalBillList(meta.totals);
+      setCurrentPage(meta.page);
+    }
   };
   const onLog = async (page: number, pageSize: number) => {
     if (
@@ -117,18 +136,22 @@ const SupportBillManagePage = () => {
     ) {
       const nextData = { ...checkSearchCondition, page: page, size: pageSize };
       const queryString = buildQuery(nextData);
-      const res = await supportSearchBill(queryString, 1);
-      setBillList(res.data.result);
-      setPageSize(res.data.meta.pageSize);
-      setTotalBillList(res.data.meta.totals);
-      setCurrentPage(res.data.meta.page);
+      if (clinicInfo?.id) {
+        const res = await supportSearchBill(queryString, clinicInfo?.id);
+        setBillList(res.data.result);
+        setPageSize(res.data.meta.pageSize);
+        setTotalBillList(res.data.meta.totals);
+        setCurrentPage(res.data.meta.page);
+      }
     } else {
-      const result = await getBillByClinicId(1, page, pageSize);
-      const { meta } = result.data;
-      setBillList(result.data.result);
-      setPageSize(meta.pageSize);
-      setTotalBillList(meta.totals);
-      setCurrentPage(meta.page);
+      if (clinicInfo?.id) {
+        const result = await getBillByClinicId(clinicInfo?.id, page, pageSize);
+        const { meta } = result.data;
+        setBillList(result.data.result);
+        setPageSize(meta.pageSize);
+        setTotalBillList(meta.totals);
+        setCurrentPage(meta.page);
+      }
     }
   };
   useEffect(() => {

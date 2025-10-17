@@ -4,4 +4,5 @@ export type searchBillModel = {
   cccd: string;
   page: number;
   size: number;
+  sort: "";
 };

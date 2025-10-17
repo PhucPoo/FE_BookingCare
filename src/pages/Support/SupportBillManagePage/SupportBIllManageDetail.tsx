@@ -1,7 +1,24 @@
 import { Divider, Modal } from "antd/lib";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import type { AdminBillManageModel } from "../../Admin/Bill/AdminBillManageModel";
 import { formatDate } from "../../../utils/constant";
+import { DoctorGetPatientDetail } from "../../../api/Doctor/DoctorApi";
+
+type accountModel = {
+  id?: number;
+  name?: string;
+  avatar?: string;
+  address?: string;
+  phoneNumber?: string;
+  email?: string;
+  birth?: string;
+  cccd?: string;
+};
+type PatientDetailModel = {
+  id?: number | string;
+  account?: accountModel;
+  bhyt: string;
+};
 
 type Props = {
   isModalOpen: boolean;
@@ -14,7 +31,28 @@ const SupportBIllManageDetail = ({
   setIsModalOpen,
   BillDetail,
 }: Props) => {
+  const [PatientDetail, setPatientInfo] = useState<PatientDetailModel>({
+    bhyt: "",
+    id: "",
+    account: {},
+  });
 
+  const handleGetPatientDetail = async () => {
+    if (BillDetail?.patient?.id)
+      await DoctorGetPatientDetail(BillDetail?.patient.id)
+        .then((res) => {
+          setPatientInfo(res.data);
+        })
+        .catch((err) => {
+          console.log("🚀 ~ handleGetPatientDetail ~ err:", err);
+        });
+  };
+
+  useEffect(() => {
+    if (BillDetail && BillDetail?.patient?.id) {
+      handleGetPatientDetail();
+    }
+  }, [BillDetail?.patient?.id]);
   return (
     <Modal
       title="Thông tin lịch khám chi tiết"
@@ -37,7 +75,13 @@ const SupportBIllManageDetail = ({
       <Divider>Thông tin đơn khám</Divider>
 
       <div>
-        <p className="text-xl">Bệnh nhân: {BillDetail.patient?.name}</p>
+        <p className="text-xl">Bệnh nhân: {PatientDetail?.account?.name}</p>
+        <p>- Địa chỉ: {PatientDetail?.account?.address}</p>
+        <p>- Ngày sinh: {PatientDetail?.account?.birth}</p>
+        <p>- Email: {PatientDetail?.account?.email}</p>
+        <p>- Số điện thoại: {PatientDetail?.account?.phoneNumber}</p>
+        <p>- Mã bảo hiểm y tế: {PatientDetail?.bhyt}</p>
+        <p>- Mã căn cước: {PatientDetail?.account?.cccd}</p>
       </div>
 
       <p className=" mt-1">Trạng thái đơn khám: {BillDetail.status}</p>
