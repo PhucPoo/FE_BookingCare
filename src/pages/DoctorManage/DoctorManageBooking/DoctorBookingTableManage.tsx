@@ -159,20 +159,8 @@ const BookingTableManage = ({
                 >
                   Status
                 </th>
-                {/* <th
-                  className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
-                  onClick={() => {
-                    handleSort("doctor");
-                  }}
-                >
-                  Bác sĩ
-                </th> */}
-                <th
-                  className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
-                  // onClick={() => {
-                  //   handleSort("doctor");
-                  // }}
-                >
+
+                <th className="px-6 py-3 text-sm font-medium text-gray-500  tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
                   Số điện thoại
                 </th>
                 <th
@@ -219,9 +207,7 @@ const BookingTableManage = ({
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
                         {getStatusBooking(item.status)}
                       </td>
-                      {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
-                        {item.doctor?.account?.name}
-                      </td> */}
+
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900p text-center">
                         {item.patient?.account?.phoneNumber}
                       </td>
@@ -242,31 +228,37 @@ const BookingTableManage = ({
                           >
                             Chi tiết
                           </Button>
-                          <Button type="primary">
-                            <Popconfirm
-                              title={"Xác nhận khám"}
-                              onConfirm={() => {
-                                if (item && item.id) {
-                                  handleUpdateBooking(
-                                    `${item.id}`,
-                                    "CONFIRMED"
-                                  );
-                                }
-                              }}
-                              onCancel={() => {
-                                if (item && item.id) {
-                                  handleUpdateBooking(
-                                    `${item.id}`,
-                                    "CANCELLED"
-                                  );
-                                }
-                              }}
-                              okText="Xác nhận"
-                              cancelText="Từ chối"
-                            >
-                              Thao tác
-                            </Popconfirm>
-                          </Button>
+                          {item.status === "COMPLETED" ||
+                          item.status === "CANCELLED" ||
+                          item.status === "PENDING" ? (
+                            <Button disabled>Thao tác</Button>
+                          ) : (
+                            <Button type="primary">
+                              <Popconfirm
+                                title={"Xác nhận khám"}
+                                onConfirm={() => {
+                                  if (item && item.id) {
+                                    handleUpdateBooking(
+                                      `${item.id}`,
+                                      "COMPLETED"
+                                    );
+                                  }
+                                }}
+                                onCancel={() => {
+                                  if (item && item.id) {
+                                    handleUpdateBooking(
+                                      `${item.id}`,
+                                      "CANCELLED"
+                                    );
+                                  }
+                                }}
+                                okText="Xác nhận"
+                                cancelText="Từ chối"
+                              >
+                                Thao tác
+                              </Popconfirm>
+                            </Button>
+                          )}
                         </div>
                       </td>
                     </tr>
