@@ -89,18 +89,22 @@ const BookingPage = () => {
     if (dataToQuery.doctorName || dataToQuery.date || dataToQuery.patientName) {
       const nextData = { ...dataToQuery, page: page, size: pageSize };
       const queryString = buildQuery(nextData);
-      const res = await supportSearchBooking(queryString, 1);
-      setBookingList(res.data.result);
-      setPageSize(res.data.meta.pageSize);
-      setTotalBillList(res.data.meta.totals);
-      setCurrentPage(res.data.meta.page);
+      if (clinicInfo?.id) {
+        const res = await supportSearchBooking(queryString, clinicInfo?.id);
+        setBookingList(res.data.result);
+        setPageSize(res.data.meta.pageSize);
+        setTotalBillList(res.data.meta.totals);
+        setCurrentPage(res.data.meta.page);
+      }
     } else {
-      const res = await getBookingByClinicId(1, page, pageSize);
-      setBookingList(res.data.result);
-      const { meta } = res.data;
-      setPageSize(meta.pageSize);
-      setTotalBillList(meta.totals);
-      setCurrentPage(meta.page);
+      if (clinicInfo?.id) {
+        const res = await getBookingByClinicId(clinicInfo?.id, page, pageSize);
+        setBookingList(res.data.result);
+        const { meta } = res.data;
+        setPageSize(meta.pageSize);
+        setTotalBillList(meta.totals);
+        setCurrentPage(meta.page);
+      }
     }
   };
   const handleGetClinicInfo = async () => {
@@ -169,11 +173,13 @@ const BookingPage = () => {
 
     setDataToQuery({ ...dataToQuery, [key]: value });
     const newQuery = buildQuery(dataToBuildQuery);
-    const res = await supportSearchBooking(newQuery, 1);
-    setBookingList(res.data.result);
-    setPageSize(res.data.meta.pageSize);
-    setTotalBillList(res.data.meta.totals);
-    setCurrentPage(res.data.meta.page);
+    if (clinicInfo?.id) {
+      const res = await supportSearchBooking(newQuery, clinicInfo?.id);
+      setBookingList(res.data.result);
+      setPageSize(res.data.meta.pageSize);
+      setTotalBillList(res.data.meta.totals);
+      setCurrentPage(res.data.meta.page);
+    }
   };
 
   const confirm = async (id: number, status: string) => {

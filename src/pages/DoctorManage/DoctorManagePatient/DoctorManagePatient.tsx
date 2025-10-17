@@ -8,6 +8,7 @@ import type { DoctorManagePatientModel } from "./DoctorManagePatientModel";
 import DoctorManagePatientTable from "./DoctorManagePatientTable";
 import type { DoctorManagePatientSortKeyModel } from "./DoctorManagePatientSortKey";
 import useUserInfoStore from "../../../Zustand/configZustand";
+import DoctorManagePatientDetail from "./DoctorManagePatientDetail";
 type DataToQuery = {
   phoneNumber: string;
   name: string;
@@ -16,10 +17,12 @@ const DoctorManagePatient = () => {
   const [pageSize, setPageSize] = useState<number>(10);
   const [totalListPatient, setTotalListPatient] = useState<number>(500);
   const [currentPage, setCurrentPage] = useState<number>(1);
-
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [listPatient, setListPatient] = useState<DoctorManagePatientModel[]>(
     []
   );
+  const [medicalRecordSelected, setMedicalRecordSelected] =
+    useState<DoctorManagePatientModel>();
   const [checkRender, setCheckRender] = useState<
     Record<DoctorManagePatientSortKeyModel, boolean>
   >({
@@ -130,6 +133,13 @@ const DoctorManagePatient = () => {
         onLog={onLog}
         searchValue={dataToQuery}
         setSearchValue={handleSearchChange}
+        setIsModalOpen={setIsModalOpen}
+        setMedicalRecordSelected={setMedicalRecordSelected}
+      />
+      <DoctorManagePatientDetail
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+        medicalRecordSelected={medicalRecordSelected}
       />
     </div>
   );
