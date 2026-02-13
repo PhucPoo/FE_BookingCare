@@ -1,0 +1,15 @@
+.doctors_item_contain {
+  padding-bottom: 5px;
+  margin-top: 40px;
+  border-bottom: 1px solid rgb(204 204 204 / 1);
+}
+.doctors_item-img {
+  width: 105px;
+  height: 105px;
+}
+.doctors_item-name {
+}
+.doctor_detail-img {
+  width: 120px;
+  height: 120px;
+}

@@ -1,22 +1,37 @@
 import React, { useState } from "react";
-import { Input, Modal } from "antd";
+import { Input, Modal } from "antd/lib";
 import { Controller, useForm } from "react-hook-form";
 import "./ModalAddServices.css";
 import MDEditor from "@uiw/react-md-editor";
+import { createService } from "../../../../api/Services/ServiceApi";
+import { toast } from "react-toastify";
 type Props = {
   isModalOpen: boolean;
   setIsModalOpen: (e: boolean) => void;
+  handleGetServiceList: () => void;
 };
 
-const ModalAddServices = ({ isModalOpen, setIsModalOpen }: Props) => {
+const ModalAddServices = ({
+  isModalOpen,
+  setIsModalOpen,
+  handleGetServiceList,
+}: Props) => {
   const [value, setValue] = useState<string>("");
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-  const { handleSubmit, control } = useForm();
+  const { handleSubmit, control, reset } = useForm();
 
-  const onSubmit = (data: object) =>
-    console.log({ ...data, description: value });
+  const onSubmit = async (data: object) => {
+    const res = await createService({ ...data, description: value });
+    if (!res?.error) {
+      toast.success("Tạo mới dịch vụ hoàn tất");
+      handleGetServiceList();
+      setIsModalOpen(false);
+      setValue("");
+      reset();
+    }
+  };
 
   return (
     <>

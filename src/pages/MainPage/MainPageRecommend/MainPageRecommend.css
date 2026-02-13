@@ -1,0 +1,25 @@
+.recommend-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: rgb(13, 71, 161);
+  margin-bottom: 40px;
+  text-align: center;
+}
+.recommend_content {
+  display: flex;
+  justify-content: space-between;
+  gap: 50px;
+}
+.recommend_content-item {
+  width: 20%;
+  text-align: center;
+  cursor: pointer;
+}
+.recommend_content-item img {
+  border-radius: 50%;
+}
+.recommend_content-item p {
+  font-size: 20px;
+  margin-top: 20px;
+  font-weight: 700;
+}

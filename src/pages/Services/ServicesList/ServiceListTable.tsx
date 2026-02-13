@@ -1,24 +1,20 @@
 import { IoIosAddCircle } from "react-icons/io";
-import {
-  Button,
-  message,
-  Pagination,
-  Popconfirm,
-  type PopconfirmProps,
-} from "antd";
+import { Button, Pagination, Popconfirm } from "antd/lib";
+import { deleteService } from "../../../api/Services/ServiceApi";
+import { toast } from "react-toastify";
+import type {
+  CheckServiceSortKeyModel,
+  searchServiceModel,
+} from "./CheckServiceSortKeyModel";
 
 type Props = {
   pageSize: number;
   totalServiceList: number;
   currentPage: number;
-  handleSearchService: (value: string) => void;
-  filterService: () => void;
+  handleSearchService: (value: string, key: string) => void;
   handleGetServiceList: () => void;
-  setFilterData: (value: { from: number; to: number }) => void;
-  filterData: { from: number; to: number };
   setIsModalOpen: (e: boolean) => void;
-  columns: { value: number; label: string }[];
-  handleSort: (value: number) => void;
+  handleSort: (value: CheckServiceSortKeyModel) => void;
   ServiceList: {
     id: number;
     name: string;
@@ -32,6 +28,9 @@ type Props = {
     description: string;
   }) => void;
   onLog: (page: number, pageSize: number) => void;
+  dataToQuery: searchServiceModel;
+  handleSetDataToQuery: (value: string, key: string) => void;
+  filterService: () => void;
 };
 
 const ServiceListTable = ({
@@ -39,26 +38,22 @@ const ServiceListTable = ({
   pageSize,
   totalServiceList,
   handleSearchService,
-  filterService,
   handleGetServiceList,
-  setFilterData,
-  filterData,
   setIsModalOpen,
-  columns,
   handleSort,
   ServiceList,
   handleUpdateService,
   onLog,
+  dataToQuery,
+  handleSetDataToQuery,
+  filterService,
 }: Props) => {
-  const confirm: PopconfirmProps["onConfirm"] = (e) => {
-    console.log(e);
-    message.success("Click on Yes");
-    alert("Cút");
-  };
-
-  const cancel: PopconfirmProps["onCancel"] = (e) => {
-    console.log(e);
-    message.error("Click on No");
+  const handleDeleteService = async (id: number) => {
+    const result = await deleteService(id);
+    if (!result?.error) {
+      toast.success("Xoá dịch vụ hoàn tất");
+      handleGetServiceList();
+    }
   };
   return (
     <>
@@ -69,9 +64,11 @@ const ServiceListTable = ({
             <input
               type="text"
               placeholder="Tìm kiếm dịch vụ..."
+              value={dataToQuery.name}
               onChange={(e) => {
+                handleSetDataToQuery(e.target.value, "name");
                 setTimeout(() => {
-                  handleSearchService(e.target.value);
+                  handleSearchService(e.target.value, "name");
                 }, 500);
               }}
               className="w-full sm:w-15 md:w-25 lg:w-50  not-only: px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -86,17 +83,25 @@ const ServiceListTable = ({
               <input
                 type="number"
                 placeholder="Từ"
+                value={dataToQuery.min}
                 className="w-full sm:w-16 md:w-32  px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 onChange={(e) => {
-                  setFilterData({ ...filterData, from: +e.target.value });
+                  handleSetDataToQuery(e.target.value, "min");
+                  // setTimeout(() => {
+                  //   handleSearchService(e.target.value, "min");
+                  // }, 500);
                 }}
               />
               <input
                 type="number"
                 placeholder="Đến"
+                value={dataToQuery.max}
                 className="w-full sm:w-16 md:w-32   px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 onChange={(e) => {
-                  setFilterData({ ...filterData, to: +e.target.value });
+                  handleSetDataToQuery(e.target.value, "max");
+                  // setTimeout(() => {
+                  //   handleSearchService(e.target.value, "max");
+                  // }, 500);
                 }}
               />
             </div>
@@ -143,21 +148,33 @@ const ServiceListTable = ({
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                {columns &&
-                  columns.length > 0 &&
-                  columns.map((item) => {
-                    return (
-                      <th
-                        className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
-                        key={item.value}
-                        onClick={() => {
-                          handleSort(item.value);
-                        }}
-                      >
-                        {item.label}
-                      </th>
-                    );
-                  })}
+                <th
+                  className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
+                  onClick={() => {
+                    handleSort("id");
+                  }}
+                >
+                  id
+                </th>
+                <th
+                  className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
+                  onClick={() => {
+                    handleSort("name");
+                  }}
+                >
+                  Tên
+                </th>
+                <th
+                  className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white"
+                  onClick={() => {
+                    handleSort("cost");
+                  }}
+                >
+                  Giá
+                </th>
+                <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center cursor-pointer transition-all delay-100 hover:bg-gray-500 hover:text-white">
+                  Miêu tả
+                </th>
                 <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-center hover:bg-gray-500 hover:text-white transition-all delay-100">
                   Hành động
                 </th>
@@ -199,8 +216,7 @@ const ServiceListTable = ({
                             <Popconfirm
                               title={"Xoá " + item.name}
                               description="Bạn có muốn xoá không?"
-                              onConfirm={confirm}
-                              onCancel={cancel}
+                              onConfirm={() => handleDeleteService(item.id)}
                               okText="Có"
                               cancelText="Không"
                             >
@@ -220,9 +236,8 @@ const ServiceListTable = ({
       {/* pagination */}
       <div className="mt-6 flex flex-col sm:flex-row items-center justify-between bg-white px-6 py-3 rounded-lg shadow-sm border border-gray-200">
         <div className="text-sm text-gray-700 mb-4 sm:mb-0">
-          Hiển thị <span className="font-semibold">1</span> đến{" "}
-          <span className="font-semibold">5</span>
-          của <span className="font-semibold">{totalServiceList}</span> kết quả
+          Tìm thấy <span className="font-semibold">{totalServiceList}</span> kết
+          quả
         </div>
         <div className="flex items-center space-x-1">
           <Pagination
@@ -230,6 +245,8 @@ const ServiceListTable = ({
             pageSize={pageSize}
             total={totalServiceList}
             onChange={onLog}
+            pageSizeOptions={["3", "5", "10"]}
+            showSizeChanger
             responsive
           />
         </div>

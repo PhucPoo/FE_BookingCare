@@ -1,79 +1,172 @@
-import React, { useState } from 'react';
-import type { User } from './UserTable'; // hoặc import từ userTypes.ts nếu tách riêng
+import React, { useState } from "react";
+import { Input, Button, Select, Space, DatePicker } from "antd/lib";
+import type { User } from "./UserTable";
+import { testSearchAccountApi } from "../../../api/testApi";
 
-interface userFilterBarProps {
-  users: User[];
-  onFilter: (filtered: User[]) => void;
+const { Option, OptGroup } = Select;
+
+interface UserFilterBarProps {
+  filteredUsers: (users: User[]) => void;
+  onFilter: (
+    filtered: User[],
+    keywords: {
+      cccd: string;
+      phone: string;
+      email: string;
+      role?: string | null;
+      gender?: string | null;
+      monthYear?: string | null;
+    }
+  ) => void;
+  cccd: string;
+  setCccd: (cccd: string) => void;
+  phone: string;
+  setPhone: (phone: string) => void;
+  email: string;
+  setEmail: (email: string) => void;
+  role: string | null;
+  setRole: (role: string | null) => void;
+  gender: string | null;
+  setGender: (gender: string | null) => void;
+  monthYear: string | null;
+  setMonthYear: (monthYear: string | null) => void;
+  pages: number;
+  pageSize: number;
 }
 
-const userFilterBar: React.FC<userFilterBarProps> = ({ users, onFilter,   }) => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [create_at, setCreate_at] = useState('');
+const UserFilterBar: React.FC<UserFilterBarProps> = ({
+  filteredUsers,
+  onFilter,
+  cccd,
+  setCccd,
+  phone,
+  setPhone,
+  email,
+  setEmail,
+  role,
+  setRole,
+  gender,
+  setGender,
+  monthYear,
+  setMonthYear,
+  pages,
+  pageSize,
+}) => {
+  // 🚀 Hàm tìm kiếm
+  const handleSearch = async () => {
+    const keywords = {
+      cccd,
+      phone,
+      email,
+      role: role,
+      gender,
+      monthYear,
+    };
 
-  const handleSearch = () => {
-    const filtered = users.filter((user) => {
-      const matchName = name === '' || user.name.toLowerCase().includes(name.toLowerCase());
-      const matchPrice = email === '' || user.email.toString().includes(email);
-      const matchPhone = phone === '' || user.phone.includes(phone);
-      const matchCreate_at = create_at === '' || user.create_at .toISOString().slice(0, 10).includes(create_at);
-      return matchName && matchPrice && matchPhone && matchCreate_at;
-    });
+    try {
+      const result = await testSearchAccountApi(
+        {
+          phoneNumber: phone || undefined,
+          cccd: cccd || undefined,
+          email: email || undefined,
+          roleName: role || undefined,
+          gender: gender || undefined,
+          monthYear: monthYear || undefined,
 
-    onFilter(filtered);
+        },
+        pages,
+        pageSize
+      );
+      console.log("🔎 Đang tìm kiếm với monthYear =", monthYear);
+
+      const users = result.data?.result || [];
+      filteredUsers(users);
+      onFilter(users, keywords);
+    } catch (error) {
+      console.error("Lỗi khi tìm kiếm người dùng:", error);
+      filteredUsers([]);
+      onFilter([], keywords);
+    }
   };
 
   return (
     <div className="flex flex-wrap gap-4 p-4 bg-white shadow rounded mb-4 w-full">
-      <input
-        type="text"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="Tên người dùng"
-        className="border rounded px-3 py-2 flex-1 min-w-[150px]"
+      <Input
+        placeholder="CCCD"
+        value={cccd}
+        onChange={(e) => setCccd(e.target.value)}
+        className="flex-1 min-w-[150px]"
+        size="large"
       />
-      <input
-        type="text"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Email"
-        className="border rounded px-3 py-2 flex-1 min-w-[150px]"
-      />
-      <input
-        type="text"
+
+      <Input
+        placeholder="Số điện thoại"
         value={phone}
         onChange={(e) => setPhone(e.target.value)}
-        placeholder="Số điện thoại"
-        className="border rounded px-3 py-2 flex-1 min-w-[150px]"
+        className="flex-1 min-w-[150px]"
+        size="large"
       />
-      {/* <select
-        value={create_at}
-        onChange={(e) => setCreate_at(e.target.value)}
-        className="border rounded px-3 py-2 flex-1 min-w-[150px]"
+
+      <Input
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        className="flex-1 min-w-[150px]"
+        size="large"
+      />
+
+      <Select
+        placeholder="Chọn role"
+        value={role ?? undefined}
+        style={{ width: 200 }}
+        size="large"
+        allowClear
+        onChange={(val) => setRole(val)}
       >
-        <option value="">Trạng thái</option>
-        <option value="active">Hoạt động</option>
-        <option value="inactive">Nghỉ</option>
-      </select> */}
-      <input
-        type="text"
-        value={create_at}
-        onChange={(e) => setCreate_at(e.target.value)}
-        placeholder="Ngày tạo"
-        className="border rounded px-3 py-2 flex-1 min-w-[150px]"
-      />
-      <button
+        <OptGroup label="Role">
+          <Option value="admin">Admin</Option>
+          <Option value="doctor">Doctor</Option>
+          <Option value="support">Support</Option>
+          <Option value="client">Client</Option>
+        </OptGroup>
+      </Select>
+
+      <Select
+        placeholder="Giới tính"
+        value={gender ?? undefined}
+        style={{ width: 160 }}
+        size="large"
+        allowClear
+        onChange={(val) => setGender(val)}
+      >
+        <OptGroup label="Gender">
+          <Option value="male">Nam</Option>
+          <Option value="female">Nữ</Option>
+          <Option value="other">Khác</Option>
+        </OptGroup>
+      </Select>
+
+      <Space.Compact size="large">
+        <DatePicker
+          picker="month"
+          placeholder="Ngày tạo"
+          style={{ width: 180 }}
+          size="large"
+          onChange={(date) => setMonthYear(date ? date.format("YYYY-MM") : null)}
+
+        />
+      </Space.Compact>
+
+      <Button
+        type="primary"
         onClick={handleSearch}
-        className="bg-blue-600 text-white px-4 py-2 rounded flex-1 min-w-[150px]"
+        className="min-w-[150px]"
+        size="large"
       >
         Tìm kiếm
-      </button>
-
+      </Button>
     </div>
-
-
   );
 };
 
-export default userFilterBar;
+export default UserFilterBar;

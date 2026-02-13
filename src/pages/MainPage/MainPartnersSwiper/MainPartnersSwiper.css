@@ -1,0 +1,32 @@
+.slick-arrow.slick-next::before {
+  content: "→" !important;
+  color: #2196f3 !important;
+  font-size: 30px;
+}
+.slick-arrow.slick-prev::before {
+  content: "←" !important;
+  color: #2196f3 !important;
+  font-size: 30px;
+}
+.swiper {
+  width: 100%;
+  height: 100%;
+}
+
+.swiper-slide {
+  text-align: center;
+  font-size: 18px;
+  background: #444;
+
+  /* Center slide text vertically */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
