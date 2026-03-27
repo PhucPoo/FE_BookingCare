@@ -1,116 +1,144 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-import Button from "antd/lib/button";
 import type { Patient } from "./PatientTable";
-import PatientFilterBar from "./PatientFilterBar";
 import PatientTable from "./PatientTable";
-import AddPatient from "./AddPatient";
-import { DatePicker, Select, Space } from "antd/lib";
-import Input from "antd/es/input";
+import PatientFilterBar from "./PatientFilterBar";
+
+import { testDeletePatientApi, testSearchPatientApi } from "../../../api/testPatient";
+
+const PatientManagement: React.FC = () => {
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
+
+  // state filter
+  const [pageSize, setPageSize] = useState<number>(5);
+  const [totalPatients, setTotalPatients] = useState(10);
+  const [pages, setPages] = useState<number>(1);
+  const [bhyt, setBHYT] = useState<string>("");
+  const [cccd, setCCCD] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
+  const [address, setAddress] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  // state search
+
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingSupport, setEditingSupport] = useState<Patient | null>(null);
 
 
+  const [keywords, setKeywords] = useState({
+    name: "",
+    phone: "",
+    bhyt: "",
+    cccd: "",
+    address: "",
+  });
+  // Lấy danh sách bệnh nhân
 
-const initialpatients: Patient[] = [
-  { id: 2, name: "Bn. Nguyễn Văn B", email: "hp234@gmail.com", cccd: 1289389, phone: "0942234567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "active" },
-  { id: 1, name: "Bn. Nguyễn Văn A", email: "hp@gmail.com", cccd: 1289389, phone: "0901234567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "active" },
-  { id: 3, name: "Bn. Nguyễn Văn C", email: "hp36@gmail.com", cccd: 1289389, phone: "0939234567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "active" },
-  { id: 4, name: "Bn. Nguyễn Văn D", email: "hp@gmail.com", cccd: 1289389, phone: "0920234567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "inactive" },
-  { id: 5, name: "Bn. Nguyễn Văn CD", email: "hp@gmail.com", cccd: 1289389, phone: "0901234567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "inactive" },
-  { id: 6, name: "Bn. Nguyễn Văn AB", email: "hp@gmail.com", cccd: 1289389, phone: "0910744567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "active" },
-  { id: 7, name: "Bn. Nguyễn Văn ABC", email: "hp@gmail.com", cccd: 1289389, phone: "0910784567", create_at: new Date("2025-08-27"), update_at: new Date("2025-08-27"), status: "inactive" },
-];
 
-const patientManagement: React.FC = () => {
-  const [patients, setpatients] = useState<Patient[]>(initialpatients);
-  const [filteredpatients, setFilteredpatients] = useState<Patient[]>(initialpatients);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const { Option, OptGroup } = Select;
-
-  // Thêm bệnh nhân mới
-  const handleAddpatient = (newpatient: Patient) => {
-    const updatedpatients = [...patients, newpatient];
-    setpatients(updatedpatients);
-    setFilteredpatients(updatedpatients);
-    setIsAddModalOpen(false);
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await testSearchPatientApi({
+          name: name,
+          address: address,
+          phoneNumber: phone,
+          bhyt: bhyt,
+          cccd: cccd,
+        }, pages, pageSize);
+        setPatients(res.data.result);
+        setFilteredPatients(res.data.result);
+        setTotalPatients(res.data.meta.totals);
+      } catch (error) {
+        console.error("Lỗi lấy danh sách bệnh nhân:", error);
+      }
+    };
+    fetchData();
+  }, [pages, pageSize]);
 
   // Cập nhật bệnh nhân
-  const handleUpdatepatient = (updatedpatient: Patient) => {
-    const updatedList = patients.map((Bn) =>
-      Bn.id === updatedpatient.id
-        ? { ...Bn, ...updatedpatient, update_at: new Date() }
-        : Bn
-    );
-    setpatients(updatedList);
-    setFilteredpatients(updatedList); // rất quan trọng để table hiển thị đúng
+  const handleUpdatePatient = async (updatedPatient: Patient) => {
+    try {
+      const updatedList = patients.map((p) =>
+        p.id === updatedPatient.id ? { ...p, ...updatedPatient } : p
+      );
+      setPatients(updatedList);
+      setFilteredPatients(updatedList);
+      setIsEditModalOpen(false);
+      setEditingSupport(null);
+
+      console.log("Cập nhật bệnh nhân thành công:", updatedPatient);
+    } catch (error) {
+      console.error("Lỗi cập nhật bệnh nhân:", error);
+    }
   };
+
   // Xóa bệnh nhân
-  const handleDeletepatient = (id: number) => {
-    console.log("Deleted patient with id:", id);
-    const updatedpatients = patients.filter((d) => d.id !== id);
-    setpatients(updatedpatients);
-    setFilteredpatients(updatedpatients);
-
+  const handleDeletePatient = async (id: number) => {
+    try {
+      await testDeletePatientApi(id);
+      const updatedList = patients.filter((p) => p.id !== id);
+      setPatients(updatedList);
+      setFilteredPatients(updatedList);
+      console.log("Xóa bệnh nhân thành công:", id);
+    } catch (err) {
+      console.error("Lỗi xóa bệnh nhân:", err);
+    }
   };
-  function handleChange(value: any) {
-    console.log(`selected ${value}`);
-  }
+
+
+
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4 text-blue-700">Quản lý bệnh nhân</h1>
+    <div className="p-6 bg-white rounded-xl shadow-sm">
+      <h1 className="text-2xl font-bold mb-6 text-blue-700">
+        Quản lý bệnh nhân
+      </h1>
 
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex-1">
-          <PatientFilterBar patients={patients} onFilter={setFilteredpatients} />
-        </div>
-      </div>
+      <PatientFilterBar
+        filteredPatients={setFilteredPatients}
+        onFilter={(filtered, kw) => {
+          setFilteredPatients(filtered);
+          setKeywords({
+            name: kw.name ?? "",
+            phone: kw.phone ?? "",
+            bhyt: kw.bhyt ?? "",
+            cccd: kw.cccd ?? "",
+            address: kw.address ?? "",
+          });
+        }
+        }
+        pages={pages}
+        pageSize={pageSize}
+        name={name}
+        setName={setName}
+        phone={phone}
+        setPhone={setPhone}
+        bhyt={bhyt}
+        setBHYT={setBHYT}
+        cccd={cccd}
+        setCCCD={setCCCD}
+        address={address}
+        setAddress={setAddress}
+      />
 
-      <div className="mb-4">
-        {/* Filter Inputs */}
-        <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-3">
-          <DatePicker placeholder="Ngày tạo" style={{ width: 160, }} />
-          <Input
-            placeholder="Địa chỉ"
-            className="w-full sm:w-auto flex-1 min-w-[150px]"
-          />
-          <Select
-            defaultValue="gender"
-            onChange={handleChange}
-            className="w-full sm:w-auto min-w-[150px] max-w-[200px] h-[36px]"
-          >
-            <OptGroup label="Manager">
-              <Option value="male">Nam</Option>
-              <Option value="female">Nữ</Option>
-              <Option value="other">Khác</Option>
-            </OptGroup>
-          </Select>
-        </div>
-
-        {/* Add Button */}
-        <Button
-          type="primary"
-          size="large"
-          onClick={() => setIsAddModalOpen(true)}
-          className="w-full sm:w-auto min-w-[150px]"
-        >
-          + Thêm bệnh nhân
-        </Button>
-      </div>
 
 
       <PatientTable
-        patients={filteredpatients}
-        onUpdatepatient={handleUpdatepatient}
-        onDeletepatient={handleDeletepatient}
-      />
-
-      <AddPatient
-        open={isAddModalOpen}
-        onCancel={() => setIsAddModalOpen(false)}
-        onAdd={handleAddpatient}
+        patients={filteredPatients}
+        onUpdatePatient={handleUpdatePatient}
+        onDeletePatient={handleDeletePatient}
+        searchName={keywords.name}
+        searchPhone={keywords.phone}
+        searchBHYT={keywords.bhyt}
+        searchCccd={keywords.cccd}
+        searchAddress={keywords.address}
+        totalPatients={totalPatients}
+        pages={pages}
+        pageSize={pageSize}
+        setpages={setPages}
+        setPageSize={setPageSize}
       />
     </div>
   );
 };
 
-export default patientManagement;
+export default PatientManagement;

@@ -4,7 +4,8 @@ import React from "react";
 import Modal from "antd/es/modal";
 import Button from "antd/es/button";
 import type { User } from "./UserTable";
- // đảm bảo đường dẫn đúng
+import dayjs from "dayjs";
+// đảm bảo đường dẫn đúng
 
 interface InformationuserProps {
   open: boolean;
@@ -12,31 +13,46 @@ interface InformationuserProps {
   onClose: () => void;
 }
 
-// const getcreate_atBadge = (create_at: User["create_at"]) => {
-//   if (create_at === "active") {
-//     return (
-//       <span className="bg-green-500 text-white px-2 py-1 rounded text-sm">
-//         Hoạt động
-//       </span>
-//     );
-//   } else if (create_at === "inactive") {
-//     return (
-//       <span className="bg-red-500 text-white px-2 py-1 rounded text-sm">
-//         Nghỉ
-//       </span>
-//     );
-//   }
-//   return null;
-// };
 
-const Informationuser: React.FC<InformationuserProps> = ({
+const DetailUser: React.FC<InformationuserProps> = ({
   open,
   user,
   onClose,
 }) => {
+  console.log("ABC",user);
+  
+  const handleFormatDay = (time: string | number | Date) => {
+    const date = new Date(time);
+    const VNTime = date.toLocaleString("vi-VN", {
+      timeZone: "Asia/Ho_Chi_Minh",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+    return VNTime;
+  };
+  const handleFormatDayOnly = (time: string | number | Date) => {
+    const date = new Date(time);
+    const VNTime = date.toLocaleString("vi-VN", {
+      timeZone: "Asia/Ho_Chi_Minh",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+    return VNTime;
+  };
+  console.log(user);
+  
   return (
     <Modal
-      title={<div className="text-center text-lg font-semibold">Thông tin chi tiết người dùng</div>}
+      title={
+        <div className="text-center text-lg font-semibold">
+          Thông tin chi tiết người dùng
+        </div>
+      }
       open={open}
       onCancel={onClose}
       footer={[
@@ -55,27 +71,48 @@ const Informationuser: React.FC<InformationuserProps> = ({
             <strong>Tên:</strong> {user.name}
           </p>
           <p>
+            <strong>Giới tính:</strong> {user.gender}
+          </p>
+          <p>
             <strong>Email:</strong> {user.email}
           </p>
           <p>
             <strong>CCCD:</strong> {user.cccd}
           </p>
           <p>
-            <strong>SĐT:</strong> {user.phone}
+            <strong>Ngày sinh:</strong>
+            {handleFormatDayOnly(user.birth)}
           </p>
           <p>
-            <strong>Ngày tạo:</strong> {user.create_at.toLocaleDateString()}
+            <strong>Địa chỉ:</strong> {user.address}
           </p>
           <p>
-            <strong>Cập nhật:</strong> {user.update_at.toLocaleDateString()}
+            <strong>SĐT:</strong> {user.phoneNumber}
           </p>
-          {/* <p>
-            <strong>Trạng thái:</strong> {getcreate_atBadge(user.create_at)}
-          </p> */}
+          <p>
+            <strong>Ảnh:</strong>{" "}
+            {user.avatar ? (
+              <img
+                src={user.avatar}
+                alt="Người dùng"
+                className="w-32 h-32 object-cover rounded"
+              />
+            ) : (
+              "Chưa có"
+            )}
+          </p>
+          <p>
+            <strong>Ngày tạo:</strong>
+            {handleFormatDay(user.createAt)}
+          </p>
+          <p>
+            <strong>Cập nhật:</strong>
+            {handleFormatDay(user.updateAt)}
+          </p>
         </div>
       )}
     </Modal>
   );
 };
 
-export default Informationuser;
+export default DetailUser;

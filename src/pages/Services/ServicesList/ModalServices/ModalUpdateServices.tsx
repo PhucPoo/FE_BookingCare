@@ -1,7 +1,9 @@
 import MDEditor from "@uiw/react-md-editor";
-import { Input, Modal } from "antd";
+import { Input, Modal } from "antd/lib";
 import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
+import { updateService } from "../../../../api/Services/ServiceApi";
+import { toast } from "react-toastify";
 
 type Props = {
   isModalUpdateOpen: boolean;
@@ -14,6 +16,7 @@ type Props = {
   } | null;
   key: number | null;
   id: number | null;
+  handleGetServiceList: () => void;
 };
 
 const ModalUpdateServices = ({
@@ -21,17 +24,30 @@ const ModalUpdateServices = ({
   setIsModalUpdateOpen,
   DataToUpdateFromParent,
   id,
+  handleGetServiceList,
 }: Props) => {
-  const { handleSubmit, control, reset } = useForm();
-  const [value, setValue] = useState<string>("");
+  const { handleSubmit, control } = useForm();
+  const [value, setValue] = useState<string | undefined>("");
 
   const handleCancel = () => {
     setIsModalUpdateOpen(false);
-    reset();
   };
-  const onSubmit = (data: object) => console.log(data);
+  const onSubmit = async (data: object) => {
+    const res = await updateService({
+      ...data,
+      description: value,
+      id: DataToUpdateFromParent?.id,
+    });
+    if (!res?.error) {
+      toast.success("Sửa dịch vụ hoàn tất");
+      handleGetServiceList();
+      setIsModalUpdateOpen(false);
+    }
+  };
 
-  useEffect(() => {}, [id]);
+  useEffect(() => {
+    setValue(DataToUpdateFromParent?.description);
+  }, [id]);
   return (
     <>
       <Modal
@@ -48,15 +64,12 @@ const ModalUpdateServices = ({
             <br />
             <Controller
               name="name"
+              defaultValue={DataToUpdateFromParent?.name}
               control={control}
               rules={{ required: "Yêu cầu nhập tên" }}
               render={({ field, fieldState }) => (
                 <>
-                  <Input
-                    {...field}
-                    placeholder="Tên"
-                    defaultValue={DataToUpdateFromParent?.name}
-                  />
+                  <Input {...field} placeholder="Tên" type="text" />
                   {fieldState.error && (
                     <p style={{ color: "red" }}>{fieldState.error.message}</p>
                   )}
